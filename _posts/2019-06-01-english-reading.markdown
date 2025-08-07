@@ -10,9 +10,41 @@ categories: 英语学习
 
 
 
-
 # Words (柯林斯英汉双解大词典)
 
+* periodic /ˌpɪəriˈɒdɪk/
+  + ADJ **Periodic** events or situations happen occasionally, at fairly regular intervals. 周期性的
+    - **Periodic** checks are taken to ensure that high standards are maintained. 进行周期性检查以确保高标准得以维持。
+
+
+* periodical /ˌpɪəriˈɒdɪk(ə)l/
+  + N-COUNT **Periodicals** are magazines, especially serious or academic ones, that are published at regular intervals. (尤指内容严肃或学术性的) 期刊
+  + ADJ **Periodical** events or situations happen occasionally, at fairly regular intervals. 定期的
+    - She made **periodical** visits to her dentist. 她定期去看牙医。
+
+
+
+* compact /kəmˈpækt/
+  + ADJ **Compact** things are small or take up very little space. You use this word when you think this is a good quality. 小巧的
+  + ADJ A **compact** person is small but looks strong. 矮小结实的
+    - He was compact, probably no taller than me. 他矮小结实，大概没我高。
+
+
+* toggle /ˈtɒɡəl/
+  + N-COUNT A **toggle** is a small piece of wood or plastic which is sewn to something such as a coat or bag, and which is pushed through a loop or hole to fasten it. 棒形纽扣
+  + V-I On computers and some other machines, if you **toggle** between two functions, you use a part of the machine that allows you to switch from one function to the other one. 切换
+
+
+
+* flexible /ˈfleksəb(ə)l/
+  + ADJ A **flexible** object or material can be bent easily without breaking. 柔韧的
+  + ADJ Something or someone that is **flexible** is able to change easily and adapt to different conditions and circumstances as they occur. 灵活的
+    - flexible working hours 弹性工作时间
+
+
+* tailored /ˈteɪləd/
+  +  ADJ **Tailored** clothes are designed to fit close to the body, rather than being loose. 订做的
+    - a white tailored shirt. 一件订做的白衬衫
 
 * unidirectional /ˌjuːnɪdɪˈrekʃənəl; ˌjuːnɪdaɪˈrekʃənəl/
   + ADJ having, moving in, or operating in only one direction 单向的
