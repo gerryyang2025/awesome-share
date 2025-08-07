@@ -1,0 +1,634 @@
+---
+layout: post
+title:  "CPP Trick"
+date:   2020-05-28 20:00:00 +0800
+categories: [C/C++]
+---
+
+* Do not remove this line (it will not be displayed)
+{: toc}
+
+# Statements and Declarations in Expressions
+
+A compound statement enclosed in parentheses may appear as an expression in GNU C. This allows you to use loops, switches, and local variables within an expression. Recall that a compound statement is a sequence of statements surrounded by braces; in this construct, parentheses go around the braces. For example:
+
+``` c
+({ int y = foo (); int z;
+   if (y > 0) z = y;
+   else z = - y;
+   z; })
+```
+
+is a valid (though slightly more complex than necessary) expression for the absolute value of `foo ()`.
+
+``` c
+int a = ({int b; b = 1; b;}); // a = 1
+```
+
+* https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html
+
+# likely/unlikely
+
+``` cpp
+#define likely(x)  __builtin_expect(!!(x), 1)
+#define unlikely(x)  __builtin_expect(!!(x), 0)
+```
+
+`__builtin_expect`是gcc提供的宏，是编译器提供用来优化编译结果的。第一行代码意思是“x大概率为true”，第二行意思是“x大概率为false”，通过提供给编译器这样的信息，编译器可以在生成汇编代码时减少跳转指令被执行的概率。
+
+参考：protobuf/port_def.inc
+
+``` cpp
+#ifdef GOOGLE_PREDICT_TRUE
+#define PROTOBUF_PREDICT_TRUE GOOGLE_PREDICT_TRUE
+#else
+#ifdef __GNUC__
+// Provided at least since GCC 3.0.
+#define PROTOBUF_PREDICT_TRUE(x) (__builtin_expect(!!(x), 1))
+#else
+#define PROTOBUF_PREDICT_TRUE(x) (x)
+#endif
+#endif
+
+#ifdef GOOGLE_PREDICT_FALSE
+#define PROTOBUF_PREDICT_FALSE GOOGLE_PREDICT_FALSE
+#else
+#ifdef __GNUC__
+// Provided at least since GCC 3.0.
+#define PROTOBUF_PREDICT_FALSE(x) (__builtin_expect(x, 0))
+#else
+#define PROTOBUF_PREDICT_FALSE(x) (x)
+#endif
+#endif
+```
+
+# C++ style cast from unsigned char * to const char *
+
+```
+unsigned char *foo();
+std::string str;
+str.append(reinterpret_cast<const char*>(foo()));
+```
+
+https://stackoverflow.com/questions/658913/c-style-cast-from-unsigned-char-to-const-char
+
+# C++ static member functions and variables
+
+``` cpp
+// .h
+class Environment
+{
+private:
+    static int maxRobots;
+public:
+    static void setMaxRobots(int max)
+    {
+        maxRobots = max;
+    }
+    void printMaxRobots();
+};
+
+void Environment::printMaxRobots()
+{
+    std::cout << maxRobots;
+}
+
+// .cpp
+int Environment::maxRobots = 0;
+
+// main.cpp
+Environment::setMaxRobots(5);
+
+Environment *env = new Environment;
+env->printMaxRobots();
+delete env;
+```
+
+https://stackoverflow.com/questions/13203999/c-static-member-functions-and-variables
+
+
+# How can I pass a class member function as a callback?
+
+``` cpp
+class Fred {
+public:
+  void memberFn();
+  static void staticMemberFn();  // A static member function can usually handle it
+  // ...
+};
+// Wrapper function uses a global to remember the object:
+Fred* object_which_will_handle_signal;
+void Fred_memberFn_wrapper()
+{
+  object_which_will_handle_signal->memberFn();
+}
+int main()
+{
+  /* signal(SIGINT, Fred::memberFn); */   // Can NOT do this
+  signal(SIGINT, Fred_memberFn_wrapper);  // Okay
+  signal(SIGINT, Fred::staticMemberFn);   // Okay usually; see below
+  // ...
+}
+```
+
+* https://stackoverflow.com/questions/400257/how-can-i-pass-a-class-member-function-as-a-callback
+* http://www.parashift.com/c++-faq-lite/pointers-to-members.html
+* https://isocpp.org/wiki/faq/pointers-to-members#memfnptr-vs-fnptr
+
+
+# 优雅访问并修改C++中私有成员的方法
+
+方法1：
+
+``` cpp
+#include <iostream>
+
+#define private public
+#include <memory>
+#undef private
+
+int main() {
+  std::shared_ptr<int> a;
+  a._M_refcount;  // gcc, access private member
+}
+```
+
+方法2：
+
+原理：获取成员指针，通过成员指针进行访问。
+
+1. 类成员变量指针是个常量，比如`&C::member`是个常量，类型是`int C::*`。
+2. 模板实例化不检查参数的访问属性，因此模板实例化时模板参数可以传递私有成员的指针。
+3. 在模板类里就地定义友员，从而通过模板参数偷取了成员指针。
+
+> 17.7.2 Explicit instantiation
+> http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf
+> The usual access checking rules do not apply to names used to specify explicit instantiations. [ Note: In particular, the template arguments and names used in the function declarator (including parameter types, return types and exception specifications) may be private types or objects which would normally not be accessible and the template may be a member template or member function which would not normally be accessible. — end note ]
+
+
+``` cpp
+#include <iostream>
+#include <string>
+
+class A {
+ private:
+  int member;
+};
+
+struct AccessA {
+  typedef int A::*type;
+  friend type FiledPtr(AccessA);
+};
+
+template <typename Tag, typename Tag::type M>
+struct Rob {
+  friend typename Tag::type FiledPtr(Tag) { return M; }
+};
+
+template struct Rob<AccessA, &A::member>;
+
+int main() {
+  A a;
+  a.*FiledPtr(AccessA()) = 42;  // write 42 to it
+  std::cout << "proof: " << a.*FiledPtr(AccessA()) << std::endl;
+}
+```
+
+对上面作一些简化：
+
+``` cpp
+#include <iostream>
+#include <string>
+
+class A {
+ private:
+  int member;
+};
+
+int A::* FiledPtr();
+
+template <typename Tag, int Tag::* M>
+struct Rob {
+  friend int A::* FiledPtr() { return M; }
+};
+
+template struct Rob<A, &A::member>;
+
+int main() {
+  A a;
+
+  auto mp = FiledPtr(); // mp: member pointer
+
+  a.*mp = 42;  // write 42 to it
+  std::cout << "proof: " << a.*mp << std::endl;
+}
+```
+
+通过全局变量把成员变量的指针暴漏出来：
+
+``` cpp
+#include <iostream>
+#include <string>
+
+class A {
+ private:
+  int member;
+};
+
+using mem_ptr_t = int A::*;
+
+mem_ptr_t ptr_to_member;
+
+template <auto kMemPtr>
+struct PtrExporter {
+  // Initialized prior to `main` is entered.
+  inline static const int lets_initialize_global_ptr = [] {
+    ptr_to_member = kMemPtr;  // `ptr_to_member` is initialized here.
+    return 0;
+  }();
+};
+
+// Explicit instantiatation of `PtrExporter` (hence, its member
+// `lets_initialize_global_ptr`.)
+//
+// Lambda above is run as a result of this instantiation.
+template struct PtrExporter<&A::member>;
+
+int main() {
+  // By now `ptr_to_member` is initialized.
+
+  A a;
+  a.*ptr_to_member = 42;
+  std::cout << "proof: " << a.*ptr_to_member << std::endl;
+}
+```
+
+其他方法：
+
+https://github.com/martong/access_private/blob/master/include/access_private.hpp
+
+
+# std::find/std::find_if
+
+Returns **the first element** in the range **[first, last)** that satisfies specific criteria:
+
+* `find` searches for an element equal to value
+* `find_if` searches for an element for which `predicate p` returns `true`
+* `find_if_not` searches for an element for which `predicate q` returns `false`
+
+``` cpp
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+int main()
+{
+  int n1 = 3;
+  int n2 = 5;
+
+  std::vector<int> v{0, 1, 2, 3, 4};
+
+  auto result1 = std::find(std::begin(v), std::end(v), n1);
+  auto result2 = std::find(std::begin(v), std::end(v), n2);
+
+  if (result1 != std::end(v)) {
+    std::cout << "v contains: " << n1 << '\n';
+  } else {
+    std::cout << "v does not contain: " << n1 << '\n';
+  }
+
+  if (result2 != std::end(v)) {
+    std::cout << "v contains: " << n2 << '\n';
+  } else {
+    std::cout << "v does not contain: " << n2 << '\n';
+  }
+
+
+  std::vector<int> v2 = {3, 1, 8, 5, 0};
+  // 标准库里的查找算法
+  std::cout << *find_if(std::begin(v2), std::end(v2),
+  [](int x) { // 匿名lambda表达式, 不需要auto赋值
+    return x >= 5; // 用做算法的谓词判断条件
+  })
+          << std::endl; // 语句执行完, lambda表达式就不存在了
+
+
+  std::string str = "001001";
+  std::cout << *find_if(std::begin(str), std::end(str),
+  [](char c) {
+    return c == '1';
+  })
+          << std::endl;
+
+  return 0;
+}
+/*
+v contains: 3
+v does not contain: 5
+8
+1
+*/
+```
+
+[https://en.cppreference.com/w/cpp/algorithm/find](https://en.cppreference.com/w/cpp/algorithm/find)
+
+
+# 输出520
+
+规则: 用尽可能不一样的方式输出520, 代码里面不能出现5/2/0。进阶规则: 代码里面不能使用数字/字符/字符串常量。PS: `sizeof(int)`这种算常量, 因为`int a[sizeof(int)]`是合法的
+
+方法1:
+
+``` bash
+# 请求会返回 HTTP 错误码 502 Bad Gateway
+curl -s -w "%{http_code}\n" https://ifish.dev/hello | grep -o . | sort -r | tr -d "\n"
+```
+
+方法2:
+
+``` cpp
+int main()
+{
+#define S(n) std::to_string(n)
+#define CONCAT(a, b, c) S(a)+S(b)+S(c)
+
+        auto f = [](){
+                std::cout << CONCAT(__ATOMIC_SEQ_CST, __SIZEOF_SHORT__, __FINITE_MATH_ONLY__) << std::endl;
+        };
+        f();
+
+        return 0;
+}
+```
+
+方法3:
+
+``` cpp
+int main()
+{
+    static unsigned char a;
+    int v;
+    a--;
+    v = a;
+    v++;
+    v++;
+    v++;
+    v++;
+    v++;
+    cout << v+v << endl;
+}
+```
+
+
+# static_assert 声明
+
+作用：C++11起, 进行编译时断言检查。
+
+
+``` cpp
+#include <type_traits>
+
+template <class T>
+void swap(T& a, T& b)
+{
+        static_assert(std::is_copy_constructible<T>::value,
+                        "Swap requires copying");
+        static_assert(std::is_nothrow_copy_constructible<T>::value
+                        && std::is_nothrow_copy_assignable<T>::value,
+                        "Swap requires nothrow copy/assign");
+        auto c = b;
+        b = a;
+        a = c;
+}
+
+template <class T>
+struct data_structure
+{
+        static_assert(std::is_default_constructible<T>::value,
+                        "Data Structure requires default-constructible elements");
+};
+
+struct no_copy
+{
+        no_copy ( const no_copy& ) = delete;
+        no_copy () = default;
+};
+
+struct no_default
+{
+        no_default () = delete;
+};
+
+int main()
+{
+        int a, b;
+        swap(a, b);
+
+        no_copy nc_a, nc_b;
+        swap(nc_a, nc_b); // 1
+
+        data_structure<int> ds_ok;
+        data_structure<no_default> ds_error; // 2
+}
+```
+
+```
+// 1
+$g++ static_assert.cpp -std=c++11
+static_assert.cpp: In instantiation of 'void swap(T&, T&) [with T = no_copy]':
+static_assert.cpp:40:17:   required from here
+static_assert.cpp:6:2: error: static assertion failed: Swap requires copying
+  static_assert(std::is_copy_constructible<T>::value,
+  ^
+static_assert.cpp:8:2: error: static assertion failed: Swap requires nothrow copy/assign
+  static_assert(std::is_nothrow_copy_constructible<T>::value
+  ^
+static_assert.cpp:11:11: error: use of deleted function 'no_copy::no_copy(const no_copy&)'
+  auto c = b;
+           ^
+static_assert.cpp:25:2: error: declared here
+  no_copy ( const no_copy& ) = delete;
+  ^
+```
+
+```
+// 2
+$g++ static_assert.cpp -std=c++11
+static_assert.cpp: In instantiation of 'struct data_structure<no_default>':
+static_assert.cpp:43:29:   required from here
+static_assert.cpp:19:2: error: static assertion failed: Data Structure requires default-constructible elements
+  static_assert(std::is_default_constructible<T>::value,
+  ^
+```
+
+
+refer: https://zh.cppreference.com/w/cpp/language/static_assert
+
+# std::chrono::high_resolution_clock::now
+
+``` cpp
+#include <iostream>
+#include <vector>
+#include <numeric>
+#include <chrono>
+
+volatile int sink;
+int main()
+{
+    for (auto size = 1ull; size < 1000000000ull; size *= 100) {
+        // record start time
+        auto start = std::chrono::high_resolution_clock::now();
+        // do some work
+        std::vector<int> v(size, 42);
+        sink = std::accumulate(v.begin(), v.end(), 0u); // make sure it's a side effect
+        // record end time
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> diff = end - start;
+        std::cout << "Time to fill and iterate a vector of "
+                  << size << " ints : " << diff.count() << " s\n";
+    }
+}
+/*
+Time to fill and iterate a vector of 1 ints : 8.55e-06 s
+Time to fill and iterate a vector of 100 ints : 3.411e-06 s
+Time to fill and iterate a vector of 10000 ints : 0.000235135 s
+Time to fill and iterate a vector of 1000000 ints : 0.0253748 s
+Time to fill and iterate a vector of 100000000 ints : 2.97886 s
+*/
+```
+
+``` cpp
+#include <iostream>
+#include <chrono>
+#include <thread>
+
+int main()
+{
+    using namespace std::chrono_literals;
+    std::cout << "Hello waiter\n" << std::flush;
+    auto start = std::chrono::high_resolution_clock::now();
+
+    std::this_thread::sleep_for(2s);
+    // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> elapsed = end-start;
+    std::cout << "Waited " << elapsed.count() << " ms\n";
+}
+/*
+Hello waiter
+Waited 2000.12 ms
+*/
+```
+
+refer:
+
+* https://en.cppreference.com/w/cpp/chrono/high_resolution_clock/now
+* https://en.cppreference.com/w/cpp/thread/sleep_for
+
+
+# Parse HTTP Header
+
+``` cpp
+#include <stdlib.h>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <map>
+#include <boost/algorithm/string.hpp>
+
+int main(int argc, char* argv[]) {
+  const char* s = "HTTP/1.1 200 OK\r\n"
+"Connection: close\r\n"
+"Content-Length: 43\r\n"
+"T-UUID: 5f608668-9b33-7ad3-8989-f9298065bd36\r\n"
+"T-Metric: 1\r\n"
+"Content-Type: text/html\r\n\r\n"
+"ResultCode=0&ResultInfo=&PayAmt=0&PayUnit=3";
+
+  std::map<std::string, std::string> m;
+
+  std::istringstream resp(s);
+  std::string header;
+  std::string::size_type index;
+  while (std::getline(resp, header) && header != "\r") {
+    index = header.find(':', 0);
+    if(index != std::string::npos) {
+      m.insert(std::make_pair(
+        boost::algorithm::trim_copy(header.substr(0, index)),
+        boost::algorithm::trim_copy(header.substr(index + 1))
+      ));
+    }
+  }
+
+  for (auto& kv: m) {
+    std::cout << "KEY: `" << kv.first << "`, VALUE: `" << kv.second << '`' << std::endl;
+  }
+
+  std::string data(s);
+  std::string msg(data.c_str() + data.rfind("\n") + 1);
+  std::cout << "msg: " << msg << std::endl;
+
+  if (msg.length() == std::stoul(m["Content-Length"])) {
+      std::cout << "Content-Length: " << msg.length() << std::endl;
+  }
+
+  return EXIT_SUCCESS;
+}
+/*
+KEY: `Connection`, VALUE: `close`
+KEY: `Content-Length`, VALUE: `43`
+KEY: `Content-Type`, VALUE: `text/html`
+KEY: `T-Metric`, VALUE: `1`
+KEY: `T-UUID`, VALUE: `5f608668-9b33-7ad3-8989-f9298065bd36`
+msg: ResultCode=0&ResultInfo=&PayAmt=0&PayUnit=3
+Content-Length: 43
+*/
+```
+
+# Generate random variable names
+
+[How to generate random variable names in C++ using macros?](https://stackoverflow.com/questions/1082192/how-to-generate-random-variable-names-in-c-using-macros)
+
+
+``` cpp
+#include <iostream>
+#include <ctime>
+
+#define SYMBOL_CAT_LINE_1(a, b) SYMBOL_CAT_LINE_2(a, b)
+#define SYMBOL_CAT_LINE_2(a, b) SYMBOL_CAT_LINE_3(~, a##b)
+#define SYMBOL_CAT_LINE_3(a, b) b
+#define SYMBOL_CAT_LINE(Symbol) SYMBOL_CAT_LINE_1(Symbol, __LINE__)
+
+#define TRIGGER_COOLDOWN(COOLDOWNSEC) \
+        thread_local time_t SYMBOL_CAT_LINE(tLastTime) = 0; \
+        time_t SYMBOL_CAT_LINE(tNow) = time(nullptr); \
+        if (SYMBOL_CAT_LINE(tLastTime) + COOLDOWNSEC <= SYMBOL_CAT_LINE(tNow) && (SYMBOL_CAT_LINE(tLastTime) = SYMBOL_CAT_LINE(tNow)))
+
+int main()
+{
+        while (false) {
+                thread_local time_t tLastTime = 0;
+                time_t tNow = time(nullptr);
+                if (tLastTime + 1 <= tNow) {
+                        tLastTime = tNow;
+                        std::cout << "tick\n";
+                }
+        }
+
+        while (true) {
+                TRIGGER_COOLDOWN(1) {
+                        std::cout << "tick\n";
+                }
+
+                TRIGGER_COOLDOWN(2) {
+                        std::cout << "tick2\n";
+                }
+        }
+
+}
+```
+
+
+
