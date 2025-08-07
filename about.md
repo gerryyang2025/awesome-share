@@ -32,10 +32,10 @@ More infos:
 		+ Pirates of the Caribbean (2003)
 		+ Wonder (2017)
 
-My personal Wechat account is `delphiwcdj` and Wechat public account is `tencentgerryyang`. 
+My personal Wechat account is `delphiwcdj` and Wechat public account is `tencentgerryyang`.
 
 [Blog]: https://blog.csdn.net/delphiwcdj
-[GitHub]: https://github.com/gerryyang
+[GitHub]: https://github.com/gerryyang2025
 
 
 

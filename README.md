@@ -72,7 +72,7 @@ This ancient Chinese proverb reflects my approach to learning and sharing knowle
 
 ```bash
 # Clone the repository
-git clone https://github.com/gerryyang/awesome-share.git
+git clone https://github.com/gerryyang2025/awesome-share.git
 cd awesome-share
 
 # Install dependencies
@@ -102,8 +102,8 @@ bundle exec jekyll serve
 
 # 🔗 Quick Links
 
-- **GitHub**: [@gerryyang](https://github.com/gerryyang)
-- **CSDN Blog**: [Delphiwcdj](https://blog.csdn.net/delphiwcdj)
+- **GitHub**: [@gerryyang](https://github.com/gerryyang2025)
+- **CSDN Blog**: [delphiwcdj](https://blog.csdn.net/delphiwcdj)
 
 
 
