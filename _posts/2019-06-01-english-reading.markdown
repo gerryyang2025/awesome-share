@@ -9,8 +9,18 @@ categories: 英语学习
 {:toc}
 
 
-
 # Words (柯林斯英汉双解大词典)
+
+
+* plural /ˈplʊərəl/
+  + ADJ The **plural** form of a word is the form that is used when referring to more than one person or thing. 复数的
+  + N-COUNT The **plural** of a noun is the form of it that is used to refer to more than one person or thing. 复数形式
+
+
+* credentials /krɪˈdɛnʃəlz/
+  + N-PLURAL Someone's **credentials** are their previous achievements, training, and general background, which indicate that they are qualified to do something. (表明某人有资格做某事的) 资历
+  + N-PLURAL Someone's **credentials** are a letter or certificate that proves their identity or qualifications. (身份或资格的) 证明文件
+
 
 * periodic /ˌpɪəriˈɒdɪk/
   + ADJ **Periodic** events or situations happen occasionally, at fairly regular intervals. 周期性的

@@ -45,20 +45,16 @@ Your CI can run `claude -p "If there are new text strings, translate them into F
 
 # Prepare
 
-**Prerequisites**: [Node.js 18 or newer](https://nodejs.org/en/download/)
+## System requirements
 
-``` bash
-# Install Claude Code
-npm install -g @anthropic-ai/claude-code
+* **Operating Systems**: macOS 10.15+, Ubuntu 20.04+/Debian 10+, or Windows 10+ (with WSL 1, WSL 2, or Git for Windows)
+* **Hardware**: 4GB+ RAM
+* **Software**: [Node.js 18+](https://nodejs.org/en/download)
+* **Network**: Internet connection required for authentication and AI processing
+* **Shell**: Works best in `Bash`, `Zsh` or `Fish`
+* **Location**: [Anthropic supported countries](https://www.anthropic.com/supported-countries)
 
-# Navigate to your project
-cd your-awesome-project
 
-# Start coding with Claude
-claude
-```
-
-Got specific setup needs or hit issues? See [advanced setup](https://docs.anthropic.com/en/docs/claude-code/setup) or [troubleshooting](https://docs.anthropic.com/en/docs/claude-code/troubleshooting).
 
 
 
@@ -127,12 +123,51 @@ nvm install node
 
 ## Install Claude Code
 
-
 ``` bash
+# Install Claude Code
 npm install -g @anthropic-ai/claude-code
+
+# Navigate to your project
+cd your-awesome-project
+
+# Start coding with Claude
+claude
 ```
 
+> **Note**: **Do NOT** use `sudo npm install -g` as this can lead to **permission issues and security risks**. If you encounter permission errors, see [configure Claude Code](https://docs.anthropic.com/en/docs/claude-code/troubleshooting#linux-permission-issues) for recommended solutions.
+>
+> Some users may be automatically migrated to an improved installation method. Run `claude doctor` after installation to check your installation type.
+
+
+
+Got specific setup needs or hit issues? See [advanced setup](https://docs.anthropic.com/en/docs/claude-code/setup) or [troubleshooting](https://docs.anthropic.com/en/docs/claude-code/troubleshooting).
+
+
 ![npm](/assets/images/202508/npm.png)
+
+```
+$ ls -l ~/.nvm/versions/node/v24.5.0/bin/claude
+lrwxrwxrwx 1 gerryyang users 52 Aug  6 16:50 /data/home/gerryyang/.nvm/versions/node/v24.5.0/bin/claude -> ../lib/node_modules/@anthropic-ai/claude-code/cli.js
+```
+
+
+After the installation process completes, navigate to your project and start Claude Code:
+
+
+``` bash
+cd your-awesome-project
+claude
+```
+
+Claude Code offers the following **authentication options**:
+
+1. **Anthropic Console**: The default option. Connect through the Anthropic Console and complete the OAuth process. Requires active billing at [console.anthropic.com](https://console.anthropic.com/).
+
+2. **Claude App (with Pro or Max plan)**: Subscribe to Claude’s [Pro or Max plan](https://www.anthropic.com/pricing) for a unified subscription that includes both Claude Code and the web interface. Get more value at the same price point while managing your account in one place. Log in with your Claude.ai account. During launch, choose the option that matches your subscription type.
+
+3. **Enterprise platforms**: Configure Claude Code to use [Amazon Bedrock or Google Vertex AI](https://docs.anthropic.com/en/docs/claude-code/third-party-integrations) for enterprise deployments with your existing cloud infrastructure.
+
+> Claude Code securely stores your credentials. See [Credential Management](https://docs.anthropic.com/en/docs/claude-code/iam#credential-management) for details.
 
 
 # Get started
@@ -141,10 +176,53 @@ npm install -g @anthropic-ai/claude-code
 * [Continue with Quickstart (5 mins)](https://docs.anthropic.com/en/docs/claude-code/quickstart)
 
 
+# Tips
+
+``` bash
+# Should show an alias to ~/.claude/local/claude
+which claude
+
+# Check installation health
+claude doctor
+```
+
+# Update Claude Code
+
+## Auto updates
+
+Claude Code automatically keeps itself up to date to ensure you have the latest features and security fixes.
+
+* Update checks: Performed on startup and periodically while running
+* Update process: Downloads and installs automatically in the background
+* Notifications: You’ll see a notification when updates are installed
+* Applying updates: Updates take effect the next time you start Claude Code
+
+
+## Disable auto-updates
+
+``` bash
+# Via configuration
+claude config set autoUpdates false --global
+
+# Or via environment variable
+export DISABLE_AUTOUPDATER=1
+```
+
+## Update manually
+
+``` bash
+claude update
+```
+
+
 
 
 
 # Q&A
+
+## 国家地区访问限制问题
+
+Claude Code might not be available in your country. Check supported countries at https://anthropic.com/supported-countries
 
 ![claude1](/assets/images/202508/claude1.png)
 
