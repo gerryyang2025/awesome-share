@@ -16,8 +16,9 @@ categories: Papers
 
 # CodeRAG
 
-* [CodeRAG: Supportive Code Retrieval on Bigraph for Real-World Code Generation](https://arxiv.org/pdf/2504.10046) (June 03–05, 2018)
-  + 论文讲解：https://developer.volcengine.com/articles/7496711933538598963
+## [CodeRAG: Supportive Code Retrieval on Bigraph for Real-World Code Generation](https://arxiv.org/pdf/2504.10046)
+
+论文讲解：https://developer.volcengine.com/articles/7496711933538598963
 
 > 现实世界代码生成的困境
 
@@ -48,6 +49,23 @@ categories: Papers
 ![codeRAG](/assets/images/202507/codeRAG.png)
 
 CodeRAG 的四大核心组件：需求图谱（Requirement Graph）、DS-Code 图（Dependency-Semantic Code Graph）、双图映射引擎（Bigraph Mapping）和 Agentic 代码生成。
+
+
+## [A Deep Dive into Retrieval-Augmented Generation for Code Completion: Experience on WeChat](https://arxiv.org/pdf/2507.18515)
+
+**Code completion**, a crucial(至关重要的) task in software engineering that enhances developer productivity, has seen substantial(大量的) improvements with the rapid advancement of large language models (`LLMs`). In recent years, retrieval-augmented generation (`RAG`) has emerged as a promising(前景很好的) method to **enhance the code completion capabilities of LLMs, which leverages relevant context from codebases without requiring model retraining**.
+
+While existing studies have demonstrated the effectiveness of RAG on public repositories and benchmarks, the potential distribution shift between open-source and closed-source codebases presents unique challenges that remain unexplored.
+
+To mitigate the gap, we conduct an empirical(实证的) study to investigate the performance of widely-used RAG methods for code completion in the industrialscale codebase of WeChat, one of the largest proprietary software systems. Specifically, we extensively explore two main types of RAG methods, namely **identifier-based RAG** and **similaritybased RAG**, across 26 open-source LLMs ranging from 0.5B to 671B parameters.
+
+For a more comprehensive analysis, we employ different retrieval techniques for similarity-based RAG, including lexical and semantic retrieval. Based on 1,669 internal repositories, we achieve several key findings:
+
+1. both RAG methods demonstrate effectiveness in closed-source repositories, with similarity-based RAG showing superior performance
+2. the effectiveness of similarity-based RAG improves with more advanced retrieval techniques, where BM25 (lexical retrieval) and GTE-Qwen (semantic retrieval) achieve superior performance
+3. the combination of lexical and semantic retrieval techniques yields optimal results, demonstrating complementary strengths. Furthermore, we conduct a developer survey to validate the practical utility of RAG methods in real-world development environments.
+
+
 
 
 

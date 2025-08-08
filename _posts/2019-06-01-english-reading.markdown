@@ -11,6 +11,12 @@ categories: 英语学习
 
 # Words (柯林斯英汉双解大词典)
 
+* promising /ˈprɒmɪsɪŋ/
+  + ADJ Someone or something that is **promising** seems likely to be very good or successful. 有望成功的; 前景很好的
+
+* substantial /səbˈstænʃ(ə)l/
+  + ADJ **Substantial** means large in amount or degree. 大量的; 很大程度的
+
 
 * plural /ˈplʊərəl/
   + ADJ The **plural** form of a word is the form that is used when referring to more than one person or thing. 复数的
