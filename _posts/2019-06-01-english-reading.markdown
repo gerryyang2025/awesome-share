@@ -967,6 +967,41 @@ categories: 英语学习
 
 
 
+# A-Z 开头形容性格特点的单词
+
+* Ambitious 有野心的
+* Brave 勇敢的
+* Childish 孩子气的
+* Dependable 可依赖的
+* Extroverted 外向的（E 人）
+* Frank 坦率的
+* Gentle 温柔的
+* Humorous 幽默的
+* Introverted 内向的（I 人）
+* Jealous 妒忌心强的
+* Knowledgeable 知识渊博的
+* Logical 有逻辑的
+* Mean 刻薄的，吝啬的
+* Nasty 龌蹉的
+* Optimistic 乐观的
+* Polite 有礼貌的
+* Qualified 合格的
+* Reasonable 讲理的
+* Sensitive 敏感的
+* Timid 胆小的
+* Understanding 善解人意的
+* Versatile /ˈvɜːsətaɪl/ 多才多艺的
+* Wise 智慧的
+* X ...
+* Yellow 胆小的
+* Zealous 热情的
+
+
+
+
+
+
+
 # 流利阅读
 
 ## Trump administration owes Americans answers about restrictions on Huawei (2019-5-23)
