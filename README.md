@@ -2,7 +2,7 @@
 
 > 🏗️ Jekyll-powered knowledge repository | 📝 Dev tutorials • 🎓 English learning • ✨ Life logs
 
-This is a personal blog built with **Jekyll**, serving as my curated knowledge repository. I document technical insights from software development, share practical strategies for English language learning, and reflect on meaningful life experiences. Through concise articles and tutorials, I aim to solidify my understanding while offering value to fellow developers, language learners, and curious minds exploring the intersection of technology and personal growth.
+This is a personal blog built with [Jekyll](https://jekyllrb.com/), serving as my curated knowledge repository. I document technical insights from software development, share practical strategies for English language learning, and reflect on meaningful life experiences. Through concise articles and tutorials, I aim to solidify my understanding while offering value to fellow developers, language learners, and curious minds exploring the intersection of technology and personal growth.
 
 # Blog Philosophy
 
