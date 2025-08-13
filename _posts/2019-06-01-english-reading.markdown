@@ -11,6 +11,20 @@ categories: 英语学习
 
 # Words (柯林斯英汉双解大词典)
 
+* juiced /ˈdʒuːst/
+  + ADJ Someone who is **juiced** or **juiced up** is excited. 兴奋的
+    - Script editors are all **juiced up** over the humorous potential. 剧本编辑们全都因剧本潜在的幽默性而兴奋起来了。
+
+* fancy /ˈfænsi/
+  + ADJ If you describe something as **fancy**, you mean that it is special, unusual, or elaborate, for example because it has a lot of decoration. 别致的
+    - The magazine was packaged in a **fancy** plastic case with attractive graphics. 这本杂志装在一个带有漂亮图纹的别致塑料盒子里。
+
+
+* conciliation /kənˌsɪliˈeɪʃn/
+  + N-UNCOUNT **Conciliation** is willingness to end a disagreement or the process of ending a disagreement. 和解意愿; 和解
+    -  Resolving the dispute will require a mood of **conciliation** on both sides. 解决这场争端需要双方都抱有和解的态度。
+
+
 * promising /ˈprɒmɪsɪŋ/
   + ADJ Someone or something that is **promising** seems likely to be very good or successful. 有望成功的; 前景很好的
 

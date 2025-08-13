@@ -2283,6 +2283,77 @@ grape
 
 
 
+# Bash Snippet
+
+``` bash
+#!/bin/bash
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_status() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Check if binaries exist
+BIN_FILE=/usr/bin/date
+if [ ! -f "$BIN_FILE" ]; then
+    print_error "$BIN_FILE not found"
+    exit 1
+fi
+
+# Create test directory
+TEST_DIR="test_output"
+mkdir -p "$TEST_DIR"
+
+# Start TestSvr in background
+print_status "Starting TestSvr..."
+./bin/testsvr > "$TEST_DIR/testsvr.log" 2>&1 &
+TESTSVR_PID=$!
+
+# Wait for TestSvr to start
+sleep 3
+
+# Check if TestSvr is running
+if ! kill -0 $TESTSVR_PID 2>/dev/null; then
+    print_error "TestSvr failed to start. Check logs:"
+    cat "$TEST_DIR/testsvr.log"
+    exit 1
+fi
+
+print_success "TestSvr started with PID $TESTSVR_PID"
+
+# Stop TestSvr
+print_status "Stopping TestSvr..."
+kill $TESTSVR_PID 2>/dev/null || true
+wait $TESTSVR_PID 2>/dev/null || true
+
+print_success "Test completed successfully!"
+print_status "Check the following files for detailed output:"
+print_status "  - TestSvr logs: $TEST_DIR/testsvr.log"
+```
+
+
+
 
 # Example
 
