@@ -11,6 +11,14 @@ categories: 英语学习
 
 # Words (柯林斯英汉双解大词典)
 
+* prioritize /praɪˈɒrɪˌtaɪz/
+  + V-T If you **prioritize** something, you treat it as more important than other things. 优先考虑
+    - Prioritize your own wants rather than constantly thinking about others. 优先考虑你自己的需要，而不要总想着别人。
+  + V-T If you **prioritize** the tasks that you have to do, you decide which are the most important and do them first. 确定 (任务) 优先顺序
+    - Make lists of what to do and prioritize your tasks. 把你要做的事情列出来，确定任务的轻重缓急。
+
+
+
 * juiced /ˈdʒuːst/
   + ADJ Someone who is **juiced** or **juiced up** is excited. 兴奋的
     - Script editors are all **juiced up** over the humorous potential. 剧本编辑们全都因剧本潜在的幽默性而兴奋起来了。
