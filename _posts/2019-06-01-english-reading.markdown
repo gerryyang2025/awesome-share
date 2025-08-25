@@ -9,7 +9,108 @@ categories: 英语学习
 {:toc}
 
 
+
+# Tools
+
+* [Oxford Advanced Learner's Dictionary](https://www.oxfordlearnersdictionaries.com/definition/english/)
+
+The world's bestselling advanced-level dictionary for learners of English.
+
+Since 1948, over 100 million English language learners have used `OALD` to develop their English skills for work and study.
+
+Now in its tenth edition, `OALD` builds English vocabulary better than ever before and leads the way to more confident, successful communication in English.
+
+* [dictionary](https://www.dictionary.com/)
+
+* [thesaurus](https://www.thesaurus.com/) (同义词)
+
+A **thesaurus** is a reference book in which words with similar meanings are grouped together. 同义词汇编手册
+
+* [English Language & Usage](https://english.stackexchange.com/)
+
+
+
+
+
+
 # Words (柯林斯英汉双解大词典)
+
+
+* subscription /səbˈskrɪpʃən/
+  + N-COUNT A **subscription** is an amount of money that you pay regularly in order to belong to an organization, to help a charity or campaign, or to receive copies of a magazine or newspaper. 会员费; 捐赠款; 征订费
+    - You can become a member by paying the yearly **subscription**. 你通过支付年度会员费可以成为一名会员。
+  + ADJ **Subscription** television is television that you can watch only if you pay a subscription. A subscription channel is a channel that you can watch only if you pay a subscription. (电视或频道) 付费的
+
+
+
+
+
+
+* occurrence /əˈkʌrəns/
+  + N-COUNT An **occurrence** is something that happens. 发生的事情
+    - Complaints seemed to be an everyday occurrence. 投诉似乎成了天天发生的事。
+
+
+* proposal /prəˈpəʊz(ə)l/
+  + N-COUNT A **proposal** is a plan or an idea, often a formal or written one, which is suggested for people to think about and decide upon. (常为正式书面的) 提议
+  + N-COUNT A **proposal** is the act of asking someone to marry you. 求婚
+
+
+
+
+* irrespective /ˌɪrɪˈspektɪv/
+  + PHRASE If you say that something happens or should happen **irrespective of** a particular thing, you mean that it is not affected or should not be affected by that thing. 不考虑的
+
+
+* specific /spɪˈsɪfɪk/
+  + ADJ You use **specific** to refer to a particular exact area, problem, or subject. 特定的 (部位、问题、主题等)
+    - There are several **specific** problems to be dealt with. 有好几个特定问题要解决。
+  + ADJ If someone is **specific**, they give a description that is precise and exact. You can also use specific to describe their description. 确切的
+
+
+* criterion /kraɪˈtɪəriən/
+  + N-COUNT A **criterion** is a factor on which you judge or decide something. (判断的) 标准
+    - The most important **criterion** for entry is that applicants must design and make their own work. 参加的最重要标准就是申请人必须设计并制作自己的作品。
+
+
+* aforementioned /əˈfɔːˌmɛnʃənd/
+  + ADJ If you refer to the **aforementioned** person or subject, you mean the person or subject that has already been mentioned. 此前提及的
+
+
+* pertaining /pəˈteɪn/
+  + V-I If one thing **pertains** to another, it relates, belongs, or applies to it. 与…相关; 属于; 适于
+
+
+
+* essential /ɪˈsenʃ(ə)l/
+  + ADJ Something that is **essential** is extremely important or absolutely necessary to a particular subject, situation, or activity. 至关重要的
+  + ADJ The **essential** aspects of something are its most basic or important aspects. 基本的; 重要的
+    - Most authorities agree that play is an **essential** part of a child's development. 大多数权威人士认为玩耍是孩子成长的一个重要部分。
+  + N-COUNT The **essentials** are the things that are absolutely necessary for the situation you are in or for the task you are doing. 必需品
+    - The apartment contained the basic **essentials** for bachelor life. 这套公寓配有单身生活的基本必需品。
+  + N-PLURAL The **essentials** are the most important principles, ideas, or facts of a particular subject. 要素; 要点
+    - the **essentials** of everyday life, such as eating and exercise. 饮食、运动等日常生活要素
+
+
+
+* scaffold /ˈskæfəʊld/
+  + N-COUNT A **scaffold** was a raised platform on which criminals were hanged or had their heads cut off. 绞刑台
+  + N-COUNT A **scaffold** is a temporary raised platform on which workers stand to paint, repair, or build high parts of a building. 脚手架
+    - They were standing on top of a giant **scaffold**. 他们站在一个巨大的脚手架顶上。
+
+
+* up-to-date
+  + ADJ If something is **up-to-date**, it is the newest thing of its kind. 最新的
+    - Web services are always **up-to-date** and available. 网络服务总是最新的且随时可用。
+  + ADJ If you are **up-to-date** about something, you have the latest information about it. 掌握最新信息的
+    - We'll keep you **up to date** with any news. 我们将让你了解最新消息。
+
+* warrant /ˈwɒrənt/
+  + V-T If something **warrants** a particular action, it makes the action seem necessary or appropriate for the circumstances. 使…显得必要; 使…显得适当
+    - The allegations are serious enough to **warrant** an investigation. 指控已严重得有必要进行一番调查。
+  + N-COUNT A **warrant** is a legal document that allows someone to do something, especially one that is signed by a judge or magistrate and gives the police permission to arrest someone or search their house. 搜查令; 拘捕令
+    - Police confirmed that they had issued a **warrant** for his arrest. 警方证实他们已对他签发了拘捕令。
+
 
 * prioritize /praɪˈɒrɪˌtaɪz/
   + V-T If you **prioritize** something, you treat it as more important than other things. 优先考虑
@@ -960,8 +1061,9 @@ categories: 英语学习
     + The **integrity** of something such as a group of people or a text is its state of being a united whole. 完整
 
 * leverage 英 /ˈliːvərɪdʒ/ 美 /ˈlevərɪdʒ/
-    + **Leverage** is the ability to influence situations or people so that you can control what happens. 影响力
-    + To **leverage** a company or investment means to use borrowed money in order to buy it or pay for it. 举债经营
+    + N-UNCOUNT **Leverage** is the ability to influence situations or people so that you can control what happens. 影响力
+      - His position as mayor gives him **leverage** to get things done. 他的市长身份使他有能力办成一些事情。
+    + V-T To **leverage** a company or investment means to use borrowed money in order to buy it or pay for it. 举债经营
 
 * incorporate 英 /ɪnˈkɔːpəreɪt/
     + If one thing **incorporates** another thing, it includes the other thing. 包含
@@ -1151,5 +1253,85 @@ In a few hours, we'll bid farewell to 2024 and welcome 2025. First and foremost,
 再过十几个小时，我们即将告别2024，迈入2025。首先祝大家新年快乐！非常感谢所有腾讯人的努力，让我们在过去一年经受住了宏观考验，保持了稳定、高质量的发展。尤其难得的是，在困难中磨炼了我们专注与自我革新的能力，这将是我们走向未来最宝贵的财富。
 
 放眼世界，各种不稳定因素依旧活跃，经济周期波动起伏，市场竞争加剧，2025年我们面对的仍然是一个充满挑战与机遇的未来。
+
+
+# Q&A
+
+## "Status" vs. "state"
+
+["Status" vs. "state"](https://english.stackexchange.com/questions/12958/status-vs-state)
+
+Linux 中 top 命令显示的 `S` 列内容，此处的 `S` 表示 `Process Status`
+
+![top-S](/assets/images/202508/top-S.png)
+
+
+以下为一些参考内容：
+
+Q:
+
+Can anyone explain what the difference between `status` and `state` is when I talk about the condition or situation of an object?
+
+Here's what I got from **Longman English Dictionary**.
+
+> **status**: a situation at a particular time, especially in an argument, discussion etc.
+>
+> **state**: the physical or mental condition that someone or something is in
+
+For example, how do you interpret these two sentences:
+
+1. What is the current `status` of this project?
+2. What is the current `state` of this project?
+
+A1:
+
+In that context, `status` would refer to **the progress of a project**, e.g. in **testing**, in **preliminary research**, etc. `State` would refer more to **the condition of a project**, e.g. green-lighted, cancelled, on hold for financial analysis.
+
+When referring to a specific object, you typically want to use `state`, e.g. cold, hot, liquid, solid (this refers to the object's physical state). The `status` of an object is rarely used or mentioned, unless it is something that moves or transforms, in which case it is used to mean distance or progress.
+
+A2:
+
+In the context that you describe, the definitions above are still relevant. The state of the project maybe described as, "component A is complete but component B is not; the project is 60% complete overall". This description of the state of the project would be the same at any point in time given unchanged progress of components A and B and unchanged outside influences. The status of the project however would almost certainly change with time, likely with respect to a deadline.
+
+A3:
+
+A simplifying proposal:
+
+`Status` is one-dimensional, i.e., it is determined by a single value (e.g., the social rank of a person, the amount of progress made by a project, the goodness of an outcome, etc.) usually ranging from good to bad, desirable to undesirable, or the like.
+
+`State` is “all the rest”: it is either n-dimensional (with n > 1), or it does not refer to something that can be ordered by quality. In practice, though, state is often used when the conditions for using status would apply.
+
+In IT, executions at the OS level usually return an exit `status` (e.g., `0` for `success`), HTTP calls return an **HTTP status code** (e.g., `200 OK` or `404 Not Found`). On the other hand, we have (finite-)state automata that describe how a complex system (e.g., a parser) can go through its possible `states`. When we suspend a physical or virtual machine we cause its `state` to be saved.
+
+
+
+
+["state" or "status"? When should a variable name contain the word "state", and when should a variable name instead contain the word "status"?](https://softwareengineering.stackexchange.com/questions/219351/state-or-status-when-should-a-variable-name-contain-the-word-state-and-w)
+
+
+A:
+
+I like this question. The following is from my head but I think it fits quite well.
+
+* **status** is used to describe an outcome of an operation (e.g. `success`/`fail`).
+* **state** is used to describe a stage in a process (e.g. `pending`/`dispatched`).
+
+I also like this definition:
+
+> **status** is a final (resulting) **state**.
+
+**It is quite clear when applied to programming**. Much less clear when you apply it to natural language. Let's take the examples from [the english thread](https://english.stackexchange.com/questions/12958/status-vs-state) and see if it holds with the most upvoted answer.
+
+> "What is the current **status** of this project?" The answer should be "**In testing**."
+
+Well, this might seem to contradict my definitions at a first look but we must realize the context. Probably some supervisor is asking his team about the project and **how far they have reached**. The point is that the supervisor is interested in the outcome up to now. The fact that there will be something after is just put away because it is not the point of the question.
+
+> "What is the current **state** of this project?" The answer should be "**On hold for financial analysis**."
+
+So I think that this very nicely demonstrates an essence of a state. "On hold for financial analysis." clearly focuses on the fact that the current situation is a **part of some encompassing process** and even suggests the next state.
+
+I would say it holds pretty well.
+
+
 
 
