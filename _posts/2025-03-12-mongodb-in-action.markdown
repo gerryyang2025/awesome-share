@@ -9,6 +9,241 @@ categories: 数据库
 {:toc}
 
 
+
+# Introduction
+
+* [MongoDB: An introduction](https://www.geeksforgeeks.org/mongodb/mongodb-an-introduction/)
+* [Introduction to MongoDB](https://www.mongodb.com/docs/manual/introduction/)
+
+
+`MongoDB` is the most popular **NoSQL** open source document-oriented database. The term 'NoSQL' means 'non-relational'. This means that MongoDB is not based on a table like relational database structure but provides an altogether different mechanism for storage and retrieval of data. This format of storage is called **BSON** ( similar to **JSON** format).
+
+* **SQL databases** store data in tabular format. These data are stored in a predefined data model which is not flexible for highly growing applications in today's real world.
+* Modern applications are more social, interactive and networked than ever. Applications stores more and more data and accessing them at higher rates.
+* Relational Database Management System is not the correct choice when it comes to handle big data by the virtue of their design since they are not horizontally scalable. If the database runs on a single server, then it will reach a scaling limit.
+* **NoSQL databases** are more scalable and provide superior performance. `MongoDB` scales by adding more and more servers and increases productivity with its flexible document model.
+
+> A simple MongoDB document Structure:
+
+```
+{
+  title: 'Geeksforgeeks',
+  by: 'Harshit Gupta',
+  url: 'https://www.geeksforgeeks.org/',
+  type: 'NoSQL'
+}
+```
+
+
+## Document Database
+
+A **record** in `MongoDB` is a **document**, which is a data structure composed of **field and value pairs**. `MongoDB` **documents** are similar to `JSON` objects. The values of fields may include other **documents**, **arrays**, and **arrays of documents**.
+
+![mongodb1](/assets/images/202508/mongodb1.png)
+
+**The advantages of using documents are**:
+
+1. Documents correspond to native data types in many programming languages.
+2. Embedded documents and arrays reduce need for expensive joins.
+3. Dynamic schema supports fluent polymorphism.
+
+
+
+
+
+## MongoDB Usage
+
+You can create a MongoDB database in the following environments:
+
+* [MongoDB Atlas](https://www.mongodb.com/docs/atlas): The fully managed service for MongoDB deployments in the cloud
+* [MongoDB Enterprise](https://www.mongodb.com/docs/manual/administration/install-enterprise/#std-label-install-mdb-enterprise): The subscription-based, self-managed version of MongoDB
+* [MongoDB Community](https://www.mongodb.com/docs/manual/administration/install-community/#std-label-install-mdb-community-edition): **The source-available, free-to-use, and self-managed version of MongoDB**
+
+
+
+
+
+## MongoDB database features
+
+* **Document Oriented**: MongoDB stores the main subject in the minimal number of documents and not by breaking it into multiple relational structures like [RDBMS](https://www.geeksforgeeks.org//dbms/rdbms-full-form/). For example, it stores all the information of a computer in a single document called `Computer` and not in distinct relational structures like CPU, RAM, Hard disk etc.
+
+* **Indexing**: Without [indexing](https://www.geeksforgeeks.org/mongodb/indexing-in-mongodb/), a database would have to scan every document of a collection to select those that match the query which would be inefficient. So, for efficient searching Indexing is must and MongoDB uses it to process huge volumes of data in very less time.
+
+* **Scalability**: MongoDB scales horizontally using [sharding](https://www.geeksforgeeks.org/dbms/what-is-sharding/) (partitioning data across various servers). Data is partitioned into data chunks using the **shard key** and these data chunks are evenly distributed across shards that reside across many physical servers. Also, new machines can be added to a running database.
+
+* **Replication and High Availability**: MongoDB increases the data availability with multiple copies of data on different servers. By providing redundancy, it protects the database from hardware failures. If one server goes down, the data can be retrieved easily from other active servers which also had the data stored on them.
+
+* **Aggregation**: [Aggregation operations](https://www.geeksforgeeks.org/mongodb/aggregation-in-mongodb/) process data records and return the computed results. It is similar to the [GROUPBY](https://www.geeksforgeeks.org/sql/sql-group-by/) clause in SQL. A few aggregation expressions are `sum`, `avg`, `min`, `max`, etc.
+
+
+
+## Where do we use MongoDB?
+
+`MongoDB` is preferred over `RDBMS` in the following scenarios:
+
+* **Big Data**: If we have huge amount of data to be stored in tables, think of MongoDB before RDBMS databases. **MongoDB has built-in solution for partitioning and sharding our database**.
+
+* **Unstable Schema**: Adding a new column in RDBMS is hard whereas **MongoDB is schema-less**. Adding a new field does not effect old documents and will be very easy.
+
+* **Distributed data**: Since multiple copies of data are stored across different servers, recovery of data is instant and safe even if there is a hardware failure.
+
+
+## Language Support by MongoDB
+
+`MongoDB` currently provides official driver support for all popular programming languages like `C`, `C++`, `Rust`, `C#`, `Java`, `Node.js`, `Perl`, `PHP`, `Python`, `Ruby`, `Scala`, `Go` and `Erlang`.
+
+
+
+
+
+
+
+# Install MongoDB Community Edition
+
+* https://www.mongodb.com/try/download/community
+* https://www.mongodb.com/docs/manual/administration/install-community/
+
+[Install MongoDB Community on Red Hat or CentOS using .tgz Tarball](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-red-hat-tarball/)
+
+While MongoDB can be installed manually via a downloaded `.tgz` tarball as described in this document, it is recommended to use the `yum` package manager on your system to install MongoDB if possible. Using a package manager automatically installs all needed dependencies, provides an example `mongod.conf` file to get you started, and simplifies future upgrade and maintenance tasks.
+
+> See [Install MongoDB using the yum Package Manager](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-red-hat/) for instructions.
+
+When you use the `.tgz` package to install the server, you need to follow the [mongosh installation instructions](https://www.mongodb.com/docs/mongodb-shell/install/) to download and install [mongosh](https://www.mongodb.com/docs/mongodb-shell/) separately.
+
+
+## Prerequisites
+
+Use the following command to install the dependencies required for the MongoDB Community `.tgz` tarball:
+
+``` bash
+sudo yum install libcurl openssl xz-libs
+```
+
+## Procedure
+
+Follow these steps to manually install MongoDB Community Edition from the `.tgz`.
+
+> 1. Download the tarball.
+
+After you have installed the required prerequisite packages, download the MongoDB Community `tgz` tarball from the following link: [MongoDB Download Center](https://www.mongodb.com/try/download/community?tck=docs_server)
+
+* In the **Version** dropdown, select the version of MongoDB to download.
+* In the **Platform** dropdown, select your operating system version and architecture.
+* In the **Package** dropdown, select **tgz**.
+* Click **Download**.
+
+> 2. Extract the files from the downloaded archive.
+
+For example, from a system shell, you can extract using the `tar` command:
+
+``` bash
+tar -zxvf mongodb-linux-*-8.0.12.tgz
+```
+
+> 3. Ensure the binaries are in a directory listed in your PATH environment variable.
+
+The MongoDB binaries are in the `bin/` directory of the tarball. You can either:
+
+* Copy the binaries into a directory listed in your `PATH` variable, such as `/usr/local/bin` (Update `/path/to/the/mongodb-directory/` with your installation directory as appropriate)
+
+``` bash
+sudo cp /path/to/the/mongodb-directory/bin/* /usr/local/bin/
+```
+
+* Create symbolic links to the binaries from a directory listed in your `PATH` variable, such as `/usr/local/bin` (Update `/path/to/the/mongodb-directory/` with your installation directory as appropriate):
+
+``` bash
+# ln [OPTION]... [-T] TARGET LINK_NAME
+sudo ln -s  /path/to/the/mongodb-directory/bin/* /usr/local/bin/
+```
+
+> 4. nstall the MongoDB Shell (`mongosh`).
+
+[Install](https://www.mongodb.com/docs/mongodb-shell/install/) `mongosh` then use the MongoDB Shell to connect to your deployment.
+
+Download the package for the version of `mongosh` you need from the [MongoDB Download Center](https://www.mongodb.com/try/download/community?tck=docs_server) and uncompress the package.
+
+
+
+# Run MongoDB Community Edition
+
+## ulimit
+
+Most Unix-like operating systems limit the system resources that a process may use. These limits may negatively impact MongoDB operation, and should be adjusted. See [UNIX ulimit Settings for Self-Managed Deployments](https://www.mongodb.com/docs/manual/reference/ulimit/) for the recommended settings for your platform.
+
+> **Note**
+>
+> If the `ulimit` value for number of open files is under `64000`, MongoDB generates a startup warning.
+
+## Directory Paths
+
+### To Use Default Directories
+
+By default, MongoDB runs using the `mongod` user account and uses the following default directories:
+
+* `/var/lib/mongo` (the data directory)
+* `/var/log/mongodb` (the log directory)
+
+Create the MongoDB data and log directories:
+
+``` bash
+sudo mkdir -p /var/lib/mongo
+sudo mkdir -p /var/log/mongodb
+```
+
+By default, MongoDB runs using the `mongod` user account. Create a `mongod` and a `mongodb` group. Ensure that the `mongod` belongs to the group then set the owner and group of these directories to `mongod`:
+
+``` bash
+sudo chown -R mongod:mongod /var/lib/mongo
+sudo chown -R mongod:mongod /var/log/mongodb
+```
+
+
+### To Use Non-Default Directories
+
+To use a data directory and/or log directory other than the default directories:
+
+1. Create the new directory or directories.
+2. Edit the configuration file `/etc/mongod.conf` and modify the following fields accordingly:
+
+* [storage.dbPath](https://www.mongodb.com/docs/manual/reference/configuration-options/#mongodb-setting-storage.dbPath) to specify a new data directory path (e.g. `/some/data/directory`)
+* [systemLog.path](https://www.mongodb.com/docs/manual/reference/configuration-options/#mongodb-setting-systemLog.path) to specify a new log file path (e.g. `/some/log/directory/mongod.log`)
+
+
+3. Ensure that the user running MongoDB has access to the directory or directories:
+
+``` bash
+sudo chown -R mongod:mongod <directory>
+```
+
+If you change the user that runs the MongoDB process, you **must** give the new user access to these directories.
+
+
+4. Configure SELinux if enforced. See [Configure SELinux](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-red-hat/#std-label-install-rhel-configure-selinux).
+
+
+# Additional Information
+
+## Localhost Binding by Default
+
+By default, MongoDB launches with [bindIp](https://www.mongodb.com/docs/manual/reference/configuration-options/#mongodb-setting-net.bindIp) set to `127.0.0.1`, which binds to the localhost network interface. This means that the `mongod` can only accept connections from clients that are running on the same machine. Remote clients will not be able to connect to the `mongod`, and the `mongod` will not be able to initialize a [replica set](https://www.mongodb.com/docs/manual/reference/glossary/#std-term-replica-set) unless this value is set to a valid network interface.
+
+This value can be configured either:
+
+* in the MongoDB configuration file with [bindIp](https://www.mongodb.com/docs/manual/reference/configuration-options/#mongodb-setting-net.bindIp), or
+* via the command-line argument [--bind_ip](https://www.mongodb.com/docs/manual/reference/program/mongod/#std-option-mongod.--bind_ip)
+
+> **Warning**
+>
+> Before you bind your instance to a publicly-accessible IP address, you must secure your cluster from unauthorized access. For a complete list of security recommendations, see [Security Checklist for Self-Managed Deployments](https://www.mongodb.com/docs/manual/administration/security-checklist/#std-label-security-checklist). At minimum, consider [enabling authentication](https://www.mongodb.com/docs/manual/administration/security-checklist/#std-label-checklist-auth) and [hardening network infrastructure](https://www.mongodb.com/docs/manual/core/security-hardening/#std-label-network-config-hardening).
+
+For more information on configuring [bindIp](https://www.mongodb.com/docs/manual/reference/configuration-options/#mongodb-setting-net.bindIp), see [IP Binding in Self-Managed Deployments](https://www.mongodb.com/docs/manual/core/security-mongodb-configuration/).
+
+
+
+
+
 # MongoDB Shell (mongosh)
 
 MongoDB Shell (mongosh) 是一个 JavaScript 和 Node.js REPL 环境，用于与 [Atlas](https://www.mongodb.com/zh-cn/docs/atlas/)、本地或其他远程主机上的 MongoDB 部署进行交互。使用 MongoDB Shell 测试查询，并与 MongoDB 数据库中的数据进行交互。
@@ -444,6 +679,7 @@ db.users.deleteMany({})  // 删除所有文档
 
 # Refer
 
+* https://github.com/mongodb/mongo
 * https://www.mongodb.com/zh-cn/docs/mongodb-shell/
 * https://www.mongodb.com/zh-cn/docs/manual/installation/
 * https://www.mongodb.com/zh-cn/docs/mongodb-shell/crud/#std-label-mdb-shell-crud
