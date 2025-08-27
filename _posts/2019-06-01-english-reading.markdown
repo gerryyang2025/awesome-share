@@ -36,6 +36,10 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 # Words (柯林斯英汉双解大词典)
 
 
+* alloy /ˈælɔɪ/
+  + N-MASS An **alloy** is a metal that is made by mixing two or more types of metal together. 合金
+
+
 * subscription /səbˈskrɪpʃən/
   + N-COUNT A **subscription** is an amount of money that you pay regularly in order to belong to an organization, to help a charity or campaign, or to receive copies of a magazine or newspaper. 会员费; 捐赠款; 征订费
     - You can become a member by paying the yearly **subscription**. 你通过支付年度会员费可以成为一名会员。
