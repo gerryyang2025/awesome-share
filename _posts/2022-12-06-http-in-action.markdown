@@ -8,6 +8,40 @@ categories: [TCP/IP]
 * Do not remove this line (it will not be displayed)
 {:toc}
 
+
+# [REST API Introduction](https://www.geeksforgeeks.org/node-js/rest-api-introduction/)
+
+**REST API** stands for **RE**presentational **S**tate **T**ransfer **API**. It is a type of **API** (**Application Programming Interface**) that allows communication between different systems over the internet. **REST APIs** work by sending requests and receiving responses, typically in `JSON` format, between the client and server.
+
+**REST APIs** use **HTTP methods** (such as `GET`, `POST`, `PUT`, `DELETE`) to define actions that can be performed on resources. These methods align with **CRUD** (`Create`, `Read`, `Update`, `Delete`) operations, which are used to manipulate resources over the web.
+
+
+![rest_api](/assets/images/202508/rest_api.png)
+
+A request is sent from the **client** to the **server** via a **web URL**, using one of the `HTTP` methods. The **server** then responds with the requested resource, which could be `HTML`, `XML`, `Image`, or `JSON`, with `JSON` being the most commonly used format for modern web services.
+
+> **Note**
+>
+> **REST** is an architectural design style for APIs, while **HTTP** is the communication protocol used for data transfer over the web. **REST APIs** use **HTTP** methods to interact with resources, but they are not the same thing. **REST defines how the APIs should behave, while HTTP defines the rules for communication over the web**. They commonly work together, but they serve different purposes.
+
+
+Key Features of REST APIs:
+
+* **Stateless**: Each request from a client to a server must contain all the information the server needs to fulfill the request. No session state is stored on the server.
+
+* **Client-Server Architecture**: RESTful APIs are based on a client-server model, where the client and server operate independently, allowing scalability.
+
+* **Cacheable**: Responses from the server can be explicitly marked as cacheable or non-cacheable to improve performance.
+
+* **Uniform Interface**: REST APIs follow a set of conventions and constraints, such as consistent URL paths, standardized HTTP methods, and status codes, to ensure smooth communication.
+
+* **Layered System**: REST APIs can be deployed on multiple layers, which helps with scalability and security.
+
+
+
+
+
+
 # Hypertext Transfer Protocol
 
 The [Hypertext Transfer Protocol](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) (**HTTP**) is an [application layer](https://en.wikipedia.org/wiki/Application_layer) protocol in the [Internet protocol suite](https://en.wikipedia.org/wiki/Internet_protocol_suite) model for distributed, collaborative, [hypermedia](https://en.wikipedia.org/wiki/Hypermedia) information systems.
