@@ -30,10 +30,72 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 
 
+# 短语
+
+* raise the bar
+  + 更上一层楼
+
+* kick off
+  + PHRASAL VERB If an event, game, series, or discussion kicks off, or is kicked off, **it begins**. 开始 (事件、比赛等)
+    - The shows kick off on October 24th. 展览从10月24日开始。
+
+
+* the Executive Committee
+  + N-SING **The executive committee** or board of an organization is a committee within that organization that has the authority to make decisions and ensures that these decisions are carried out. 执行委员会
+    - They opted to put **an executive committee** in charge of the project rather than a single person. 他们选择由**一个执行委员会**而非个人来负责这个项目。
+
+
 
 
 
 # Words (柯林斯英汉双解大词典)
+
+
+* executive /ɪɡˈzekjətɪv/
+  + N-COUNT An **executive** is someone who is employed by a business at a senior level. Executives decide what the business should do, and ensure that it is done. 执行总监
+  + ADJ **Executive** goods are expensive products designed or intended for executives and other people at a similar social or economic level. 高级的
+    - an executive briefcase. 一个高级公文包。
+  + N-SING **The executive committee** or board of an organization is a committee within that organization that has the authority to make decisions and ensures that these decisions are carried out. 执行委员会
+  + N-SING **The executive** is the part of the government of a country that is concerned with carrying out decisions or orders, as opposed to the part that makes laws or the part that deals with criminals. (政府的) 行政部门
+    - The government, **the executive** and the judiciary are supposed to be separate. 政府、**行政**和司法应该彼此分立。
+
+
+
+
+* vitality /vaɪˈtæləti/
+  + N-UNCOUNT If you say that someone or something has **vitality**, you mean that they have great energy and liveliness. 活力
+    - Without continued learning, graduates will lose their intellectual **vitality**. 如果不继续学习，毕业生们就会失去他们的思维活力。
+
+
+* foster /ˈfɒstə(r)
+  + ADJ **Foster** parents are people who officially take a child into their family for a period of time, without becoming the child's legal parents. The child is referred to as their foster child. 收养的
+  + V-T If you **foster** a child, you take it into your family for a period of time, without becoming its legal parent. 收养
+  + V-T To **foster** something such as an activity or idea means to help it to develop. **促进**
+    - He said that developed countries had a responsibility to **foster** global economic growth to help new democracies. 他说发达国家有一种促进全球经济增长以帮助新兴民主国家的责任。
+
+
+* innovative /ˈɪnəveɪtɪv; ˈɪnəvətɪv/
+  + ADJ Something that is **innovative** is new and original. 创新的; 革新的
+  + ADJ An **innovative** person introduces changes and new ideas. 富有创新精神的; 采用新观念的
+
+
+
+* pinpoint /ˈpɪnpɔɪnt/
+  + V-T If you **pinpoint** the cause of something, you discover or explain the cause exactly. 准确指出 (原因)
+    - It was almost impossible to **pinpoint** the cause of death. 几乎不可能确定死因。
+  + V-T If you **pinpoint** something or its position, you discover or show exactly where it is. 给…准确定位
+    - I could **pinpoint** his precise location on a map. 我能在地图上指出他的确切位置。
+
+
+
+* rationale /ˌræʃəˈnɑːl/
+  + N-COUNT The **rationale** for a course of action, practice, or belief is the set of reasons on which it is based. 全部理由; 根本原因
+    - However, the **rationale** for such initiatives is not, of course, solely economic. 但是，这些积极行动的根本原因当然不全是出于经济目的。
+
+
+* reservoir /ˈrezəvwɑː(r)/
+  + N-COUNT A **reservoir** is a lake that is used for storing water before it is supplied to people. 水库
+  + N-COUNT A **reservoir of** something is a large quantity of it that is available for use when needed. 大量储备
 
 
 * alloy /ˈælɔɪ/
@@ -44,9 +106,6 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
   + N-COUNT A **subscription** is an amount of money that you pay regularly in order to belong to an organization, to help a charity or campaign, or to receive copies of a magazine or newspaper. 会员费; 捐赠款; 征订费
     - You can become a member by paying the yearly **subscription**. 你通过支付年度会员费可以成为一名会员。
   + ADJ **Subscription** television is television that you can watch only if you pay a subscription. A subscription channel is a channel that you can watch only if you pay a subscription. (电视或频道) 付费的
-
-
-
 
 
 
@@ -131,6 +190,15 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 * fancy /ˈfænsi/
   + ADJ If you describe something as **fancy**, you mean that it is special, unusual, or elaborate, for example because it has a lot of decoration. 别致的
     - The magazine was packaged in a **fancy** plastic case with attractive graphics. 这本杂志装在一个带有漂亮图纹的别致塑料盒子里。
+
+* elaborate /ɪˈlæbərət/
+  + ADJ You use **elaborate** to describe something that is very complex because it has a lot of different parts. 复杂的
+    - an **elaborate** research project. 一项复杂的研究项目
+  + ADJ **Elaborate** plans, systems, and procedures are complicated because they have been planned in very great detail, sometimes too much detail. (有时过于) 周密的
+  + V-T If you **elaborate** a plan or theory, you develop it by making it more complicated and more effective. 周密制定; 周密发展
+    - His task was to **elaborate** policies that would make a market economy compatible with a clean environment. 他的任务是周密地制定能够让市场经济适合于无污染的环境的政策。
+  + V-I If you **elaborate on** something that has been said, you say more about it, or give more details. 作详细阐述
+    - A spokesman declined to **elaborate on** a statement released late yesterday. 发言人拒绝对昨天晚些时候发表的一份声明作出更多说明。
 
 
 * conciliation /kənˌsɪliˈeɪʃn/
@@ -1210,6 +1278,28 @@ We are looking forward to seeing your responses to the 2024 `X` Employee Satisfa
 满意度调查到今年已经是第20个年头，在大家通过各种渠道反馈的问题和建议中，我们看到、感受到，我们的激情与锐气正被一些繁琐的规则、流程、套路框住，导致很多好的想法跑不出来，不少优秀的人才不能被看到，做成一件事有时有重重阻碍。我们鼓励每一位员工真实地表达自己的想法看法，即使是批评。我们也相信，你真实的表达，一定能帮助组织不断进步，激发活力。
 
 在此，公司期望通过“2024年员工满意度调查”来继续了解你对于公司各维度的真实的想法，期待各位诚挚的发声，助推公司历久弥新，与时俱进。
+
+
+# Share Your Thoughts and Build an Evergreen X (2025 X 公司满意度调查)
+
+Dear Colleagues,
+
+We are kicking off the 2025 Employee Satisfaction Survey — a chance for you to help **make X an even better place to work**. It's an opportunity for you to share your thoughts, and for us to **pinpoint and address issues**. It helps all of us to **raise the bar** and ensure X remains a top-tier, innovative organization.
+
+Over the past year, our focus has been on **optimizing products** to **foster growth in various business areas**. However, the rapid rise and evolution of AI present uncertainties. We must **stay clear-headed** and listen to frontline teams and ourselves to identify issues, **seize AI opportunities**, improve efficiency, and achieve high-quality growth.
+
+In 2024, employee satisfaction scores in **compensation**, **communication**, and the company's future increased significantly, while scores people gave to their own department's future, **collaboration**, **trust**, and **creative areas** still need improvement. We've made key changes based on your feedback. **To accelerate AI upgrades, we're driving business teams to explore value generation in this new era, including using AI to improve our products and unlock more creative ideas**.
+
+We are ramping up recruitment to add talent to our organization, with **campus recruitment** and a strong pipeline of top AI professionals as priorities. We're also giving talented individuals more business opportunities by creating more autonomous, lean teams and encouraging job rotation. These initiatives shape our new talent strategy — building a dynamic mix of vibrant, emerging talent and experienced, core members.
+
+We've also raised the bar for leadership by managing out those with unsatisfactory performance. **We expect managers to lead by example, pursue excellence, and build robust talent pipelines within their teams**.
+
+Culturally, we uphold our core values while striving for higher standards and transparency. **We believe "doing the right things" is the foundation of a successful business**.
+
+Our teams are encouraged to take bold risks and learn from mistakes. **Guided by "doing the right things even when they're hard," we balance short-term wins with long-term value, unleashing our potential in the AI era**.
+
+In 2025, X will raise its management requirements further. This upcoming satisfaction survey will help us achieve this goal. **We encourage you to share your views and suggestions to improve efficiency, vitality, and culture. Your feedback will shape X into a more agile, innovative, and evergreen company**.
+
 
 
 # Happy Teachers' Day: Each of Us Has the Potential to Empower Others (September 10th, 2024)
