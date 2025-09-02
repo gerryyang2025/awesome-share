@@ -375,6 +375,28 @@ relclean
 
 
 
+# MALLOC_CONF 环境变量
+
+`MALLOC_CONF` 是jemalloc 用来动态配置内存分配参数的环境变量，允许在不重新编译的情况下调整优化选项。通过设置 `MALLOC_CONF` 环境变量，可以传入**以逗号分隔**的配置项来修改 jemalloc 的行为，这些配置可以影响内存保留、衰减等多个方面。
+
+在运行应用程序之前，在 shell 中设置 `MALLOC_CONF` 环境变量。
+
+``` bash
+export MALLOC_CONF="retain:true,dirty_decay_ms:25000,muzzy_decay_ms:30000" && ./demo
+```
+
+* 参数之间使用`逗号`分隔。
+* 参数格式通常是 `选项名称:值`。
+
+参数示例：
+
+* `retain:true`：控制是否保留内存。
+* `dirty_decay_ms:25000`：设置脏（dirty）页的衰减时间（毫秒）。
+* `muzzy_decay_ms:30000`：设置模糊（muzzy）页的衰减时间（毫秒）。
+
+
+
+
 # Documentation
 
 `jemalloc` has evolved substantially over its lifetime, so although the older documentation is still broadly informative, many of the details are obsolete.
