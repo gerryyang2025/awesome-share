@@ -995,5 +995,620 @@ int main() {
 }
 ```
 
+# 随机数
+
+## 伪随机数生成器
+
+```
+rand, rand_r, srand — pseudo-random number generator (伪随机数生成器)
+```
+
+参考：
+
+* https://man7.org/linux/man-pages/man3/rand.3p.html
+* https://linux.die.net/man/3/rand_r
+* https://linux.die.net/man/3/drand48_r
+* https://linux.die.net/man/3/random
+
+``` c
+#include <stdlib.h>
+
+int rand(void);
+
+int rand_r(unsigned int *seedp);
+
+void srand(unsigned int seed);
+```
+
+The `rand()` function returns a pseudo-random integer in the range `0` to `RAND_MAX` inclusive (i.e., the mathematical range `[0, RAND_MAX]`).
+
+The `srand()` function sets its argument as the seed for a new sequence of pseudo-random integers to be returned by `rand()`. **These sequences are repeatable by calling `srand()` with the same seed value**.
+
+**If no seed value is provided, the `rand()` function is automatically seeded with a value of 1.**
+
+The function `rand()` is **not reentrant or thread-safe**, since it uses hidden state that is modified on each call. This might just be the seed value to be used by the next call, or it might be something more elaborate. In order to get reproducible behavior in a threaded application, this state must be made explicit; this can be done using the reentrant function `rand_r()`.
+
+Like `rand()`, `rand_r()` returns a pseudo-random integer in the range `[0, RAND_MAX]`. The **seedp** argument is **a pointer to an unsigned int** that is used to store state between calls. If `rand_r()` is called with the same initial value for the integer pointed to by seedp, and that value is not modified between calls, then the same pseudo-random sequence will result.
+
+The value pointed to by the seedp argument of `rand_r()` provides only a very small amount of state, so this function will be a weak pseudo-random generator. Try [drand48_r](https://linux.die.net/man/3/drand48_r)(3) instead.
+
+> Note: drand48_r(3), These functions are GNU extensions and are not portable.
+
+**Return Value**
+
+The `rand()` and `rand_r()` functions return a value between `0` and `RAND_MAX` (**inclusive**). The `srand()` function **returns no value**.
 
 
+**Generating the Same Sequence on Different Machines**
+
+POSIX.1-2001 gives the following example of an implementation of `rand()` and `srand()`, **possibly useful when one needs the same sequence on two different machines**.
+
+``` c
+static unsigned long next = 1;
+
+/* RAND_MAX assumed to be 32767 */
+int myrand(void) {
+    next = next * 1103515245 + 12345;
+    return((unsigned)(next/65536) % 32768);
+}
+
+void mysrand(unsigned seed) {
+    next = seed;
+}
+```
+
+**Generating a Pseudo-Random Number Sequence**
+
+The following program can be used to display the pseudo-random sequence produced by `rand()` when **given a particular seed**.
+
+```c
+#include <stdlib.h>
+#include <stdio.h>
+
+int main(int argc, char *argv[])
+{
+    int j, r, nloops;
+    unsigned int seed;
+
+   if (argc != 3) {
+        fprintf(stderr, "Usage: %s <seed> <nloops>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+   seed = atoi(argv[1]);
+    nloops = atoi(argv[2]);
+
+   srand(seed);
+    for (j = 0; j < nloops; j++) {
+        r =  rand();
+        printf("%d\n", r);
+    }
+
+   exit(EXIT_SUCCESS);
+}
+```
+
+## 基于权重的随机选择算法
+
+**权重随机选择**：在多个选项中，根据每个选项的权重（概率）进行随机选择，**权重越大的选项被选中的概率越高**。
+
+refer:
+
+* [加权随机采样 (Weighted Random Sampling)](https://lotabout.me/2018/Weighted-Random-Sampling/) 文章中介绍了 A-Res 与 A-ExpJ 两种算法，按照步骤用 Python 实现了一个简单的版本，最后用采样的方式验证了算法的正确性。
+* [Weighted Random Sampling (2005; Efraimidis, Spirakis)](https://utopia.duth.gr/~pefraimi/research/data/2007EncOfAlg.pdf) (paper)
+* [Weighted random sampling with a reservoir (2006)](https://www.sciencedirect.com/science/article/abs/pii/S002001900500298X) (paper)
+
+
+### 累积概率分布
+
+将各个选项的概率依次累加，形成一个递增的序列，用于快速定位随机数对应的选项。
+
+算法描述：
+
+ 1. 如果权重为0，直接返回成功（权重为0的元素不会被选中）
+ 2. 计算新元素的累积概率 = 前一个元素的累积概率 + 当前元素权重
+ 3. 检查累积概率是否超出安全范围（避免溢出和超出随机数范围）
+ 4. 创建新的随机信息结构并添加到候选池中
+
+
+
+
+### 基于权重，随机选择一个（不删除）
+
+
+算法描述：
+
+* 构建累积概率分布
+
+假设有4个元素，权重分别为：[10, 20, 30, 40]
+
+```
+元素索引:    0    1    2    3
+权重概率:   10   20   30   40
+累积概率:   10   30   60   100
+```
+
+``` cpp
+struct STRandInfo
+{
+    uint32_t m_uProb;             // 当前元素的权重概率
+    uint32_t m_uAccProb;          // 累积概率（当前元素及之前所有元素的权重之和）
+    UserDataType m_stUserData;    // 用户数据
+};
+```
+
+* 生成随机数
+
+生成一个 `[0, 总权重)` 范围内的随机数，即 `[0, 100)`
+
+* 二分查找定位
+
+使用累积概率进行快速定位：
+
+``` cpp
+uint32_t uProb = rand() % uMaxProb; // 假设生成随机数 45
+
+// 遍历查找第一个累积概率大于随机数的元素
+for (size_t i = 0; i < m_stRandInfoVec.size(); ++i)
+{
+    const STRandInfo& stRandInfo = m_stRandInfoVec[i];
+
+    if (stRandInfo.m_uAccProb > uProb) // 60 > 45，选中元素2
+    {
+        return &stRandInfo.m_stUserData;
+    }
+}
+```
+
+使用示例：
+
+``` cpp
+// 游戏物品掉落系统示例
+CRandomAgent<ItemData> dropTable;
+
+// 添加物品及其掉落权重
+dropTable.Add(10, ItemData{"普通剑", 100});      // 10% 概率
+dropTable.Add(20, ItemData{"精良剑", 200});      // 20% 概率
+dropTable.Add(30, ItemData{"稀有剑", 500});      // 30% 概率
+dropTable.Add(40, ItemData{"传说剑", 1000});     // 40% 概率
+
+// 随机选择掉落物品
+const ItemData* droppedItem = dropTable.Rand();
+```
+
+* **概率准确性**
+
+1. 完全按照权重比例进行选择
+2. 权重为 10 的元素被选中概率 = 10/100 = 10%
+3. 权重为 40 的元素被选中概率 = 40/100 = 40%
+
+**添加顺序不影响概率分布的原因：**
+
+无论元素以什么顺序添加到 m_stRandInfoVec 中，最终的累积概率分布都是相同的。算法只关心累积概率值，而不关心元素在数组中的位置。
+
+1. 累积概率的计算：每次添加新元素时，都会基于当前的总累积概率进行计算
+2. 数学原理：加法满足交换律，无论顺序如何，总权重不变
+3. 算法设计：Rand() 方法只依赖累积概率值，不依赖元素位置
+4. 最终结果：无论以什么顺序构建，最终的权重分布都是相同的
+
+``` c
+// 测试1：递增顺序
+CRandomAgent<ItemData> table1;
+table1.Add(10, ItemData{"A"});
+table1.Add(20, ItemData{"B"});
+table1.Add(30, ItemData{"C"});
+table1.Add(40, ItemData{"D"});
+
+// 测试2：递减顺序
+CRandomAgent<ItemData> table2;
+table2.Add(40, ItemData{"D"});
+table2.Add(30, ItemData{"C"});
+table2.Add(20, ItemData{"B"});
+table2.Add(10, ItemData{"A"});
+
+// 两个表的累积概率分布完全相同：
+// 元素A: 10/100 = 10%
+// 元素B: 20/100 = 20%
+// 元素C: 30/100 = 30%
+// 元素D: 40/100 = 40%
+```
+
+### 基于权重，随机选择一个（删除，不放回）
+
+算法描述：
+
+该方法从权重池中随机选择一个元素，选择后会将选中的元素从候选池中移除，确保不会重复选择同一个元素。适用于需要抽取单个物品且不重复的场景。
+
+
+1. 检查是否有可用的随机数据
+2. 生成一个 `[0, 总权重)` 范围内的随机数
+3. 遍历所有元素，找到第一个累积概率大于随机数的元素
+4. 选中后从候选池中移除该元素，并调整后续元素的累积概率
+5. 返回选中的用户数据
+6. 时间复杂度：O(n)，其中 n 为候选元素数量
+7. 空间复杂度：O(1)，仅使用常数额外空间
+
+
+### 基于权重，随机选择多个（不重复）
+
+算法描述：
+
+1. 生成随机数：uProb = rand() % uMaxProb
+2. 线性扫描：从第一个元素开始，依次检查每个元素的权重
+3. 权重比较：如果 元素权重 > 随机数，则选中该元素
+4. 动态调整：
+   + 选中：从总权重中减去该元素权重
+   + 未选中：从随机数中减去该元素权重
+
+概率分布正确性：
+
+* 每次选择时，随机数的范围都是基于当前剩余元素的总权重
+* 每个元素被选中的概率 = 该元素权重 / 当前总权重
+* 选中后立即从候选池中移除，确保不重复
+
+权重调整的正确性：
+
+* uMaxProb -= stRandInfo.m_uProb：确保下次选择时总权重正确
+* uProb -= stRandInfo.m_uProb：确保线性扫描时权重累加正确
+
+
+示例说明：
+
+假设有元素：[A(10), B(20), C(30), D(40)]，总权重 100
+
+第一次选择：
+
+* 生成随机数：uProb = 45
+* 检查 A：10 > 45？否，uProb = 45 - 10 = 35
+* 检查 B：20 > 35？否，uProb = 35 - 20 = 15
+* 检查 C：30 > 15？是，选中 C
+* 调整总权重：uMaxProb = 100 - 30 = 70
+
+第二次选择：
+
+* 生成随机数：uProb = rand() % 70（假设生成 25）
+* 检查 A：10 > 25？否，uProb = 25 - 10 = 15
+* 检查 B：20 > 15？是，选中 B
+* 调整总权重：uMaxProb = 70 - 20 = 50
+
+### 算法实现
+
+``` cpp
+template < typename UserDataType>
+class CRandomAgent
+{
+    protected:
+        struct STRandInfo
+        {
+            uint32_t m_uProb;
+            uint32_t m_uAccProb;
+            UserDataType m_stUserData;
+        };
+
+    using RandInfoVec = std::vector<STRandInfo> ;
+
+    public:
+        void Reset()
+        {
+            m_stRandInfoVec.clear();
+        }
+
+    [[nodiscard]] uint32_t GetNum() const
+    {
+        return static_cast<uint32_t> (m_stRandInfoVec.size());
+    }
+
+    [[nodiscard]] uint32_t GetProbByIdx(uint32_t uIdx) const
+    {
+        if (uIdx >= m_stRandInfoVec.size())
+        {
+            ASSERT(0);
+            return 0;
+        }
+
+        return m_stRandInfoVec[uIdx].m_uProb;
+    }
+
+    const UserDataType &GetDataByIdx(uint32_t uIdx) const
+    {
+        return m_stRandInfoVec[uIdx].m_stUserData;
+    }
+
+    /**
+        *@brief 向权重随机选择器中添加新的候选元素
+        *
+        * 该方法用于向权重池中添加新的候选元素，每个元素都有一个权重概率。
+        * 系统会维护累积概率分布，用于后续的权重随机选择操作。
+        *
+        * 算法原理：
+        *1. 如果权重为0，直接返回成功（权重为0的元素不会被选中）
+        *2. 计算新元素的累积概率 = 前一个元素的累积概率 + 当前元素权重
+        *3. 检查累积概率是否超出安全范围（避免溢出和超出随机数范围）
+        *4. 创建新的随机信息结构并添加到候选池中
+        *
+        *时间复杂度：O(1)，仅涉及向量末尾插入操作
+        *空间复杂度：O(1)，仅创建单个 STRandInfo 结构
+        *
+        *@param uProb 元素的权重概率，必须大于0才有效
+        *@param stUserData 与权重关联的用户数据
+        *@return bool 成功返回 true，失败返回 false（如权重溢出或超出范围）
+        */
+    bool Add(uint32_t uProb, const UserDataType &stUserData)
+    {
+        // 权重为0的元素不会被选中，直接返回成功
+        if (0 == uProb)
+        {
+            return true;
+        }
+
+        // 初始化累积概率
+        uint32_t uAccProb = 0;
+
+        // 如果候选池不为空，获取前一个元素的累积概率作为基础
+        if (m_stRandInfoVec.size() > 0)
+        {
+            uAccProb = m_stRandInfoVec.back().m_uAccProb;
+        }
+
+        // 安全地累加权重，避免整数溢出
+        SAFE_ADD(uAccProb, uProb);
+        // 检查累积概率是否超出安全范围
+        if (uAccProb == UINT32_MAX || uAccProb > static_cast<uint32_t> (RAND_MAX))
+        {
+            return false;
+        }
+
+        // 创建新的随机信息结构
+        STRandInfo stRandInfo;
+        stRandInfo.m_uProb = uProb;	// 设置元素权重
+        stRandInfo.m_uAccProb = uAccProb;	// 设置累积概率
+        stRandInfo.m_stUserData = stUserData;	// 设置用户数据
+        // 将新元素添加到候选池末尾
+        m_stRandInfoVec.push_back(stRandInfo);
+
+        return true;
+    }
+
+    [[nodiscard]] bool Check() const
+    {
+        return static_cast<bool> (0 != m_stRandInfoVec.size());
+    }
+
+    /**
+        *@brief 进行单次不重复的权重随机选择 (不放回)
+        *
+        * 该方法从权重池中随机选择一个元素，选择后会将选中的元素从候选池中移除，
+        * 确保不会重复选择同一个元素。适用于需要抽取单个物品且不重复的场景。
+        *
+        * 算法原理：
+        *1. 检查是否有可用的随机数据
+        *2. 生成一个[0, 总权重) 范围内的随机数
+        *3. 遍历所有元素，找到第一个累积概率大于随机数的元素
+        *4. 选中后从候选池中移除该元素，并调整后续元素的累积概率
+        *5. 返回选中的用户数据
+        *
+        *时间复杂度：O(n)，其中 n 为候选元素数量
+        *空间复杂度：O(1)，仅使用常数额外空间
+        *
+        *@param stData 输出参数，存储选中的用户数据
+        *@return bool 成功返回 true，失败返回 false（如候选池为空）
+        */
+    bool RandWithoutReplacement(UserDataType & stData)
+    {
+        // 检查候选池是否为空
+        if (0 == m_stRandInfoVec.size())
+        {
+            return false;
+        }
+
+        // 获取总权重（最后一个元素的累积概率）
+        uint32_t uMaxProb = m_stRandInfoVec.back().m_uAccProb;
+
+        // 生成[0, uMaxProb) 范围内的随机数
+        uint32_t uProb = rand() % uMaxProb;
+
+        // 标记是否已选中元素
+        bool bIsSelect = false;
+
+        // 记录选中元素的迭代器位置
+        auto itorSelectitor = m_stRandInfoVec.end();
+
+        // 遍历所有候选元素，进行权重随机选择
+        for (auto iter = m_stRandInfoVec.begin(); iter != m_stRandInfoVec.end(); iter++)
+        {
+            STRandInfo &stRandInfo = *iter;
+
+            if (bIsSelect == true)
+            {
+                // 已选中元素后，需要调整后续元素的累积概率
+                // 减去已选中元素的权重，保持累积概率的正确性
+                stRandInfo.m_uAccProb -= itorSelectitor->m_uProb;
+            }
+            else if (stRandInfo.m_uAccProb > uProb)
+            {
+                // 找到第一个累积概率大于随机数的元素，选中该元素
+                bIsSelect = true;
+
+                // 记录选中元素的位置
+                itorSelectitor = iter;
+                // 保存选中的用户数据
+                stData = stRandInfo.m_stUserData;
+            }
+        }
+
+        // 检查是否成功选中元素
+        if (bIsSelect == false)
+        {
+            return false;
+        }
+
+        // 从候选池中移除已选中的元素
+        m_stRandInfoVec.erase(itorSelectitor);
+        return true;
+    }
+
+    /**
+        *@brief 根据权重进行随机选择，返回选中的用户数据指针
+        *
+        * 该方法使用累积概率分布进行权重随机选择。每个元素都有一个权重概率，
+        * 系统会根据权重随机选择一个元素并返回其用户数据。
+        *
+        * 算法原理：
+        *1. 计算总权重（最后一个元素的累积概率）
+        *2. 生成一个[0, 总权重) 范围内的随机数
+        *3. 遍历所有元素，找到第一个累积概率大于随机数的元素
+        *4. 返回该元素的用户数据指针
+        *
+        *@return const UserDataType* 返回选中的用户数据指针，如果没有数据或选择失败则返回 nullptr
+        */
+    const UserDataType* Rand() const
+    {
+        // 检查是否有可用的随机数据
+        if (0 == m_stRandInfoVec.size())
+        {
+            return nullptr;
+        }
+
+        // 获取总权重（最后一个元素的累积概率）
+        uint32_t uMaxProb = m_stRandInfoVec.back().m_uAccProb;
+
+        // 生成[0, uMaxProb) 范围内的随机数
+        uint32_t uProb = rand() % uMaxProb;
+
+        // 遍历所有元素，根据累积概率进行权重随机选择
+        for (size_t i = 0; i < m_stRandInfoVec.size(); ++i)
+        {
+            const STRandInfo &stRandInfo = m_stRandInfoVec[i];
+
+            // 如果当前元素的累积概率大于随机数，则选中该元素
+            if (stRandInfo.m_uAccProb > uProb)
+            {
+                return &stRandInfo.m_stUserData;
+            }
+        }
+
+        // 理论上不应该到达这里，但为了安全起见返回 nullptr
+        return nullptr;
+    }
+
+    /**
+        *@brief 进行多次不重复的权重随机选择，返回选中的用户数据指针列表
+        *
+        * 该方法从权重池中随机选择指定数量的元素，每次选择后会将选中的元素从候选池中移除，
+        * 确保不会重复选择同一个元素。适用于需要抽取多个不同物品的场景。
+        *
+        * 算法原理：
+        *1. 创建候选索引列表，包含所有可用元素的索引
+        *2. 循环进行指定次数的随机选择：
+        *    - 生成随机数
+        *    - 遍历候选列表，根据权重进行选择
+        *    - 选中后从候选列表移除，并调整总权重
+        *3. 返回所有选中元素的指针列表
+        *
+        *@param uRandNum 需要随机选择的数量
+        *@param stList 输出参数，存储选中元素的指针列表
+        *@return bool 成功返回 true，失败返回 false
+        */
+    bool Rand(uint32_t uRandNum, PooledSTL::list<const UserDataType*> &stList) const
+    {
+        // 清空输出列表
+        stList.clear();
+
+        // 如果不需要选择任何元素，直接返回成功
+        if (0 == uRandNum)
+        {
+            return true;
+        }
+
+        // 检查是否有足够的元素可供选择
+        if (m_stRandInfoVec.size() < uRandNum)
+        {
+            return false;
+        }
+
+        // 获取初始总权重
+        uint32_t uMaxProb = m_stRandInfoVec.back().m_uAccProb;
+
+        // 创建候选索引列表，包含所有可用元素的索引
+        PooledSTL::list<uint32_t> stIdxList;
+        for (uint32_t i = 0; i < m_stRandInfoVec.size(); ++i)
+        {
+            stIdxList.push_back(i);
+        }
+
+        // 循环进行指定次数的随机选择
+        for (uint32_t i = 0; i < uRandNum; ++i)
+        {
+            // 生成[0, 当前总权重) 范围内的随机数
+            uint32_t uProb = rand() % uMaxProb;
+
+            // 遍历候选列表，根据权重进行选择
+            for (auto iter = stIdxList.begin(); iter != stIdxList.end(); ++iter)
+            {
+                const STRandInfo &stRandInfo = m_stRandInfoVec[*iter];
+
+                // 如果当前元素的权重大于随机数，则选中该元素
+                if (stRandInfo.m_uProb > uProb)
+                {
+                    // 将选中的元素添加到结果列表
+                    stList.push_back(&stRandInfo.m_stUserData);
+
+                    // 从总权重中减去已选中元素的权重
+                    uMaxProb -= stRandInfo.m_uProb;
+
+                    // 从候选列表中移除已选中的元素
+                    stIdxList.erase(iter);
+                    break;
+                }
+
+                // 如果未选中，从随机数中减去当前元素的权重，继续检查下一个元素
+                uProb -= stRandInfo.m_uProb;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+        *@brief 进行多次不重复的权重随机选择，返回选中的用户数据指针向量
+        *
+        *该方法是 Rand(uint32_t, PooledSTL::list <const UserDataType*>&) 的向量版本，
+        *功能完全相同，只是返回结果存储在 vector 容器中而不是 list 容器中。
+        *
+        * 实现方式：
+        *1. 调用 list 版本的 Rand 方法进行实际的随机选择
+        *2. 将结果从 list 容器复制到 vector 容器中
+        *3. 返回操作是否成功
+        *
+        *@param uRandNum 需要随机选择的数量
+        *@param stVector 输出参数，存储选中元素的指针向量
+        *@return bool 成功返回 true，失败返回 false
+        */
+    bool Rand(uint32_t uRandNum, PooledSTL::vector<const UserDataType*> &stVector) const
+    {
+        // 清空输出向量
+        stVector.clear();
+
+        // 创建临时列表用于存储随机选择结果
+        PooledSTL::list<const UserDataType*> stList;
+
+        // 调用 list 版本的 Rand 方法进行实际的随机选择
+        if (Rand(uRandNum, stList))
+        {
+            // 将结果从 list 容器转存到 vector 容器
+            for (auto iter = stList.begin(); iter != stList.end(); ++iter)
+            {
+                stVector.push_back(*iter);
+            }
+
+            return true;
+        }
+
+        // 如果随机选择失败，返回 false
+        return false;
+    }
+
+    protected:
+        RandInfoVec m_stRandInfoVec;
+};
+```
