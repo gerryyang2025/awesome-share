@@ -16,7 +16,11 @@ categories: 杂记
 `Zstandard`, or `zstd` as short version, is a fast lossless compression algorithm, targeting real-time compression scenarios at zlib-level and better compression ratios. It's backed by a very fast entropy stage, provided by [Huff0 and FSE library](https://github.com/Cyan4973/FiniteStateEntropy).
 
 
+# 所有小初高、大学PDF教材
 
+https://github.com/TapXWorld/ChinaTextbook
+
+https://github.com/TapXWorld/ChinaTextbook-tools
 
 
 
