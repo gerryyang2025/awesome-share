@@ -44,11 +44,43 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
   + N-SING **The executive committee** or board of an organization is a committee within that organization that has the authority to make decisions and ensures that these decisions are carried out. 执行委员会
     - They opted to put **an executive committee** in charge of the project rather than a single person. 他们选择由**一个执行委员会**而非个人来负责这个项目。
 
+* vice versa
+  + PHRASE **Vice versa** is used to indicate that the reverse of what you have said is true. For example, "women may bring their husbands with them, and vice versa" means that men may also bring their wives with them. 反之亦然
+
+
+
 
 
 
 
 # Words (柯林斯英汉双解大词典)
+
+* exclusively /ɪkˈskluːsɪvli/
+  + ADV **Exclusively** is used to refer to situations or activities that involve only the thing or things mentioned, and nothing else. 排他地; 独占地
+
+
+
+
+* hybrid /ˈhaɪbrɪd/
+  + N-COUNT A **hybrid** is an animal or plant that has been bred from two different species of animal or plant. 杂交种
+  + ADJ **Hybrid** is also an adjective. 杂交的
+    - the hybrid corn seed. 杂交玉米种子
+  + N-COUNT A **hybrid** or a **hybrid car** is a car that can be powered by either petrol or electricity. 混合动力汽车
+    - Hybrids, unlike pure electric cars, never need to be plugged in. 混合动力汽车，不像纯电动汽车，从不需要接电源。
+  + N-COUNT You can use **hybrid** to refer to anything that is a mixture of other things, especially two other things. 混合物
+    - a hybrid of solid and liquid fuel. 固体和液体燃料的混合
+  + ADJ **Hybrid** is also an adjective. 混合的
+    - a hybrid system. 一个混合系统
+
+
+
+* drop-in /ˈdrɒp ɪn/
+  + ADJ **Drop-in** centres or services provide information and help for people with particular problems, usually on a free and informal basis. 免费提供信息和帮助的(中心或服务)
+
+
+* emulate /ˈemjuleɪt/
+  + V-T If you **emulate** something or someone, you **imitate** them because you admire them a great deal. 效仿
+    - Sons are traditionally expected to **emulate** their fathers. 传统上认为儿子应该效仿他们的父亲。
 
 
 * executive /ɪɡˈzekjətɪv/
@@ -160,6 +192,11 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
   + N-COUNT A **scaffold** was a raised platform on which criminals were hanged or had their heads cut off. 绞刑台
   + N-COUNT A **scaffold** is a temporary raised platform on which workers stand to paint, repair, or build high parts of a building. 脚手架
     - They were standing on top of a giant **scaffold**. 他们站在一个巨大的脚手架顶上。
+
+* scaffolding
+  + N-UNCOUNT **Scaffolding** consists of poles and boards made into a temporary framework that is used by workers when they are painting, repairing, or building high parts of a building, usually outside. 脚手架
+    - Workers have erected **scaffolding** around the base of the tower below the roadway. 工人们已经在车行道下的塔基四周竖起了脚手架。
+    - scaffolding tools 脚手架工具（编程）
 
 
 * up-to-date
@@ -1104,7 +1141,7 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
     + If something is **compulsory**, you must do it or accept it, because it is the law or because someone in a position of authority says you must. 强制性的
 
 * compliance /kəmˈplaɪəns/
-    + **Compliance with** something, for example a law, treaty, or agreement, means doing what you are required or expected to do. 遵从
+    + N-UNCOUNT **Compliance with something**, for example a law, treaty, or agreement, means doing what you are required or expected to do. 遵从
 
 * refine /rɪˈfaɪn/
     + When a substance **is refined**, it is made pure by having all other substances removed from it. 提炼
