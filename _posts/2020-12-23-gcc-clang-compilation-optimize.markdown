@@ -990,6 +990,66 @@ Include-what-you-use has the most problems with templates and macros. If your co
 
 
 
+# BOLT (链接后优化技术)
+
+关于 BOLT 优化参考：
+
+1. https://github.com/llvm/llvm-project/tree/main/bolt
+2. https://zhuanlan.zhihu.com/p/550895670
+3. [BOLT 二进制反馈优化技术](https://developer.aliyun.com/article/1441240)
+
+> **BOLT** is a post-link optimizer developed to speed up large applications. It achieves the improvements by optimizing application's code layout based on execution profile gathered by sampling profiler, such as Linux perf tool. An overview of the ideas implemented in BOLT along with a discussion of its potential and current results is available in [CGO'19 paper](https://research.fb.com/publications/bolt-a-practical-binary-optimizer-for-data-centers-and-beyond/).
+
+大型应用的代码往往达到数十甚至上百 MB，这导致在程序执行时缓存机制无法充分利用，导致大量时间花费在 CPU 和内存链路上。通过对热点函数的布局进行优化，我们可以更好地利用 CPU cache，从而获得较为可观的性能提升。针对这一问题，在编译技术上有 `PGO` 和 `BOLT` 两种解决办法，两者都是一种通过收集程序在运行时如跳转，调用关系，函数热度等执行信息，这些收集到的程序运行情况数据（profile data），可以更好地指导一些程序优化的策略，如是否对函数进行内联，以及对基本块和函数布局的排布来提高特定场景下的程序性能。
+
+`PGO` 和 `BOLT` 两种方式都是基于收集到程序运行数据进行优化，但存在一定差异。不同于 **`PGO` 通过编译器进行再次编译**，`BOLT` 是一个二进制优化和布局工具，**直接对可执行文件或动态库 ELF 文件进行解析和进行修改，无需再次通过编译器进行构建**。
+
+PGO 的优化原理：
+
+![blot2](/assets/images/202509/bolt2.png)
+
+BOLT 的优化原理：
+
+![blot3](/assets/images/202509/bolt3.png)
+
+在业务落地和优化结果方面，`BOLT` 和 `PGO` 主要有以下两个方面的区别。
+
+> 1. BOLT 在函数和基本块布局上能拿到更好的效果
+
+编译器对函数的布局通常都是在编译优化的最后一步。在使用 `PGO` 的过程中，一个无法避免的问题就是函数内联等优化会导致上下文发生变化进而收集数据不准确，尤其是基本块排布需要的分支概率。而 `BOLT` 避免了 callsite 等信息的改动，专注于函数和函数内部的排布进行优化，可以得到更好的效果。
+
+**因此，`BOLT` 和 `PGO` 在编译优化方法中并不是互斥的，是可以相互弥补的。在实践中，`PGO` 和 `BOLT` 的优化在很多场景下是可以串联的，同时使用可以获得更好的性能收益**。
+
+![blot4](/assets/images/202509/bolt4.png)
+
+> 2. BOLT 在有大型项目的部署会更加友好
+
+这里的部署友好主要体现在三个方面：
+
+1. **更容易被集成到应用的构建系统中**。`BOLT` 在构建脚本中无需重复编译器的编译流程，这对于很多构建方式复杂的应用方来说构建修改更加友好，更方便落地。
+2. **更快地构建速度**。无需重复编译也意味着通过 `BOLT` 进行优化能拿到比 `PGO` 更快的构建速度，比如编译器构建一次要 20-30 分钟的 Clang 使用 BOLT 只需要 20～30秒。这对于单次编译就长达数小时的应用来说显然更容易接受。
+3. **BOLT 可以对第三方的静态库进行优化**。大型应用中往往很多第三方库的依赖，`BOLT` 的好处之一就是可以对静态链接进来的第三方库进行优化，而 `PGO` 则需要对第三方库逐个重新构建，在直接依赖于第三方静态库的场景中无法使用。
+
+
+关于 BOLT 的更多介绍：
+
+
+**优化代码布局** (code layout) 是一项对于性能提升的重要优化，目前在**编译时**和**链接时**都有对应可行的优化手段。而 `BOLT` (**Binary Optimization and Layout Tool**) 则是**链接后优化** (post-link optimizer)，使用基于采样的 profile 信息，甚至可以对已经进行过 `FDO` (feedback-driven optimization) 和 `LTO` (link-time optimization) 之后的二进制再次提升其运行性能，所以这是一个可作为补充的优化手段。根据论文中测试数据，在 `FDO` 和 `LTO` 基础上，提升了 GCC 和 Clang 编译器 20.4% 的性能。还可以用来优化没有源码的第三方库。
+
+`BOLT` 是 facebook 推出的优化工具，目前 BOLT 已经合进去 LLVM 仓库作为一部分，具体使用有[官方文档](https://link.zhihu.com/?target=https%3A//github.com/llvm/llvm-project/tree/main/bolt)，不展开介绍了。
+
+对于以数据中心驱动的应用而言，提升代码的局部性是优化性能的关键。`FDO` 也可称之为 `PGO` (profile-guided optimization)。instrumentation-based PGO 在插桩 (probe) 收集 profile 信息阶段会带来巨大的内存和性能消耗，其复杂的操作流程也导致其难以施行。所以 `BOLT` 采取 sampling-based PGO 的方式，使用诸如 perf 工具进行数据采样，减少了方案实行的复杂度，同时也减少了内存与性能消耗。
+
+而且 `BOLT` 是在对链接后的二进制层面做优化，相对于 `PGO` 在编译期和链接期的机器码生成之前阶段的操作，也会更加简单，和 `LTO` 同样拥有整个程序的全局视角来做优化。因为要优化代码布局，在低层级 (low-level) 优化中，sampling-based PGO 的 profile 信息也是基于二进制层面的，准确度和匹配程度也会更高。所以即使经过 `LTO` 和 `PGO` 的优化，`BOLT` 的优势就在于在二进制层面还有优化空间，而且 profile 的准确度和匹配程度也较高。**准确度和匹配程度是很重要的，因为使用不准确的 profile 甚至可能会导致性能倒退，而不匹配的 profile 则会导致错失一些优化机会**。
+
+
+![blot](/assets/images/202509/bolt.png)
+
+`BOLT` 会跳过那些它无法处理的函数，比如比较复杂的还未支持的函数、无法重建 `CFG` (control-flow graph，控制流图) 的函数。而且可能会带来代码体积的增加，因为 cold paths (执行频次较小的路径) 的 branch (分支跳转) 会变多 (基于 profile 可以判断 cold code，通常会被转移到其他地方，所以需要添加跳转执行的指令，这样也有效地提升内存使用率)；而且 x86 架构的 conditional branch (条件分支跳转) 指令有个特点，带符号偏移量 (signed offset) 如果只用 8-bit 会需要 2-bytes，而如果要用 32-bit 则需要 6-bytes。
+
+
+BOLT 在一个进程当中完成反汇编、优化、重写二进制的操作，所以它存在一些问题：无法有效利用分布式编译系统，重写 300MB 的代码段可能需要 70G 的内存和长达 10 分钟的时间。
+
 
 
 
