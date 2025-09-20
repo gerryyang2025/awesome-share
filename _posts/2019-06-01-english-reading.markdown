@@ -30,7 +30,7 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 
 
-# 短语
+# Phrase
 
 * raise the bar
   + 更上一层楼
@@ -55,10 +55,36 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+
+* panic /ˈpænɪk/
+  + N-VAR **Panic** is a very strong feeling of anxiety or fear that makes you act without thinking carefully. 惊慌
+    - An earthquake has hit the capital, causing damage to buildings and **panic** among the population.  一场地震袭击了首都，造成建筑物的损坏和人们的惊慌。
+  + N-UNCOUNT **Panic** or a panic is a situation in which people are affected by a strong feeling of anxiety. 恐慌局面
+  + V-T/V-I If you **panic** or if someone **panics** you, you suddenly feel anxious or afraid, and act quickly and without thinking carefully. 使惊慌; 惊慌
+    - Guests **panicked** and screamed when the bomb exploded. 炸弹爆炸的时候，客人们惊慌失措，惊声尖叫。
+
+
+* phrase /freɪz/
+  + N-COUNT A **phrase** is a short group of words that people often use as a way of saying something. The meaning of a phrase is often not obvious from the meaning of the individual words in it. 惯用语; 警句
+  + N-COUNT A **phrase** is a small group of words that forms a unit, either on its own or within a sentence. 短语; 词组
+  + V-T If you **phrase** something in a particular way, you express it in words in that way. 用言语表达
+
+
+* glitch /ɡlɪtʃ/
+  + N-COUNT A **glitch** is a problem that stops something from working properly or being successful. 故障
+    - Manufacturing **glitches** have limited the factory's output. 制造过程中的故障影响了工厂的产量。
+
+* anime /ˈænɪmeɪ/
+  + N a type of Japanese **animated** film with themes and styles similar to manga comics 日本动漫
+
+* animated /ˈænɪmeɪtɪd/
+  + ADJ Someone who is **animated** or who is having an **animated** conversation is lively and is showing their feelings. 热烈的
+  + ADJ An **animated** film is one in which puppets or drawings appear to move. 动画的
+
+
+
 * exclusively /ɪkˈskluːsɪvli/
   + ADV **Exclusively** is used to refer to situations or activities that involve only the thing or things mentioned, and nothing else. 排他地; 独占地
-
-
 
 
 * hybrid /ˈhaɪbrɪd/
@@ -1384,6 +1410,27 @@ In a few hours, we'll bid farewell to 2024 and welcome 2025. First and foremost,
 再过十几个小时，我们即将告别2024，迈入2025。首先祝大家新年快乐！非常感谢所有腾讯人的努力，让我们在过去一年经受住了宏观考验，保持了稳定、高质量的发展。尤其难得的是，在困难中磨炼了我们专注与自我革新的能力，这将是我们走向未来最宝贵的财富。
 
 放眼世界，各种不稳定因素依旧活跃，经济周期波动起伏，市场竞争加剧，2025年我们面对的仍然是一个充满挑战与机遇的未来。
+
+
+# Happy Teachers' Day: Everyone is a Knowledge Contributor in the AI Era
+
+Today is Teachers' Day 2025 in China. At X, teachers can be found everywhere. They are trainers who passionately share their knowledge and experience, mentors who patiently guide newcomers in their roles, and colleagues who generously share practical AI skills. I'd like to wish every Xer who loves to share knowledge and inspire others a wonderful Teachers' Day!
+
+今天是2025年教师节。在 X，“师者”的身影早已藏在每个团队的日常里——是课堂上无私分享的讲师，是带新人熟悉业务时耐心讲解的导师，是分享AI实践技巧时毫无保留的同事。我想向每一位愿意分享知识、助力他人成长的X人，道一声：教师节快乐！
+
+In 2025, AI is **reshaping** the world. In this new age, everyone is **starting anew**. Even well-versed experts who have gone through countless business challenges need to change their mindsets and learn from scratch when facing new frameworks and tools brought by AI. Recent graduates of the "AI-native generation" should apply their creative thinking to explore new possibilities and pioneer the future of AI. Today, "learning" is no longer the responsibility of just a select few, but a necessity for survival for all of us. The transfer of experience is no longer a one-way street, but a two-way exchange between the old and the new, the past and the future.
+
+在AI重塑世界的2025年，所有人都在重新出发。哪怕是在公司深耕多年、历经无数业务挑战的骨干专家，面对AI带来的新逻辑、新工具，也得放下“经验惯性”，像新人一样从零学起。而刚毕业的“AI原生一代”，更要凭借着不受束缚的思维，勇敢冲浪，在新的AI世界不断探索新的可能。在今天，“学习”不再是某类人的事，而是我们所有人的“生存必需”；“经验”也不再是单向传递，而是老与新、前与后的双向碰撞。
+
+We wish every knowledge contributor and sharer a happy Teachers' Day and a fruitful, rewarding journey in the exciting AI era ahead!
+
+祝大家，在这个属于每一位“师者”的节日里，收获成长的喜悦，也期待我们一起，共赴更精彩的AI新程！
+
+
+* anew /əˈnjuː/
+  + ADV If you do something **anew**, you do it again, often in a different way from before. 重新地
+    - She's ready to **start anew**. 她准备好重新来过。
+
 
 
 # Q&A
