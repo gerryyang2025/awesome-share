@@ -93,6 +93,13 @@ More:
 **Dify** is an open-source platform for developing LLM applications. Its intuitive interface combines agentic AI workflows, RAG pipelines, agent capabilities, model management, observability features, and more—allowing you to quickly move from prototype to production.
 
 
+## [LangGraph](https://github.com/langchain-ai/langgraph)
+
+Trusted by companies shaping the future of agents – including Klarna, Replit, Elastic, and more – LangGraph is a low-level orchestration framework for building, managing, and deploying long-running, stateful agents.
+
+[LangGraph quickstart](https://langchain-ai.github.io/langgraph/agents/agents/)
+
+
 
 # Workflow Engine
 
