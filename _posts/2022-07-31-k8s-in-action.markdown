@@ -196,6 +196,9 @@ kubectl exec -it deploy-redis1-7ffdbff548-2k4sf -c container-redis-default  --na
 # 删除异常pod
 kubectl delete pods $pod-name -n dev
 
+# 清理 Evicted 状态的 Pod
+kubectl get pods --namespace autoworlds | grep Evicted | awk '{print $1}' | xargs kubectl delete pod --namespace autoworlds
+kubectl get pods --namespace autoworlds | grep Evicted | awk '{print $1}' | xargs -I {} kubectl delete pod --namespace autoworlds {} --force --grace-period=0 # 强制删除
 
 ```
 {% endraw %}
