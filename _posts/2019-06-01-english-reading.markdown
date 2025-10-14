@@ -55,6 +55,18 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* toleration /ˌtɒləˈreɪʃən/
+  + N the act or practice of tolerating 宽容
+
+
+* affinity /əˈfɪnɪtɪ/
+  + N-SING If you have an **affinity** with someone or something, you feel that you are similar to them or that you know and understand them very well. 亲切感
+    - He has a close **affinity** with the landscape and people he knew when he was growing up. 他对他成长过程中所熟悉的景色和人们有一种很强的亲切感。
+
+
+* mermaid /ˈmɜːmeɪd/
+  + N-COUNT In fairy tales and legends, a **mermaid** is a woman with a fish's tail instead of legs, who lives in the sea. 美人鱼
+
 
 * panic /ˈpænɪk/
   + N-VAR **Panic** is a very strong feeling of anxiety or fear that makes you act without thinking carefully. 惊慌
