@@ -588,6 +588,31 @@ source ~/.zshrc
 
 ## 画图
 
+* Mermaid 时序图
+
+查看图表的方法：
+
+方法1：**在线编辑**
+- [Mermaid Live Editor](https://mermaid.live/)
+- 复制代码块到在线编辑器查看和调整
+
+方法2：**VSCode**
+- 安装 "Markdown Preview Mermaid Support" 插件
+- 打开预览：`Ctrl+Shift+V` (Windows/Linux) 或 `Cmd+Shift+V` (Mac)
+
+方法3：**命令行工具**
+
+```bash
+# 安装 Mermaid CLI
+npm install -g @mermaid-js/mermaid-cli
+
+# 导出为 PNG
+mmdc -i MERMAID_DIAGRAMS.md -o diagrams.png
+
+# 导出为 SVG
+mmdc -i MERMAID_DIAGRAMS.md -o diagrams.svg
+```
+
 * [Graphviz](https://www.graphviz.org/)
   - Graphviz is open source graph visualization software. Graph visualization is a way of representing structural information as diagrams of abstract graphs and networks. It has important applications in networking, bioinformatics, software engineering, database and web design, machine learning, and in visual interfaces for other technical domains.
 
