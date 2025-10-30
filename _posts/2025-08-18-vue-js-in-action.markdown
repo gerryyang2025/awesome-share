@@ -2,11 +2,17 @@
 layout: post
 title:  "Vue.js in Action"
 date:   2025-08-18 12:30:00 +0800
-categories: JavaScript
+categories: Web
 ---
 
 * Do not remove this line (it will not be displayed)
 {:toc}
+
+# 预备知识
+
+假设你对 HTML、CSS 和 JavaScript 已经基本熟悉。如果你对前端开发完全陌生，最好不要直接从一个框架开始进行入门学习，最好是掌握了基础知识再回到这里。你可以通过这篇 [JavaScript 概述](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/A_re-introduction_to_JavaScript)来检验你的 JavaScript 知识水平。如果之前有其他框架的经验会很有帮助，但也不是必须的。
+
+
 
 
 # Introduction
@@ -402,6 +408,7 @@ If you are using Vue to enhance server-rendered HTML and only need Vue to contro
 * https://vue3js.cn/ (Vue 爱好者)
 * https://cn.vuejs.org/ (中文)
 * https://vuejs.org/ (英文)
+* https://github.com/yyx990803 (Evan You)
 
 
 
