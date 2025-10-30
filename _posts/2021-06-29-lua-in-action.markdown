@@ -350,24 +350,31 @@ LuaBridge is a lightweight and dependency-free library for mapping data, functio
 最近用lua处理某些大整数的时候发现不对劲
 
 下面这条语句的结果是：10992432728506384
+
+``` lua
 print(string.format("%d", 186312419127226*59 + 49))
+```
+
 但是这个算术得到的结果应该是：10992432728506383
 
-luajit也有同样的问题
+LuaJIT 也有同样的问题
 
-lua 版本：5.1.5
-luajit版本：2.1.0-alpha
+Lua 版本：5.1.5
 
-64位操作系统
+LuaJIT 版本：2.1.0-alpha
+
+64 位操作系统
 
 问题解释：
 
 在 LuaJIT 中，Lua number 的默认精度上限是双精度浮点数（double）。如果你想进行无精度损失的 64 位整数计算，须使用
 FFI cdata 的包装整数类型。例如，对于你这里的例子：
 
+``` lua
 local ffi = require "ffi"
 local res = ffi.new("int64_t", 186312419127226)*59 + 49)
-print(tostring(res)
+print(tostring(res))
+```
 
 使用 LuaJIT 运行这三行 Lua 代码得到的结果是
 
@@ -377,7 +384,7 @@ print(tostring(res)
 
 好吧，这可以进一步化简为
 
-```
+``` lua
 $ luajit -e 'print(186312419127226LL*59 + 49)'
 10992432728506383LL
 ```
