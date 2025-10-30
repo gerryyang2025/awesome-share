@@ -2817,6 +2817,41 @@ int main()
 
 https://en.cppreference.com/w/cpp/types/extent
 
+
+## [std::error_code](https://en.cppreference.com/w/cpp/error/error_code.html)
+
+`std::error_code` represents a platform-dependent error code value. Each std::error_code object holds an error code value originating from the operating system or some low-level interface and a pointer to an object of type [std::error_category](https://en.cppreference.com/w/cpp/error/error_category.html), which corresponds to the said interface. The error code values are not required to be unique across different error categories.
+
+``` cpp
+#include <system_error>
+#include <iostream>
+#include <fstream>
+
+int main()
+{
+    // 创建文件，可能失败
+    std::ifstream file("nonexistent_file.txt");
+
+    if (!file) {
+        // 从 errno 创建 error_code
+        std::error_code ec(errno, std::generic_category());
+
+        std::cout << "Error value: " << ec.value() << std::endl;
+        std::cout << "Error message: " << ec.message() << std::endl;
+        std::cout << "Error category: " << ec.category().name() << std::endl;
+    }
+}
+/*
+Error value: 2
+Error message: No such file or directory
+Error category: generic
+*/
+```
+
+
+
+
+
 # C++14
 
 ## C++ attribute: deprecated
