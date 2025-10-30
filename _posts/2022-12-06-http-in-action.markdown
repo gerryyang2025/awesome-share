@@ -143,6 +143,272 @@ The common workaround for these problems is to use [POST](https://en.wikipedia.o
 
 **There are times when HTTP GET is less suitable even for data retrieval**. An example of this is when a great deal of data would need to be specified in the URL. Browsers and web servers can have limits on the length of the URL that they will handle without truncation or error. **Percent-encoding of reserved characters in URLs and query strings can significantly increase their length, and while Apache HTTP Server can handle up to 4,000 characters in a URL, Microsoft Internet Explorer is limited to 2,048 characters in any URL.** Equally, **HTTP GET should not be used where sensitive information**, such as usernames and passwords, have to be submitted along with other data for the request to complete. Even if **HTTPS** is used, preventing the data from being intercepted in transit, the browser history and the web server's logs will likely contain the full URL in plaintext, which may be exposed if either system is hacked. **In these cases, HTTP POST should be used**.
 
+
+# Web Server
+
+## Web Server 实现 (Python)
+
+支持 GET 或 POST 请求打印，支持 keep-alive 检查，并返回固定的应答参数。
+
+``` python
+#!/usr/bin/env python3
+# web_server.py
+
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from urllib.parse import urlparse, parse_qs
+import json
+from datetime import datetime
+
+class RequestHandler(BaseHTTPRequestHandler):
+    protocol_version = 'HTTP/1.1'
+
+    def do_GET(self):
+        self.handle_request("GET")
+
+    def do_POST(self):
+        self.handle_request("POST")
+
+    def handle_request(self, method):
+        # Parse request path and query parameters
+        parsed_path = urlparse(self.path)
+        query_params = parse_qs(parsed_path.query)
+
+        # Get and validate content length
+        content_length = 0
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+        except ValueError:
+            pass
+
+        # Read request body (for POST requests)
+        body_data = b''
+        if method == "POST" and content_length > 0:
+            try:
+                body_data = self.rfile.read(content_length)
+            except Exception as e:
+                print(f"Error reading request body: {e}")
+                body_data = b''
+
+        # Print request information
+        self.print_request_info(method, parsed_path, query_params, self.headers, body_data)
+
+        # Check if client wants keep-alive connection
+        keep_alive = self.headers.get('Connection', '').lower() == 'keep-alive'
+
+        # Prepare response data
+        response = {
+            "status": "success",
+            "message": f"{method} request received and processed",
+            "timestamp": datetime.now().isoformat(),
+            "method": method,
+            "path": self.path,
+            "client_ip": self.client_address[0],
+            "client_port": self.client_address[1],
+            "connection": "keep-alive" if keep_alive else "close"
+        }
+        response_data = json.dumps(response).encode('utf-8')
+
+        # Send response with proper headers
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Content-Length', str(len(response_data)))
+
+        # Handle connection type based on client preference
+        # For keep-alive requests, we set the appropriate headers
+        if keep_alive:
+            self.send_header('Connection', 'keep-alive')
+            self.send_header('Keep-Alive', 'timeout=5, max=100')
+        else:
+            self.send_header('Connection', 'close')
+
+        self.end_headers()
+        self.wfile.write(response_data)
+
+        # Log connection status
+        print(f"Connection will be: {'kept alive' if keep_alive else 'closed'}")
+
+    def print_request_info(self, method, parsed_path, query_params, headers, body_data):
+        print("\n" + "="*80)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Received {method} Request")
+        print("="*80)
+
+        # Print client IP and port
+        client_ip, client_port = self.client_address
+        print(f"Client: {client_ip}:{client_port}")
+
+        # Print request method and path
+        print(f"Request Method: {method}")
+        print(f"Request Path: {parsed_path.path}")
+        print(f"Full URL: {self.path}")
+
+        # Print query parameters
+        print("\nQuery Parameters:")
+        if query_params:
+            for key, value in query_params.items():
+                print(f"  {key}: {value[0] if len(value) == 1 else value}")
+        else:
+            print("  (No query parameters)")
+
+        # Print request headers
+        print("\nRequest Headers:")
+        for header, value in headers.items():
+            print(f"  {header}: {value}")
+
+        # Print request body (for POST requests)
+        if method == "POST":
+            print("\nRequest Body:")
+            if body_data:
+                try:
+                    # Try to parse as JSON
+                    json_data = json.loads(body_data.decode('utf-8'))
+                    print("Content-Type: JSON")
+                    print(json.dumps(json_data, indent=2, ensure_ascii=False))
+                except:
+                    # If not JSON, print raw data
+                    print("Content-Type: Raw/Text")
+                    print(body_data.decode('utf-8', errors='replace'))
+            else:
+                print("(Empty)")
+
+        print("="*80)
+
+    def log_message(self, format, *args):
+        # Disable default log output, we use custom printing
+        pass
+
+def run_server(host='0.0.0.0', port=8088):
+    server_address = (host, port)
+    httpd = HTTPServer(server_address, RequestHandler)
+
+    print(f"Server started at http://{host}:{port}")
+    print("Waiting for requests...")
+    print("Press Ctrl+C to stop the server")
+
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\nServer stopped")
+        httpd.shutdown()
+
+if __name__ == '__main__':
+    # Using port 8088 to avoid permission issues
+    run_server(host='0.0.0.0', port=8088)
+```
+
+
+## 客户端测试命令 (短连接)
+
+``` bash
+#!/bin/bash
+
+curl -X POST 'http://localhost:8088/cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451' \
+-H 'Content-Type: application/json' \
+-H 'Connection: close' \
+-d '{"data": "test", "action": "process"}'
+```
+
+Web Server 服务端请求内容：
+
+
+```
+================================================================================
+[2025-10-27 15:34:54] Received POST Request
+================================================================================
+Client: 127.0.0.1:49302
+Request Method: POST
+Request Path: /cgi-bin/Test.fcgi
+Full URL: /cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451
+
+Query Parameters:
+  cmd: test
+  appid: 1
+  timestamp: 1554802545
+  nonce: 100000
+  sign: 73ea834b1ed7637dd9776f22269a8451
+
+Request Headers:
+  Host: localhost:8088
+  User-Agent: curl/7.61.1
+  Accept: */*
+  Content-Type: application/json
+  Connection: close
+  Content-Length: 37
+
+Request Body:
+Content-Type: JSON
+{
+  "data": "test",
+  "action": "process"
+}
+================================================================================
+Connection will be: closed
+```
+
+应答内容：
+
+``` json
+{"status": "success", "message": "POST request received and processed", "timestamp": "2025-10-27T15:34:54.009649", "method": "POST", "path": "/cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451", "client_ip": "127.0.0.1", "client_port": 49302, "connection": "close"}
+```
+
+## 客户端测试命令 (长连接)
+
+``` bash
+#!/bin/bash
+
+curl -X POST 'http://localhost:8088/cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451' \
+-H 'Content-Type: application/json' \
+-H 'Connection: keep-alive' \
+-d '{"data": "test", "action": "process"}' \
+--max-time 5
+```
+
+Web Server 服务端请求内容：
+
+
+```
+================================================================================
+[2025-10-27 15:34:47] Received POST Request
+================================================================================
+Client: 127.0.0.1:49290
+Request Method: POST
+Request Path: /cgi-bin/Test.fcgi
+Full URL: /cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451
+
+Query Parameters:
+  cmd: test
+  appid: 1
+  timestamp: 1554802545
+  nonce: 100000
+  sign: 73ea834b1ed7637dd9776f22269a8451
+
+Request Headers:
+  Host: localhost:8088
+  User-Agent: curl/7.61.1
+  Accept: */*
+  Content-Type: application/json
+  Connection: keep-alive
+  Content-Length: 37
+
+Request Body:
+Content-Type: JSON
+{
+  "data": "test",
+  "action": "process"
+}
+================================================================================
+Connection will be: kept alive
+```
+
+应答内容：
+
+``` json
+{"status": "success", "message": "POST request received and processed", "timestamp": "2025-10-27T15:34:47.469851", "method": "POST", "path": "/cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451", "client_ip": "127.0.0.1", "client_port": 49290, "connection": "keep-alive"}
+```
+
+
+
+
+
 # Refer
 
 * https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
