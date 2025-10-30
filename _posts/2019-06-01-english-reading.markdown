@@ -55,6 +55,49 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* sharpen /ˈʃɑːpən/
+  + V-T/V-I If your senses, understanding, or skills **sharpen** or are **sharpened**, you become better at noticing things, thinking, or doing something. 使敏锐; 增强
+  + V-T If you **sharpen** an object, you make its edge very thin or you make its end pointed. 使变锋利; 弄尖
+    - He started to sharpen his knife. 他开始磨刀。
+
+
+* archive /ˈɑːkaɪv/
+  + N-COUNT **Archives** are a collection of documents and records that contain historical information. You can also use archives to refer to the place where archives are stored. 档案; 档案馆
+  + ADJ **Archive** material is information that comes from archives. 记入档案的
+    - archive material 档案资料
+  + V-T If you **archive** material such as documents or data, you store it in an archive. 把…存档
+    - The system will **archive** the information so agencies can review it in detail. 该系统会将该信息存档，以便各代理机构能对其详细审阅。
+
+
+* comply /kəmˈplaɪ/
+  + V-I If someone or something **complies with** an order or set of rules, they do what is required or expected. 遵从
+    - The commander said that the army would **comply with** the ceasefire. 指挥官说过部队会遵从停火协议。
+    - Some beaches had failed to **comply with** environmental regulations. 一些海滩没能遵守环保规定。
+
+
+* platinum /ˈplætɪnəm/
+  + N-UNCOUNT **Platinum** is a very valuable, silvery-grey metal. It is often used for making jewellery. 铂; 白金
+
+
+* breed /briːd/
+  + N-COUNT A **breed** of a pet animal or farm animal is a particular type of it. For example, terriers are a **breed** of dog. (动物的) 品种
+    - rare **breeds** of cattle 稀有牛种
+  + V-T If you **breed** animals or plants, you keep them for the purpose of producing more animals or plants with particular qualities, in a controlled way. 养殖
+    - He lived alone, breeding horses and dogs. 他独自生活,养殖马和狗。
+  + V-I When animals **breed**, they have babies. 繁殖
+    - Frogs will usually **breed** in any convenient pond. 青蛙通常在任何适宜的水塘里繁殖。
+
+
+* gauge /ɡeɪdʒ/
+  + V-T If you **gauge** the speed or strength of something, or if you **gauge** an amount, you measure or calculate it, often by using a device of some kind. (常指用仪器) 测量
+  + N-COUNT A **gauge** is a device that measures the amount or quantity of something and shows the amount measured. 测量仪器
+    - temperature gauges 温度计
+  + V-T If you **gauge** people's actions, feelings, or intentions in a particular situation, you carefully consider and judge them. 判定
+    - His mood can be **gauged** by his reaction to the most trivial of incidents. 他的情绪可以通过他对最琐碎的小事的反应来判定。
+  + N-SING A **gauge** of someone's feelings or a situation is a fact or event that can be used to judge them. (评价、判断的) 标准
+    - The index is the government's chief **gauge** of future economic activity. 这个指数是政府对未来经济活动的主要判断标准。
+
+
 * toleration /ˌtɒləˈreɪʃən/
   + N the act or practice of tolerating 宽容
 
