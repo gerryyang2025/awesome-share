@@ -61,6 +61,287 @@ export GOSUMDB="xxx"
 ```
 
 
+# 编译构建
+
+代码目录示例：
+
+```
+.
+├── app
+│   └── demo
+│       ├── bin
+│       ├── cmd
+│       ├── config
+│       ├── deploy
+│       ├── log
+│       ├── scripts
+│       └── tools
+├── protocol
+│   └── trpc
+│       └── demo
+└── vendor
+```
+
+构建脚本：
+
+
+``` bash
+#!/bin/bash
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+cd "${SCRIPT_DIR}" || exit 1
+
+PROJ_NAME=my-project
+APP_DIR="app/demo"
+
+# Script is in project root
+PROJECT_ROOT="$SCRIPT_DIR"
+APP_PATH="$SCRIPT_DIR/$APP_DIR"
+BIN_DIR="$APP_PATH/bin"
+
+# Helper functions
+log_info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+log_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1" >&2
+}
+
+log_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+# Print section header
+print_section() {
+    echo ""
+    echo "=========================================="
+    echo "$1"
+    echo "=========================================="
+}
+
+# Ensure bin directory exists
+ensure_bin_dir() {
+    if [[ ! -d "$BIN_DIR" ]]; then
+        mkdir -p "$BIN_DIR"
+        log_info "Created bin directory: $BIN_DIR"
+    fi
+}
+
+# Build the project
+build() {
+    print_section "Building $PROJ_NAME"
+
+    # Get version information
+    COMMIT=$(git rev-parse --short HEAD 2>/dev/null)
+    if [[ -z $COMMIT ]]; then
+        log_warning "Not a git repository or failed to get commit hash"
+        COMMIT="unknown"
+    fi
+
+    VERSION=$(git describe --tags --abbrev=14 "${COMMIT}^{commit}" --always 2>/dev/null || echo $COMMIT)
+
+    log_info "Commit: $COMMIT"
+    log_info "Version: $VERSION"
+    echo ""
+
+    # Ensure bin directory exists
+    ensure_bin_dir
+
+    # Run go mod commands in project root
+    cd "$PROJECT_ROOT" || exit 1
+
+    # Clean dependencies
+    log_info "Running go mod tidy in $PROJECT_ROOT..."
+    if ! go mod tidy; then
+        log_error "go mod tidy failed"
+        exit 1
+    fi
+
+    # Update vendor for code browsing
+    log_info "Updating vendor directory for code browsing..."
+    if ! go mod vendor; then
+        log_error "go mod vendor failed"
+        exit 1
+    fi
+
+    log_info "Vendor directory updated for IDE browsing"
+    log_info "Note: Building with -mod=mod to use complete source from module cache"
+    echo ""
+
+    # Build - switch to app directory
+    log_info "Building binary in $APP_PATH..."
+    start_time=$(date +%s)
+
+    cd "$APP_PATH" || exit 1
+
+    if CGO_ENABLED=1 GOOS=linux go build -mod=mod \
+        -ldflags "-X 'main.Version=$VERSION' -X 'main.Commit=$COMMIT'" \
+        -v -o "./bin/$PROJ_NAME" "./cmd/$PROJ_NAME"; then
+        end_time=$(date +%s)
+        build_time=$((end_time - start_time))
+
+        log_success "Build completed in ${build_time}s"
+        echo ""
+
+        # Show binary information
+        if [[ -f "./bin/$PROJ_NAME" ]]; then
+            binary_size=$(ls -lh "./bin/$PROJ_NAME" | awk '{print $5}')
+            binary_path="$(pwd)/bin/$PROJ_NAME"
+            log_info "Binary: $binary_path"
+            log_info "Size: $binary_size"
+
+            # Get Go version used
+            go_version=$(go version | awk '{print $3}')
+            log_info "Go version: $go_version"
+        fi
+    else
+        log_error "Build failed"
+        exit 1
+    fi
+}
+
+# Clean build artifacts
+clean() {
+    print_section "Cleaning Build Artifacts"
+
+    # Clean binary directory in app
+    if [[ -d "$APP_PATH/bin" ]]; then
+        rm -rf "$APP_PATH/bin"
+        log_info "Removed $APP_PATH/bin directory"
+    fi
+
+    # Clean vendor in project root
+    if [[ -d "$PROJECT_ROOT/vendor" ]]; then
+        rm -rf "$PROJECT_ROOT/vendor"
+        log_info "Removed vendor directory"
+    fi
+
+    log_success "Clean completed"
+    log_info "Note: Module cache (~/go/pkg/mod) is preserved for faster builds"
+    log_info "Use 'go clean -modcache' if you need to clear it"
+}
+
+# Clean everything including module cache
+clean_all() {
+    print_section "Cleaning Everything (Including Module Cache)"
+
+    # Clean build artifacts first
+    if [[ -d "$APP_PATH/bin" ]]; then
+        rm -rf "$APP_PATH/bin"
+        log_info "Removed $APP_PATH/bin directory"
+    fi
+
+    if [[ -d "$PROJECT_ROOT/vendor" ]]; then
+        rm -rf "$PROJECT_ROOT/vendor"
+        log_info "Removed vendor directory"
+    fi
+
+    # Clean module cache
+    log_warning "Removing module cache (this may take a while)..."
+    if go clean -modcache; then
+        log_info "Module cache cleared"
+    else
+        log_error "Failed to clear module cache"
+    fi
+
+    log_success "Deep clean completed"
+}
+
+# Run tests
+test() {
+    print_section "Running Tests"
+
+    log_info "Running go test..."
+    go test -v ./... || {
+        log_error "Tests failed"
+        exit 1
+    }
+
+    log_success "All tests passed"
+}
+
+# Show binary information
+info() {
+    print_section "Project Information"
+
+    binary_path="$APP_PATH/bin/$PROJ_NAME"
+    if [[ -f "$binary_path" ]]; then
+        log_info "Binary exists: $binary_path"
+        ls -lh "$binary_path"
+        file "$binary_path"
+
+        cd "$APP_PATH" || exit 1
+        # Try to get version from binary
+        if ./bin/$PROJ_NAME --version 2>/dev/null || ./bin/$PROJ_NAME -version 2>/dev/null; then
+            echo ""
+        fi
+    else
+        log_warning "Binary not found at $binary_path"
+        log_warning "Run '$0 build' first."
+    fi
+}
+
+# Show usage
+usage() {
+    echo "Usage: $0 [command]"
+    echo ""
+    echo "Commands:"
+    echo "  build, b      Build the project (default)"
+    echo "  clean, c      Clean build artifacts (bin, vendor)"
+    echo "  clean-all     Clean everything including module cache"
+    echo "  test, t       Run tests"
+    echo "  info, i       Show project information"
+    echo "  help, h       Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  $0 build       Build the project"
+    echo "  $0 clean       Clean bin and vendor directories"
+    echo "  $0 clean-all   Clean everything (including ~/go/pkg/mod)"
+    echo "  $0 info        Show binary information"
+    echo ""
+}
+
+# Main
+case "${1:-build}" in
+    build|b)
+        build
+        ;;
+    clean|c)
+        clean
+        ;;
+    clean-all)
+        clean_all
+        ;;
+    test|t)
+        test
+        ;;
+    info|i)
+        info
+        ;;
+    help|h|--help|-h)
+        usage
+        ;;
+    *)
+        log_error "Unknown command: $1"
+        usage
+        exit 1
+        ;;
+esac
+```
+
+
 # GoLang IDE
 
 ## GoLand
@@ -71,7 +352,7 @@ TODO
 
 ### 启用 gopls
 
-可以在工程的 VSCode settings.json 配置中设置开启 gopls 服务，即，`"go.useLanguageServer": true`
+可以在工程的 VSCode `.vscode/settings.json` 配置中设置开启 gopls 服务，即，`"go.useLanguageServer": true`
 
 ``` json
 {
@@ -449,14 +730,18 @@ Gin is a web framework written in Go. It features a martini-like API with perfor
 go mod vendor
 ```
 
+> 注意：如果使用 `-mod=vendor` 模式构建，vendor 仅包含 Go 代码，不含 C/C++ 头文件代码，会提示找不到 C/C++ 头文件导致编译错误。需要改为编译使用 `-mod=mod` 强制使用 module 模式，而不是使用 vendor 目录的代码构建，从 module 缓存读取完整 C/C++ 源码，Go module 缓存保留完整 C/C++ 源码，满足 CGO 编译需要。
+
 
 ## 清理旧依赖缓存
-
 
 ``` bash
 go clean -cache
 go clean -modcache
 ```
+
+> 注意：模块缓存的位置在 ~/go/pkg/mod 或 $GOMODCACHE，存储已下载的模块源码。作用是避免重复下载，加快构建。默认构建流程不建议清空，否则需要重新下载所有依赖。
+
 
 ## [GoLang GOOS and GOARCH](https://gist.github.com/asukakenji/f15ba7e588ac42795f421b48b8aede63)
 
