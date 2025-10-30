@@ -4015,6 +4015,16 @@ Options:
 ![zstd](/assets/images/202307/zstd.png)
 
 
+## gunzip
+
+`.gz` is a gzipped file and is not related to `tar`. To unzip a gzipped file you use the `gunzip` command.
+
+``` bash
+gunzip filename.vw.gz
+```
+
+https://stackoverflow.com/questions/50625441/how-to-unzip-a-vw-gz-file-in-linux
+
 
 
 ## [cloc](https://github.com/AlDanial/cloc) - Count Lines of Code
