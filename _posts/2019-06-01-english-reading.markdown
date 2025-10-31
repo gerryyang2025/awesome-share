@@ -55,6 +55,10 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* demonic /dɪˈmɒnɪk/
+  + ADJ **Demonic** means coming from or belonging to a demon or being like a demon. 恶魔的; 恶魔似的
+    - Maintain the character’s original appearance and details, add Halloween makeup devil horns and demonic features. ([Featured Nano Banana AI Prompts](https://nanobananaprompt.org/))
+
 * sharpen /ˈʃɑːpən/
   + V-T/V-I If your senses, understanding, or skills **sharpen** or are **sharpened**, you become better at noticing things, thinking, or doing something. 使敏锐; 增强
   + V-T If you **sharpen** an object, you make its edge very thin or you make its end pointed. 使变锋利; 弄尖
