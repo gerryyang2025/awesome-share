@@ -55,6 +55,10 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* streamline /ˈstriːmlaɪn/
+  + V-T To **streamline** an organization or process means to make it more efficient by removing unnecessary parts of it. 提高…效率
+
+
 * demonic /dɪˈmɒnɪk/
   + ADJ **Demonic** means coming from or belonging to a demon or being like a demon. 恶魔的; 恶魔似的
     - Maintain the character’s original appearance and details, add Halloween makeup devil horns and demonic features. ([Featured Nano Banana AI Prompts](https://nanobananaprompt.org/))

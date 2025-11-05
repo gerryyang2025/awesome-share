@@ -3391,7 +3391,7 @@ initial-cluster: VM-129-173-tencentos=http://9.134.129.173:2380,VM-84-53-tencent
 
 
 
-# 测试用例
+# 常用命令
 
 ## etcdctl
 
@@ -3453,6 +3453,7 @@ Deleting data from etcd...
 Listing all keys in etcd after deletion...
 + etcdctl --endpoints=localhost:2379 get '' --prefix=true
 ```
+
 
 
 ## HTTP
@@ -3518,11 +3519,6 @@ Deleting data from etcd...
 Reading data from etcd...
 response: {"header":{"cluster_id":"12297797944536498889","member_id":"17894252403103677144","revision":"30","raft_term":"5"}}
 ```
-
-
-
-
-# Tips
 
 
 ## 通过 `-w fields` 或 `-w json` 查看 key 的详细元数据
@@ -3624,9 +3620,9 @@ $ etcdctl get /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 
 $ etcdctl del /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib -w fields
 "ClusterID" : 12297797944536498889
 "MemberID" : 17894252403103677144
-"Revision" : 243000         // 删除操作发生时的全局 revision
+"Revision" : 243000         # 删除操作发生时的全局 revision
 "RaftTerm" : 10
-"Deleted" : 1               // 删除的 key 数量
+"Deleted" : 1               # 删除的 key 数量
 ```
 
 * **方法 2：通过历史查询查看删除事件**
@@ -3635,7 +3631,7 @@ $ etcdctl del /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 
 
 ``` bash
 $ etcdctl watch /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib --rev=242999
-DELETE                       // 输出删除事件
+DELETE                       # 输出删除事件
 /namesvr/counter/agent
 ```
 
@@ -3820,6 +3816,10 @@ etcdctl endpoint status --cluster -w json | python -mjson.tool
     }
 ]
 ```
+
+
+
+
 
 # etcd 运维脚本
 
