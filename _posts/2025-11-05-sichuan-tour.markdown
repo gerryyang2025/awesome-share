@@ -13,8 +13,8 @@ categories: 杂记
 # 行程安排
 
 * 行程天数：2025年09月26日 - 2025年10月06日，共 11 天
-* 计划景点：九寨沟，四姑娘山（猫鼻梁，长坪沟，双桥沟），黄河九曲第一湾，若尔盖大草原，黄龙
-* 未去景点：毕棚沟，都江堰，峨眉山
+* 目的景点：九寨沟，四姑娘山（猫鼻梁，长坪沟，双桥沟），黄河九曲第一湾，若尔盖大草原，黄龙
+* 未来规划景点：毕棚沟，都江堰，峨眉山
 * 自驾里程：1300 公里
 
 
@@ -112,7 +112,7 @@ categories: 杂记
 
 ## 简介
 
-九寨沟位于四川省西北部岷山山脉南段的阿坝藏族羌族自治州九寨沟县漳扎镇境内，地处岷山南段弓杠岭的东北侧。距离成都市400多千米，系长江水系嘉陵江上游白水江源头的一条大支沟。 九寨沟自然保护区地势南高北低，山谷深切，高差悬殊。北缘九寨沟口海拔仅2000米，中部峰岭均在4000米以上，南缘达4500米以上，主沟长30多公里。
+九寨沟位于四川省西北部岷山山脉南段的阿坝藏族羌族自治州九寨沟县漳扎镇境内，地处岷山南段弓杠岭的东北侧。距离成都市400多千米，系长江水系嘉陵江上游白水江源头的一条大支沟。九寨沟自然保护区地势南高北低，山谷深切，高差悬殊。北缘九寨沟口海拔仅2000米，中部峰岭均在4000米以上，南缘达4500米以上，主沟长30多公里。
 
 九寨沟是世界自然遗产、国家重点风景名胜区、国家AAAAA级旅游景区、国家级自然保护区、国家地质公园、世界生物圈保护区网络，也是中国第一个以保护自然风景为主要目的的自然保护区。
 
@@ -248,6 +248,49 @@ categories: 杂记
 
 * **人参果坪（沟口附近）**：这是双桥沟冰川地貌的终点。这里有大片草甸，春夏季节，各种高山花卉布满草坪，景色优美。
 
+
+
+![jiuzhaigou30](/assets/images/202511/jiuzhaigou30.jpg)
+
+![jiuzhaigou31](/assets/images/202511/jiuzhaigou31.jpg)
+
+![jiuzhaigou32](/assets/images/202511/jiuzhaigou32.jpg)
+
+![jiuzhaigou33](/assets/images/202511/jiuzhaigou33.jpg)
+
+![jiuzhaigou34](/assets/images/202511/jiuzhaigou34.jpg)
+
+![jiuzhaigou35](/assets/images/202511/jiuzhaigou35.jpg)
+
+![jiuzhaigou36](/assets/images/202511/jiuzhaigou36.jpg)
+
+![jiuzhaigou37](/assets/images/202511/jiuzhaigou37.jpg)
+
+![jiuzhaigou38](/assets/images/202511/jiuzhaigou38.jpg)
+
+![jiuzhaigou39](/assets/images/202511/jiuzhaigou39.jpg)
+
+![jiuzhaigou40](/assets/images/202511/jiuzhaigou40.jpg)
+
+![jiuzhaigou41](/assets/images/202511/jiuzhaigou41.jpg)
+
+![jiuzhaigou42](/assets/images/202511/jiuzhaigou42.jpg)
+
+![jiuzhaigou43](/assets/images/202511/jiuzhaigou43.jpg)
+
+![jiuzhaigou44](/assets/images/202511/jiuzhaigou44.jpg)
+
+![jiuzhaigou45](/assets/images/202511/jiuzhaigou45.jpg)
+
+![jiuzhaigou46](/assets/images/202511/jiuzhaigou46.jpg)
+
+![jiuzhaigou47](/assets/images/202511/jiuzhaigou47.jpg)
+
+![jiuzhaigou48](/assets/images/202511/jiuzhaigou48.jpg)
+
+![jiuzhaigou49](/assets/images/202511/jiuzhaigou49.jpg)
+
+![jiuzhaigou50](/assets/images/202511/jiuzhaigou50.jpg)
 
 
 
