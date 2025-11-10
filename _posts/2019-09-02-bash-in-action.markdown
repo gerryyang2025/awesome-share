@@ -1161,20 +1161,181 @@ done
 
 ## BASH_SOURCE 变量
 
+参考：[Bash Variables](https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html#Bash-Variables)
+
+An array variable whose members are the source filenames where the corresponding shell function names in the `FUNCNAME` array variable are defined. The shell function `${FUNCNAME[$i]}` is defined in the file `${BASH_SOURCE[$i]}` and called from `${BASH_SOURCE[$i+1]}` Assignments to `BASH_SOURCE` have no effect, and it may not be unset.
+
 保存了当前脚本的路径，包括文件名。
 
+### 常见用法：获取当前脚本所在目录
+
 ``` bash
-CUR_DIR=$(dirname $(readlink -f $BASH_SOURCE))
-PROJ_DIR=`readlink -f $CUR_DIR/../..`
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ```
 
+### `${BASH_SOURCE[0]}` 与 $0 的区别
+
+[choosing between $0 and BASH_SOURCE](https://stackoverflow.com/questions/35006457/choosing-between-0-and-bash-source)
+
+`${BASH_SOURCE[0]}` (or, more simply, `$BASH_SOURCE`) contains the (potentially relative) path of the containing script in all invocation scenarios, notably also when the script is sourced, which is not true for `$0`.
+
+The following example illustrates this:
+
+Script `foo`:
+
+``` bash
+#!/bin/bash
+echo "[$0] vs. [${BASH_SOURCE[0]}]"
+```
+
+```
+$ bash ./foo
+[./foo] vs. [./foo]
+
+$ ./foo
+[./foo] vs. [./foo]
+
+$ . ./foo
+[bash] vs. [./foo]
+```
+
+`$0` is part of the POSIX shell specification, whereas `BASH_SOURCE`, as the name suggests, is Bash-specific.
+
+
+### `${BASH_SOURCE[0]}` 与 `${BASH_SOURCE}` 的区别
+
+Bash allows you to reference element `0` of an array variable using scalar notation: instead of writing `${arr[0]}`, you can write `$arr`; in other words: if you reference the variable as if it were a scalar, you get the element at index `0`.
+
+Using this feature obscures the fact that `$arr` is an array, which is why popular shell-code linter shellcheck.net issues the following warning (as of this writing):
+
+> SC2128: Expanding an array without an index only gives the first element.
+
+On a side note: While this warning is helpful, it could be more precise, because you won't necessarily get the first element: It is specifically the element at index `0` that is returned, so if the first element has a higher index - which is possible in Bash - you'll get the empty string; try `a[1]='hi'; echo "$a"`.
+
+
+在功能上，两者等价：`${BASH_SOURCE}` 默认访问索引 0，等同于 `${BASH_SOURCE[0]}`。推荐使用 `${BASH_SOURCE[0]}`，更明确表示访问数组的第一个元素。
+
+
+### Under what conditions does the BASH_SOURCE array variable actually contain multiple elements?
+
+`BASH_SOURCE` only has multiple entries if function calls are involved, in which case its elements parallel the `FUNCNAME` array that contains all function names currently on the call stack.
+
+That is, inside a function, `${FUNCNAME[0]}` contains the name of the executing function, and `${BASH_SOURCE[0]}` contains the path of the script file in which that function is defined, `${FUNCNAME[1]}` contains the name of the function from which the currently executing function was called, if applicable, and so on.
+
+If a given function was invoked directly from the top-level scope in the script file that defined the function at level `$i` of the call stack, `${FUNCNAME[$i+1]}` contains:
+
+* `main` (a pseudo function name), if the script file was invoked directly (e.g., `./script`)
+* `source` (a pseudo function name), if the script file was sourced (e.g. `source ./script` or `. ./script`).
+
+
+### 测试脚本
+
+``` bash
+#!/bin/bash
+# test_bash_source.sh
+
+# 示例脚本：演示 BASH_SOURCE 和 FUNCNAME 的用法
+
+echo "=== 脚本级别 ==="
+echo "当前脚本: ${BASH_SOURCE[0]}"
+echo "调用者: ${BASH_SOURCE[1]:-N/A}"
+echo "当前函数: ${FUNCNAME[0]:-main}"
+echo ""
+
+# 定义函数1
+function func1() {
+    echo "=== func1 内部 ==="
+    echo "BASH_SOURCE[0]: ${BASH_SOURCE[0]}"  # 当前脚本
+    echo "BASH_SOURCE[1]: ${BASH_SOURCE[1]:-N/A}"  # 调用者（如果有）
+    echo "FUNCNAME[0]: ${FUNCNAME[0]}"  # 当前函数名 func1
+    echo "FUNCNAME[1]: ${FUNCNAME[1]:-N/A}"  # 调用 func1 的函数
+    echo ""
+
+    func2
+}
+
+# 定义函数2
+function func2() {
+    echo "=== func2 内部 ==="
+    echo "BASH_SOURCE[0]: ${BASH_SOURCE[0]}"  # 当前脚本
+    echo "BASH_SOURCE[1]: ${BASH_SOURCE[1]:-N/A}"
+    echo "FUNCNAME[0]: ${FUNCNAME[0]}"  # 当前函数名 func2
+    echo "FUNCNAME[1]: ${FUNCNAME[1]}"  # 调用 func2 的函数 func1
+    echo "FUNCNAME[2]: ${FUNCNAME[2]:-N/A}"  # 调用 func1 的函数
+    echo ""
+
+    # 显示完整调用栈
+    echo "=== 完整调用栈 ==="
+    for i in "${!FUNCNAME[@]}"; do
+        echo "层级 $i: 函数=${FUNCNAME[$i]}, 文件=${BASH_SOURCE[$i]}"
+    done
+}
+
+# 调用函数1
+func1
+```
+
+输出结果：
+
+```
+$ ./test_bash_source.sh
+=== 脚本级别 ===
+当前脚本: ./test_bash_source.sh
+调用者: N/A
+当前函数: main
+
+=== func1 内部 ===
+BASH_SOURCE[0]: ./test_bash_source.sh
+BASH_SOURCE[1]: ./test_bash_source.sh
+FUNCNAME[0]: func1
+FUNCNAME[1]: main
+
+=== func2 内部 ===
+BASH_SOURCE[0]: ./test_bash_source.sh
+BASH_SOURCE[1]: ./test_bash_source.sh
+FUNCNAME[0]: func2
+FUNCNAME[1]: func1
+FUNCNAME[2]: main
+
+=== 完整调用栈 ===
+层级 0: 函数=func2, 文件=./test_bash_source.sh
+层级 1: 函数=func1, 文件=./test_bash_source.sh
+层级 2: 函数=main, 文件=./test_bash_source.sh
+```
+
+
+
 ## FUNCNAME 变量
+
+参考：[Bash Variables](https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html#Bash-Variables)
+
+An array variable containing the names of all shell functions currently in the execution call stack. The element with index 0 is the name of any currently-executing shell function. The bottom-most element (the one with the highest index) is "main". This variable exists only when a shell function is executing. Assignments to `FUNCNAME` have no effect. If `FUNCNAME` is unset, it loses its special properties, even if it is subsequently reset.
+
+This variable can be used with `BASH_LINENO` and `BASH_SOURCE`. Each element of `FUNCNAME` has corresponding elements in `BASH_LINENO` and `BASH_SOURCE` to describe the call stack. For instance, `${FUNCNAME[$i]}` was called from the file `${BASH_SOURCE[$i+1]}` at line number `${BASH_LINENO[$i]}`. The caller builtin displays the current call stack using this information.
+
 
 ``` bash
 make()
 {
     echo "$FUNCNAME: do nothing"
 }
+```
+
+``` bash
+# 获取脚本所在目录（最常用）
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# 调试：打印调用栈
+for i in "${!FUNCNAME[@]}"; do
+    echo "函数: ${FUNCNAME[$i]}, 文件: ${BASH_SOURCE[$i]}, 行号: ${BASH_LINENO[$i]}"
+done
+
+# 检查是否被 source 调用
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    echo "脚本被 source 调用"
+else
+    echo "脚本被直接执行"
+fi
 ```
 
 
