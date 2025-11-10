@@ -36,7 +36,16 @@ Cursor 背后的公司于 2023 年在旧金山成立，主要开发利用 LLM �
 
 # 常用功能
 
-## Cursor Tab
+
+## [Cursor Tab](https://cursor.com/docs/tab/overview) (选项卡)
+
+`Tab` is a specialized Cursor model for autocompletion. The more you use it, the better it becomes as you inject intent by accepting `Tab` or rejecting `Escape` suggestions. With `Tab`, you can:
+
+* Modify multiple lines at once
+* Add import statements when missing
+* Jump within and across files for coordinated edits
+* Get suggestions based on recent changes, linter errors and accepted edits
+
 
 `Cursor Tab` 是本地的自动补全功能。它是一个更强大的 Copilot，能够建议整个差异，并具有特别好的记忆。由自定义模型驱动，`Cursor Tab` 可以：
 
@@ -69,130 +78,7 @@ Cursor 可以对当前行上方一行到下方两行进行更改。
 可以通过进入 `Cursor Settings` > `Tab Completion` 并取消选中“在评论中触发”来禁用评论中的 `Cursor Tab`。
 
 
-## Cursor Composer
-
-`Composer` 是在编辑器中的 **AI 编码助手**。它帮助探索代码、编写新功能并修改现有代码，而无需离开用户工作流程。使用 `⌘I` 打开它，使用 `⌘N` 创建一个新的 `Composer`。
-
-
-> 聊天和 Composer 之间有什么区别？
-
-Cursor 聊天帮助您搜索和理解代码。使用它来探索您的代码库、提出问题并获取解释。用户可以使用 `⌘⏎` 搜索代码。
-
-`Composer` 帮助您编写和编辑代码。它提供一个工作区，您可以在其中生成新代码并直接将更改应用到文件中。
-
-
-## Cursor Chat
-
-`Cursor Chat` 让用户在代码库中提问或解决问题，使用最强大的语言模型，全部在用户的编辑器中进行。
-
-为了使语言模型能够给出良好的答案，它们需要了解与用户的代码库相关的特定信息——上下文。
-
-Cursor 具有多种内置功能，以在聊天中提供上下文，例如自动包含整个代码库的上下文、搜索网络、索引文档以及用户指定的代码块引用。**它们旨在消除与语言模型在代码上工作时所需的繁琐复制粘贴**。
-
-默认情况下，Cursor Chat 位于 AI 面板中，该面板位于用户的主侧边栏的对面。用户可以通过按 `Ctrl/⌘ + L` 切换 AI 面板，打开时将焦点集中到聊天上。要提交用户的查询，请按 `Enter`。
-
-> 用户和 AI 消息
-
-用户消息包含用户输入的文本，以及用户引用的上下文。用户可以返回任何先前的用户消息进行编辑并重新运行查询。这将覆盖之后的任何消息并生成新的消息。
-
-AI 消息是用户选择的 AI 模型生成的响应。它们与之前的用户消息配对。AI 消息可能包含解析的代码块，可以通过[即时应用](https://cursordocs.com/docs/chat/apply)添加到用户的代码库中。
-
-所有用户/AI 消息在同一线程中称为**聊天线程**，**每个聊天线程都保存在用户的聊天历史中**。
-
-> 聊天历史
-
-通过点击 AI 面板右上角的“先前聊天”按钮，或按 `Ctrl/⌘ + Alt/Option + L`，用户可以查看聊天历史。用户可以点击任何聊天线程以返回查看构成该线程的消息，用户还可以通过点击笔图标修改线程的标题，或在悬停在线程上时点击垃圾桶图标删除该线程。
-
-Cursor 线程的标题仅为第一条用户消息的前几个词。
-
-> 默认上下文
-
-默认情况下，`Cursor Chat` 包含当前文件作为上下文。用户可以通过从消息中移除当前文件标签来提交不包含任何上下文的查询。当用户输入时，用户可以在输入框上方的标签中看到将包含的上下文。
-
-> 添加上下文
-
-默认情况下，用户消息将包含用户输入的文本，以及用户引用的上下文。用户可以通过 `@` 符号向每个气泡添加更多自定义上下文，默认情况下，当前查看的文件也将作为上下文在用户消息中使用。
-
-有关更多信息，请参见 [@ 符号](https://cursordocs.com/docs/context/@-symbols/@-files) 页面。
-
-> 聊天中的 AI 修复
-
-修复代码库中的 `linter` 错误的一个方便功能是使用聊天中的 AI 修复。要做到这一点，请在编辑器中悬停在错误上，然后点击出现的蓝色 AI 修复按钮。
-
-此操作的键盘快捷键为 `Ctrl/⌘ + Shift + E`。
-
-> 设置
-
-可以在 Cursor 设置 > 功能 > 聊天 下自定义 Cursor Chat。
-
-这些设置包括：
-
-* 始终在网上搜索答案。这将使 AI 模型在每次查询时浏览网络以获取最新信息。
-* 添加聊天淡出动画。这为生成的 AI 消息添加了平滑的动画效果。
-* 自动滚动聊天。当在线程底部时，这将自动滚动聊天，以便 AI 生成文本。
-* 聊天窗格中的窄滚动条。
-* 开始新聊天时显示聊天历史。
-
-> 默认代码库聊天
-
-如果代码库没有被[索引](https://cursordocs.com/docs/context/codebase-indexing)，Cursor Chat 将首先尝试计算几个搜索查询，以便在用户的代码库中进行搜索。为了更好的准确性，建议使用[嵌入搜索](https://cursordocs.com/docs/chat/codebase#embeddings-search)。
-
-
-> 嵌入搜索
-
-通过[代码库索引](https://cursordocs.com/docs/context/codebase-indexing)，Cursor Chat 可以根据用户的代码库准确生成响应。
-
-在输入消息后按 `Ctrl/⌘ + Enter`，Cursor Chat 会扫描用户的索引代码库，以查找相关代码片段。这通常适合快速包含代码片段，以便在对话中使用。为了更好地控制代码库搜索并提高准确性，用户可以使用 `@codebase`。
-
-> 高级代码库搜索
-
-当使用 `@Codebase` 时，Cursor 代码库聊天会进行更详细的搜索。
-
-有关 `@Codebase` 的更多信息，请[点击这里](https://cursordocs.com/docs/context/@-symbols/@-codebase)。
-
-> 应用
-
-Cursor 的**应用**允许用户快速将聊天中的代码块建议集成到用户的代码中。
-
-要应用代码块建议，用户可以点击每个聊天代码块右上角的播放按钮。这将编辑用户的文件，以纳入 Chat 生成的代码。**由于用户可以在聊天中添加最多的上下文并与模型进行最多的互动，我们建议使用聊天 + 应用来进行更复杂的 AI 驱动代码更改**。
-
-![cursor3](/assets/images/202503/cursor3.png)
-
-一旦用户应用了代码块，用户可以查看差异并**接受或拒绝**更改。用户还可以点击聊天代码块右上角的“接受”或“拒绝”按钮。
-
-`Ctrl/⌘ Enter` 以接受，`Ctrl/⌘ Backspace` 以拒绝。
-
-![cursor4](/assets/images/202503/cursor4.png)
-
-
-## Cmd K
-
-`Cmd K`，也称为在 Windows/Linux 上的“Ctrl K”，允许用户在编辑器窗口中生成新代码或编辑现有代码。
-
-> 提示栏
-
-在 Cursor 中，我们称用户按下 `Ctrl/Cmd K` 时出现的栏为“提示栏”。它的工作方式类似于聊天的 AI 输入框，用户可以正常输入，或使用 [@ 符号](https://cursordocs.com/docs/cmdk/context/@-symbols) 来引用其他上下文。
-
-> 行内生成
-
-如果在按下 `Ctrl/Cmd K` 时没有选择任何代码，Cursor 将根据用户在提示栏中输入的提示生成新代码。
-
-> 行内编辑
-
-对于就地编辑，用户只需选择要编辑的代码并在提示栏中输入即可。
-
-> 后续指令
-
-在每次生成后，用户可以通过向提示栏添加更多指令来进一步细化提示，然后按 Enter 以便 AI 根据您的后续指令重新生成。
-
-> 默认上下文
-
-默认情况下，Cursor 将尝试查找不同类型的有用信息以改善代码生成，除了您包含的手动 [@ 符号](https://cursordocs.com/docs/context/@-symbols/@-files)。
-
-额外的上下文可能包括相关文件、最近查看的文件等。在收集后，Cursor 根据与用户的编辑/生成的相关性对上下文项进行排名，并将最相关的项保留在大型语言模型的上下文中。
-
-
-## codebase-indexing (代码库索引)
+## [Codebase Indexing](https://cursor.com/cn/docs/context/codebase-indexing) (代码库索引)
 
 为了更好、更准确地使用 `@codebase` 或 `Ctrl/⌘ Enter` 获取代码库答案，用户可以索引用户的代码库。在后台，Cursor 为用户代码库中的每个文件计算嵌入，并将使用这些嵌入来提高代码库答案的准确性。
 
@@ -222,7 +108,37 @@ Cursor 的**应用**允许用户快速将聊天中的代码块建议集成到用
 用户可以使用上下箭头键在选定的 Cmd K @ 符号列表中导航，按 Enter 展开/折叠选定的上下文项。对于文件引用，用户可以使用 `Ctrl/⌘ M` 切换文件读取策略。有关文件读取策略的更多信息，请[点击这里](https://cursordocs.com/docs/context/@-symbols/@-files#cmd-k-chunking-strategy)。
 
 
-## [配置 rules](https://cursor.document.top/tips/usage/set-rules/) (.cursorrules)
+
+## [Rules](https://cursor.com/docs/context/rules)
+
+Rules provide system-level instructions to Agent and Inline Edit. They are persistent context, preferences, or workflows for your projects.
+
+Cursor supports four types of rules:
+
+1. **Project Rules**. Stored in `.cursor/rules`, version-controlled and scoped to your codebase.
+2. **User Rules**. Global to your Cursor environment. Defined in settings and always applied.
+3. **Team Rules**. Team-wide rules managed from the dashboard. Available on Team and Enterprise plans.
+4. **AGENTS.md**. Agent instructions in markdown format. Simple alternative to `.cursor/rules`.
+
+> How rules work?
+
+**Large language models don't retain memory between completions. Rules provide persistent, reusable context at the prompt level**.
+
+When applied, rule contents are included at the start of the model context. This gives the AI consistent guidance for generating code, interpreting edits, or helping with workflows.
+
+> Best practices
+
+Good rules are focused, actionable, and scoped.
+
+* Keep rules under 500 lines
+* Split large rules into multiple, composable rules
+* Provide concrete examples or referenced files
+* Avoid vague guidance. Write rules like clear internal docs
+* Reuse rules when repeating prompts in chat
+
+
+
+### [配置规则](https://cursor.document.top/tips/usage/set-rules/)
 
 Cursor 的 `.cursorrules` 功能为 AI 助手提供了一个定制化的 Prompt。
 
@@ -249,6 +165,27 @@ Cursor 的 `.cursorrules` 功能为 AI 助手提供了一个定制化的 Prompt�
 
 
 More: https://docs.cursor.com/context/rules-for-ai
+
+
+## [Cursor Agent](https://cursor.com/docs/agent/overview)
+
+Agent is Cursor's assistant that can complete complex coding tasks independently, run terminal commands, and edit code. Access in sidepane with
+`Cmd+I`.
+
+Learn more about [how agents work](https://cursor.com/learn/agents) and help your build faster.
+
+
+### [Browser](https://cursor.com/docs/agent/browser) (浏览器)
+
+Agent can control a web browser to test applications, audit accessibility, convert designs into code, and more. With full access to console logs and network traffic, Agent can debug issues and automate comprehensive testing workflows.
+
+### [Tools](https://cursor.com/docs/agent/tools) (工具)
+
+A list of all tools available to modes within the Agent, which you can enable or disable when building your own [custom modes](https://cursor.com/docs/agent/modes#custom).
+
+To understand how tool calling works under the hood, see our [tool calling fundamentals](https://cursor.com/learn/tool-calling).
+
+
 
 
 
@@ -498,6 +435,7 @@ A:
 * https://www.cursor.com/features
 * https://www.cursor.com/en
 * [Cursor 中文文档](https://cursordocs.com/)
+* [Cursor 英文文档](https://cursor.com/docs)
 * https://cursor.document.top/
 * [Transcript for Cursor Team: Future of Programming with AI - Lex Fridman Podcast #447](https://lexfridman.com/cursor-team-transcript)
 
