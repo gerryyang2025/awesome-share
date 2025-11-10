@@ -55,6 +55,21 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* defective /dɪˈfektɪv/
+  + ADJ If something is **defective**, there is something wrong with it and it does not work properly. 有缺陷的
+    - Retailers can return **defective** merchandise. 零售商可以退回有瑕疵的商品。
+
+* refine /rɪˈfaɪn/
+  + V-T When a substance is **refined**, it is made pure by having all other substances removed from it. 提炼
+    - Oil is **refined** to remove naturally occurring impurities. 油经过提炼去除天然生成的杂质。
+  + V-T If something such as a process, theory, or machine is **refined**, it is improved by having small changes made to it. 完善
+    - Surgical techniques are constantly being refined. 外科手术技术正在不断得到完善。
+
+
+* pseudo /ˈsjuːdəʊ/
+  + ADJ not genuine; pretended 假的
+
+
 * streamline /ˈstriːmlaɪn/
   + V-T To **streamline** an organization or process means to make it more efficient by removing unnecessary parts of it. 提高…效率
 
