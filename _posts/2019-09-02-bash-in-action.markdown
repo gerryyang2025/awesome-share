@@ -1173,7 +1173,7 @@ An array variable whose members are the source filenames where the corresponding
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ```
 
-### `${BASH_SOURCE[0]}` 与 $0 的区别
+### `${BASH_SOURCE[0]}` 与 `$0` 的区别
 
 [choosing between $0 and BASH_SOURCE](https://stackoverflow.com/questions/35006457/choosing-between-0-and-bash-source)
 

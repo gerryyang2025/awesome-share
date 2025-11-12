@@ -55,6 +55,11 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* cumulative /ˈkjuːmjələtɪv/
+  + ADJ If a series of events have a **cumulative** effect, each event makes the effect greater. 累积的
+    - It is simple pleasures, such as a walk on a sunny day, which have a **cumulative** effect on our mood. 诸如在晴朗的日子散步这样简朴的乐趣对我们的情绪有累积性益处。
+
+
 * defective /dɪˈfektɪv/
   + ADJ If something is **defective**, there is something wrong with it and it does not work properly. 有缺陷的
     - Retailers can return **defective** merchandise. 零售商可以退回有瑕疵的商品。
