@@ -384,7 +384,106 @@ https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar
 
 `/proc/$pid/exe`: 可执行文件软链接
 
-## kill
+## kill / pkill / killall
+
+
+| **特性** | **kill** | **pkill** | **killall**
+| -- | -- | -- | --
+| **目标标识** | PID (进程ID) | 进程名模式匹配 | 精确进程名
+| **默认信号** | SIGTERM(15) | SIGTERM(15) | SIGTERM(15)
+| **匹配方式** | 无匹配，直接指定 PID | 支持正则和模式匹配 | 精确匹配进程名
+| **灵活性** | 最低 | 最高 | 中等
+| **使用场景** | 知道具体 PID 时 | 基于名称模式批量操作 | 基于精确名称批量操作
+
+
+### 使用建议
+
+1. 优先使用 `SIGTERM(15)`，给进程清理资源的机会
+2. 谨慎使用 `SIGKILL(9)`，可能导致数据丢失
+3. 先用 `pkill -l` 或 `killall -i` 确认匹配的进程
+4. 在生产环境中，先测试匹配结果再执行
+
+### 信号常用值
+
+
+｜ **信号** ｜ **数值** ｜ **说明**
+｜ -- ｜ -- ｜ --
+｜ SIGHUP ｜ 1 ｜ 挂起
+｜ SIGINT ｜ 2 ｜ 中断
+｜ SIGQUIT ｜ 3 ｜ 退出
+｜ SIGKILL ｜ 9 ｜ 强制终止
+｜ SIGTERM ｜ 15 ｜ 优雅终止 (默认)
+｜ SIGSTOP ｜ 19 ｜ 暂停
+
+``` bash
+$ kill -l
+ 1) SIGHUP       2) SIGINT       3) SIGQUIT      4) SIGILL       5) SIGTRAP
+ 6) SIGABRT      7) SIGBUS       8) SIGFPE       9) SIGKILL     10) SIGUSR1
+11) SIGSEGV     12) SIGUSR2     13) SIGPIPE     14) SIGALRM     15) SIGTERM
+16) SIGSTKFLT   17) SIGCHLD     18) SIGCONT     19) SIGSTOP     20) SIGTSTP
+21) SIGTTIN     22) SIGTTOU     23) SIGURG      24) SIGXCPU     25) SIGXFSZ
+26) SIGVTALRM   27) SIGPROF     28) SIGWINCH    29) SIGIO       30) SIGPWR
+31) SIGSYS      34) SIGRTMIN    35) SIGRTMIN+1  36) SIGRTMIN+2  37) SIGRTMIN+3
+38) SIGRTMIN+4  39) SIGRTMIN+5  40) SIGRTMIN+6  41) SIGRTMIN+7  42) SIGRTMIN+8
+43) SIGRTMIN+9  44) SIGRTMIN+10 45) SIGRTMIN+11 46) SIGRTMIN+12 47) SIGRTMIN+13
+48) SIGRTMIN+14 49) SIGRTMIN+15 50) SIGRTMAX-14 51) SIGRTMAX-13 52) SIGRTMAX-12
+53) SIGRTMAX-11 54) SIGRTMAX-10 55) SIGRTMAX-9  56) SIGRTMAX-8  57) SIGRTMAX-7
+58) SIGRTMAX-6  59) SIGRTMAX-5  60) SIGRTMAX-4  61) SIGRTMAX-3  62) SIGRTMAX-2
+63) SIGRTMAX-1  64) SIGRTMAX
+```
+
+### 场景示例
+
+场景1: 终止浏览器进程
+
+``` bash
+
+# kill - 知道具体 PID
+ps aux | grep chrome
+kill 8842 8843 8844
+
+# pkill - 更灵活，可能匹配多个变体
+pkill chrome
+pkill -f "google-chrome"
+
+# killall - 需要精确的进程名
+killall chrome
+killall google-chrome-stable
+```
+
+场景2: 安全地终止进程
+
+``` bash
+# kill - 需要精确知道 PID，最安全
+kill 1234
+
+# pkill - 先预览匹配结果
+pgrep firefox
+pkill -l firefox
+pkill firefox
+
+# killall - 交互式确认
+killall -i firefox
+```
+
+场景3: 批量操作
+
+``` bash
+# 杀死所有 Python 相关进程
+pkill -f "python"
+
+# 杀死特定用户的所有进程
+pkill -u username
+killall -u username process_name
+
+# 重载配置（不终止进程）
+kill -HUP 1234
+pkill -HUP nginx
+killall -HUP nginx
+```
+
+场景4: 其他
+
 
 ``` bash
 > pgrep firefox
@@ -412,6 +511,86 @@ kill -STOP <process_id>
 kill -CONT <process_id>
 ```
 
+### kill 使用示例
+
+``` bash
+# 基本语法
+kill [信号] <PID>
+
+# 常用示例
+kill 1234                    # 优雅终止PID为1234的进程
+kill -9 1234                 # 强制杀死进程
+kill -TERM 1234 5678         # 终止多个进程
+kill -l                      # 列出所有信号
+
+# 实际应用场景
+ps aux | grep nginx          # 先查找PID
+kill 8842                    # 然后终止特定PID
+
+# 杀死当前shell
+kill $$                      # $$ 表示当前shell的PID
+```
+
+### pkill 使用示例
+
+``` bash
+# 1. 杀死所有 Firefox 进程
+pkill firefox
+
+# 2. 使用特定信号 (SIGKILL)
+pkill -9 firefox
+pkill -KILL firefox
+
+# 3. 精确匹配进程名 (使用 -x 选项)
+pkill -x bash
+
+# 4. 杀死特定用户的进程
+pkill -u username process_name
+
+# 5. 使用正则表达式匹配
+pkill -f "python.*script"  # 匹配命令行包含该模式的进程
+
+# 6. 交互式模式 (确认每个进程)
+pkill -i process_name
+
+# 7. 只显示匹配的进程，不实际杀死
+pkill -l process_name
+
+# 8. 杀死进程组
+pkill -g process_group_id
+```
+
+
+### killall 使用示例
+
+``` bash
+# 1. 杀死所有指定进程
+killall firefox
+
+# 2. 使用特定信号
+killall -9 firefox
+killall -KILL firefox
+killall -SIGTERM firefox
+
+# 3. 交互式模式
+killall -i bash
+
+# 4. 忽略大小写
+killall -I FIREFOX
+
+# 5. 等待进程结束
+killall -w process_name
+
+# 6. 列出所有支持的信号
+killall -l
+
+# 7. 杀死特定用户的进程
+killall -u username process_name
+
+# 8. 基于进程启动时间杀死进程
+killall -o 1h process_name  # 杀死启动时间超过1小时的进程
+killall -y 1h process_name  # 杀死启动时间少于1小时的进程
+```
 
 
 ## Process State (ps/top)
