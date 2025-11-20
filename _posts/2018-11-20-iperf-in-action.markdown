@@ -27,9 +27,7 @@ Primary development for `iperf3` takes place on Ubuntu Linux, FreeBSD, and macOS
 
 # Download
 
-Downloads of `iperf3` are available at:
-
-https://downloads.es.net/pub/iperf/
+Downloads of `iperf3` are available at: https://downloads.es.net/pub/iperf/
 
 # Build
 
@@ -42,9 +40,7 @@ https://downloads.es.net/pub/iperf/
 
 `iperf3` includes a manual page listing all of the command-line options. The manual page is the most up-to-date reference to the various flags and parameters.
 
-For sample command line usage, see:
-
-https://fasterdata.es.net/performance-testing/network-troubleshooting-tools/iperf/
+For sample command line usage, see: https://fasterdata.es.net/performance-testing/network-troubleshooting-tools/iperf/
 
 Using the default options, `iperf` is meant to show typical well designed application performance. "Typical well designed application" means avoiding artificial enhancements that work only for testing (such as splice()'ing the data to /dev/null). `iperf` does also have flags for "extreme best case" optimizations, but they must be explicitly activated.
 
@@ -62,32 +58,32 @@ These flags include:
 基本测试流程：
 
 * 在服务器端启动服务：执行命令 `iperf3 -s`，服务器会开始监听默认的 5201 端口。
-* 在客户端发起测试：执行命令 `iperf3 -c <服务器IP地址>`，其中 `<服务器IP地址>` 需要替换为服务器所在机器的实际 IP。
+* 在客户端发起测试：执行命令 `iperf3 -c <服务器 IP>`，其中 `<服务器 IP>` 需要替换为服务器所在机器的实际 IP。
 
 `iperf3` 提供了丰富的参数来满足不同的测试需求：
 
 
 | **场景** | **常用参数组合** | **参数说明**
 | -- | -- | --
-| 最简 TCP 测试 | `iperf3 -c <服务器IP>` | 进行默认 10 秒的 TCP 带宽测试
-| 指定测试时长 | `iperf3 -c <服务器IP> -t 30` | `-t 30`：将测试时间延长至 30 秒
-| 多线程并行 | `iperf3 -c <服务器IP> -P 4` | `-P 4`：使用 4 个并行连接来压榨网络潜力
-| UDP 带宽与丢包 | `iperf3 -c <服务器IP> -u -b 100M` | `-u`：使用 UDP 协议 `-b 100M`：将 UDP 传输速率限制为 100 Mbps
-| 测试下行带宽 | `iperf3 -c <服务器IP> -R` | `-R (Reverse)`：反向测试模式，让服务器发送数据，客户端接收，测试下行带宽
-| 更改服务器端口 | `iperf3 -c <服务器IP> -p 5202` | `-p 5202`：连接至服务器非默认的 5202 端口
-| 输出 JSON 报告 | `iperf3 -c <服务器IP> -i 1 -J > result.json` | `-i 1`：每秒输出一次报告 `-J`：以 JSON 格式输出，便于脚本分析 `> result.json`：将结果保存到文件
+| 最简 TCP 测试 | `iperf3 -c <服务器 IP>` | 进行默认 10 秒的 TCP 带宽测试
+| 指定测试时长 | `iperf3 -c <服务器 IP> -t 30` | `-t 30`：将测试时间延长至 30 秒
+| 多线程并行 | `iperf3 -c <服务器 IP> -P 4` | `-P 4`：使用 4 个并行连接来压榨网络潜力
+| UDP 带宽与丢包 | `iperf3 -c <服务器 IP> -u -b 100M` | `-u`：使用 UDP 协议 `-b 100M`：将 UDP 传输速率限制为 100 Mbps
+| 测试下行带宽 | `iperf3 -c <服务器 IP> -R` | `-R (Reverse)`：反向测试模式，让服务器发送数据，客户端接收，测试下行带宽
+| 更改服务器端口 | `iperf3 -c <服务器 IP> -p 5202` | `-p 5202`：连接至服务器非默认的 5202 端口
+| 输出 JSON 报告 | `iperf3 -c <服务器 IP> -i 1 -J > result.json` | `-i 1`：每秒输出一次报告 `-J`：以 JSON 格式输出，便于脚本分析 `> result.json`：将结果保存到文件
 
 注意事项：
 
-* iperf 使用的端口（默认 TCP 和 UDP 的 5201 端口）
+* iperf 使用的端口（默认 TCP 和 UDP 的 **5201** 端口）
 * 在 TCP 测试中，重点关注 Bitrate（比特率）来衡量带宽
-* 在 UDP 测试中，除了带宽，还需关注 Jitter（抖动，即延迟变化）和 Lost/Total Datagrams（丢包率）
+* 在 UDP 测试中，除了带宽，还需关注 `Jitter`（抖动，即延迟变化）和 `Lost/Total Datagrams`（丢包率）
 * 上述示例均为客户端命令。服务器端通常只需简单地启动服务（`iperf3 -s`），但也可绑定特定端口（`-p`）或作为守护进程运行（`-D`，仅限类 Unix 系统）。
 
 
 ## 测试 UDP 每秒发送 N 个数据包
 
-### 方法1
+### 方法1：PPS = 目标带宽 (bps) / 单个数据包的总比特数
 
 可以通过下面的公式计算出大致的 PPS：`PPS ≈ 目标带宽 (bps) / (数据包长度 (字节) × 8 + 数据包头开销)`
 
@@ -109,22 +105,22 @@ These flags include:
 
 测试命令为：`iperf3 -c your_ip -u -P16 -t10 -b40.96M -l512`
 
-客户端测试结果示例：
+客户端测试结果：
 
 ![iperf3_test](/assets/images/202511/iperf3_test.png)
 
-### 方法2
+> 注意：
+>
+> 1. 此方法仅在使用 UDP 协议时有效。TCP 是面向流的协议，会自行决定分段大小，不适用于按包控制。
+> 2. 实际 PPS 的波动：`-b` 参数在 UDP 模式下限制的是发送速率。实际 PPS 可能会因系统负载、网络状况等因素有微小波动。iperf3 会尽力维持你设定的带宽，从而逼近目标 PPS。
+
+### 方法2：指定传输的数据包数量
 
 可看到 `-k (--blockcount)` 参数用于指定传输的数据包数量。例如 `-k 1000` 会发送 1000 个包后结束。
 
 测试命令为：`iperf3 -c 9.135.11.48 -u -P16  -k10000 -l512`
 
-
-> 注意：
-
-1. 此方法仅在使用 UDP 协议时有效。TCP 是面向流的协议，会自行决定分段大小，不适用于按包控制。
-2. 实际 PPS 的波动：`-b` 参数在 UDP 模式下限制的是发送速率。实际 PPS 可能会因系统负载、网络状况等因素有微小波动。iperf3 会尽力维持你设定的带宽，从而逼近目标 PPS。
-3. 终止条件的参数只能指定一个。如果输入多个终止参数会遇到错误提示：`only one test end condition (-t, -n, -k) may be specified`
+> 注意：终止条件的参数只能指定一个。如果输入多个终止参数会遇到错误提示：`only one test end condition (-t, -n, -k) may be specified`
 
 客户端测试结果：
 
