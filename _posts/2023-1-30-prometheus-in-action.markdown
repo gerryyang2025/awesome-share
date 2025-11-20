@@ -640,6 +640,63 @@ Prometheus integrates with remote storage systems in three ways:
 2. Prometheus can receive samples from other Prometheus servers in a standardized format.
 3. Prometheus can read (back) sample data from a remote URL in a standardized format.
 
+# PromQL Query Examples
+
+refer: https://prometheus.io/docs/prometheus/latest/querying/basics/
+
+## 上报指标原则
+
+Following Prometheus best practices, App exposes only raw metric values. Ratios and aggregations should be calculated in Prometheus using PromQL queries. This approach provides:
+
+- **Flexibility**: Users can customize time windows and calculation methods
+- **Efficiency**: Reduces metric storage and network overhead
+- **Consistency**: Aligns with Prometheus ecosystem standards
+
+## Average Request Duration
+
+Calculate average request processing time:
+
+```promql
+# Average request duration over the last 5 minutes
+rate(namesvr_jrpc_request_duration_seconds_sum[5m]) / rate(namesvr_jrpc_request_duration_seconds_count[5m])
+
+# 99th percentile request duration
+histogram_quantile(0.99, rate(namesvr_jrpc_request_duration_seconds_bucket[5m]))
+
+# 95th percentile request duration
+histogram_quantile(0.95, rate(namesvr_jrpc_request_duration_seconds_bucket[5m]))
+
+# 50th percentile (median) request duration
+histogram_quantile(0.50, rate(namesvr_jrpc_request_duration_seconds_bucket[5m]))
+```
+
+示例：`histogram_quantile(0.99, rate(namesvr_jrpc_request_duration_seconds_bucket[5m]))`
+
+含义：
+
+* `rate()` 将各 bucket 的累积计数转换为每秒速率
+* `histogram_quantile()` 基于这些速率计算分位数
+* 结果表示：**过去 5 分钟内，99% 的 jRPC 请求延迟低于该值（单位：秒）**
+
+
+解释说明：
+
+* `namesvr_jrpc_request_duration_seconds_bucket`
+  + Histogram 类型的指标，记录 jRPC 请求耗时分布
+  + _bucket 后缀表示分桶数据，每个桶记录小于等于该阈值的请求数量
+
+* `[5m]`
+  + 时间范围选择器，表示过去 5 分钟的数据
+
+* `rate(...)`
+  + 计算每秒速率
+  + 对 histogram buckets 使用 rate() 得到每秒各桶的增量，用于计算分位数
+
+* `histogram_quantile(0.99, ...)`
+  + 计算 99 分位数（P99）
+  + 参数 0.99 表示 99% 的请求延迟低于该值
+
+
 
 # Q&A
 
@@ -661,8 +718,11 @@ topk(1, count ({__name__=~"msgame_P.*"}) by(__name__))
 # Manual
 
 * https://github.com/prometheus/prometheus
-* https://prometheus.io/docs/prometheus/latest/querying/functions/
-* https://prometheus.io/docs/prometheus/latest/querying/examples/
+* [Prometheus Query Basics](https://prometheus.io/docs/prometheus/latest/querying/basics/)
+* [PromQL Functions](https://prometheus.io/docs/prometheus/latest/querying/functions/)
+* [Prometheus Best Practices](https://prometheus.io/docs/practices/naming/)
+* [Prometheus Query examples](https://prometheus.io/docs/prometheus/latest/querying/examples/)
+* [Histogram and Summary](https://prometheus.io/docs/practices/histograms/)
 * https://github.com/google/re2/wiki/Syntax
 
 # Refer
