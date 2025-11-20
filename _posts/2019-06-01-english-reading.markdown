@@ -55,6 +55,18 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+
+* legitimate /lɪˈdʒɪtɪmət/
+  + ADJ Something that is **legitimate** is acceptable according to the law. 合法的
+    - The French government has condemned the coup in Haiti and has demanded the restoration of the **legitimate** government. 法国政府已经谴责了海地的政变，并要求恢复合法政府。
+  + ADJ If you say that something such as a feeling or claim is **legitimate**, you think that it is reasonable and justified. 合理的
+    - That's a perfectly **legitimate** fear. 那是种完全合乎逻辑的恐惧。
+
+
+* histogram /ˈhɪstəɡræm/
+  + N a statistical graph that represents the frequency of values of a quantity by vertical rectangles of varying heights and widths. The width of the rectangles is in proportion to the class interval under consideration, and their areas represent the relative frequency of the phenomenon in question 柱状统计图
+
+
 * cumulative /ˈkjuːmjələtɪv/
   + ADJ If a series of events have a **cumulative** effect, each event makes the effect greater. 累积的
     - It is simple pleasures, such as a walk on a sunny day, which have a **cumulative** effect on our mood. 诸如在晴朗的日子散步这样简朴的乐趣对我们的情绪有累积性益处。
