@@ -3528,7 +3528,7 @@ response: {"header":{"cluster_id":"12297797944536498889","member_id":"1789425240
 
 ## 管理类
 
-### 查询 endpoint 状态
+### 查询 endpoint status
 
 ```bash
 # 查询单个 endpoint 的状态
@@ -3538,29 +3538,7 @@ etcdctl endpoint status --endpoints http://ip:port --user root:comeon -w json | 
 etcdctl endpoint status --endpoints http://ip1:port1,http://ip2:port2,http://ip3:port3 --user root:comeon -w json | jq
 ```
 
-注意：
-
-1. 使用 `--cluster` 参数查询时可以只指定一个 endpoint 查询整个 cluster 的信息，但是由于 etcdctl 会尝试连接集群中的所有成员。如果集群成员使用的是 Kubernetes 内部域名或内网地址，从外部网络无法解析这些域名，会导致连接失败。
-2. 使用 member list 查看成员信息，不会尝试连接所有成员，只返回成员列表。
-3. 如果必须查询所有成员状态，需要提供所有可访问的 endpoints。
-
-
-### 查询集群成员列表
-
-```bash
-etcdctl member list --endpoints http://ip:port --user root:comeon -w json | jq
-```
-
-![etcd0](/assets/images/202502/etcd0.png)
-
-
-### 查看 cluster leader 信息
-
-``` bash
-etcdctl endpoint status --write-out=table
-```
-
-这将返回一个表格，其中包含每个成员的ID、名称、版本、数据库大小、是否是 leader、raft term、raft index 等信息。在 "IS LEADER" 列中，可以看到哪个实例是当前的 leader。
+`etcdctl endpoint status --write-out=table` 这将返回一个表格，其中包含每个成员的ID、名称、版本、数据库大小、是否是 leader、raft term、raft index 等信息。在 "IS LEADER" 列中，可以看到哪个实例是当前的 leader。
 
 还可以通过查看每个成员的 "RAFT TERM" 和 "RAFT INDEX" 来推测哪个实例可能是 leader。通常，具有最高 raft term 和 raft index 的实例是 leader。
 
@@ -3570,72 +3548,20 @@ etcdctl endpoint status --write-out=table
 
 ![etcd3](/assets/images/202502/etcd3.png)
 
+注意：
+
+1. 使用 `--cluster` 参数查询时可以只指定一个 endpoint 查询整个 cluster 的信息，但是由于 etcdctl 会尝试连接集群中的所有成员。如果集群成员使用的是 Kubernetes 内部域名或内网地址，从外部网络无法解析这些域名，会导致连接失败。
+2. 使用 member list 查看成员信息，不会尝试连接所有成员，只返回成员列表。
+3. 如果必须查询所有成员状态，需要提供所有可访问的 endpoints。
 
 
-### 查看 cluster 集群信息
+### 查询 member list
 
-``` bash
-etcdctl endpoint status --cluster -w json | python -mjson.tool
+```bash
+etcdctl member list --endpoints http://ip:port --user root:comeon -w json | jq
 ```
 
-``` json
-[
-    {
-        "Endpoint": "http://9.135.11.48:2379",
-        "Status": {
-            "header": {
-                "cluster_id": 1001830784961041594,
-                "member_id": 7901483741016259879,
-                "revision": 3,
-                "raft_term": 13
-            },
-            "version": "3.5.17",
-            "dbSize": 20480,
-            "leader": 17453000336978732202,
-            "raftIndex": 38,
-            "raftTerm": 13,
-            "raftAppliedIndex": 38,
-            "dbSizeInUse": 16384
-        }
-    },
-    {
-        "Endpoint": "http://9.134.84.53:2379",
-        "Status": {
-            "header": {
-                "cluster_id": 1001830784961041594,
-                "member_id": 12755789866461112567,
-                "revision": 3,
-                "raft_term": 13
-            },
-            "version": "3.5.17",
-            "dbSize": 20480,
-            "leader": 17453000336978732202,
-            "raftIndex": 38,
-            "raftTerm": 13,
-            "raftAppliedIndex": 38,
-            "dbSizeInUse": 16384
-        }
-    },
-    {
-        "Endpoint": "http://9.134.129.173:2379",
-        "Status": {
-            "header": {
-                "cluster_id": 1001830784961041594,
-                "member_id": 17453000336978732202,
-                "revision": 3,
-                "raft_term": 13
-            },
-            "version": "3.5.17",
-            "dbSize": 20480,
-            "leader": 17453000336978732202,
-            "raftIndex": 38,
-            "raftTerm": 13,
-            "raftAppliedIndex": 38,
-            "dbSizeInUse": 16384
-        }
-    }
-]
-```
+![etcd0](/assets/images/202502/etcd0.png)
 
 
 
@@ -3714,8 +3640,6 @@ $ etcdctl get /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 
 
 ### 删除 key 的版本号变化，如何查看已删除 key 的记录
 
-在 etcd 中删除 key 时，版本号的变化机制较为特殊。以下是删除操作对版本号的影响及查看方式：
-
 > 删除操作对版本号的影响
 
 * **全局修订版本 (Global Revision)**
@@ -3731,7 +3655,7 @@ $ etcdctl get /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 
 
 > 查看删除操作引起的版本变化
 
-* **方法 1：通过删除命令直接获取**。使用 `etcdctl del` 时添加 `-w fields` 参数。这里的关键字段 `revision` 就是**删除操作发生时的新全局版本号**。
+* **通过删除命令直接获取**。使用 `etcdctl del` 时添加 `-w fields` 参数。这里的关键字段 `revision` 就是**删除操作发生时的新全局版本号**。
 
 ``` bash
 $ etcdctl del /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib -w fields
@@ -3742,7 +3666,7 @@ $ etcdctl del /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 
 "Deleted" : 1               # 删除的 key 数量
 ```
 
-* **方法 2：通过墓碑记录查询**
+* **通过墓碑记录查询**
 
 虽然被删除的 key 不可直接访问，但可通过特定修订版本查询其"墓碑"：查询指定 `revision` 的数据（删除操作发生的 `revision`）
 
@@ -4429,6 +4353,106 @@ An etcd operation that modifies the key value store is assigned a single increas
 理解 **Revision** 是深入掌握 etcd 工作原理和正确使用其 API（尤其是 `Watch` 和 `Txn`）的关键。**它把看似离散的操作和事件，统一到了一个严格有序的逻辑时间轴上**。
 
 
+
+# [Metrics](https://etcd.io/docs/v3.6/metrics/)
+
+> Metrics for real-time monitoring and debugging
+
+etcd uses [Prometheus](https://prometheus.io/) for metrics reporting. The metrics can be used for real-time monitoring and debugging. etcd does not persist its metrics; if a member restarts, the metrics will be reset.
+
+The simplest way to see the available metrics is to cURL the metrics endpoint `/metrics`. The format is described [here](http://prometheus.io/docs/instrumenting/exposition_formats/).
+
+Follow the [Prometheus getting started doc](https://prometheus.io/docs/introduction/getting_started/) to spin up a Prometheus server to collect etcd metrics.
+
+The naming of metrics follows the suggested [Prometheus best practices](https://prometheus.io/docs/practices/naming/). A metric name has an `etcd` or `etcd_debugging` prefix as its namespace and a subsystem prefix (for example `wal` and `etcdserver`).
+
+
+## etcd namespace metrics
+
+The metrics under the `etcd` prefix are for monitoring and alerting. They are stable high level metrics. If there is any change of these metrics, it will be included in release notes.
+
+### Server (etcd_server_)
+
+These metrics describe the status of the **etcd server**. In order to detect outages or problems for troubleshooting, the server metrics of every production etcd cluster should be closely monitored.
+
+All these metrics are prefixed with `etcd_server_`
+
+
+![etcd1](/assets/images/202511/etcd1.png)
+
+* `has_leader` indicates whether the member has a leader. If a member does not have a leader, it is totally unavailable. If all the members in the cluster do not have any leader, the entire cluster is totally unavailable.
+
+* `leader_changes_seen_total` counts the number of leader changes the member has seen since its start. Rapid leadership changes impact the performance of etcd significantly. It also signals that the leader is unstable, perhaps due to network connectivity issues or excessive load hitting the etcd cluster.
+
+* `proposals_committed_total` records the total number of consensus proposals committed. This gauge should increase over time if the cluster is healthy. Several healthy members of an etcd cluster may have different total committed proposals at once. This discrepancy may be due to recovering from peers after starting, lagging behind the leader, or being the leader and therefore having the most commits. It is important to monitor this metric across all the members in the cluster; a consistently large lag between a single member and its leader indicates that member is slow or unhealthy.
+
+* `proposals_applied_total` records the total number of consensus proposals applied. The etcd server applies every committed proposal asynchronously. The difference between `proposals_committed_total` and `proposals_applied_total` should usually be small (**within a few thousands even under high load**). **If the difference between them continues to rise, it indicates that the etcd server is overloaded**. This might happen when applying expensive queries like heavy range queries or large txn operations.
+
+* `proposals_pending` indicates how many proposals are queued to commit. Rising pending proposals suggests there is a high client load or the member cannot commit proposals.
+
+* `proposals_failed_total` are normally related to **two issues**: **temporary failures related to a leader election** or **longer downtime caused by a loss of quorum in the cluster**.
+
+
+### Disk (etcd_disk_)
+
+These metrics describe the status of the **disk operations**.
+
+All these metrics are prefixed with `etcd_disk_`.
+
+![etcd2](/assets/images/202511/etcd2.png)
+
+* A `wal_fsync` is called when etcd persists its log entries to disk before applying them.
+
+* A `backend_commit` is called when etcd commits an incremental snapshot of its most recent changes to disk.
+
+**High disk operation latencies (`wal_fsync_duration_seconds` or `backend_commit_duration_seconds`) often indicate disk issues**. It may cause high request latency or make the cluster unstable.
+
+
+### Network (etcd_network_)
+
+These metrics describe the status of the **network**.
+
+All these metrics are prefixed with `etcd_network_`
+
+![etcd3](/assets/images/202511/etcd3.png)
+
+* `peer_sent_bytes_total` counts the total number of bytes sent to a specific peer. **Usually the leader member sends more data than other members since it is responsible for transmitting replicated data**.
+
+* `peer_received_bytes_total` counts the total number of bytes received from a specific peer. **Usually follower members receive data only from the leader member**.
+
+
+### gRPC requests
+
+These metrics are exposed via [go-grpc-prometheus](https://github.com/grpc-ecosystem/go-grpc-prometheus).
+
+
+
+## etcd_debugging namespace metrics
+
+The metrics under the `etcd_debugging` prefix are for debugging. They are very implementation dependent and volatile. **They might be changed or removed without any warning in new etcd releases. Some of the metrics might be moved to the etcd prefix when they become more stable**.
+
+
+### Snapshot
+
+![etcd4](/assets/images/202511/etcd4.png)
+
+Abnormally high snapshot duration (`snapshot_save_total_duration_seconds`) indicates **disk issues and might cause the cluster to be unstable**.
+
+
+## Prometheus supplied metrics
+
+The Prometheus client library provides a number of metrics under the `go` and `process` namespaces. There are a few that are particularly interesting.
+
+![etcd5](/assets/images/202511/etcd5.png)
+
+Heavy file descriptor (`process_open_fds`) usage (i.e., near the process’s file descriptor limit, process_max_fds) indicates a potential file descriptor exhaustion issue. **If the file descriptors are exhausted, etcd may panic because it cannot create new WAL files**.
+
+
+
+## Generated list of metrics
+
+
+https://etcd.io/docs/v3.6/metrics/etcd-metrics-latest.txt
 
 
 # Next steps
