@@ -131,12 +131,39 @@ Links
 * https://www.aminer.cn/
 * https://consensus.app/
 
-再通过元宝上传 pdf 总结精读。
+可通过元宝上传 pdf 总结精读。
 
 
+# LLM 参数
 
+## 影响大模型输出的主要参数
 
+* temperature
+  + 解释：控制 softmax 输出的平滑性，temperature 越小，输出越固定
+  + 使用场景
+    - temperature=0.6，适合推理模型及分析场景（更合适推理模型，DeepSeek 论文里推荐）
+    - temperature<0.1，严谨的智能问答、text2sql、实体提取等场景（更适合通用模型）
 
+* top_k
+  + 解释：过滤前 k 个 token 候选项
+  + 使用场景：top_k<5 适合确定性分类场景（如意图识别），避免非候选意图集中的结果出现，以及确保专业性，避免非专业术语出现
 
+* top_p
+  + 根据候选 token 的概率从大到小，累积概率达到 p
+  + 使用场景：同 top_k，确保回复的专业性
+    - top_p (0.8-0.9): 适合代码生成/数学解题
+    - top_p (0.9-0.95): 适合数据抽取/实时回答
+    - top_p (0.95-0.99): 适合创意写作/营销文案
 
+* num_beams
+  + 解释：保留的候选集数目，减少回答陷入局部最优的情况
+  + 使用场景
+    - num_beams>1: 适合精确度要求比较高的场景
+    - num_beams=1 (默认): 适合快速生成的场景
+
+> 分析场景，一般采用的推理模型，建议参数选用 temperature=0.6，num_beams=1。
+
+## 各个参数的作用先后顺序
+
+![llm_params](/assets/images/202511/llm_params.png)
 
