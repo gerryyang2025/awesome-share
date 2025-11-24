@@ -293,7 +293,9 @@ Cursor 使用情况每月重置，基于用户的订阅开始日期。
 
 https://www.cursor.com/changelog
 
-## Automated and improved rules (0.49.x - April 15, 2025)
+## 0.49.x - April 15, 2025
+
+### Automated and improved rules
 
 You can now generate rules directly from a conversation using the `/Generate Cursor Rules` command. This is useful when you want to capture the existing context of a conversation to reuse later.
 
@@ -309,28 +311,28 @@ We’ve also fixed a long-standing issue where `Always` attached rules now persi
 
 More: https://docs.cursor.com/context/rules
 
-## More accessible history (0.49.x - April 15, 2025)
+### More accessible history
 
 Chat history has moved into the command palette. You can access it from the "Show history button" in Chat as well as through the `Show Chat History` command
 
 ![cursor3](/assets/images/202504/cursor3.png)
 
 
-## Making reviews easier (0.49.x - April 15, 2025)
+### Making reviews easier
 
 Reviewing agent generated code is now easier with a built-in diff view at the end of each conversation. You'll find the `Review changes` button at the bottom of chat after a message from the agent.
 
-## Images in MCP (0.49.x - April 15, 2025)
+### Images in MCP
 
 You can now pass images as part of the context in MCP servers. This helps when screenshots, UI mocks, or diagrams add essential context to a question or prompt.
 
 
-## Improved agent terminal control (0.49.x - April 15, 2025)
+### Improved agent terminal control
 
 We've added more control for you over terminals started by the agent. **Commands can now be edited before they run**, or skipped entirely. We've also renamed "Pop-out" to "Move to background" to better reflect what it does.
 
 
-## Global ignore files (0.49.x - April 15, 2025)
+### Global ignore files
 
 You can now define [global ignore](https://docs.cursor.com/context/ignore-files) patterns that apply across all projects via your user-level settings. This keeps noisy or sensitive files like build outputs or secrets out of prompts, without needing per-project configuration.
 
@@ -397,7 +399,7 @@ Advanced Pattern Examples
 **/logs
 ```
 
-## New models (0.49.x - April 15, 2025)
+### New models
 
 We've recently added many more [models](https://docs.cursor.com/settings/models) you can use. Try out Gemini 2.5 Pro, Gemini 2.5 Flash, Grok 3, Grok 3 Mini, GPT-4.1, o3 and o4-mini from model settings.
 
@@ -406,6 +408,41 @@ We've recently added many more [models](https://docs.cursor.com/settings/models)
 
 
 ![cursor5](/assets/images/202504/cursor5.png)
+
+
+## 2.0 - Oct 29, 2025
+
+### 多智能体
+
+在我们的全新编辑器中管理智能代理，侧边栏可查看和管理你的代理与计划。
+
+在单个提示下最多可并行运行八个代理。为避免文件冲突，系统会使用 Git worktree 或远程机器。每个代理都在其各自隔离的代码库副本中运行。
+
+### Composer 组合器
+
+隆重推出我们的首款智能代理编码模型。Composer 是一款前沿模型，比同等智能的模型快 4 倍。
+
+### 浏览器（正式版）
+
+Agent 的浏览器功能在 1.7 版本以测试版上线，如今已正式发布（GA）。我们在 2.0 中进一步支持 企业 团队使用 Browser。浏览器现已可内嵌在编辑器中，并提供强大的新工具，用于选择元素并将 DOM 信息转发给代理。了解更多关于使用浏览器的详情。
+
+
+### 性能提升
+
+Cursor 使用**语言服务器协议**（`LSP`）来提供特定语言的功能，例如跳转到定义、悬停提示、诊断等。我们大幅提升了所有语言的 LSP 加载和使用性能。在使用代理助手并查看差异时，提升尤为明显。针对大型项目，Python 和 TypeScript 的 LSP 现在默认运行更快，并会根据可用 RAM 动态提升内存上限。我们还修复了多处内存泄漏，并优化了整体内存占用。
+
+
+
+## 2.1 - Nov 21, 2025
+
+### 改进的 Plan 模式
+
+在创建计划时，Cursor 会先提出一些澄清性问题，以提升计划质量。现在 Cursor 提供了交互式界面，让你可以更方便地回答这些问题。你还可以使用 `⌘+F` 在生成的计划中进行搜索。
+
+### AI 代码评审
+
+你现在可以在 Cursor 中直接通过 AI 代码评审来发现并修复 bug。它会检查你的改动并找出问题，你可以在侧边栏中查看。这也是对 Bugbot 的补充。Bugbot 运行在你的代码托管平台上，如 GitHub（包括 Enterprise Server）、GitLab 等。
+
 
 
 
@@ -422,6 +459,54 @@ Q: When adding a new rule file to `cursor/rules`, cursor automatically creates a
 A:
 
 ![cursor2](/assets/images/202504/cursor2.png)
+
+
+# 高级功能
+
+## [Agent Review](https://cursor.com/cn/docs/agent/review#agent-review)
+
+> 你现在可以在 Cursor 中直接通过 AI 代码评审来发现并修复 bug。它会检查你的改动并找出问题，你可以在侧边栏中查看。这也是对 Bugbot 的补充。Bugbot 运行在你的代码托管平台上，如 GitHub（包括 Enterprise Server）、GitLab 等。
+
+Agent Review 会以专用模式运行 Cursor Agent，专注于发现你 diff 中的缺陷。该工具会逐行分析提议的变更，并在你合并前标记潜在问题。
+
+使用 Agent Review 有两种方式：在 agent diff 中使用，或在 Source Control 选项卡中使用。
+
+* Agent Diff
+  + 查看 Agent 差异的结果：在收到响应后，点击 Review，然后点击 Find Issues，以分析建议的修改并生成后续建议。
+
+* Source Control
+  + 审查所有相对于主分支的更改：打开 Source Control 选项卡并运行 Agent Review，以检查本地更改与主分支之间的所有差异。
+
+
+**计费**
+
+运行 Agent Review 会触发一次 Agent 运行，并按使用量计费。
+
+
+
+## [Bugbot](https://cursor.com/cn/docs/bugbot)
+
+> 想在 PR 上自动完成代码审查吗？试试 Bugbot，它会在每个 pull request 上自动执行高级分析，及早发现问题并给出改进建议。
+
+Bugbot 会审查 Pull Request，并发现漏洞、安全问题和代码质量问题。
+
+**工作原理**
+
+Bugbot 会分析 PR 的 diff，并留下包含说明和修复建议的评论。它会在每次 PR 更新时自动运行，或在手动触发时运行。
+
+* 在每次 PR 更新时运行**自动审查**
+* 通过在任意 PR 下评论 `cursor review` 或 `bugbot run` 进行**手动触发**
+* 将现有 PR 评论作为上下文：读取 GitHub PR 评论（顶层与内联），以避免重复建议并基于先前反馈继续改进
+* 在 Cursor 中修复 链接会直接在 Cursor 中打开相关问题
+* 在 Web 中修复 链接会直接在 `cursor.com/agents` 打开相关问题
+
+**计费**
+
+Bugbot 提供两个套餐：免费版 和 专业版。
+
+免费套餐：每位付费方案用户每月可获得有限次数的免费 PR 评审。团队中每位成员都有各自的免费评审次数。达到上限后，评审将暂停，直至下一个计费周期。您可随时升级到付费的 Bugbot 方案以享受无限次评审。
+
+
 
 
 
