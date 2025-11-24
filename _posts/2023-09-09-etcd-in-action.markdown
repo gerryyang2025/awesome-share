@@ -171,6 +171,12 @@ categories: GoLang
 * Kubernetes 使用 etcd 作为底层存储。Google 的 Spanner 和微信的 PaxosStore 都是基于 Paxos 协议实现的 KV 存储。Paxos 和 Raft 各有优劣，一般 Raft 工程实现简单，但是有租约不可用的问题；基于无租约 Paxos 协议没有 Leader 节点，可以做到无缝切换。
 
 
+# 关键特性
+
+* **全局有序的 Revision 机制**。etcd 是为所有写入操作（Put, Delete） 分配一个全局单调递增的 Revision 号。每次修改（包括创建、更新、删除）任何 key，都会导致集群的全局 Revision 增加。这个 Revision 是 etcd 内部事件顺序的唯一、权威来源。
+
+* **Watch 事件可靠通知和顺序一致性**。Watch API 返回的事件不是按 key 的字典序排序，也不是按 key 的路径结构排序，**而是严格按照 Revision 号排序**。当 Watch 一个前缀时，etcd 会捕获所有匹配该前缀的 key 的修改事件，并将这些事件按它们发生的 Revision 顺序推送给客户端。例如：在 etcd 中使用 `--prefix` 选项监听 `/a` 前缀，并且按顺序更新 `/a/1` 和 `/a/2` 时，对 `/a` 前缀的 Watch 事件顺序会严格与子 key 更新的顺序一致。
+
 
 
 # 基础架构
@@ -3393,7 +3399,7 @@ initial-cluster: VM-129-173-tencentos=http://9.134.129.173:2380,VM-84-53-tencent
 
 # 常用命令
 
-## etcdctl
+## Example
 
 ``` bash
 #!/bin/bash
@@ -3456,7 +3462,7 @@ Listing all keys in etcd after deletion...
 
 
 
-## HTTP
+## HTTP 接口
 
 etcd 提供了一个 HTTP/JSON API，可以使用 curl 命令或者其他 HTTP 客户端来访问这个 API。
 
@@ -3520,212 +3526,35 @@ Reading data from etcd...
 response: {"header":{"cluster_id":"12297797944536498889","member_id":"17894252403103677144","revision":"30","raft_term":"5"}}
 ```
 
+## 管理类
 
-## 通过 `-w fields` 或 `-w json` 查看 key 的详细元数据
+### 查询 endpoint 状态
 
-* `Version`: Key 被修改的次数（从创建开始计数）。
-* `CreateRevision`: Key 创建时的全局 revision。
-* `ModRevision`: Key 最后一次修改时的全局 revision（集群级别）。
+```bash
+# 查询单个 endpoint 的状态
+etcdctl endpoint status --endpoints http://ip:port --user root:comeon -w json | jq
 
-``` json
-{
-  "kvs": [
-    {
-      "key": "<your-key>",
-      "value": "<value>",
-      "version": "3",             // 该 key 被修改过 3 次
-      "mod_revision": "789",      // 最后一次修改发生在全局 revision 789
-      "create_revision": "123"    // 创建时的全局 revision
-    }
-  ],
-  "count": 1
-}
+# 查询多个 endpoint 的状态
+etcdctl endpoint status --endpoints http://ip1:port1,http://ip2:port2,http://ip3:port3 --user root:comeon -w json | jq
 ```
 
-``` bash
-$ etcdctl get /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib -w fields
-"ClusterID" : 12297797944536498889
-"MemberID" : 17894252403103677144
-"Revision" : 242999
-"RaftTerm" : 10
-"Key" : "/namesvr/counter/agent"
-"CreateRevision" : 242338
-"ModRevision" : 242338
-"Version" : 1
-"Value" : "1"
-"Lease" : 0
-"More" : false
-"Count" : 1
+注意：
+
+1. 使用 `--cluster` 参数查询时可以只指定一个 endpoint 查询整个 cluster 的信息，但是由于 etcdctl 会尝试连接集群中的所有成员。如果集群成员使用的是 Kubernetes 内部域名或内网地址，从外部网络无法解析这些域名，会导致连接失败。
+2. 使用 member list 查看成员信息，不会尝试连接所有成员，只返回成员列表。
+3. 如果必须查询所有成员状态，需要提供所有可访问的 endpoints。
+
+
+### 查询集群成员列表
+
+```bash
+etcdctl member list --endpoints http://ip:port --user root:comeon -w json | jq
 ```
 
-通过 `-w json` 也可以查看：
-
-```
-$ etcdctl get /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib -w json
-{"header":{"cluster_id":12297797944536498889,"member_id":17894252403103677144,"revision":242999,"raft_term":10},"kvs":[{"key":"L25hbWVzdnIvY291bnRlci9hZ2VudA==","create_revision":242338,"mod_revision":242338,"version":1,"value":"MQ=="}],"count":1}
-```
-
-``` json
-{
-	"header": {
-		"cluster_id": 12297797944536498889,
-		"member_id": 17894252403103677144,
-		"revision": 242999,
-		"raft_term": 10
-	},
-	"kvs": [{
-		"key": "L25hbWVzdnIvY291bnRlci9hZ2VudA==",
-		"create_revision": 242338,
-		"mod_revision": 242338,
-		"version": 1,
-		"value": "MQ=="
-	}],
-	"count": 1
-}
-```
-
-若知道 key 修改时的全局 revision，可查询指定 revision 的数据：
-
-``` bash
-$ etcdctl get /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib --rev=242999
-/namesvr/counter/agent
-1
-```
-
-> 注意：历史数据依赖配置：默认 etcd 不保留所有历史版本，需配置 --max-history 或使用 etcdutl 备份恢复。
+![etcd0](/assets/images/202502/etcd0.png)
 
 
-## 删除 key 的版本号变化，如何查看已删除 key 的记录
-
-在 etcd 中删除 key 时，版本号的变化机制较为特殊。以下是删除操作对版本号的影响及查看方式：
-
-> 删除操作对版本号的影响
-
-* **全局修订版本 (Global Revision)**
-
-每次删除操作都会使全局修订版本号增加 1，无论删除单个 key 还是批量删除。这是 etcd 的核心机制：**所有修改操作（包括 put/del/txn）都会使全局 `revision` 单调递增**。
-
-* **Key 的版本元数据**
-
-当 key 被删除时：
-
-1. `create_revision` 和 `mod_revision` 不再可查（通过普通 `get` 操作）
-2. 但删除操作会在 etcd 中留下一个 "tombstone"（逻辑墓碑）记录，包含删除时的全局 `revision`
-
-> 查看删除操作引起的版本变化
-
-* **方法 1：通过删除命令直接获取**。使用 `etcdctl del` 时添加 `-w fields` 参数。这里的关键字段 `revision` 就是**删除操作发生时的新全局版本号**。
-
-``` bash
-$ etcdctl del /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib -w fields
-"ClusterID" : 12297797944536498889
-"MemberID" : 17894252403103677144
-"Revision" : 243000         # 删除操作发生时的全局 revision
-"RaftTerm" : 10
-"Deleted" : 1               # 删除的 key 数量
-```
-
-* **方法 2：通过历史查询查看删除事件**
-
-使用 `etcdctl del` 时添加 `-w fields` 可以得到删除前的 `revision` 版本号。
-
-``` bash
-$ etcdctl watch /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib --rev=242999
-DELETE                       # 输出删除事件
-/namesvr/counter/agent
-```
-
-* **方法 3：通过墓碑记录查询**
-
-虽然被删除的 key 不可直接访问，但可通过特定修订版本查询其"墓碑"：查询指定 `revision` 的数据（删除操作发生的 `revision`）
-
-``` bash
-$ etcdctl get /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib --rev=242999
-/namesvr/counter/agent
-1
-```
-
-结果行为：
-
-* 若指定的 revision 等于删除操作的 revision：返回空结果（etcd v3.4+）
-* 若指定的 revision 早于删除操作的 revision：返回删除前的值
-* 若指定的 revision 晚于删除操作的 revision：返回空
-
-> 注意事项
-
-* 历史数据保留
-
-etcd **默认压缩历史数据**（通过 `--auto-compaction` 配置）。**若删除操作发生时的 revision 已被压缩，则无法查询删除事件**。
-
-* 与 key 版本的区别
-  + key 的 `version` 计数器（修改次数）在删除后重置
-  + 重新创建同名 key 时：
-
-```
-create_revision = 新全局 revision
-version = 1（重新计数）
-```
-
-* 删除范围的影响
-
-批量删除（如 `etcdctl del --prefix`）会使全局 `revision` **只增加 1**，无论删除多少 key。
-
-
-
-## watch 查看事件变化 (通过指定 `--rev` 版本号可以历史事件)
-
-首先插入两条记录：
-
-``` bash
-$ etcdctl put hello world1 --endpoints http://127.0.0.1:2379 --user root:jlib
-OK
-$ etcdctl put hello world2 --endpoints http://127.0.0.1:2379 --user root:jlib
-OK
-```
-
-然后执行 watch 命令，空集群启动后的版本号为 1
-
-``` bash
-$ etcdctl watch hello --endpoints http://127.0.0.1:2379 --user root:jlib --rev=1 -w json
-```
-
-输出：两个事件记录分别对应上面的两次的修改，事件中含有 key、value、各类版本号等信息。
-
-``` json
-{
-	"Header": {
-		"cluster_id": 12297797944536498889,
-		"member_id": 17894252403103677144,
-		"revision": 243002,
-		"raft_term": 10
-	},
-	"Events": [{
-		"kv": {
-			"key": "aGVsbG8=",
-			"create_revision": 243001,
-			"mod_revision": 243001,
-			"version": 1,
-			"value": "d29ybGQx"
-		}
-	}, {
-		"kv": {
-			"key": "aGVsbG8=",
-			"create_revision": 243001,
-			"mod_revision": 243002,
-			"version": 2,
-			"value": "d29ybGQy"
-		}
-	}],
-	"CompactRevision": 0,
-	"Canceled": false,
-	"Created": false
-}
-```
-
-
-
-
-## 查看 cluster leader 信息
+### 查看 cluster leader 信息
 
 ``` bash
 etcdctl endpoint status --write-out=table
@@ -3743,16 +3572,7 @@ etcdctl endpoint status --write-out=table
 
 
 
-## 查看 cluster 的成员信息
-
-``` bash
-etcdctl member list
-```
-
-![etcd0](/assets/images/202502/etcd0.png)
-
-
-## 查看 cluster 集群信息
+### 查看 cluster 集群信息
 
 ``` bash
 etcdctl endpoint status --cluster -w json | python -mjson.tool
@@ -3816,6 +3636,202 @@ etcdctl endpoint status --cluster -w json | python -mjson.tool
     }
 ]
 ```
+
+
+
+## 查询类
+
+### 只查看 key 和 value
+
+``` bash
+$ etcdctl get /ns/counter/agent --prefix --endpoints http://ip:port --user root:comeon
+/ns/counter/agent
+1450
+```
+
+
+### 查看 key 的元数据
+
+通过 `-w fields` 或 `-w json` 查看 key 的详细元数据。
+
+
+``` bash
+$ etcdctl get /ns/counter/agent --prefix --endpoints http://ip:port --user root:comeon -w fields
+"ClusterID" : 3446818099286441330
+"MemberID" : 954628371628346732
+"Revision" : 8722
+"RaftTerm" : 3
+"Key" : "/ns/counter/agent"
+"CreateRevision" : 151
+"ModRevision" : 8718
+"Version" : 1450
+"Value" : "1450"
+"Lease" : 0
+"More" : false
+"Count" : 1
+```
+
+* `Version`: Key 被修改的次数（从创建开始计数）。
+* `CreateRevision`: Key 创建时的全局 revision。
+* `ModRevision`: Key 最后一次修改时的全局 revision（集群级别）。
+
+
+通过 `-w json` 也可以查看：
+
+``` bash
+$ etcdctl get /ns/counter/agent --prefix --endpoints http://ip:port --user root:comeon -w json | jq
+{
+  "header": {
+    "cluster_id": 3446818099286441330,
+    "member_id": 954628371628346732,
+    "revision": 21055,
+    "raft_term": 3
+  },
+  "kvs": [
+    {
+      "key": "L25zL2NvdW50ZXIvYWdlbnQ=",
+      "create_revision": 151,
+      "mod_revision": 21052,
+      "version": 3651,
+      "value": "MzY1MQ=="
+    }
+  ],
+  "count": 1
+}
+```
+
+
+若知道 key 修改时的全局 revision，可查询指定 revision 的数据：
+
+``` bash
+$ etcdctl get /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib --rev=242999
+/namesvr/counter/agent
+1
+```
+
+> 注意：历史数据依赖配置：默认 etcd 不保留所有历史版本，需配置 --max-history 或使用 etcdutl 备份恢复。
+
+
+### 删除 key 的版本号变化，如何查看已删除 key 的记录
+
+在 etcd 中删除 key 时，版本号的变化机制较为特殊。以下是删除操作对版本号的影响及查看方式：
+
+> 删除操作对版本号的影响
+
+* **全局修订版本 (Global Revision)**
+
+每次删除操作都会使全局修订版本号增加 1，无论删除单个 key 还是批量删除。这是 etcd 的核心机制：**所有修改操作（包括 put/del/txn）都会使全局 `revision` 单调递增**。
+
+* **Key 的版本元数据**
+
+当 key 被删除时：
+
+1. `create_revision` 和 `mod_revision` 不再可查（通过普通 `get` 操作）
+2. 但删除操作会在 etcd 中留下一个 "tombstone"（逻辑墓碑）记录，包含删除时的全局 `revision`
+
+> 查看删除操作引起的版本变化
+
+* **方法 1：通过删除命令直接获取**。使用 `etcdctl del` 时添加 `-w fields` 参数。这里的关键字段 `revision` 就是**删除操作发生时的新全局版本号**。
+
+``` bash
+$ etcdctl del /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib -w fields
+"ClusterID" : 12297797944536498889
+"MemberID" : 17894252403103677144
+"Revision" : 243000         # 删除操作发生时的全局 revision
+"RaftTerm" : 10
+"Deleted" : 1               # 删除的 key 数量
+```
+
+* **方法 2：通过墓碑记录查询**
+
+虽然被删除的 key 不可直接访问，但可通过特定修订版本查询其"墓碑"：查询指定 `revision` 的数据（删除操作发生的 `revision`）
+
+``` bash
+$ etcdctl get /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib --rev=242999
+/namesvr/counter/agent
+1
+```
+
+结果行为：
+
+* 若指定的 revision 等于删除操作的 revision：返回空结果（etcd v3.4+）
+* 若指定的 revision 早于删除操作的 revision：返回删除前的值
+* 若指定的 revision 晚于删除操作的 revision：返回空
+
+> 注意事项
+
+* 历史数据保留
+
+etcd **默认压缩历史数据**（通过 `--auto-compaction` 配置）。**若删除操作发生时的 revision 已被压缩，则无法查询删除事件**。
+
+* 与 key 版本的区别
+  + key 的 `version` 计数器（修改次数）在删除后重置
+  + 重新创建同名 key 时：
+
+```
+create_revision = 新全局 revision
+version = 1（重新计数）
+```
+
+* 删除范围的影响
+
+批量删除（如 `etcdctl del --prefix`）会使全局 `revision` **只增加 1**，无论删除多少 key。
+
+
+
+### watch 查看事件变化 (通过指定 `--rev` 版本号可以历史事件)
+
+首先插入两条记录：
+
+``` bash
+$ etcdctl put hello world1 --endpoints http://127.0.0.1:2379 --user root:jlib
+OK
+$ etcdctl put hello world2 --endpoints http://127.0.0.1:2379 --user root:jlib
+OK
+```
+
+然后执行 watch 命令，空集群启动后的版本号为 1
+
+``` bash
+$ etcdctl watch hello --endpoints http://127.0.0.1:2379 --user root:jlib --rev=1 -w json
+```
+
+输出：两个事件记录分别对应上面的两次的修改，事件中含有 key、value、各类版本号等信息。
+
+``` json
+{
+	"Header": {
+		"cluster_id": 12297797944536498889,
+		"member_id": 17894252403103677144,
+		"revision": 243002,
+		"raft_term": 10
+	},
+	"Events": [{
+		"kv": {
+			"key": "aGVsbG8=",
+			"create_revision": 243001,
+			"mod_revision": 243001,
+			"version": 1,
+			"value": "d29ybGQx"
+		}
+	}, {
+		"kv": {
+			"key": "aGVsbG8=",
+			"create_revision": 243001,
+			"mod_revision": 243002,
+			"version": 2,
+			"value": "d29ybGQy"
+		}
+	}],
+	"CompactRevision": 0,
+	"Canceled": false,
+	"Created": false
+}
+```
+
+
+
+
 
 
 
