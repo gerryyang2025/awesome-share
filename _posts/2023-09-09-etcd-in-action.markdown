@@ -4358,13 +4358,76 @@ An etcd operation that modifies the key value store is assigned a single increas
 
 > Metrics for real-time monitoring and debugging
 
-etcd uses [Prometheus](https://prometheus.io/) for metrics reporting. The metrics can be used for real-time monitoring and debugging. etcd does not persist its metrics; if a member restarts, the metrics will be reset.
+etcd uses [Prometheus](https://prometheus.io/) for metrics reporting. The metrics can be used for real-time monitoring and debugging. **etcd does not persist its metrics; if a member restarts, the metrics will be reset**.
+
+Prometheus 相关知识：
+
+* [Metric and label naming](https://prometheus.io/docs/practices/naming/)
+* [Exposition formats](https://prometheus.io/docs/instrumenting/exposition_formats/)
+
 
 The simplest way to see the available metrics is to cURL the metrics endpoint `/metrics`. The format is described [here](http://prometheus.io/docs/instrumenting/exposition_formats/).
+
+> etcd 默认在 http://localhost:2379/metrics 端点暴露 Prometheus 格式的指标
+
+![etcd6](/assets/images/202511/etcd6.png)
+
 
 Follow the [Prometheus getting started doc](https://prometheus.io/docs/introduction/getting_started/) to spin up a Prometheus server to collect etcd metrics.
 
 The naming of metrics follows the suggested [Prometheus best practices](https://prometheus.io/docs/practices/naming/). A metric name has an `etcd` or `etcd_debugging` prefix as its namespace and a subsystem prefix (for example `wal` and `etcdserver`).
+
+
+## 指标类别
+
+* 集群健康与领导权
+  + 正常情况下，所有 etcd 成员都应有 Leader（即 `sum(etcd_server_has_leader)` 等于成员数），且同时只能有一个 Leader（即 `etcd_server_is_leader == 1` 的成员数量为 1）
+  + `etcd_server_leader_changes_seen_total` 指标在短时间内频繁增加，通常意味着网络不稳定或节点负载过高
+
+* 性能与负载
+  + Raft 提案
+    - 正常情况下，`etcd_server_proposals_failed_total` 的速率应为 0 或极低
+    - `etcd_server_proposals_pending` 指标若持续大于 0，表示提案有积压，可能由于应用速度慢或客户端请求过多
+    - 如果已提交但未应用的提案差值（`etcd_server_proposals_committed_total - etcd_server_proposals_applied_total`）超过 5000，etcd 甚至会拒绝客户端请求
+  + 磁盘 I/O
+    - `etcd_disk_wal_fsync_duration_seconds_bucket` 的 p99 延迟（即 99% 的请求完成时间）应低于 10 毫秒。若长时间出现几百毫秒甚至秒级延迟，表明磁盘读写可能存在瓶颈，会严重影响集群性能
+
+* 存储与数据
+  + 数据库大小：监控 `etcd_mvcc_db_total_size_in_use_in_bytes`（实际使用大小）和 `etcd_server_quota_backend_bytes`（后端配额）。当使用量超过配额的 50% 并持续一段时间时，可能需要考虑进行碎片整理（defrag）。
+
+* 碎片整理：
+  + 可以通过计算 (`etcd_mvcc_db_total_size_in_bytes - etcd_mvcc_db_total_size_in_use_in_bytes`) 来了解可回收的碎片空间
+  + 碎片整理是一个阻塞操作，建议在低峰期进行，并逐个对成员进行操作，每次操作后至少等待一分钟让集群恢复。
+
+
+## --listen-metrics-urls 参数说明
+
+在启动 etcd 时，不一定需要显式指定 `--listen-metrics-urls` 参数。它有其默认行为，但在某些特定场景下，显式设置会更有优势。
+
+* 不显式指定。与 `--listen-client-urls` 共享端口与路径，例如 `http://IP:2379/metrics`
+* 显式指定。独立的URL，例如 `http://IP:2381/metrics`
+
+在启动 etcd 时，可以通过命令行参数来设置监控端点的监听地址。以下是一个配置示例：应用程序通过 **2379** 端口连接 etcd，而监控系统（如 Prometheus）则通过 **2381** 端口来抓取指标数据。
+
+``` bash
+etcd \
+  --name=my-etcd \
+  --listen-client-urls=http://0.0.0.0:2379 \
+  --advertise-client-urls=http://192.168.1.100:2379 \
+  --listen-metrics-urls=http://0.0.0.0:2381  # 显式指定指标监控端口
+```
+
+可以使用 `curl http://IP:2381/metrics` 命令来验证指标接口是否工作正常。
+
+> 关于监控指标的质量，还可以通过 `--metrics` 启动参数来控制其详细程度，可选值为 **basic**（基础指标）或 **extensive**（包含服务器端 gRPC 直方图等详细指标）。
+
+总而言之，是否显式设置 `--listen-metrics-urls` 取决于你的具体需求：
+
+1. 对于本地测试或资源受限的环境，依赖默认行为（与客户端端口共享）通常足够。
+2. 对于生产环境或重视安全与性能隔离的场景，建议显式配置 `--listen-metrics-urls`，为监控数据提供独立的出口。
+
+
+
 
 
 ## etcd namespace metrics
@@ -4453,6 +4516,9 @@ Heavy file descriptor (`process_open_fds`) usage (i.e., near the process’s fil
 
 
 https://etcd.io/docs/v3.6/metrics/etcd-metrics-latest.txt
+
+
+
 
 
 # Next steps
