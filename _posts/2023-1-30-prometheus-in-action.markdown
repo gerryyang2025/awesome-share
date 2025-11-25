@@ -698,6 +698,17 @@ histogram_quantile(0.50, rate(namesvr_jrpc_request_duration_seconds_bucket[5m]))
 
 
 
+# [Exposition formats](https://prometheus.io/docs/instrumenting/exposition_formats/)
+
+Metrics can be exposed to Prometheus using a simple [text-based](https://prometheus.io/docs/instrumenting/exposition_formats/#text-based-format) exposition format. There are various [client libraries](https://prometheus.io/docs/instrumenting/clientlibs/) that implement this format for you. If your preferred language doesn't have a client library you can [create your own](https://prometheus.io/docs/instrumenting/writing_clientlibs/).
+
+
+# [Metric and label naming](https://prometheus.io/docs/practices/naming/)
+
+The metric and label conventions presented in this document are not required for using Prometheus, but can serve as both a style-guide and a collection of best practices. Individual organizations may want to approach some of these practices, e.g. naming conventions, differently.
+
+
+
 # Q&A
 
 ## the query hit the max number of series limit (limit: 100000 series)
