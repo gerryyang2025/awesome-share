@@ -55,6 +55,29 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* flip /flɪp/
+  + V-T If you **flip** a device on or off, or if you **flip** a switch, you turn it on or off by pressing the switch quickly. 快速地按动 (装置或开关)
+    - He didn't **flip** on the headlights until he was two blocks away. 直到过了两个街区后，他才打开前灯。
+    - Then he walked out, **flipping** the lights off. 接着他走了出去，随手把灯关掉。
+  + V-I If you **flip** through the pages of a book, for example, you quickly turn over the pages in order to find a particular one or to get an idea of the contents. 快速翻阅
+    - He was **flipping** through a magazine in the living room. 他在起居室里快速翻阅一本杂志。
+  + V-T/V-I If something **flips over**, or if you flip it over or into a different position, it moves or is moved into a different position. 翻动
+    - The plane then **flipped over** and burst into flames. 这时飞机翻了个个儿，接着就燃烧了起来。
+
+  + V-T If you **flip** something, especially a coin, you use your thumb to make it turn over and over, as it goes through the air. 投掷 (尤指硬币)
+    - I pulled a coin from my pocket and **flipped** it. 我从口袋里掏出一枚硬币，把它投掷出去。
+
+
+* immutable /ɪˈmjuːtəb(ə)l/
+  + ADJ Something that is **immutable** will never change or cannot be changed. 永恒的; 永远不变的
+
+
+* constitution /ˌkɒnstɪˈtjuːʃən/
+  + N-COUNT The **constitution** of a country or organization is the system of laws which formally states people's rights and duties. 宪法; 章程
+    - The king was forced to adopt a new **constitution** which reduced his powers. 国王被迫通过了削减其权力的新宪法。
+  + N-COUNT Your **constitution** is your health. 体格
+    - He must have an extremely strong **constitution**. 他必有极为强健的体格。
+
 
 * legitimate /lɪˈdʒɪtɪmət/
   + ADJ Something that is **legitimate** is acceptable according to the law. 合法的
