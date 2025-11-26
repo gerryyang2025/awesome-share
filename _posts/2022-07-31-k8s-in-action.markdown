@@ -190,11 +190,29 @@ kubectl get pods --namespace dev-test-gerry -o go-template --template="{{range .
 # 查询所有 namespace 下 pods 的容器镜像
 kubectl get pods --all-namespaces -o jsonpath='{range .items[*]}{"\n"}{.metadata.name}{":\t"}{range .spec.containers[*]}{.image}{", "}{end}{end}' |\ sort
 
-# 进入容器
-kubectl exec -it deploy-redis1-7ffdbff548-2k4sf -c container-redis-default  --namespace dev-test-gerry bash
+# 登录 Pod
+kubectl exec -it <pod-name> -n <namespace> -- /bin/bash
 
-# 删除异常pod
-kubectl delete pods $pod-name -n dev
+# 查看 Pod 中的容器列表
+kubectl get pod <pod-name> -n <namespace> -o jsonpath='{.spec.containers[*].name}'
+
+# 登录到指定容器
+kubectl exec -it <pod-name> -n <namespace> -c <container-name> -- /bin/bash
+kubectl exec -it deploy-redis1-7ffdbff548-2k4sf -c container-redis-default --namespace dev-test-gerry bash
+
+
+# 删除异常 Pod
+kubectl delete pods $pod-name -n dev --grace-period=0 --force
+
+# 根据 Pod IP 查询 Pod
+## 全集群搜索
+kubectl get pods --all-namespaces -o wide | grep "$PodIP"
+## JSON 格式查询
+kubectl get pods --all-namespaces -o json | jq -r '.items[] | select(.status.podIP=="$PodIP") | .metadata.namespace + "/" + .metadata.name'
+## 字段选择器
+kubectl get pods --all-namespaces --field-selector status.podIP="$PodIP"
+
+
 
 # 清理 Evicted 状态的 Pod
 kubectl get pods --namespace autoworlds | grep Evicted | awk '{print $1}' | xargs kubectl delete pod --namespace autoworlds
