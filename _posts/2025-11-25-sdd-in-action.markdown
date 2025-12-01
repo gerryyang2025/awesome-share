@@ -258,7 +258,8 @@ Setting it up is straightforward. First, install the `specify` command-line tool
 
 
 ``` bash
-uvx --from git+https://github.com/github/spec-kit.git specify init <PROJECT_NAME>
+uvx --from git+https://github.com/github/spec-kit.git
+specify init <PROJECT_NAME>
 ```
 
 Once your project is initialized, use the `/specify` command to provide a high-level prompt, and the coding agent generates the full spec. Focus on the “what” and “why” of your project, not the technical details.
