@@ -509,8 +509,256 @@ Bugbot 提供两个套餐：免费版 和 专业版。
 
 
 
+# [Dashboard](https://cursor.com/cn/dashboard)
+
+![cursor_dashboard](/assets/images/202512/cursor_dashboard.png)
+
+![cursor_dashboard5](/assets/images/202512/cursor_dashboard5.png)
+
+## 两个指标数据
+
+* Lines of Agent Edits
+* Tabs Accepted
+
+![cursor_dashboard2](/assets/images/202512/cursor_dashboard2.png)
+
+We released a change in late August 2025 that improved the accuracy of our analytics. This change is only available for users on Cursor 1.5+. Check [the documentation (使用分析)](https://cursor.com/cn/docs/account/teams/analytics) for more info.
 
 
+![cursor_dashboard3](/assets/images/202512/cursor_dashboard3.png)
+
+![cursor_dashboard4](/assets/images/202512/cursor_dashboard4.png)
+
+## Usage 用量统计
+
+![cursor_dashboard6](/assets/images/202512/cursor_dashboard6.png)
+
+通过[这个工具脚本](https://github.com/gerryyang2025/my-tools/blob/master/cursor-usage/cursor-usage-analyze.py)可以用来分析 Cursor 输出的 Usage 使用情况：
+
+![cursor_usage_key-metrics_analysis](/assets/images/202512/cursor_usage_key-metrics_analysis.png)
+
+各字段说明：
+
+* Date
+  + 使用时间戳，格式为 YYYY-MM-DDThh:mm:ss.sssZ，表示一次 AI 请求发生的时间。
+
+* Kind
+  + 表示该次使用是否被计入额度或账单。
+  + **Included** 表示该次使用包含在订阅额度内，未产生额外费用（可能为免费额度或订阅内额度）。
+
+* Model
+  + 使用的 AI 模型，这里显示为 **auto**，表示 Cursor 自动选择合适的模型（如 GPT-4、Claude 等）。
+
+* Max Mode
+  + 是否开启了“最大模式”（通常是更长的上下文或更强的推理能力）。
+  + **No** 表示未开启。
+
+* Input (w/ Cache Write)
+  + 带缓存写入的输入 Token 数量。
+  + 指本次请求中，模型写入缓存的输入内容所占用的 Token 数。
+
+* Input (w/o Cache Write)
+  + 不带缓存写入的输入 Token 数量。
+  + 指本次请求中，未写入缓存的输入内容所占用的 Token 数。
+
+* Cache Read
+  + 从缓存中读取的 Token 数量。
+  + 如果本次请求中复用了之前缓存的内容，这里会显示读取的 Token 数。
+
+* Output Tokens
+  + 模型生成的输出 Token 数量。
+
+* Total Tokens
+  + 本次请求的总 Token 数量（输入 + 输出）。
+
+* Cost
+  + 本次请求的费用（美元）。
+  + 如果为 0.00 或很小，表示该次使用在免费额度内或已包含在订阅中。
+
+
+## 如何通过 Cursor 的缓存机制优化成本
+
+为什么需要缓存？
+
+AI 模型处理 Token 时会产生计算成本。在很多场景中，**相同的输入会被重复处理**，比如：
+
+* 相同的系统提示（System Prompt）
+* 重复的代码片段
+* 项目中的常量定义
+* 通用的配置信息
+
+缓存机制将这些计算结果存储起来，下次遇到相同内容时直接复用，避免重复计算。
+
+
+Input (w/ Cache Write) - 写入缓存的输入
+
+* 含义：本次请求中，**首次出现且值得缓存的内容**
+* 会被存储到缓存中供后续使用
+* 会计算成本（因为是首次处理）
+* 示例：你在项目中第一次询问 "解释这个函数的作用"，这个问题的处理结果会被缓存
+
+
+Input (w/o Cache Write) - 不写入缓存的输入
+
+* 含义：**不存储到缓存的输入内容**
+* 会计算成本（需要实时处理）
+* 通常是因为内容：
+  + 太独特，重复概率低
+  + 包含敏感信息
+  + 内容过长不适合缓存
+
+Cache Read - 从缓存读取
+
+* 含义：**从之前缓存中直接读取的内容**
+* **也计费，只是成本比较低**（参考：https://cursor.com/cn/docs/models）
+* **这是成本优化的关键指标**
+
+
+执行过程示例：
+
+```
+用户提问： "优化这段排序算法代码"
+↓
+Cursor 检查缓存：
+   1. 是否有相同的 "优化这段排序算法代码" 请求？→ 直接返回
+   2. 是否有相似的排序算法相关问题？→ 部分复用
+   3. 完全没有？→ 全新处理
+↓
+如果是全新处理：
+   - `Input (w/ Cache Write)` 增加
+   - 结果存入缓存
+↓
+如果是缓存命中：
+   - `Cache Read` 增加
+   - `Input (w/ Cache Write)` 为 0
+```
+
+## Cost 成本计算公式
+
+Cursor 中的 Cost 是基于**实际计费的 Token 数量**和**模型定价**计算得出的。按**每百万 tokens 计价**
+
+> Cost = 输入 Token 数 × 输入单价 + 缓存写入 * 缓存写入单价 + 缓存读取 * 缓存读取单价 + 输出 Token 数 × 输出单价
+
+Cursor 使用 混合模型（Auto 模式），不同模型价格不同。
+
+
+
+# [Models](https://cursor.com/cn/docs/models)
+
+## 支持的模型列表
+
+Cursor 支持各大模型提供商的所有顶尖代码模型。
+
+![cursor_dashboard7](/assets/images/202512/cursor_dashboard7.png)
+
+## 上下文窗口
+
+
+**默认上下文 200k**
+
+在 Cursor 中，“默认上下文 200k”指的是**模型在单次请求中能够处理的上下文窗口大小为 200,000 tokens**。
+
+**什么是上下文窗口？**
+
+* 上下文窗口 = 模型一次性能“看到”和处理的 tokens 数量上限
+* 包括：**输入 + 输出的总和**
+* 就像模型的工作内存或短期记忆
+
+```
+模型实际处理的上下文大小 =
+    Input (w/ Cache Write) +
+    Input (w/o Cache Write) +
+    Output Tokens
+```
+
+> 注意：
+>
+> 1. 上下文窗口 = 输入 + 输出，不能超过模型限制
+> 2. Cache Read 不占用上下文，这是节省空间的关键
+
+**通俗比喻**
+
+* 想象一本 只能翻阅 200 页的书
+* 模型只能阅读这 200 页内容来回答问题
+* 超出部分它“看不到”
+
+
+**容量感知：**
+
+200,000 tokens ≈
+- 150,000 个英文单词
+- 300 页书的内容
+- 约 5000 行代码（含注释）
+
+**在 Cursor 中的体现：**
+
+```
+你的请求结构：
+┌─────────────────────────────────────┐
+│ 系统提示 (System Prompt): ~2k tokens │
+│ 你的问题 (User Query): ~1k tokens    │
+│ 相关文件内容: ~50k tokens             │ ← Cursor 自动添加
+│ 对话历史: ~50k tokens                │ ← 之前的问答
+│ 模型回答: ~10k tokens                │
+└─────────────────────────────────────┘
+总计：~113k tokens < 200k
+```
+
+**上下文窗口的影响：**
+
+**正面影响**
+
+* 项目感知能力增强
+  + Cursor 能看到更多相关文件
+  + 理解代码之间的依赖关系
+
+* 长对话记忆
+  + 记住之前 50-100 个问答
+  + 保持对话连贯性
+
+* 复杂任务处理
+
+``` bash
+# 可以一次性要求：
+"分析整个项目的架构，找出性能瓶颈，然后为每个模块提供优化建议"
+```
+
+**潜在问题**
+
+* 成本增加
+  + 更大的上下文 = 更多的输入 tokens
+  + 每次请求都包含大量内容
+
+* 性能考虑
+  + 处理 200k tokens 比处理 10k tokens 慢
+  + 需要更多的计算资源
+
+
+
+
+## Cursor 如何构建上下文
+
+
+200k 上下文包括：
+
+1. 系统指令 (5%)      - Cursor 的默认指令
+2. 项目配置文件 (10%)  - `.cursorrules`
+3. 打开的文件 (30-60%) - 你当前编辑/查看的文件
+4. 对话历史 (20-40%)  - 本次会话的所有问答
+5. 你的新问题 (1-5%)  - 本次输入的问题
+6. 预留空间 (5-10%)   - 给模型的回答
+
+
+
+
+
+## 模型定价
+
+Cursor [套餐](https://cursor.com/docs/account/pricing)的使用量按各模型 API 的计费标准计算。例如，Pro 套餐中包含的 20 美元用量，会根据你选择的模型及其价格逐步消耗。
+
+编辑器会根据你当前的使用情况显示使用额度。所有价格均按**每百万 tokens 计价**。
+
+![cursor_dashboard8](/assets/images/202512/cursor_dashboard8.png)
 
 
 
