@@ -102,8 +102,8 @@ categories: ML
 
 > 目前 AI 可以看作这样一位同事，他具备有很多的知识，但是缺乏很长的记忆能力。
 
-
-* **代码补全 -> Vibe Coding -> Spec Coding**。AI 编程技术演变。
+* **Deep Research**。以前通过 Stack Overflow (a popular question and answer website for professional and enthusiast programmers) 查问题，而现在可以借住 AI 工具对感兴趣的知识进行更深入的研究。例如，秘塔 AI 搜索 (https://metaso.cn/)，[Google 的 AI 搜索模式](https://www.google.com/search?authuser=0&aep=21&udm=50&utm_source=google&utm_campaign=aim_aware&utm_content=oo-seaport-10853&mtid=z0YuaaytNZrE1e8Pp7eEmAY&ved=2ahUKEwizyu7_5Z2RAxVciq8BHV_AAqwQoo4PegYIAQgAEAA)
+* **编码形式：手工编码 -> 代码补全 -> Vibe Coding -> Spec Coding**。AI 编程技术演变。
 * **脚手架工具**。以前开发代码可以通过脚手架工具生成一些业务框架代码，然后再由开发同学实现具体的业务逻辑。然而，目前基于 AI 工具通过 Prompt (代码样例) 的方式由 AI 自动生成需要的代码，此方式相比脚手架更灵活，而且省去了对脚手架工具的开发维护。
 * **代码向文档转移**。Linus Torvalds 说过 "Talk is cheap, show me the **code**"，而现在 AI 时代演变成了 "Talk is cheap, show me the **prompt**"。开发者在实现一个业务功能，为了生成这五百行的代码，准备了八百多行的需求文档，并手写写了大约一百四十行的描述性文档，以及五六十行的框架性定义约束。
 * **理解和表达能力的重要性**。由于 Transformer 的架构限制，上下文的长度是有限的，同时上下文也不是越多越好。在相同模型能力的前提下，好的上下文决定了结果的质量。例如，善用 Cursor 的 `@` 功能。因此，出现了提示工程 (Prompt Engineering) 一门较新的学科，关注提示词开发和优化，帮助用户更好地了解 LLM 的能力和局限性。
