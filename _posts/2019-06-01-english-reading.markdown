@@ -55,6 +55,17 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* opus /ˈəʊpəs/
+  + N-COUNT An **opus** is a piece of classical music by a particular composer. **Opus** is usually followed by a number which indicates at what point the piece was written. The abbreviation is also used. 编号作品; 缩略形式为 op.
+  + N-COUNT You can refer to an artistic work such as a piece of music or writing or a painting as an **opus**. 艺术作品(如乐曲、著作或画作)
+
+
+
+
+* enthusiast /ɪnˈθjuːziæst/
+  + N-COUNT An **enthusiast** is a person who is very interested in a particular activity or subject and who spends a lot of time on it. 爱好者
+    - He is a great sports **enthusiast**. 他是个真正的体育爱好者。
+
 * flip /flɪp/
   + V-T If you **flip** a device on or off, or if you **flip** a switch, you turn it on or off by pressing the switch quickly. 快速地按动 (装置或开关)
     - He didn't **flip** on the headlights until he was two blocks away. 直到过了两个街区后，他才打开前灯。
