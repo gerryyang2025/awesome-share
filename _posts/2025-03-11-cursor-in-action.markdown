@@ -658,7 +658,7 @@ Cursor 使用 混合模型（Auto 模式），不同模型价格不同。
 ![cursor_dashboard9](/assets/images/202512/cursor_dashboard9.png)
 
 
-## Max 模式
+### Max 模式
 
 通常，Cursor 使用 200k tokens（约 15,000 行代码）的上下文窗口。Max 模式会将少数模型的上下文窗口扩展到其支持的最大长度。这样速度会稍慢、成本也更高。它对 Gemini 2.5 Flash、Gemini 3 Pro、GPT 4.1 和 Grok 4 尤其适用，因为这些模型的上下文窗口都大于 200k。
 
