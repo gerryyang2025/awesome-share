@@ -537,6 +537,16 @@ We released a change in late August 2025 that improved the accuracy of our analy
 
 ![cursor_usage_key-metrics_analysis](/assets/images/202512/cursor_usage_key-metrics_analysis.png)
 
+``` python
+# Sample data
+SAMPLE_DATA = """Date,Kind,Model,Max Mode,Input (w/ Cache Write),Input (w/o Cache Write),Cache Read,Output Tokens,Total Tokens,Cost
+2025-12-02T01:46:34.592Z,Included,auto,No,21865,0,68608,3043,93516,0.06
+2025-12-01T13:15:54.637Z,Included,auto,No,26134,0,404992,9107,440233,0.19
+2025-12-01T12:56:34.058Z,Included,auto,No,136654,0,853248,26477,1016379,0.54
+2025-12-01T12:49:10.345Z,Included,auto,No,26323,0,190720,4617,221660,0.11
+"""
+```
+
 各字段说明：
 
 * Date
