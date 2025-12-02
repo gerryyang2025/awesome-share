@@ -651,6 +651,16 @@ Cursor 中的 Cost 是基于**实际计费的 Token 数量**和**模型定价**�
 
 Cursor 使用 混合模型（Auto 模式），不同模型价格不同。
 
+### Auto 模式
+
+启用 Auto 后，Cursor 会根据当前负载情况，为当前任务自动选择最适合且可靠性最高的高级模型。该功能还能检测到输出质量下降，并自动切换模型以解决问题。
+
+![cursor_dashboard9](/assets/images/202512/cursor_dashboard9.png)
+
+
+## Max 模式
+
+通常，Cursor 使用 200k tokens（约 15,000 行代码）的上下文窗口。Max 模式会将少数模型的上下文窗口扩展到其支持的最大长度。这样速度会稍慢、成本也更高。它对 Gemini 2.5 Flash、Gemini 3 Pro、GPT 4.1 和 Grok 4 尤其适用，因为这些模型的上下文窗口都大于 200k。
 
 
 # [Models](https://cursor.com/cn/docs/models)
@@ -663,10 +673,25 @@ Cursor 支持各大模型提供商的所有顶尖代码模型。
 
 ## 上下文窗口
 
+[上下文窗口](https://cursor.com/cn/learn/context)是指 LLM 在一次处理中可以同时考虑的最大 token 数量（包括文本和代码），其中既包含输入提示词，也包含模型生成的输出内容。
+
+Cursor 中的每个对话都有自己的上下文窗口。在一次会话中，包含的提示词、附加文件和回复越多，加入的上下文就越多，可用的上下文窗口就会被逐渐占满。
+
+在 Cursor 中了解更多[如何使用上下文](https://cursor.com/cn/learn/context)。
+
+> 上下文限制
+
+每个 AI 模型的上下文限制各不相同，一旦触及该限制，模型将不再接受更多消息。因此，许多 AI 工具会向用户提示他们距离该限制还有多近，或提供对当前对话进行压缩与总结的方式，以保持在限制之内。
+
+![cursor_dashboard10](/assets/images/202512/cursor_dashboard10.png)
+
 
 **默认上下文 200k**
 
 在 Cursor 中，“默认上下文 200k”指的是**模型在单次请求中能够处理的上下文窗口大小为 200,000 tokens**。
+
+![cursor_dashboard15](/assets/images/202512/cursor_dashboard15.png)
+
 
 **什么是上下文窗口？**
 
@@ -769,6 +794,29 @@ Cursor [套餐](https://cursor.com/docs/account/pricing)的使用量按各模型
 编辑器会根据你当前的使用情况显示使用额度。所有价格均按**每百万 tokens 计价**。
 
 ![cursor_dashboard8](/assets/images/202512/cursor_dashboard8.png)
+
+这些价格来自各模型的 API 文档：
+
+* [OpenAI 定价](https://openai.com/api/pricing/)
+* [Anthropic 定价](https://www.anthropic.com/pricing#api)
+* [Google Gemini 定价](https://ai.google.dev/gemini-api/docs/pricing)
+
+
+# [Cursor Learn](https://cursor.com/cn/learn)
+
+本课程将教你如何借助 AI 提升编程效率。它并不是一门讲授机器学习或如何训练自有模型的课程，而是面向使用 AI 模型与工具编写软件的开发者的实用课程。
+
+要真正用好 AI 工具，你需要理解模型的工作原理、模型的不同类型，以及它们的局限。
+
+打个比方：想象你要从城这头到那头。有很多出行方式可选：
+
+* 走路。免费，但更耗时。
+* 骑车。要花点钱，稍快一些。
+* 开车。最贵，但最快。
+
+你可以在时间、金钱、可靠性和投入之间做取舍。
+
+
 
 
 
