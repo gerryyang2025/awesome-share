@@ -127,7 +127,37 @@ python3 -m pip install xxhash
 
 
 
+
+
 # 错误定位
+
+
+## `python -m py_compile test.py`
+
+* `-m py_compile`: 以模块方式运行 `py_compile` 模块
+* `-m ast`: 使用 ast 模块检查语法
+
+作用：
+
+1. 语法检查：验证代码语法是否正确
+2. 编译为字节码：将 `.py` 编译为 `.pyc`（如果语法正确）
+3. 快速验证：不执行代码，只检查语法
+
+``` bash
+# 语法正确的文件 - 无输出，静默成功
+$ python3 -m py_compile succ_file.py
+$ echo $?
+0
+
+# 语法错误的文件 - 显示错误信息
+$ python3 -m py_compile bad_file.py
+  File "bad_file.py", line 3
+    print("hello"
+                ^
+SyntaxError: unexpected EOF while parsing
+```
+
+## How to catch and print the full exception traceback
 
 参考：[How to catch and print the full exception traceback without halting/exiting the program?](https://stackoverflow.com/questions/3702675/how-to-catch-and-print-the-full-exception-traceback-without-halting-exiting-the)
 
