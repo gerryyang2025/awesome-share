@@ -448,6 +448,10 @@ The leading open-source AI code assistant
 
 A plug-in for Cppcheck, capable of checking folders or editor tabs, shows output in the output channel, severity options available.
 
+## Rainbow CSV
+
+Highlight CSV and TSV files, Run SQL-like queries
+
 
 # 有趣的扩展
 
