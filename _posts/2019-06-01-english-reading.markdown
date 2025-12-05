@@ -55,11 +55,20 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* punctuation /ˌpʌŋktjʊˈeɪʃən/
+  + N-UNCOUNT **Punctuation** is the use of symbols such as periods, commas, or question marks to divide written words into sentences and clauses. 标点符号的使用
+    - He was known for his poor grammar and punctuation. 他以很差的语法和标点符号使用而出名。
+  + N-UNCOUNT **Punctuation** is the symbols that you use to divide written words into sentences and clauses. 标点符号
+
+
+
+* comma /ˈkɒmə/
+  + N-COUNT A **comma** is the punctuation mark , which is used to separate parts of a sentence or items in a list. 逗号
+
+
 * opus /ˈəʊpəs/
   + N-COUNT An **opus** is a piece of classical music by a particular composer. **Opus** is usually followed by a number which indicates at what point the piece was written. The abbreviation is also used. 编号作品; 缩略形式为 op.
   + N-COUNT You can refer to an artistic work such as a piece of music or writing or a painting as an **opus**. 艺术作品(如乐曲、著作或画作)
-
-
 
 
 * enthusiast /ɪnˈθjuːziæst/
@@ -1293,10 +1302,12 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 
 * compulsory /kəmˈpʌlsəri/
-    + If something is **compulsory**, you must do it or accept it, because it is the law or because someone in a position of authority says you must. 强制性的
+    + ADJ If something is **compulsory**, you must do it or accept it, because it is the law or because someone in a position of authority says you must. 强制性的
+      - He believes that the study of history should be **compulsory** in school. 他认为在学校里学习历史应该是强制性的。
 
 * compliance /kəmˈplaɪəns/
     + N-UNCOUNT **Compliance with something**, for example a law, treaty, or agreement, means doing what you are required or expected to do. 遵从
+
 
 * refine /rɪˈfaɪn/
     + When a substance **is refined**, it is made pure by having all other substances removed from it. 提炼
@@ -1317,8 +1328,10 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
     + If one side in a battle, contest, or dispute **prevails**, it wins. 获胜
 
 * embody /ɪmˈbɒdi/
-    + To **embody** an idea or quality means to be a symbol or expression of that idea or quality. 体现; 具体象征
-    + If something **is embodied in** a particular thing, the second thing contains or consists of the first. 包含; 收录
+    + V-T To **embody** an idea or quality means to be a symbol or expression of that idea or quality. 体现; 具体象征
+      - Jack Kennedy embodied all the hopes of the 1960s. 杰克•肯尼迪体现了20世纪60年代的全部希望。
+    + V-T If something **is embodied in** a particular thing, the second thing contains or consists of the first. 包含; 收录
+      - The proposal has been embodied in a draft resolution. 这项提议已经被包含在一份决议草案中
 
 * integrity /ɪnˈteɡrəti/
     + If you have **integrity**, you are honest and firm in your moral principles. 正直; 诚实
