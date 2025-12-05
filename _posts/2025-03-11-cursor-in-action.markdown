@@ -535,7 +535,18 @@ We released a change in late August 2025 that improved the accuracy of our analy
 
 通过[这个工具脚本](https://github.com/gerryyang2025/my-tools/blob/master/cursor-usage/cursor-usage-analyze.py)可以用来分析 Cursor 输出的 Usage 使用情况：
 
-![cursor_usage_key-metrics_analysis](/assets/images/202512/cursor_usage_key-metrics_analysis.png)
+![cursor-usage-key-metrics-analysis-sample](/assets/images/202512/cursor-usage-key-metrics-analysis-sample.png)
+
+Auto 模型使用分析：
+
+![cursor-usage-key-metrics-analysis-auto](/assets/images/202512/cursor-usage-key-metrics-analysis-auto.png)
+
+Composer-1 模型使用分析：
+
+![cursor-usage-key-metrics-analysis-composer-1](/assets/images/202512/cursor-usage-key-metrics-analysis-composer-1.png)
+
+
+
 
 ``` python
 # Sample data
@@ -817,6 +828,15 @@ Cursor [套餐](https://cursor.com/docs/account/pricing)的使用量按各模型
 你可以在时间、金钱、可靠性和投入之间做取舍。
 
 
+# Others
+
+## [Cursor Composer 1 vs Claude 4.5 Sonnet: The better coding model](https://composio.dev/blog/cursor-composer-1-vs-claude-4-5-sonnet-the-better-coding-model) (Nov 11, 2025)
+
+The AI coding race is heating up again. After OpenAI, Anthropic, and Google, Cursor has stepped into the game with its new model, **Composer 1**, a coding-focused agent model that’s said to be **4x faster than other models with similar intelligence**.
+
+It’s said to output code at lightning speed, reason through large contexts, and even outperform models like **GPT-5** and **Claude Sonnet** in engineering workflows.
+
+![cursor-composer1](/assets/images/202512/cursor-composer1.png)
 
 
 
