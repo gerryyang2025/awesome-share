@@ -32,6 +32,14 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Phrase
 
+
+* watch your six (源自：疯狂动物城2)
+
+watch your six 是一个英语俚语，直译是“注意你的六点钟方向”。它源自军事术语，其中方向用时钟表示：12点为正前方，3点为右侧，6点为正后方，9点为左侧。因此，这个短语的引申意思是 **“小心背后”或“保持警惕”**，常用于提醒某人注意来自后方的危险或意外。
+
+Watch your six when walking alone at night. 晚上独自走路时要小心背后。
+
+
 * raise the bar
   + 更上一层楼
 
@@ -54,6 +62,12 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 
 # Words (柯林斯英汉双解大词典)
+
+
+* cognitive /ˈkɒɡnɪtɪv/
+  + ADJ **Cognitive** means relating to the mental process involved in knowing, learning, and understanding things. 认知的
+    - As children grow older, their **cognitive** processes become sharper. 随着孩子们长大，他们的认知过程也变得越来越敏锐了。
+
 
 * punctuation /ˌpʌŋktjʊˈeɪʃən/
   + N-UNCOUNT **Punctuation** is the use of symbols such as periods, commas, or question marks to divide written words into sentences and clauses. 标点符号的使用
