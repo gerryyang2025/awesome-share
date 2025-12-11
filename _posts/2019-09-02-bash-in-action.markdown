@@ -8,6 +8,254 @@ categories: [Bash]
 * Do not remove this line (it will not be displayed)
 {:toc}
 
+# `~/.bashrc` 常用配置
+
+``` bash
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+fi
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+
+# -------------------------------
+
+export TERM="linux"
+
+# 设置命令行提示符显示格式
+PS1="\[\e[1;35m\][\[\e[1;33m\]\u \[\e[1;31m\]\w \[\e[1;33m\]\t\[\e[1;35m\]]\[\e[1;36m\]\$\[\e[0m\] "
+
+# 常用别名
+alias grep='grep --color'
+alias his='history | tail -n 10'
+alias ll='ls -rtlh'
+
+# Bash 自动补全设置
+# 需要安装 https://github.com/scop/bash-completion 工具
+# Use bash-completion, if available, and avoid double-sourcing
+[[ $PS1 &&
+  ! ${BASH_COMPLETION_VERSINFO:-} &&
+  -f /usr/share/bash-completion/bash_completion ]] &&
+    . /usr/share/bash-completion/bash_completion
+
+
+
+
+
+
+```
+
+
+
+
+## Bash 自动补全功能
+
+`complete` 是 Bash shell 的内置命令，**用于自定义命令或自定义脚本的自动补全行为**。当用户按下 `Tab` 键时，**Bash 会调用相应的补全函数来生成补全建议**。
+
+
+### bash-completion 工具集
+
+[bash-completion](https://github.com/scop/bash-completion) is a collection of command line command completions for the [Bash shell](https://www.gnu.org/software/bash/), collection of helper functions to assist in creating new completions, and set of facilities for loading completions automatically on demand, as well as installing them.
+
+安装方法：
+
+Step1: 建议通过软件源安装 bash-completion，也可通过[源码构建](https://github.com/scop/bash-completion/releases)安装
+
+``` bash
+sudo yum install bash-completion
+```
+
+Step2: 在 `~/.bashrc` 配置使用 bash-completion
+
+``` bash
+# Use bash-completion, if available, and avoid double-sourcing
+[[ $PS1 &&
+  ! ${BASH_COMPLETION_VERSINFO:-} &&
+  -f /usr/share/bash-completion/bash_completion ]] &&
+    . /usr/share/bash-completion/bash_completion
+```
+
+用法解释：
+
+* `[[ $PS1 ]]`
+  + 作用：检查当前 Shell 是否为**交互式 Shell**
+  + 目的：避免在非交互式 Shell 中加载补全（**节省资源**）
+    - `$PS1` 是 Bash 的主提示符变量（Prompt String 1）
+    - 只有在交互式 Shell 中才会设置 `PS1`
+    - 非交互式 Shell（如运行脚本时）不会设置 `PS1`
+
+* `! ${BASH_COMPLETION_VERSINFO:-}`
+  + 作用：检查是否已经加载过 bash-completion
+  + 目的：如果已经加载过 bash-completion，就不再重复加载（**避免重复 source**）
+    - `BASH_COMPLETION_VERSINFO` 是 bash-completion 包设置的变量，包含版本信息
+    - `${BASH_COMPLETION_VERSINFO:-}` 是参数扩展语法
+      = 如果 `BASH_COMPLETION_VERSINFO` 变量已设置，则使用它的值
+      = 如果未设置，则扩展为空字符串
+
+* `-f /usr/share/bash-completion/bash_completion`
+  + 作用：检查 bash-completion 文件是否存在
+  + 目的：确保文件存在，避免 source 不存在的文件导致错误
+    - `-f` 测试文件是否存在且为普通文件
+    - `/usr/share/bash-completion/bash_completion` 是 bash-completion 的主要脚本文件
+
+
+* `. /usr/share/bash-completion/bash_completion`
+  + 作用：加载 bash-completion 脚本
+    - `.` 是 source 命令的简写（在当前 Shell 中执行文件内容）
+    - 这会加载 bash-completion 框架，为许多命令提供自动补全
+
+
+检查 bash-completion 是否已加载：如果输出类似 2 或 2 11 的数字，表示已加载；如果输出为空，表示未加载。
+
+``` bash
+# 查看 BASH_COMPLETION_VERSINFO 变量
+echo $BASH_COMPLETION_VERSINFO
+
+# 或使用更详细的方式
+echo "bash-completion 版本: ${BASH_COMPLETION_VERSINFO[@]}"
+```
+
+
+检查 complete 命令设置：
+
+``` bash
+# 查看已注册的补全数量
+complete -p | wc -l
+
+# 查看前几个补全设置
+complete -p | head -10
+
+# 检查特定命令的补全
+complete -p ls      # 查看 ls 的补全设置
+complete -p git     # 查看 git 的补全设置
+complete -p ssh     # 查看 ssh 的补全设置
+```
+
+![bash_complete2](/assets/images/202512/bash_complete2.png)
+
+
+### complete 基本用法
+
+```
+$ complete --help
+complete: complete [-abcdefgjksuv] [-pr] [-DEI] [-o option] [-A action] [-G globpat] [-W wordlist] [-F function] [-C command] [-X filterpat] [-P prefix] [-S suffix] [name ...]
+    Specify how arguments are to be completed by Readline.
+
+    For each NAME, specify how arguments are to be completed.  If no options
+    are supplied, existing completion specifications are printed in a way that
+    allows them to be reused as input.
+
+    Options:
+      -p        print existing completion specifications in a reusable format
+      -r        remove a completion specification for each NAME, or, if no
+                NAMEs are supplied, all completion specifications
+      -D        apply the completions and actions as the default for commands
+                without any specific completion defined
+      -E        apply the completions and actions to "empty" commands --
+                completion attempted on a blank line
+      -I        apply the completions and actions to the initial (usually the
+                command) word
+
+    When completion is attempted, the actions are applied in the order the
+    uppercase-letter options are listed above. If multiple options are supplied,
+    the -D option takes precedence over -E, and both take precedence over -I.
+
+    Exit Status:
+    Returns success unless an invalid option is supplied or an error occurs.
+```
+
+```
+用户按 Tab 键
+    ↓
+Bash 检查当前命令是否有自定义补全
+    ↓
+如果没有：使用默认补全（通常是文件名）
+如果有：调用注册的补全函数
+    ↓
+补全函数设置 COMPREPLY 数组
+    ↓
+Bash 显示 COMPREPLY 中的建议
+```
+
+补全函数的关键变量：
+
+| **变量** | **说明** |
+| -- | -- |
+| cur | 当前正在输入的单词：`${COMP_WORDS[COMP_CWORD]}` |
+| prev | 前一个单词：`${COMP_WORDS[COMP_CWORD-1]}` |
+| COMPREPLY | 必须设置，包含补全建议的数组 |
+
+常用选项：
+
+| **选项** | **说明** | **示例**
+| -- | -- | --
+| **-F 函数名** | 指定补全函数 | complete -F _myfunc mycmd
+| **-W "单词列表"** | 指定静态单词列表 | complete -W "start stop restart" mycmd
+| **-o 选项** | 设置补全选项 | complete -o default -F _myfunc mycmd
+| **-A 动作** | 使用内置动作 | complete -A directory mycmd
+
+`-o` 参数：
+
+* default 如果没有生成补全，使用默认补全（文件名）
+* nospace 补全后不在末尾添加空格
+* filenames 将补全项视为文件名（处理路径中的特殊字符）
+* bashdefault 使用 Bash 的默认补全
+
+
+
+### 自定义 Bash 自动补全
+
+![bash_complete](/assets/images/202512/bash_complete.png)
+
+保存补全脚本到 `~/.bash_completion`
+
+``` bash
+# 将补全函数添加到 ~/.bashrc 或 ~/.bash_completion
+cat >> ~/.bash_completion << 'EOF'
+
+# mycmd 补全
+_mycmd_completion() {
+    local cur
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    COMPREPLY=($(compgen -W "apple banana cherry date" -- "${cur}"))
+}
+
+complete -F _mycmd_completion mycmd 2>/dev/null
+EOF
+
+# 重新加载配置
+source ~/.bash_completion
+```
+
+测试命令：
+
+``` bash
+# 先定义 mycmd（如果不存在）
+alias mycmd='echo "Running mycmd with:"'
+
+# 现在测试：
+# 1. 输入 mycmd，然后按 Tab 两次
+# 2. 输入 mycmd a，然后按 Tab
+```
+
+检查 mycmd 命令的补全函数是否已经注册：
+
+``` bash
+# 检查是否已注册
+complete -p | grep mycmd
+
+# 如果没有输出，重新加载
+source ~/.bash_completion.sh
+```
+
+
+
 # Bash Tools
 
 * [Execute Bash Shell Online (GNU Bash v4.4)](https://www.tutorialspoint.com/execute_bash_online.php)
