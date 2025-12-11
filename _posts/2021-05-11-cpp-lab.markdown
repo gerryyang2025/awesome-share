@@ -1561,6 +1561,72 @@ Bad::~Bad() called
 
 https://en.cppreference.com/w/cpp/memory/enable_shared_from_this
 
+
+## [std::chrono::duration](https://cplusplus.com/reference/chrono/duration/)
+
+``` cpp
+template <class Rep, class Period = ratio<1> >
+class duration;
+```
+
+A **duration** object expresses a time span by means of a **count** and a **period**.
+
+Internally, the object stores the **count** as an object of member type `rep` (an alias of the first template parameter, `Rep`), which can be retrieved by calling member function [count](https://cplusplus.com/duration::count).
+
+This [count](https://cplusplus.com/duration::count) is expresed in terms of **periods**. The length of a **period** is integrated in the type (on compile time) by its second template parameter (Period), which is a [ratio](https://cplusplus.com/ratio) type that expresses the number (or fraction) of seconds that elapse in each **period**.
+
+> Template parameters
+
+* Rep
+
+An arithmetic type, or a class emulating an arithmetic type, to be used as the type for the internal [count](https://cplusplus.com/duration::count).
+
+* Period
+*
+A [ratio](https://cplusplus.com/ratio) type that represents the **period** in seconds.
+
+> Template instantiations
+
+The following convenience typedefs of instantiations of `duration` are also defined in this namespace:
+
+
+| **type** | **Representation** | **Period**
+| -- | -- | --
+| hours | signed integral type of at least 23 bits | ratio<3600,1>
+| minutes | signed integral type of at least 29 bits | ratio<60,1>
+| seconds | signed integral type of at least 35 bits | ratio<1,1>
+| milliseconds | signed integral type of at least 45 bits | ratio<1,1000>
+| microseconds | signed integral type of at least 55 bits | ratio<1,1000000>
+| nanoseconds | signed integral type of at least 64 bits | ratio<1,1000000000>
+
+``` cpp
+// duration constructor
+#include <iostream>
+#include <ratio>
+#include <chrono>
+
+int main ()
+{
+  typedef std::chrono::duration<int> seconds_type;
+  typedef std::chrono::duration<int,std::milli> milliseconds_type;
+  typedef std::chrono::duration<int,std::ratio<60*60>> hours_type;
+
+  hours_type h_oneday (24);                  // 24h
+  seconds_type s_oneday (60*60*24);          // 86400s
+  milliseconds_type ms_oneday (s_oneday);    // 86400000ms
+
+  seconds_type s_onehour (60*60);            // 3600s
+//hours_type h_onehour (s_onehour);          // NOT VALID (type truncates), use:
+  hours_type h_onehour (std::chrono::duration_cast<hours_type>(s_onehour));
+  milliseconds_type ms_onehour (s_onehour);  // 3600000ms (ok, no type truncation)
+
+  std::cout << ms_onehour.count() << "ms in 1h" << std::endl; // Output: 3600000ms in 1h
+
+  return 0;
+}
+```
+
+
 ## std::this_thread::sleep_for
 
 ``` cpp
