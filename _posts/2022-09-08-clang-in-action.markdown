@@ -1149,10 +1149,50 @@ Default limit for clangd is 8GB, but you can easily customize it. BTW, clangd wo
 
 ### 将 preamble-xxx.pch 默认的 root 输出目录改为用户目录
 
-vscode 的 clangd 插件在 disk 模式下会在 /tmp 目录下产生大量的 preamble-xxx.pch 的文件，导致 / 挂载盘空间占满。
+vscode 的 clangd 插件在 disk 模式下会在 `/tmp` 目录下产生大量的 `preamble-xxx.pch` 的文件，导致 `/` 挂载盘空间占满。
+
 解决方案：(将 tmp 文件重定向到用户 data 目录下)
-1. ~/.bash_profile 中加上 export TMPDIR=$HOME/tmp
+
+1. `~/.bash_profile` 中加上 `export TMPDIR=$HOME/tmp`
 2. kill 掉服务器上的 vscode 进程，重新连接进入
+
+### The comment `// IWYU pragma: keep`
+
+在 `clangd` 中使用 `// IWYU pragma: keep`，主要是为了在保持代码整洁度的同时，在 IDE 层面对必要的头文件进行“例外”标注，避免不必要的警告干扰。
+
+The comment `// IWYU pragma: keep` is a directive used with **Include What You Use** (`IWYU`) and **clangd**, a C++ language server. Its purpose is to explicitly instruct these tools to retain a specific `#include` directive, preventing them from removing it during header cleanup or analysis.
+
+Explanation:
+
+* **Include What You Use** (`IWYU`): `IWYU` is a tool that analyzes C++ source files to determine which headers are actually necessary for compilation. It aims to enforce the "include what you use" principle, which means a source file should only include the headers that directly define the symbols it uses. `IWYU` may suggest removing includes it deems unnecessary.
+
+* `// IWYU pragma`: keep: When placed on the same line as an `#include` directive, this pragma tells `IWYU` (and by extension, clangd's include cleaner) to never remove that particular include, even if it appears to be unused according to IWYU's analysis. **This is useful for**:
+
+  + **Headers that provide transitive dependencies**: Sometimes, a header may not directly define symbols used in the current file, but it might be necessary because it transitively includes other headers that are required.
+
+  + **Headers for specific build system requirements or conventions**: Certain project setups or build systems might require specific includes for reasons not immediately obvious to `IWYU`.
+
+  + **Workarounds for IWYU limitations**: In some cases, IWYU's analysis might be incorrect, and the `keep` pragma provides a way to override its suggestions.
+
+
+* **Clangd's Include Cleaner**: `Clangd`, a powerful language server for C++, integrates IWYU-like functionality through its include cleaner. This feature helps manage includes by suggesting additions, removals, and reordering. The `// IWYU pragma: keep` directive is respected by clangd's include cleaner, preventing it from suggesting the removal of marked includes.
+
+
+``` cpp
+#include <vector> // IWYU pragma: keep
+#include "my_utility.h"
+
+int main() {
+    std::vector<int> data;
+    // ...
+    return 0;
+}
+```
+
+In this example, even if `IWYU` or `clangd` determined that `<vector>` was not strictly necessary (e.g., if `std::vector` was only used in a function called from another translation unit), the `// IWYU pragma: keep` comment would ensure it remains included.
+
+
+
 
 
 
