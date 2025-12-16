@@ -417,6 +417,7 @@ AI 模型不止于生成文本，它们实际上可以通过工具调用动态�
 > 目前 AI 可以看作这样一位同事，他具备有很多的知识，但是缺乏很长的记忆能力。
 
 
+* **会问问题变得很重要**。如何驾驭好 AI 工具，将任务拆解的越细，AI 实现的结果越准确。开发在研发初期的 Spec 方案描述和方案设计阶段上花费的时间更多了 (良性循环，文档驱动开发)。例如，目前的 Specification-Driven Development (SDD) 规约编程。
 * **Deep Research**。以前通过 Stack Overflow (a popular question and answer website for professional and enthusiast programmers) 查问题，而现在可以借住 AI 工具对感兴趣的知识进行更深入的研究。例如，秘塔 AI 搜索 (https://metaso.cn/)，[Google 的 AI 搜索模式](https://www.google.com/search?authuser=0&aep=21&udm=50&utm_source=google&utm_campaign=aim_aware&utm_content=oo-seaport-10853&mtid=z0YuaaytNZrE1e8Pp7eEmAY&ved=2ahUKEwizyu7_5Z2RAxVciq8BHV_AAqwQoo4PegYIAQgAEAA)
 * **角色变化：手工编码 -> 代码补全 -> Vibe Coding -> Spec Coding**。AI 编程技术演变，使得开发者的角色发生改变。你将成为任务的管理者，而非执行者。开发者发出指令让 AI 生成或修改代码时通常也并不是闲着的，而是一直盯着 AI 的生成情况，一旦发现 AI 的输出发生偏差会立即中断并回退当轮的对话 (因为流式响应的特性)，这样可以节省一些不必要的 token 开销。在 AI 完成代码生成后，开发者还需要对比和确认修改的代码是否符合预期。
 * **代码向文档转移**。Linus Torvalds 说过 "Talk is cheap, show me the **code**"，而现在 AI 时代演变成了 "Talk is cheap, show me the **prompt**"。开发者在实现一个业务功能，为了生成这五百行的代码，准备了八百多行的需求文档，并手写写了大约一百四十行的描述性文档，以及五六十行的框架性定义约束。
