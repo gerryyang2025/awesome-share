@@ -64,6 +64,26 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
 # Words (柯林斯英汉双解大词典)
 
 
+* disclosure disclosure
+  + N-VAR **Disclosure** is the act of giving people new or secret information. 公开
+
+* anatomy /əˈnætəmi/
+  + N-UNCOUNT **Anatomy** is the study of the structure of the bodies of people or animals. 解剖学
+  + N-COUNT You can refer to your body as your **anatomy**. 身体
+    - The ball hit him in the most sensitive part of his **anatomy**. 这个球打中了他身体的最敏感部位。
+
+* pitfall /ˈpɪtˌfɔːl/
+  + N-COUNT The **pitfalls** involved in a particular activity or situation are the things that may go wrong or may cause problems. 隐患
+    - The **pitfalls** of working abroad are numerous. 在国外工作有很多隐患。
+
+
+* marketplace /ˈmɑːkɪtˌpleɪs/
+  + N-COUNT The **marketplace** refers to the activity of buying and selling products. 市场交易
+    - It's our hope that we will play an increasingly greater role in the **marketplace** and, therefore, supply more jobs. 希望我们能在市场交易中扮演越来越重要的角色，从而提供更多的工作。
+  + N-COUNT A **marketplace** is a small area in a town or city where goods are bought and sold, often outdoors. 集市
+    - The **marketplace** was jammed with a noisy crowd of buyers and sellers. 集市上挤满了吵吵嚷嚷的买东西和卖东西的人。
+
+
 * cognitive /ˈkɒɡnɪtɪv/
   + ADJ **Cognitive** means relating to the mental process involved in knowing, learning, and understanding things. 认知的
     - As children grow older, their **cognitive** processes become sharper. 随着孩子们长大，他们的认知过程也变得越来越敏锐了。
@@ -419,6 +439,19 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
 * conciliation /kənˌsɪliˈeɪʃn/
   + N-UNCOUNT **Conciliation** is willingness to end a disagreement or the process of ending a disagreement. 和解意愿; 和解
     -  Resolving the dispute will require a mood of **conciliation** on both sides. 解决这场争端需要双方都抱有和解的态度。
+
+
+* promise /ˈprɒmɪs/
+  + V-T/V-I If you **promise that** you will do something, you say to someone that you will definitely do it. 承诺
+    - He had **promised** that the rich and privileged would no longer get preferential treatment. 他已承诺富人和特权阶层将不会再得到优待。
+    - I'll call you back, I **promise**. 我会给你回电话的，我保证。
+  + N-COUNT A **promise** is a statement that you make to a person in which you say that you will definitely do something or give them something. 诺言
+    - If you **make a promise**, you should keep it. 如果你许下一个诺言，你就应该遵守它。
+  + V-T If a situation or event **promises** to have a particular quality or to be a particular thing, it shows signs that it will have that quality or be that thing. 预示
+    - While it will be fun, the seminar also **promises** to be most instructive. 这次专题讨论会将会很有趣，也一定会非常有启发性。
+  + N-UNCOUNT If someone or something shows **promise**, they seem likely to be very good or successful. (显示出) 成功的迹象
+    - The boy first showed **promise** as an athlete in grade school. 这个男孩最初是在小学显示出成为一名成功的运动员的迹象。
+
 
 
 * promising /ˈprɒmɪsɪŋ/
