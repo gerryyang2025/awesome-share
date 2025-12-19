@@ -267,21 +267,40 @@ More: https://code.visualstudio.com/docs/editor/codebasics
 
 比 C/C++ 扩展执行效率更高，但是 clangd 需要使用 GLIBC_2.18 版本。
 
-```
-"clangd.arguments": [
-    "--clang-tidy",                 // 开启clang-tidy
-    "--all-scopes-completion",      // 全代码库补全
-    "--completion-style=detailed",  // 详细补全
-    "--header-insertion=iwyu",
-    "--pch-storage=disk",           // 如果内存够大可以关闭这个选项
-    "--log=error",
-    "--j=5",                        // 后台线程数，可根据机器配置自行调整
-    "--background-index"
-  ],
-"clangd.path": "xxx", // 安装的clangd地址
-"[cpp]": {
-    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
-},
+vscode 上使用 clangd 的配置 (项目根目录 `.vscode/settings.json` )
+
+``` json
+{
+    // clangd configuration for jmesh project (C++20, CMake)
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/build",
+        "--clang-tidy", // 开启 clang-tidy 代码检查
+        "--clang-tidy-checks=*,-clang-analyzer-*,-readability-identifier-length,-readability-magic-numbers,-cppcoreguidelines-avoid-magic-numbers",
+        "--all-scopes-completion",
+        "--completion-style=detailed",
+        "--header-insertion=never",
+        "--pch-storage=disk", // 如果内存够大可以关闭这个选项
+        "--log=error",
+        "--j=8", // 后台线程数，可根据机器配置自行调整
+        "--background-index",
+        "--query-driver=**", // 支持更多编译器驱动
+        "--fallback-style=llvm", // 当无法从 compile_commands.json 获取格式信息时使用 LLVM 风格
+        "--function-arg-placeholders=false", // 禁用函数参数占位符，减少干扰
+        "--suggest-missing-includes=true", // 自动建议缺失的头文件
+        "--cross-file-rename" // 支持跨文件重命名
+    ],
+    "clangd.path": "/usr/bin/clangd", // 安装的 clangd 地址
+    "clangd.checkUpdates": false, // 禁用自动更新检查
+    "clangd.onConfigChanged": "restart", // 配置更改时自动重启
+    "[cpp]": {
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd", //  CPP 语言文件支持
+        "editor.formatOnSave": true, // 保存时自动格式化
+        "editor.suggest.insertMode": "replace" // 优化补全体验
+    },
+    "[c]": {
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd" // C 语言文件支持
+    }
+}
 ```
 
 
