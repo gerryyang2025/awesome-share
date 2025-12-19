@@ -11,6 +11,9 @@ categories: ML
 
 # 背景与问题：强大的通用代理缺乏专业知识
 
+> 今天的 AI Agent 就像一个“智商 300 的数学天才”，它非常聪明，但在面对复杂的税务、法律或特定企业流程时，往往因为缺乏专业知识而显得力不从心。Anthropic 官方技术分享 [Don't Build Agents, Build Skills Instead – Barry Zhang & Mahesh Murag, Anthropic](https://www.youtube.com/watch?v=CEvIs9y1uog) 提出了一个颠覆性的观点：我们应该停止重复造轮子去构建各种垂直领域的 Agent，转而开始构建“Skill”。什么是 Skill？为什么 Anthropic 认为“文件夹”才是封装 AI 能力的最佳方式？在这场深度分享中，讲述了关于 Agent 架构的最新演进：**如何利用代码作为通用接口，如何通过 MCP 与 Skill 的组合让 AI 瞬间变身行业专家，以及如何让 AI 在与你共事的第 30 天比第 1 天好用得多**。这不仅是一场技术发布，更是一份关于未来**人机协作模式的行动指南**。
+
+
 * **现状**：以 Claude Code 为代表，现代大模型已经能够构建通用代理，通过代码执行和文件系统等完整计算环境处理复杂任务。
 
 * **痛点**：虽然通用能力强大，但当任务涉及特定领域（如金融分析、生物信息学、内部公司流程）时，它们**缺乏深入、可组合、易扩展的专业知识**。为每个用例从头定制专属代理，效率低下且难以维护。
@@ -244,7 +247,12 @@ In our example, the PDF skill includes a pre-written Python script that reads a 
 
 ![agent_skills11](/assets/images/202512/agent_skills11.png)
 
+
+**这种设计的巨大优势**
+
+
 ![agent_skills12](/assets/images/202512/agent_skills12.png)
+
 
 
 # Developing and evaluating skills
@@ -334,6 +342,7 @@ We’re excited to see what people build with Skills. Get started today by check
 * [Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
 * [Using Skills in Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude)
 * https://github.com/anthropics/skills
+* [Don't Build Agents, Build Skills Instead – Barry Zhang & Mahesh Murag, Anthropic](https://www.youtube.com/watch?v=CEvIs9y1uog) (Anthropic 官方技术分享)，[小宇宙翻译版本](https://www.xiaoyuzhoufm.com/episode/6943bf87c4f10bdeea0d738b?s=eyJ1IjogIjY1YTY2NGY2ZWRjZTY3MTA0YTM5YjY2NCJ9)
 
 
 
