@@ -590,7 +590,7 @@ SAMPLE_DATA = """Date,Kind,Model,Max Mode,Input (w/ Cache Write),Input (w/o Cach
   + 模型生成的输出 Token 数量。
 
 * Total Tokens
-  + 本次请求的总 Token 数量（输入 + 输出）。
+  + 本次请求的总 Token 数量 = Input (w/ Cache Write) + Input (w/o Cache Write) + Cache Read + Output Tokens。
 
 * Cost
   + 本次请求的费用（美元）。
