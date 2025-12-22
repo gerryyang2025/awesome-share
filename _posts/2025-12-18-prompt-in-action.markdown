@@ -11,10 +11,35 @@ categories: ML
 
 
 
-# 常用的提示词
+# 方案设计
 
 * 评估将 `A` 改为 `B` 的可行性、影响和改动复杂度。
 
+
+# 画图
+
+参考：[Next AI Draw.io](https://github.com/DayuanJiang/next-ai-draw-io) 工具
+
+* Give me a **animated connector** diagram of transformer's architecture.
+
+![diagram-2025-12-22](/assets/images/202512/diagram-2025-12-22.svg)
+
+
+* Generate a GCP architecture diagram with **GCP icons**. In this diagram, users connect to a frontend hosted on an instance.
+
+![gcp_demo](/assets/images/202512/gcp_demo.svg)
+
+* Generate a AWS architecture diagram with **AWS icons**. In this diagram, users connect to a frontend hosted on an instance.
+
+![aws_demo](/assets/images/202512/aws_demo.svg)
+
+* Generate a Azure architecture diagram with **Azure icons**. In this diagram, users connect to a frontend hosted on an instance.
+
+![azure_demo](/assets/images/202512/azure_demo.svg)
+
+* Draw a cute cat for me.
+
+![cat_demo](/assets/images/202512/cat_demo.svg)
 
 
 
