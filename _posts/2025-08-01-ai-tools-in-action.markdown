@@ -10,6 +10,16 @@ categories: ML
 
 
 
+# Drawing
+
+## [Next AI Draw.io](https://github.com/DayuanJiang/next-ai-draw-io)
+
+A Next.js web application that integrates AI capabilities with draw.io diagrams. Create, modify, and enhance diagrams through natural language commands and AI-assisted visualization.
+
+Features:
+
+![ai-draw](/assets/images/202512/ai-draw.png)
+
 
 
 # Nano Banana (Gemini)
