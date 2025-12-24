@@ -9,7 +9,9 @@ categories: ML
 {:toc}
 
 
-参考 [NotebookLM 的维基百科](https://zh.wikipedia.org/zh-cn/NotebookLM)，NotebookLM 是 Google 实验室推出的一款在线笔记本，NotebookLM 内置 Gemini，它可以根据用户上传的内容生成摘要、注解和用户想要的答案。除了文本文件，用户还可以上传 PDF 文档格式、Google 文档、网站和 Google 演示稿。此外用户上传文件后，NotebookLM 可以根据文件内容生成 Podcast 以及音频文件，并在 Podcast 中概述文件内容。NotebookLM 于 2023 年推出，当时名为 Project Tailwind。
+参考 [NotebookLM 的维基百科](https://zh.wikipedia.org/zh-cn/NotebookLM)，NotebookLM 是 Google 实验室推出的一款在线笔记本，NotebookLM 内置 Gemini，它可以根据用户上传的内容生成摘要、注解和用户想要的答案。除了文本文件，用户还可以上传 PDF 文档格式、Google 文档、网站和 Google 演示稿。此外用户上传文件后，NotebookLM 可以根据文件内容生成 Podcast 以及音频文件，并在 Podcast 中概述文件内容。NotebookLM 于 **2023** 年推出，当时名为 **Project Tailwind**。
+
+> Notebook + Language Model = NotebookLM
 
 **其核心理念是 “先给你的 AI 提供资料，再让它基于资料帮你工作” 。它不像 ChatGPT 那样拥有通用知识库，而是专注于分析和理解你上传的文档，并在此基础上与你深度互动。**
 
