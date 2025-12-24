@@ -63,6 +63,35 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
 
 # Words (柯林斯英汉双解大词典)
 
+* philosophy /fɪˈlɒsəfɪ/
+  + N-UNCOUNT **Philosophy** is the study or creation of theories about basic things such as the nature of existence, knowledge, and thought, or about how people should live. 哲学
+    - He studied **philosophy** and **psychology** at Yale. 他在耶鲁大学学习哲学和心理学。
+  + N-COUNT A **philosophy** is a particular set of ideas that a philosopher has. 哲学思想
+  + N-COUNT A **philosophy** is a particular theory that someone has about how to live or how to deal with a particular situation. 人生哲学; 处事原则
+    - **The best philosophy is to change your food habits to a low-sugar diet**.  **最好的生活方式是将你的饮食习惯改成食用低糖食品**。
+
+* psychology /saɪˈkɒlədʒi/
+  + N-UNCOUNT **Psychology** is the scientific study of the human mind and the reasons for people's behaviour. 心理学
+  + N-UNCOUNT The **psychology** of a person is the kind of mind that they have, which makes them think or behave in the way that they do. 心理
+    - a fascination with the **psychology** of murderers.
+
+* pedagogy /ˈpɛdəˌɡɒɡɪ/
+  + N-UNCOUNT **Pedagogy** is the study and theory of the methods and principles of teaching. 教育学; 教学法
+
+
+
+* proverb /ˈprɒvɜːb/
+  + N-COUNT A **proverb** is a short sentence that people often quote, because it gives advice or tells you something about life. 谚语
+    - An old Arab **proverb** says, "The enemy of my enemy is my friend." 有一句古老的阿拉伯谚语说：“我敌人的敌人是我的朋友。”
+
+
+* pithy /ˈpɪθɪ/
+  + ADJ A **pithy** comment or piece of writing is short, direct, and full of meaning. 简明扼要的
+    - His **pithy** advice to young painters was, "Above all, keep your colours fresh." 他给年轻画家简明扼要的建议是，“至关重要的，要保持色彩鲜艳。”
+
+* hyphen /ˈhaɪfn/
+  + N-COUNT A **hyphen** is the punctuation sign used to join words together to make a compound, as in "left-handed." People also use a hyphen to show that the rest of a word is on the next line. 连字符
+
 
 * disclosure disclosure
   + N-VAR **Disclosure** is the act of giving people new or secret information. 公开
