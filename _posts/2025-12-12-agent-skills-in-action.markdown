@@ -21,6 +21,17 @@ categories: ML
 
 # 解决方案：Agent Skills（智能体技能包）
 
+**Skills** are **folders of instructions, scripts, and resources** that Claude **loads dynamically to improve performance on specialized tasks**. Skills teach Claude how to complete specific tasks in a repeatable way, whether that's creating documents with your company's brand guidelines, analyzing data using your organization's specific workflows, or automating personal tasks.
+
+For more information, check out:
+
+* [What are skills?](https://support.claude.com/en/articles/12512176-what-are-skills)
+* [Using skills in Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude)
+* [How to create custom skills](https://support.claude.com/en/articles/12512198-creating-custom-skills)
+* [Equipping agents for the real world with Agent Skills](https://anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
+
+
+
 这是为解决上述问题提出的创新概念。**可以将其理解为为 AI 代理准备的、可插拔的“专业工具包”或“知识模块”**。
 
 * **是什么：一个有组织的文件夹**，里面包含：
@@ -33,6 +44,8 @@ categories: ML
 
 
 > **Agent Skills 代表了一种范式转变：从为每个特定任务“建造专属代理”，转向为强大的通用代理“装备可组合的技能包”**。它旨在解决 AI 代理专业化过程中的**可扩展性、可移植性和知识复用问题**，通过将人类专家的知识封装成模块化资源，让 AI 代理能更灵活、高效地适应各种复杂领域任务。这标志着 AI 代理正朝着更模块化、生态化的方向发展。
+
+
 
 
 
@@ -115,6 +128,45 @@ Claude automatically invokes relevant skills based on your task—no manual sele
 
 * Claude Code: [Documentation](https://docs.claude.com/en/docs/claude-code/skills)
 * Example Skills to customize: [GitHub repository](https://github.com/anthropics/skills)
+
+## Skill Sets
+
+* [./skills](https://github.com/anthropics/skills/blob/main/skills): Skill examples for Creative & Design, Development & Technical, Enterprise & Communication, and Document Skills
+* [./spec](https://github.com/anthropics/skills/blob/main/spec): The Agent Skills specification
+* [./template](https://github.com/anthropics/skills/blob/main/template): Skill template
+
+## Creating a Basic Skill
+
+**Skills** are simple to create - just a folder with a `SKILL.md` file containing YAML frontmatter and instructions. You can use the **template-skill** in this repository as a starting point:
+
+``` yaml
+---
+name: my-skill-name
+description: A clear description of what this skill does and when to use it
+---
+
+# My Skill Name
+
+[Add your instructions here that Claude will follow when this skill is active]
+
+## Examples
+- Example usage 1
+- Example usage 2
+
+## Guidelines
+- Guideline 1
+- Guideline 2
+```
+
+The **frontmatter** requires only two fields:
+
+> frontmatter 指的是书籍或正式文档中，位于正文 (main matter) 之前的部分。它通常包含与书籍相关但并非正文内容的信息。
+
+* `name` - A unique identifier for your skill (lowercase, hyphens (连字符) for spaces)
+* `description` - A complete description of what the skill does and when to use it
+
+The markdown content below contains the instructions, examples, and guidelines that Claude will follow. For more details, see [How to create custom skills](https://support.claude.com/en/articles/12512198-creating-custom-skills).
+
 
 
 # What's next
@@ -343,6 +395,7 @@ We’re excited to see what people build with Skills. Get started today by check
 * [Using Skills in Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude)
 * https://github.com/anthropics/skills
 * [Don't Build Agents, Build Skills Instead – Barry Zhang & Mahesh Murag, Anthropic](https://www.youtube.com/watch?v=CEvIs9y1uog) (Anthropic 官方技术分享)，[小宇宙翻译版本](https://www.xiaoyuzhoufm.com/episode/6943bf87c4f10bdeea0d738b?s=eyJ1IjogIjY1YTY2NGY2ZWRjZTY3MTA0YTM5YjY2NCJ9)
+* [How to create custom Skills](https://support.claude.com/en/articles/12512198-how-to-create-custom-skills)
 
 
 
