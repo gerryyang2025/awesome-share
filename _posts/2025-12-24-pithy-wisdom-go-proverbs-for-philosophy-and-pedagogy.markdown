@@ -12,24 +12,25 @@ Rob Pike 在 2015 年 Gopherfest 上的演讲，探讨了如何通过 **“编�
 
 > 学习 Go 语言就像学习烹饪。语法是识别食材和刀具，而这些箴言就像是顶级厨师总结出的“火候秘籍”。它们并不规定你必须切多大的块，但会告诉你“过度的调料会掩盖食材的原味”，指引你做出清爽且高质量的佳肴。
 
-[02:42](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=162s) Don't communicate by sharing memory, share memory by communicating.
-[03:42](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=222s) Concurrency is not parallelism.
-[04:20](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=260s) Channels orchestrate; mutexes serialize.
-[05:18](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=318s) The bigger the interface, the weaker the abstraction.
-[06:25](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=385s) Make the zero value useful.
-[07:36](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=456s) interface{} says nothing.
-[08:43](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=523s) Gofmt's style is no one's favorite, yet gofmt is everyone's favorite.
-[09:28](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=568s) A little copying is better than a little dependency.
-[11:10](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=670s) Syscall must always be guarded with build tags.
-[11:52](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=712s) Cgo must always be guarded with build tags.
-[12:37](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=757s) Cgo is not Go.
-[13:50](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=830s) With the unsafe package there are no guarantees.
-[14:34](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=874s) Clear is better than clever.
-[15:23](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=923s) Reflection is never clear.
-[16:13](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=973s) Errors are values.
-[17:27](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=1047s) Don't just check errors, handle them gracefully.
-[18:10](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=1090s) Design the architecture, name the components, document the details.
-[19:08](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=1148s) Documentation is for users.
+
+* [02:42](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=162s) Don't communicate by sharing memory, share memory by communicating.
+* [03:42](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=222s) Concurrency is not parallelism.
+* [04:20](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=260s) Channels orchestrate; mutexes serialize.
+* [05:18](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=318s) The bigger the interface, the weaker the abstraction.
+* [06:25](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=385s) Make the zero value useful.
+* [07:36](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=456s) interface{} says nothing.
+* [08:43](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=523s) Gofmt's style is no one's favorite, yet gofmt is everyone's favorite.
+* [09:28](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=568s) A little copying is better than a little dependency.
+* [11:10](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=670s) Syscall must always be guarded with build tags.
+* [11:52](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=712s) Cgo must always be guarded with build tags.
+* [12:37](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=757s) Cgo is not Go.
+* [13:50](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=830s) With the unsafe package there are no guarantees.
+* [14:34](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=874s) Clear is better than clever.
+* [15:23](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=923s) Reflection is never clear.
+* [16:13](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=973s) Errors are values.
+* [17:27](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=1047s) Don't just check errors, handle them gracefully.
+* [18:10](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=1090s) Design the architecture, name the components, document the details.
+* [19:08](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=1148s) Documentation is for users.
 
 
 
@@ -76,7 +77,7 @@ Rob Pike 在 2015 年 Gopherfest 上的演讲，探讨了如何通过 **“编�
 
 # Refer
 
-* [Gopherfest 2015 | Go Proverbs with Rob Pike](https://www.youtube.com/watch?v=PAAkCSZUG1c)
+* [Gopherfest 2015 - Go Proverbs with Rob Pike](https://www.youtube.com/watch?v=PAAkCSZUG1c)
 * https://www.youtube.com/@golang
 * https://notebooklm.google.com/notebook/fe1d8b50-fdaa-4be5-aa92-524039b32f81 (NotebookLM 解读)
 
