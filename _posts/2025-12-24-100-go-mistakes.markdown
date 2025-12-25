@@ -27,7 +27,7 @@ Meanwhile, it's also open to the community. If you believe that a common Go mist
 
 **Variable shadowing** occurs when a variable name is redeclared in an inner block, but this practice is prone to mistakes. Imposing a rule to forbid shadowed variables depends on personal taste. For example, sometimes it can be convenient to reuse an existing variable name like `err` for errors. Yet, in general, we should remain cautious because we now know that we can face a scenario where the code compiles, but the variable that receives the value is not the one expected.
 
-代码示例：
+**代码示例：**
 
 ``` go
 package main
@@ -130,7 +130,7 @@ func createDefaultClient() (*http.Client, error) {
 }
 ```
 
-问题解析：
+**问题解析：**
 
 在 `listing1()` 中出现了变量遮蔽问题：`:=` 操作符在 if 块内创建了新的局部变量 client，而不是修改外部的 client 变量。所以外部 client 始终是 nil。
 
@@ -151,13 +151,13 @@ func listing1() error {
 }
 ```
 
-优化方案：
+**优化方案：**
 
 * 解决方案1：`listing2()`。使用不同的变量名 `c` 接收返回值，然后赋值给外部 `client`，避免变量遮蔽，但需要额外的临时变量。
 * 解决方案2：`listing3()`。预先声明所有变量，使用赋值操作符 `=` 而不是短声明 `:=`，代码较冗长，错误处理重复。
 * 最佳实践：`listing4()`。预先声明变量，逻辑与错误处理分离，最简洁，避免重复代码。
 
-避免遮蔽的建议：
+**避免遮蔽的建议：**
 
 * 使用 IDE 或 linter 工具检测遮蔽
 * 考虑禁用变量遮蔽的代码规范
@@ -214,7 +214,7 @@ if s == "" {
 
 Writing readable code is an important challenge for every developer. Striving to reduce the number of nested blocks, aligning the happy path on the left, and returning as early as possible are concrete means to improve our code’s readability.
 
-代码示例：
+**代码示例：**
 
 ``` go
 package main
@@ -283,14 +283,14 @@ Init functions can lead to some issues:
 We should be cautious with init functions. They can be helpful in some situations, however, such as defining static configuration. Otherwise, and in most cases, we should handle initializations through ad hoc functions.
 
 
-init 函数是 Go 语言中的特殊函数，用于包初始化：
+**init 函数是 Go 语言中的特殊函数，用于包初始化：**
 
 * 无参数，无返回值
 * 在程序启动时自动执行
 * 一个包可以有多个 init 函数，按声明顺序执行
 * 执行时机：**包级变量初始化后，main 函数执行前**
 
-示例1：多个 init 函数
+**示例1：多个 init 函数**
 
 ``` go
 // main.go
@@ -330,13 +330,13 @@ func Store(key, value string) error {
 }
 ```
 
-执行顺序：
+**执行顺序：**
 
 1. 导入 redis 包 → 执行 `redis.init()`
 2. 执行 main 包的 init 函数（按声明顺序）
 3. 执行 main 函数
 
-输出：
+**输出：**
 
 ```
 redis
@@ -344,7 +344,7 @@ init 1
 init 2
 ```
 
-示例2：数据库连接初始化
+**示例2：数据库连接初始化**
 
 ``` go
 package main
@@ -384,7 +384,7 @@ func createClient(dataSourceName string) (*sql.DB, error) {
 
 **init 函数的问题：**
 
-1. init 函数错误处理受限。如果初始化失败，只能 panic，无法返回错误给调用者，程序直接崩溃
+* init 函数错误处理受限。如果初始化失败，只能 panic，无法返回错误给调用者，程序直接崩溃
 
 ``` go
 func init() {
@@ -400,7 +400,7 @@ func initDB() error {
 }
 ```
 
-2. 测试复杂化。
+* 测试复杂化。
   + 自动执行，无法控制时机
   + 依赖全局变量，测试相互影响
   + 需要设置环境变量，测试配置复杂
@@ -410,7 +410,7 @@ func initDB() error {
 // 或者需要模拟全局状态
 ```
 
-3. 依赖全局变量
+* 依赖全局变量
   + 全局状态难以维护
   + 并发安全问题
   + 代码耦合度高
@@ -423,7 +423,7 @@ func init() {
 }
 ```
 
-4. 执行顺序不可控
+* 执行顺序不可控
 
 ``` go
 // 多个包的 init 函数执行顺序
@@ -447,7 +447,7 @@ func init() {
 }
 ```
 
-合理用途：
+**合理用途：**
 
 * 静态配置初始化
 * 验证包级变量合理性
@@ -532,7 +532,7 @@ func main() {
 
 总结：
 
-init 函数的主要问题：
+**init 函数的主要问题：**
 
 1. 错误处理能力差：只能 panic，无法优雅处理
 2. 测试困难：自动执行，依赖全局状态
@@ -592,7 +592,7 @@ type person struct {
 
 **何时使用 Getter/Setter？**
 
-适合使用的情况1：需要验证逻辑
+**适合使用的情况1：需要验证逻辑**
 
 ``` go
 type BankAccount struct {
@@ -625,7 +625,7 @@ func (b *BankAccount) Withdraw(amount float64) error {
 }
 ```
 
-适合使用的情况2：需要计算或派生值
+**适合使用的情况2：需要计算或派生值**
 
 ``` go
 type Rectangle struct {
@@ -643,7 +643,7 @@ func (r *Rectangle) Perimeter() float64 {
 }
 ```
 
-适合使用的情况3：需要延迟初始化或缓存
+**适合使用的情况3：需要延迟初始化或缓存**
 
 ``` go
 type ExpensiveResource struct {
