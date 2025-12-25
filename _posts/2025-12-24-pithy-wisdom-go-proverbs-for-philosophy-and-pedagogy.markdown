@@ -33,6 +33,8 @@ Rob Pike 在 2015 年 Gopherfest 上的演讲，探讨了如何通过 **“编�
 * [19:08](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=1148s) Documentation is for users.
 
 
+![notebooklm19](/assets/images/202512/notebooklm19.png)
+
 
 # Go 箴言的起源与目的
 
