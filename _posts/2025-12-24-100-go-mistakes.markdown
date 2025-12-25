@@ -1,0 +1,1061 @@
+---
+layout: post
+title:  "100 Go Mistakes and How to Avoid Them"
+date:   2025-12-24 20:30:00 +0800
+categories: [GoLang]
+---
+
+* Do not remove this line (it will not be displayed)
+{:toc}
+
+Source code and community space of 📖 100 Go Mistakes and How to Avoid Them, published by Manning in August 2022. Read online: [100go.co](https://100go.co/)
+
+Meanwhile, it's also open to the community. If you believe that a common Go mistake should be added, please create an [issue](https://github.com/teivah/100-go-mistakes/issues/new?assignees=&labels=community+mistake&template=community_mistake.md&title=).
+
+![100_go_mistakes](/assets/images/202512/100_go_mistakes.png)
+
+![100_go_mistakes2](/assets/images/202512/100_go_mistakes2.png)
+
+
+# Code and Project Organization
+
+## 1. Unintended variable shadowing (变量遮蔽)
+
+> TL;DR
+>
+> **Avoiding shadowed variables can help prevent mistakes like referencing the wrong variable or confusing readers.**
+
+**Variable shadowing** occurs when a variable name is redeclared in an inner block, but this practice is prone to mistakes. Imposing a rule to forbid shadowed variables depends on personal taste. For example, sometimes it can be convenient to reuse an existing variable name like `err` for errors. Yet, in general, we should remain cautious because we now know that we can face a scenario where the code compiles, but the variable that receives the value is not the one expected.
+
+代码示例：
+
+``` go
+package main
+
+import (
+	"log"
+	"net/http"
+)
+
+func main() {
+	_ = listing1()
+	_ = listing2()
+	_ = listing3()
+	_ = listing4()
+}
+
+func listing1() error {
+	var client *http.Client
+	if tracing {
+		client, err := createClientWithTracing()
+		if err != nil {
+			return err
+		}
+		log.Println(client)
+	} else {
+		client, err := createDefaultClient()
+		if err != nil {
+			return err
+		}
+		log.Println(client)
+	}
+
+	_ = client
+	return nil
+}
+
+func listing2() error {
+	var client *http.Client
+	if tracing {
+		c, err := createClientWithTracing()
+		if err != nil {
+			return err
+		}
+		client = c
+	} else {
+		c, err := createDefaultClient()
+		if err != nil {
+			return err
+		}
+		client = c
+	}
+
+	_ = client
+	return nil
+}
+
+func listing3() error {
+	var client *http.Client
+	var err error
+	if tracing {
+		client, err = createClientWithTracing()
+		if err != nil {
+			return err
+		}
+	} else {
+		client, err = createDefaultClient()
+		if err != nil {
+			return err
+		}
+	}
+
+	_ = client
+	return nil
+}
+
+func listing4() error {
+	var client *http.Client
+	var err error
+	if tracing {
+		client, err = createClientWithTracing()
+	} else {
+		client, err = createDefaultClient()
+	}
+	if err != nil {
+		return err
+	}
+
+	_ = client
+	return nil
+}
+
+var tracing bool
+
+func createClientWithTracing() (*http.Client, error) {
+	return nil, nil
+}
+
+func createDefaultClient() (*http.Client, error) {
+	return nil, nil
+}
+```
+
+问题解析：
+
+在 `listing1()` 中出现了变量遮蔽问题：`:=` 操作符在 if 块内创建了新的局部变量 client，而不是修改外部的 client 变量。所以外部 client 始终是 nil。
+
+``` go
+func listing1() error {
+    var client *http.Client  // 外部声明的 client 变量
+    if tracing {
+        // 这里使用 := 重新声明了新的 client 和 err 变量
+        client, err := createClientWithTracing()  // 这里创建了新的 client 变量
+        if err != nil {
+            return err
+        }
+        log.Println(client)  // 打印的是内部 client
+    }
+    // ...
+    _ = client  // 这里使用的是外部的 client，仍然是 nil！
+    return nil
+}
+```
+
+优化方案：
+
+* 解决方案1：`listing2()`。使用不同的变量名 `c` 接收返回值，然后赋值给外部 `client`，避免变量遮蔽，但需要额外的临时变量。
+* 解决方案2：`listing3()`。预先声明所有变量，使用赋值操作符 `=` 而不是短声明 `:=`，代码较冗长，错误处理重复。
+* 最佳实践：`listing4()`。预先声明变量，逻辑与错误处理分离，最简洁，避免重复代码。
+
+避免遮蔽的建议：
+
+* 使用 IDE 或 linter 工具检测遮蔽
+* 考虑禁用变量遮蔽的代码规范
+* 除非有明确理由，否则避免重用变量名
+
+
+## 2. Unnecessary nested code (代码嵌套过深)
+
+> TL;DR
+>
+> **Avoiding nested levels and keeping the happy path aligned on the left makes building a mental code model easier.**
+
+In general, the more nested levels a function requires, the more complex it is to read and understand. Let’s see some different applications of this rule to optimize our code for readability:
+
+When an `if` block returns, we should omit the `else` block in all cases. For example, we shouldn’t write:
+
+``` go
+if foo() {
+    // ...
+    return true
+} else {
+    // ...
+}
+```
+
+Instead, we omit the `else` block like this:
+
+``` go
+if foo() {
+    // ...
+    return true
+}
+// ...
+```
+
+We can also follow this logic with a non-happy path:
+
+``` go
+if s != "" {
+    // ...
+} else {
+    return errors.New("empty string")
+}
+```
+
+Here, an empty `s` represents the non-happy path. Hence, we should flip the condition like so:
+
+``` go
+if s == "" {
+    return errors.New("empty string")
+}
+// ...
+```
+
+Writing readable code is an important challenge for every developer. Striving to reduce the number of nested blocks, aligning the happy path on the left, and returning as early as possible are concrete means to improve our code’s readability.
+
+代码示例：
+
+``` go
+package main
+
+import "errors"
+
+// 反面示例
+func join1(s1, s2 string, max int) (string, error) {
+	if s1 == "" {
+		return "", errors.New("s1 is empty")
+	} else {
+		if s2 == "" {
+			return "", errors.New("s2 is empty")
+		} else {
+			concat, err := concatenate(s1, s2)
+			if err != nil {
+				return "", err
+			} else {
+				if len(concat) > max {
+					return concat[:max], nil
+				} else {
+					return concat, nil
+				}
+			}
+		}
+	}
+}
+
+// 建议用法
+func join2(s1, s2 string, max int) (string, error) {
+	if s1 == "" {
+		return "", errors.New("s1 is empty")
+	}
+	if s2 == "" {
+		return "", errors.New("s2 is empty")
+	}
+	concat, err := concatenate(s1, s2)
+	if err != nil {
+		return "", err
+	}
+	if len(concat) > max {
+		return concat[:max], nil
+	}
+	return concat, nil
+}
+
+func concatenate(s1, s2 string) (string, error) {
+	return "", nil
+}
+```
+
+## 3. Misusing init functions (init 函数误用)
+
+> TL;DR
+>
+> **When initializing variables, remember that init functions have limited error handling and make state handling and testing more complex. In most cases, initializations should be handled as specific functions.**
+
+An init function is a function used to initialize the state of an application. It takes no arguments and returns no result (a `func()` function). When a package is initialized, all the constant and variable declarations in the package are evaluated. Then, the init functions are executed.
+
+Init functions can lead to some issues:
+
+* They can limit error management.
+* They can complicate how to implement tests (for example, an external dependency must be set up, which may not be necessary for the scope of unit tests).
+* If the initialization requires us to set a state, that has to be done through global variables.
+
+We should be cautious with init functions. They can be helpful in some situations, however, such as defining static configuration. Otherwise, and in most cases, we should handle initializations through ad hoc functions.
+
+
+init 函数是 Go 语言中的特殊函数，用于包初始化：
+
+* 无参数，无返回值
+* 在程序启动时自动执行
+* 一个包可以有多个 init 函数，按声明顺序执行
+* 执行时机：**包级变量初始化后，main 函数执行前**
+
+示例1：多个 init 函数
+
+``` go
+// main.go
+package main
+
+import (
+	"fmt"
+	"github.com/teivah/100-go-mistakes/src/02-code-project-organization/3-init-functions/redis"
+)
+
+func init() {
+	fmt.Println("init 1")  // 第二个执行
+}
+
+func init() {
+	fmt.Println("init 2")  // 第三个执行
+}
+
+func main() {
+	err := redis.Store("foo", "bar")
+	_ = err
+}
+```
+
+``` go
+// redis.go
+package redis
+
+import "fmt"
+
+func init() {
+	fmt.Println("redis")  // 第一个执行
+}
+
+func Store(key, value string) error {
+	return nil
+}
+```
+
+执行顺序：
+
+1. 导入 redis 包 → 执行 `redis.init()`
+2. 执行 main 包的 init 函数（按声明顺序）
+3. 执行 main 函数
+
+输出：
+
+```
+redis
+init 1
+init 2
+```
+
+示例2：数据库连接初始化
+
+``` go
+package main
+
+import (
+	"database/sql"
+	"log"
+	"os"
+)
+
+var db *sql.DB  // 全局变量
+
+func init() {
+	dataSourceName := os.Getenv("MYSQL_DATA_SOURCE_NAME")
+	d, err := sql.Open("mysql", dataSourceName)
+	if err != nil {
+		log.Panic(err)  // 错误处理受限
+	}
+	err = d.Ping()
+	if err != nil {
+		log.Panic(err)  // 只能 panic，无法优雅处理
+	}
+	db = d  // 必须使用全局变量
+}
+
+func createClient(dataSourceName string) (*sql.DB, error) {
+	db, err := sql.Open("mysql", dataSourceName)
+	if err != nil {
+		return nil, err
+	}
+	if err = db.Ping(); err != nil {
+		return nil, err
+	}
+	return db, nil
+}
+```
+
+**init 函数的问题：**
+
+1. init 函数错误处理受限。如果初始化失败，只能 panic，无法返回错误给调用者，程序直接崩溃
+
+``` go
+func init() {
+	// 如果初始化失败，只能 panic
+	// 无法返回错误给调用者
+	log.Panic(err)  // 程序直接崩溃
+}
+
+// 对比普通函数
+func initDB() error {
+	// 可以返回错误，让调用者决定如何处理
+	return errors.New("connection failed")
+}
+```
+
+2. 测试复杂化。
+  + 自动执行，无法控制时机
+  + 依赖全局变量，测试相互影响
+  + 需要设置环境变量，测试配置复杂
+
+``` go
+// 测试时需要：go test -env "MYSQL_DATA_SOURCE_NAME=..."
+// 或者需要模拟全局状态
+```
+
+3. 依赖全局变量
+  + 全局状态难以维护
+  + 并发安全问题
+  + 代码耦合度高
+
+``` go
+var db *sql.DB  // 全局变量
+
+func init() {
+	db = d  // 必须用全局变量存储状态
+}
+```
+
+4. 执行顺序不可控
+
+``` go
+// 多个包的 init 函数执行顺序
+// 由导入依赖决定，不易理解和维护
+package A: init() → package B: init() → main.init()
+```
+
+**init 函数的适用场景：**
+
+``` go
+package config
+
+var DefaultConfig Config
+
+func init() {
+	// 初始化静态配置（无外部依赖）
+	DefaultConfig = Config{
+		Timeout: 30 * time.Second,
+		MaxConn: 100,
+	}
+}
+```
+
+合理用途：
+
+* 静态配置初始化
+* 验证包级变量合理性
+* 注册驱动（如 database/sql 驱动注册）
+* 设置默认行为
+
+**不适合的情况：**
+
+``` go
+// 不适合：有外部依赖的初始化
+func init() {
+	// 从环境变量读取配置（可能有环境依赖）
+	// 连接数据库（可能失败，需要错误处理）
+	// 启动网络服务（应延迟初始化）
+}
+```
+
+**最佳实践建议：**
+
+* 使用显式初始化函数
+
+``` go
+// 更好的方式
+type App struct {
+    db *sql.DB
+    // 其他依赖
+}
+
+func NewApp() (*App, error) {
+    db, err := createClient(os.Getenv("MYSQL_DATA_SOURCE_NAME"))
+    if err != nil {
+        return nil, fmt.Errorf("init db: %w", err)
+    }
+    return &App{db: db}, nil
+}
+
+func main() {
+    app, err := NewApp()
+    if err != nil {
+        log.Fatal(err)  // 可控的错误处理
+    }
+    // 使用 app
+}
+```
+
+* 依赖注入
+
+``` go
+func CreateDB(dataSourceName string) (*sql.DB, error) {
+    // 可测试，可控制
+}
+
+func main() {
+    db, err := CreateDB(os.Getenv("MYSQL_DATA_SOURCE_NAME"))
+    if err != nil {
+        // 优雅处理
+    }
+}
+```
+
+* 配置对象模式
+
+``` go
+type Config struct {
+    DBDataSource string
+    // 其他配置
+}
+
+func LoadConfig() (Config, error) {
+    // 显式加载配置，可返回错误
+}
+
+func main() {
+    cfg, err := LoadConfig()
+    if err != nil {
+        // 处理错误
+    }
+    db, err := createClient(cfg.DBDataSource)
+    // ...
+}
+```
+
+总结：
+
+init 函数的主要问题：
+
+1. 错误处理能力差：只能 panic，无法优雅处理
+2. 测试困难：自动执行，依赖全局状态
+3. 隐式行为：代码逻辑不明显，维护困难
+4. 执行顺序依赖：由导入顺序决定，不易理解
+
+**建议：除非是简单的静态初始化，否则使用显式初始化函数，这样代码更清晰、更可测试、错误处理更完善。**
+
+
+## 4. Overusing getters and setters (过度使用 Getter/Setter)
+
+
+> TL;DR
+>
+> **Forcing the use of getters and setters isn’t idiomatic in Go. Being pragmatic and finding the right balance between efficiency and blindly following certain idioms should be the way to go.**
+
+Data encapsulation refers to hiding the values or state of an object. Getters and setters are means to enable encapsulation by providing exported methods on top of unexported object fields.
+
+In Go, there is no automatic support for getters and setters as we see in some languages. It is also considered neither mandatory nor idiomatic to use getters and setters to access struct fields. We shouldn’t overwhelm our code with getters and setters on structs if they don’t bring any value. We should be pragmatic and strive to find the right balance between efficiency and following idioms that are sometimes considered indisputable in other programming paradigms.
+
+Remember that Go is a unique language designed for many characteristics, including simplicity. However, if we find a need for getters and setters or, as mentioned, foresee a future need while guaranteeing forward compatibility, there’s nothing wrong with using them.
+
+
+Go 语言的设计哲学强调简洁和实用，不强制使用 `getter` 和 `setter`。这与 Java 等语言形成鲜明对比。
+
+**Go 语言的独特设计：**
+
+* 没有自动属性支持
+
+``` go
+// Java风格（自动属性）
+private String name;
+public String getName() { return name; }
+public void setName(String name) { this.name = name; }
+
+// Go风格（直接访问或手动方法）
+type Person struct {
+    Name string  // 直接导出，简单情况
+}
+```
+
+* 访问控制通过大小写实现
+
+``` go
+// 导出字段（公开）
+type Person struct {
+    Name string    // 大写开头 - 公开访问
+    Age  int       // 大写开头 - 公开访问
+}
+
+// 非导出字段（私有）
+type person struct {
+    name string    // 小写开头 - 包内访问
+    age  int       // 小写开头 - 包内访问
+}
+```
+
+**何时使用 Getter/Setter？**
+
+适合使用的情况1：需要验证逻辑
+
+``` go
+type BankAccount struct {
+    balance float64  // 私有，需要保护
+}
+
+// Getter
+func (b *BankAccount) Balance() float64 {
+    return b.balance
+}
+
+// Setter（带验证）
+func (b *BankAccount) Deposit(amount float64) error {
+    if amount <= 0 {
+        return fmt.Errorf("存款金额必须为正数")
+    }
+    b.balance += amount
+    return nil
+}
+
+func (b *BankAccount) Withdraw(amount float64) error {
+    if amount <= 0 {
+        return fmt.Errorf("取款金额必须为正数")
+    }
+    if amount > b.balance {
+        return fmt.Errorf("余额不足")
+    }
+    b.balance -= amount
+    return nil
+}
+```
+
+适合使用的情况2：需要计算或派生值
+
+``` go
+type Rectangle struct {
+    width  float64
+    height float64
+}
+
+// Getter（计算值）
+func (r *Rectangle) Area() float64 {
+    return r.width * r.height
+}
+
+func (r *Rectangle) Perimeter() float64 {
+    return 2 * (r.width + r.height)
+}
+```
+
+适合使用的情况3：需要延迟初始化或缓存
+
+``` go
+type ExpensiveResource struct {
+    mu     sync.RWMutex
+    data   []byte
+    loaded bool
+}
+
+// Getter（延迟加载）
+func (e *ExpensiveResource) Data() ([]byte, error) {
+    e.mu.RLock()
+    if e.loaded {
+        data := e.data
+        e.mu.RUnlock()
+        return data, nil
+    }
+    e.mu.RUnlock()
+
+    // 加写锁并加载
+    e.mu.Lock()
+    defer e.mu.Unlock()
+
+    if !e.loaded {
+        var err error
+        e.data, err = loadExpensiveData()
+        if err != nil {
+            return nil, err
+        }
+        e.loaded = true
+    }
+    return e.data, nil
+}
+```
+
+**不需要使用的情况**
+
+* 简单数据传输对象（DTO）
+
+``` go
+// 直接导出字段更简洁
+type Point struct {
+    X int
+    Y int
+}
+
+// 使用简单明了
+p := Point{X: 10, Y: 20}
+fmt.Printf("Point: (%d, %d)\n", p.X, p.Y)
+```
+
+* 配置结构
+
+``` go
+type Config struct {
+    Host     string
+    Port     int
+    Timeout  time.Duration
+    MaxConns int
+}
+
+// 直接初始化更清晰
+config := Config{
+    Host:     "localhost",
+    Port:     8080,
+    Timeout:  30 * time.Second,
+    MaxConns: 100,
+}
+```
+
+* 内部辅助结构
+
+``` go
+// 只在包内使用，可以直接访问
+type internalState struct {
+    counter    int
+    lastUpdate time.Time
+    active     bool
+}
+
+func (is *internalState) increment() {
+    is.counter++
+    is.lastUpdate = time.Now()
+}
+```
+
+**总结建议**
+
+* 默认直接导出字段：Go 社区倾向于简单直接的访问方式
+* 有理由时才封装：
+  + 需要验证逻辑
+  + 需要维护不变性
+  + 需要派生计算值
+  + 涉及并发安全
+
+* 保持 API 稳定：如果结构体是公开 API 的一部分，提前考虑是否需要封装
+* 信任使用者：Go 哲学假设开发者知道自己在做什么，不过度保护
+* 文档说明：通过文档说明约束，而不是强制封装
+
+Go 语言的这种务实态度正是其魅力所在——**在简洁性和封装性之间找到平衡，避免不必要的复杂性**。
+
+
+## 5. Interface pollution (接口污染)
+
+> TL;DR
+>
+> **Abstractions should be discovered, not created. To prevent unnecessary complexity, create an interface when you need it and not when you foresee needing it, or if you can at least prove the abstraction to be a valid one.**
+
+More: [Interface pollution](https://100go.co/5-interface-pollution/)
+
+**Interfaces** are one of the cornerstones(基石) of the Go language when designing and structuring our code. However, like many tools or concepts, abusing them is generally not a good idea. **Interface pollution** is about overwhelming our code with unnecessary abstractions, making it harder to understand. It’s a common mistake made by developers coming from another language with different habits. Before delving into the topic, let’s refresh our minds about Go’s interfaces. Then, we will see when it’s appropriate to use interfaces and when it may be considered pollution.
+
+Go 语言中 “接口污染” 的概念，即过度或不必要地使用接口，反而会让代码变得复杂难懂。**核心观点是：接口的抽象应该是“被发现”，而不是“被创造”。**
+
+### Concepts (interface)
+
+An **interface** provides a way to specify the behavior of an object. We use interfaces to create common abstractions that multiple objects can implement. What makes Go interfaces so different is that they are satisfied implicitly. There is no explicit keyword like implements to mark that an object `X` `implements` interface `Y`.
+
+To understand what makes interfaces so powerful, we will dig into two popular ones from the standard library: `io.Reader` and `io.Writer`. The `io` package provides abstractions for I/O primitives. Among these abstractions, `io.Reader` relates to reading data from a data source and `io.Writer` to writing data to a target, as represented in the next figure:
+
+![100_go_mistakes3](/assets/images/202512/100_go_mistakes3.png)
+
+The `io.Reader` contains a single Read method:
+
+``` go
+type Reader interface {
+    Read(p []byte) (n int, err error)
+}
+```
+
+Custom implementations of the `io.Reader` interface should accept a slice of bytes, filling it with its data and returning either the number of bytes read or an error.
+
+On the other hand, `io.Writer` defines a single method, Write:
+
+``` go
+type Writer interface {
+    Write(p []byte) (n int, err error)
+}
+```
+
+Custom implementations of `io.Writer` should write the data coming from a slice to a target and return either the number of bytes written or an error. **Therefore, both interfaces provide fundamental abstractions:**
+
+* `io.Reader` reads data from a source
+* `io.Writer` writes data to a target
+
+What is the rationale(根本原因) for having these two interfaces in the language? What is the point of creating these abstractions?
+
+Let’s assume we need to implement a function that should copy the content of one file to another. We could create a specific function that would take as input two `*os.File`. Or, we can choose to create a more generic function using `io.Reader` and `io.Writer` abstractions:
+
+``` go
+func copySourceToDest(source io.Reader, dest io.Writer) error {
+    // ...
+}
+```
+
+This function would work with `*os.File` parameters (as `*os.File` implements both `io.Reader` and `io.Writer`) and any other type that would implement these interfaces. For example, we could create our own `io.Writer` that writes to a database, and the code would remain the same. **It increases the genericity of the function; hence, its reusability**.
+
+**Furthermore, writing a unit test for this function is easier** because, instead of having to handle files, we can use the strings and bytes packages that provide helpful implementations:
+
+``` go
+func TestCopySourceToDest(t *testing.T) {
+    const input = "foo"
+    source := strings.NewReader(input) // Creates an io.Reader
+    dest := bytes.NewBuffer(make([]byte, 0)) // Creates an io.Writer
+
+    err := copySourceToDest(source, dest) // Calls copySourceToDest from a *strings.Reader and a *bytes.Buffer
+    if err != nil {
+        t.FailNow()
+    }
+
+    got := dest.String()
+    if got != input {
+        t.Errorf("expected: %s, got: %s", input, got)
+    }
+}
+```
+
+In the example, source is a `*strings.Reader`, whereas dest is a `*bytes.Buffer`. **Here, we test the behavior of copySourceToDest without creating any files**.
+
+While designing interfaces, the **granularity**(粒度) (**how many methods the interface contains**) is also something to keep in mind. A [known proverb](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=318s) in Go relates to how big an interface should be:
+
+![100_go_mistakes4](/assets/images/202512/100_go_mistakes4.png)
+
+Indeed, adding methods to an interface can decrease its level of reusability. `io.Reader` and `io.Writer` are powerful abstractions because they cannot get any simpler. **Furthermore, we can also combine fine-grained interfaces to create higher-level abstractions**. This is the case with `io.ReadWriter`, which combines the reader and writer behaviors:
+
+``` go
+type ReadWriter interface {
+    Reader
+    Writer
+}
+```
+
+![100_go_mistakes5](/assets/images/202512/100_go_mistakes5.png)
+
+
+
+### When to use interfaces
+
+**When should we create interfaces in Go?** Let’s look at three concrete use cases where interfaces are usually considered to bring value. Note that the goal isn’t to be exhaustive(详尽无遗的) because the more cases we add, the more they would depend on the context. **However, these three cases should give us a general idea**:
+
+1. Common behavior
+2. Decoupling
+3. Restricting behavior
+
+
+#### Common behavior
+
+The first option we will discuss is to use interfaces when multiple types implement a common behavior. In such a case, we can factor out the behavior inside an interface. If we look at the standard library, we can find many examples of such a use case. For example, sorting a collection can be factored out via three methods:
+
+* Retrieving the number of elements in the collection
+* Reporting whether one element must be sorted before another
+* Swapping two elements
+
+Hence, the following interface was added to the `sort` package:
+
+``` go
+type Interface interface {
+    Len() int // Number of elements
+    Less(i, j int) bool // Checks two elements
+    Swap(i, j int) // Swaps two elements
+}
+```
+
+This interface has a strong potential for reusability because it encompasses the common behavior to sort any collection that is index-based.
+
+Throughout the `sort` package, we can find dozens of implementations. If at some point we compute a collection of integers, for example, and we want to sort it, are we necessarily interested in the implementation type? **Is it important whether the sorting algorithm is a merge sort or a quicksort? In many cases, we don’t care.** Hence, the sorting behavior can be abstracted, and we can depend on the `sort.Interface`.
+
+Finding the right abstraction to factor out a behavior can also bring many benefits. For example, the `sort` package provides utility functions that also rely on `sort.Interface`, such as checking whether a collection is already sorted. For instance:
+
+``` go
+func IsSorted(data Interface) bool {
+    n := data.Len()
+    for i := n - 1; i > 0; i-- {
+        if data.Less(i, i-1) {
+            return false
+        }
+    }
+    return true
+}
+```
+
+Because `sort.Interface` is the right level of abstraction, it makes it highly valuable.
+
+#### Decoupling
+
+Another important use case is about decoupling our code from an implementation. If we rely on an abstraction instead of a concrete implementation, the implementation itself can be replaced with another without even having to change our code. This is the Liskov Substitution Principle (the L in Robert C. Martin’s [SOLID](https://en.wikipedia.org/wiki/SOLID) design principles).
+
+
+[SOLID](https://en.wikipedia.org/wiki/SOLID)
+
+1. [Single responsibility](https://en.wikipedia.org/wiki/Single-responsibility_principle)
+2. [Open–closed](https://en.wikipedia.org/wiki/Open%E2%80%93closed_principle)
+3. [Liskov substitution](https://en.wikipedia.org/wiki/Liskov_substitution_principle)
+4. [Interface segregation](https://en.wikipedia.org/wiki/Interface_segregation_principle)
+5. [Dependency inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle)
+
+> In [object-oriented programming](https://en.wikipedia.org/wiki/Object-oriented_programming), **SOLID** is a mnemonic acronym for five principles intended to make source code more understandable, flexible, and [maintainable](https://en.wikipedia.org/wiki/Software_maintenance). Although the principles apply to object-oriented programming, they can also form a core philosophy for methodologies such as [agile software development](https://en.wikipedia.org/wiki/Agile_software_development) and [adaptive software development](https://en.wikipedia.org/wiki/Adaptive_software_development).
+
+
+One benefit of decoupling can be related to unit testing. Let’s assume we want to implement a `CreateNewCustomer` method that creates a new customer and stores it. We decide to rely on the concrete implementation directly (let’s say a `mysql.Store` struct):
+
+``` go
+type CustomerService struct {
+    store mysql.Store // Depends on the concrete implementation
+}
+
+func (cs CustomerService) CreateNewCustomer(id string) error {
+    customer := Customer{id: id}
+    return cs.store.StoreCustomer(customer)
+}
+```
+
+Now, what if we want to test this method? Because `customerService` relies on the actual implementation to store a `Customer`, we are obliged to test it through integration tests, which requires spinning up a MySQL instance (unless we use an alternative technique such as [go-sqlmock](https://github.com/DATA-DOG/go-sqlmock), but this isn’t the scope of this section). **Although integration tests are helpful, that’s not always what we want to do. To give us more flexibility, we should decouple `CustomerService` from the actual implementation, which can be done via an interface like so**:
+
+``` go
+type customerStorer interface { // Creates a storage abstraction
+    StoreCustomer(Customer) error
+}
+
+type CustomerService struct {
+    storer customerStorer // Decouples CustomerService from the actual implementation
+}
+
+func (cs CustomerService) CreateNewCustomer(id string) error {
+    customer := Customer{id: id}
+    return cs.storer.StoreCustomer(customer)
+}
+```
+
+**Because storing a customer is now done via an interface, this gives us more flexibility in how we want to test the method**. For instance, we can:
+
+* Use the concrete implementation via integration tests
+* Use a mock (or any kind of test double) via unit tests
+* Or both
+
+
+#### Restricting behavior
+
+The last use case we will discuss can be pretty **counterintuitive**(违反常理的) at first sight. It’s about restricting a type to a specific behavior. Let’s imagine we implement a custom configuration package to deal with dynamic configuration. We create a specific container for int configurations via an `IntConfig` struct that also exposes two methods: `Get` and `Set`. Here’s how that code would look:
+
+``` go
+type IntConfig struct {
+    // ...
+}
+
+func (c *IntConfig) Get() int {
+    // Retrieve configuration
+}
+
+func (c *IntConfig) Set(value int) {
+    // Update configuration
+}
+```
+
+Now, suppose we receive an `IntConfig` that holds some specific configuration, such as a threshold. **Yet, in our code, we are only interested in retrieving the configuration value, and we want to prevent updating it. How can we enforce that, semantically, this configuration is read-only, if we don’t want to change our configuration package?** By creating an abstraction that restricts the behavior to retrieving only a config value:
+
+``` go
+type intConfigGetter interface {
+    Get() int
+}
+```
+
+Then, in our code, we can rely on `intConfigGetter` instead of the concrete implementation:
+
+``` go
+type Foo struct {
+    threshold intConfigGetter
+}
+
+func NewFoo(threshold intConfigGetter) Foo { // Injects the configuration getter
+    return Foo{threshold: threshold}
+}
+
+func (f Foo) Bar()  {
+    threshold := f.threshold.Get() // Reads the configuration
+    // ...
+}
+```
+
+In this example, the configuration getter is injected into the `NewFoo` factory method. It doesn’t impact a client of this function because it can still pass an `IntConfig` struct as it implements intConfigGetter. Then, we can only read the configuration in the `Bar` method, not modify it. Therefore, we can also use interfaces to restrict a type to a specific behavior for various reasons, such as semantics enforcement.
+
+
+### Interface pollution
+
+It’s fairly common to see interfaces being overused in Go projects. Perhaps the developer’s background was `C#` or `Java`, and they found it natural to create interfaces before concrete types. However, this isn’t how things should work in `Go`.
+
+As we discussed, interfaces are made to create abstractions. And the main **caveat**(警告; 提醒) when programming meets abstractions is remembering that **abstractions should be discovered, not created**. What does this mean? **It means we shouldn’t start creating abstractions in our code if there is no immediate reason to do so. We shouldn’t design with interfaces but wait for a concrete need. Said differently, we should create an interface when we need it, not when we foresee that we could need it**.
+
+![100_go_mistakes6](/assets/images/202512/100_go_mistakes6.png)
+
+
+In summary, we should be cautious when creating abstractions in our code—abstractions should be discovered, not created. It’s common for us, software developers, to overengineer our code by trying to guess what the perfect level of abstraction is, based on what we think we might need later. This process should be avoided because, in most cases, it pollutes our code with unnecessary abstractions, making it more complex to read.
+
+![100_go_mistakes7](/assets/images/202512/100_go_mistakes7.png)
+
+
+Let’s not try to solve a problem abstractly but solve what has to be solved now. Last, but not least, if it’s unclear how an interface makes the code better, we should probably consider removing it to make our code simpler.
+
+
+
+
+### 分析解释
+
+> **核心定义与成因**
+
+接口污染的核心在于过度使用抽象。这通常发生在使用习惯了 C# 或 Java 等语言的开发者身上，他们习惯在编写具体类型之前先定义接口。在 Go 中，这种“预见性”的设计往往会导致代码中出现大量没有实际价值的间接层。
+
+> **为什么这是一个问题？**
+
+* **增加复杂性**：无用的间接层会干扰代码流，使阅读、理解和推理代码变得更加困难。
+* **降低可读性**：如果接口的用途不明确，调用者往往需要花费更多精力去寻找真正的实现逻辑。
+* **性能开销**：虽然在许多场景下微不足道，但通过接口调用方法需要在运行时进行哈希表查找以定位具体类型，这会带来一定的性能损耗。
+
+> **Go 的核心哲学：发现而非创造**
+
+来源强调了一个关键原则：**抽象应该是被发现的，而不是被创造的（Abstractions should be discovered, not created）**。
+
+* 开发者不应该为了“预见”未来可能的需求而提前创建接口。
+* 只有当接口能让代码变得更好（例如提高可重用性或简化测试）时，才应该引入它。
+* Rob Pike 曾指出：“不要针对接口设计，要发现接口”。
+
+> **什么时候不属于接口污染？**
+
+这些场景下接口能带来明确的价值：
+
+1. **共同行为（Common behavior）**：当多个类型需要实现相同的逻辑（如标准库中的 `sort.Interface` 或 `io.Reader`）时，通过接口提取共性。
+2. **解耦（Decoupling）**：为了让代码不依赖于具体的实现（例如数据库存储），从而方便进行单元测试（使用 `Mock` 对象）或在未来更换实现方案。
+3. **限制行为（Restricting behavior）**：通过接口强制实施语义约束，例如将一个具有读写能力的结构体限制为只读。
+
+> **总结建议**
+
+如果你发现很难解释某个接口存在的理由，或者直接调用具体实现会让代码更简洁，那么这个接口很可能就是“污染”。**在 Go 中，建议先编写具体的实现，等到实际需要解耦或处理多种类型时再提取接口**。
+
+> **比喻理解**
+
+**接口就像是翻译官**。在只有两个说相同语言的人对话时，强制在中间塞进一个翻译官（接口）只会让沟通变慢且容易产生误解；只有当一个说中文的人需要和多个说不同外语的人（多种具体类型）交流，或者需要确保对话内容可以随时录音存档（测试解耦）时，翻译官的存在才有意义。
+
+
+
+
+
+# Refer
+
+* https://github.com/teivah/100-go-mistakes
+* https://100go.co/
+
+
+
+
+
+
+
+
+
+
+
