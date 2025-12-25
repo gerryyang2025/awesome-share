@@ -8,6 +8,20 @@ categories: 杂记
 * Do not remove this line (it will not be displayed)
 {:toc}
 
+
+# [SOLID](https://en.wikipedia.org/wiki/SOLID) 原则
+
+1. [Single responsibility](https://en.wikipedia.org/wiki/Single-responsibility_principle)
+2. [Open–closed](https://en.wikipedia.org/wiki/Open%E2%80%93closed_principle)
+3. [Liskov substitution](https://en.wikipedia.org/wiki/Liskov_substitution_principle)
+4. [Interface segregation](https://en.wikipedia.org/wiki/Interface_segregation_principle)
+5. [Dependency inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle)
+
+> In [object-oriented programming](https://en.wikipedia.org/wiki/Object-oriented_programming), **SOLID** is a mnemonic acronym for five principles intended to make source code more understandable, flexible, and [maintainable](https://en.wikipedia.org/wiki/Software_maintenance). Although the principles apply to object-oriented programming, they can also form a core philosophy for methodologies such as [agile software development](https://en.wikipedia.org/wiki/Agile_software_development) and [adaptive software development](https://en.wikipedia.org/wiki/Adaptive_software_development).
+
+
+
+
 # 奥卡姆剃刀原则
 
 奥卡姆剃刀原理，由威廉·奥卡姆提出，是科学和逻辑学中的一个基本原则，**其核心思想是：“如无必要，勿增实体”或“在所有条件相同的情况下，最简单的解释是最好的”**。它在面对相互竞争的多个解释时，倡导选择假设最少、最简洁的那个方案，从而帮助排除不必要的复杂性。
