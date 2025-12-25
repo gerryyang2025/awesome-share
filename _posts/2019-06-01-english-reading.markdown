@@ -63,6 +63,21 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
 
 # Words (柯林斯英汉双解大词典)
 
+* counterintuitive /ˌkaʊnt(ə)rɪnˈtjuːɪtɪv/
+  + ADJ (of an idea, proposal, etc) seemingly contrary to common sense (想法、提议等)违反常理的
+
+
+* segregation /ˌsɛɡrɪˈɡeɪʃən/
+  + N-UNCOUNT **Segregation** is the official practice of keeping people apart, usually people of different sexes, races, or religions. (因种族、性别或宗教不同而采取的) 隔离
+
+* granularity /ˌɡrænjʊˈlærɪtɪ/
+  + N the state or quality of being grainy or granular 粒度
+
+
+* cornerstone /ˈkɔːnəˌstəʊn/
+  + N-COUNT The **cornerstone** of something is the basic part of it on which its existence, success, or truth depends. 基石
+    - Research is the **cornerstone** of the profession. 研究是该职业的基石。
+
 * philosophy /fɪˈlɒsəfɪ/
   + N-UNCOUNT **Philosophy** is the study or creation of theories about basic things such as the nature of existence, knowledge, and thought, or about how people should live. 哲学
     - He studied **philosophy** and **psychology** at Yale. 他在耶鲁大学学习哲学和心理学。
@@ -346,7 +361,6 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
     - I could **pinpoint** his precise location on a map. 我能在地图上指出他的确切位置。
 
 
-
 * rationale /ˌræʃəˈnɑːl/
   + N-COUNT The **rationale** for a course of action, practice, or belief is the set of reasons on which it is based. 全部理由; 根本原因
     - However, the **rationale** for such initiatives is not, of course, solely economic. 但是，这些积极行动的根本原因当然不全是出于经济目的。
@@ -611,6 +625,7 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
 
 * exhaustive /ɪɡˈzɔːstɪv/
   + ADJ If you describe a study, search, or list as **exhaustive**, you mean that it is very thorough and complete. 详尽无遗的
+    - This is by no means an **exhaustive** list but it gives an indication of the many projects taking place. 这绝不是份详尽无遗的清单，但它显示出很多正在进行的项目。
 
 * donate /dəʊˈneɪt/
   + V-T If you **donate** something to a charity or other organization, you give it to them. 捐赠
