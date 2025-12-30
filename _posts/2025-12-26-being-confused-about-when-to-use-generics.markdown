@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Being confused about when to use generics"
+title:  "Being Confused About When To Use Generics"
 date:   2025-12-26 12:30:00 +0800
 categories: [GoLang]
 ---
