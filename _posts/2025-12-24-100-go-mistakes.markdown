@@ -1743,7 +1743,7 @@ type Bar struct {
 
 > 类型嵌入的主要用途
 
-* 1. 方法提升：嵌入类型的方法会被提升到外层类型，可以避免编写转发方法
+* (1) 方法提升：嵌入类型的方法会被提升到外层类型，可以避免编写转发方法
 
 ``` go
 type Reader interface {
@@ -1760,7 +1760,7 @@ type File struct {
 // }
 ```
 
-* 2. 接口实现：通过嵌入，外层类型自动实现了内层类型实现的接口
+* (2) 接口实现：通过嵌入，外层类型自动实现了内层类型实现的接口
 
 ``` go
 type MyReader struct {
@@ -1770,7 +1770,7 @@ type MyReader struct {
 
 > 类型嵌入的潜在问题
 
-* 1. 意外暴露私有字段和方法
+* (1) 意外暴露私有字段和方法
 
 ``` go
 // 问题示例：意外暴露内部实现
@@ -1788,7 +1788,7 @@ func main() {
 
 问题：`sync.Mutex` 的 `Lock()` 和 `Unlock()` 方法被提升到 `Account`，**外部代码可以直接控制锁**，可能导致：死锁风险，锁状态管理混乱，破坏了数据封装的完整性。
 
-* 2. 命名冲突和歧义
+* (2) 命名冲突和歧义
 
 ``` go
 type A struct{}
@@ -1813,7 +1813,7 @@ func main() {
 }
 ```
 
-* 3. 接口实现冲突
+* (3) 接口实现冲突
 
 ``` go
 type Writer interface {
@@ -1828,7 +1828,7 @@ type FileWriter struct {
 // 但在编译时不会报错，直到运行时才可能发现
 ```
 
-* 4. 过度提升导致 API 污染
+* (4) 过度提升导致 API 污染
 
 ``` go
 type Config struct {
@@ -1846,7 +1846,7 @@ type Config struct {
 
 > 使用类型嵌入的最佳实践
 
-* 1. 仅在需要行为提升时使用
+* (1) 仅在需要行为提升时使用
 
 ``` go
 // ✅ 正确：需要提升 io.Reader 的行为
@@ -1866,7 +1866,7 @@ type User struct {
 }
 ```
 
-* 2. 不要嵌入应该隐藏的类型
+* (2) 不要嵌入应该隐藏的类型
 
 ``` go
 // ❌ 错误：暴露内部同步机制
@@ -1888,7 +1888,7 @@ func (sc *SafeCounter) Increment() {
 }
 ```
 
-* 3. 优先组合而非继承思维
+* (3) 优先组合而非继承思维
 
 ``` go
 // Go 鼓励组合而非继承
@@ -1907,7 +1907,7 @@ type Server struct {
 }
 ```
 
-* 4. 谨慎处理接口嵌入
+* (4) 谨慎处理接口嵌入
 
 ``` go
 // ✅ 正确使用接口嵌入
@@ -1993,7 +1993,7 @@ The functional options pattern provides a handy and API-friendly way to handle o
 
 在 Go 中，函数通常有多个配置选项，传统的解决方法有以下问题：
 
-* 1. 配置结构体问题
+* (1) 配置结构体问题
 
 ``` go
 // ❌ 问题：需要传入完整配置结构体，即使很多字段是默认值
@@ -2016,7 +2016,7 @@ server := NewServer(":8080", Config{
 })
 ```
 
-* 2. 多参数问题
+* (2) 多参数问题
 
 ``` go
 // ❌ 问题：参数太多，难以记忆和维护
@@ -2026,7 +2026,7 @@ func NewServer(addr string, port int, timeout time.Duration,
 }
 ```
 
-* 3. 变长参数使用基础类型
+* (3) 变长参数使用基础类型
 
 ``` go
 // ❌ 问题：类型不安全，可读性差
@@ -2158,7 +2158,7 @@ Organizing a project isn’t straightforward, but following these rules should h
 
 ### 项目结构组织方式
 
-> 1. 按业务上下文组织 vs 按技术层组织
+> 按业务上下文组织 vs 按技术层组织
 
 **建议：没有绝对正确，选择后保持一致性。Go社区倾向于按业务上下文组织。**
 
@@ -2219,7 +2219,7 @@ project/
 
 ### 包组织最佳实践
 
-> 1. 避免过早分包
+> (1) 避免过早分包
 
 **原则：让项目自然演进，不要一开始就设计复杂结构。**
 
@@ -2254,7 +2254,7 @@ project/
 ```
 
 
-> 2. 包的粒度要适中
+> (2) 包的粒度要适中
 
 ```
 // ❌ 过于细粒度（纳米包）
@@ -2278,7 +2278,7 @@ project/
     timeutil/      # 时间日期工具（包含相关功能）
 ```
 
-> 3. 包命名要明确
+> (3) 包命名要明确
 
 ```
 // ❌ 糟糕的命名
@@ -2299,7 +2299,7 @@ cache/          # 提供缓存功能
 // 3. 避免缩写：strconv（允许） vs stcv（避免）
 ```
 
-> 4. 最小化导出
+> (4) 最小化导出
 
 **导出原则：**
 
@@ -2335,7 +2335,7 @@ func connectRedis(addr string) *redis.Client {
 }
 ```
 
-> 5. 处理 JSON 序列化等特殊情况
+> (5) 处理 JSON 序列化等特殊情况
 
 ``` go
 type User struct {
@@ -2622,7 +2622,7 @@ Documenting our code shouldn’t be a constraint. We should take the opportunity
 
 ### 必须文档化的内容
 
-> 1. 包级文档（Package Documentation）
+> (1) 包级文档（Package Documentation）
 
 每个包都**必须有**包级文档，通常放在包声明的上方：
 
@@ -2644,7 +2644,7 @@ package httputil
 * 后续行提供更详细的信息
 * 显示在 `go doc` 和 `pkg.go.dev` 上
 
-> 2. 导出函数/方法文档
+> (2) 导出函数/方法文档
 
 ``` go
 // ValidateUser checks if the provided user meets all business requirements.
@@ -2669,7 +2669,7 @@ func ValidateUser(user User) error {
 * 说明参数、返回值、错误情况
 
 
-> 3. 导出类型/结构体文档
+> (3) 导出类型/结构体文档
 
 ``` go
 // Config holds application configuration settings.
@@ -2686,7 +2686,7 @@ type Config struct {
 }
 ```
 
-> 4. 导出变量/常量文档
+> (4) 导出变量/常量文档
 
 ``` go
 // DefaultPort is the default HTTP port used when none is specified.
@@ -2718,7 +2718,7 @@ godoc -http=:6060
 
 ### 文档生成工具链
 
-> 1. 标准工具
+> (1) 标准工具
 
 ``` bash
 # 格式化文档注释
@@ -2731,7 +2731,7 @@ go vet ./...
 golang.org/x/tools/go/analysis/passes/doc
 ```
 
-> 2. 生成 HTML 文档
+> (2) 生成 HTML 文档
 
 ``` bash
 # 生成包文档网站
