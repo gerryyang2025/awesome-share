@@ -63,6 +63,20 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
 
 # Words (柯林斯英汉双解大词典)
 
+* indent /ɪnˈdent/
+  + V-T When you **indent** a line of writing, you start it further away from the edge of the paper than all the other lines. 行首留空格
+
+* collision /kəˈlɪʒ(ə)n/
+  + N-VAR A **collision** occurs when a moving object crashes into something. 碰撞
+    - They were on their way to the airport when their van was involved in a **collision** with a car. 他们正往机场赶路的时候，其货车和一辆小汽车相撞了。
+  + N-COUNT A **collision** of cultures or ideas occurs when two very different cultures or people meet and conflict. (文化或观点的) 冲突
+    - The play represents the **collision** of three generations. 该剧表现了3代人之间的冲突。
+
+
+* hexagonal /hekˈsæɡən(ə)l/
+  + ADJ A **hexagonal** object or shape has six straight sides. 六边形的
+
+
 * counterintuitive /ˌkaʊnt(ə)rɪnˈtjuːɪtɪv/
   + ADJ (of an idea, proposal, etc) seemingly contrary to common sense (想法、提议等)违反常理的
 
