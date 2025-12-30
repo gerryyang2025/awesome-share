@@ -2,7 +2,7 @@
 layout: post
 title:  "黑客与画家 (硅谷创业之父 Paul Graham 文集)"
 date:   2024-11-03 11:25:00 +0800
-categories: 读书笔记
+categories: 杂记
 ---
 
 * Do not remove this line (it will not be displayed)

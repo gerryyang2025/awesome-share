@@ -2,7 +2,7 @@
 layout: post
 title:  "我与蝈蝈的故事"
 date:   2024-11-10 13:30:00 +0800
-categories: 读书笔记
+categories: 杂记
 ---
 
 * Do not remove this line (it will not be displayed)

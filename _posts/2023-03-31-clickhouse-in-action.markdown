@@ -13,5 +13,7 @@ categories: ClickHouse
 
 # Refer
 
+* https://clickhouse.com/
+* https://clickhouse.com/docs
 * https://clickhouse.com/docs/en/sql-reference (英文)
 * https://clickhouse.com/docs/zh/sql-reference (中文)
