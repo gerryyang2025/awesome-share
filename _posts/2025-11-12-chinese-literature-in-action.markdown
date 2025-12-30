@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Chinese Literature in Action"
+title:  "诗针词线：在庸常的褶痕里临水照见微光"
 date:   2025-11-12 08:30:00 +0800
 categories: 杂记
 ---

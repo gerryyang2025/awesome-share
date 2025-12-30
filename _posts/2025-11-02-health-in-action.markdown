@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Health in Action"
+title:  "健康之道"
 date:   2025-11-02 21:00:00 +0800
 categories: 杂记
 ---
@@ -9,7 +9,7 @@ categories: 杂记
 {:toc}
 
 
-# 千卡 (kcal) 和 千焦 (kJ) 
+# 千卡 (kcal) 和 千焦 (kJ)
 
 * 是热量单位，换算关系为：1 千卡 (kcal) = 4.184 千焦 (kJ)。日常中可用 “除以 4” 简化计算。
 * 食品标签：我国规定预包装食品需以千焦 (kJ) 标准能量，购买时可以参考营养成分表进行换算。
@@ -38,7 +38,6 @@ categories: 杂记
 
 
 
-  
 
-	
-	
+
+

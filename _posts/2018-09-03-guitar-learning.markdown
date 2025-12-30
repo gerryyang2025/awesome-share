@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "guitar学习"
+title:  "吉他入门"
 date:   2018-09-03 22:00:00 +0800
 categories: 杂记
 ---
@@ -16,7 +16,6 @@ categories: 杂记
 * 10-12节，是一个重要的阶段，学习如何给一个谱，就知道怎么弹。
 * 13-16节，进阶，学习一些技巧。
 
-# Lesson 1
 
 > A guitar is a musical instrument with six strings and a long neck. You play the guitar by plucking or strumming the strings. (from Collins)
 
@@ -57,10 +56,12 @@ categories: 杂记
 * 唱名。根据调来改变。
 * 调音。为吉他设计的标准调弦是EADGBE（从低到高）
 
-下节课：
-* 怎么拿琴和拨琴
-* 先练右手，再练左手
+练习方法：
+
+* 怎么拿琴和拨琴。
+* 先练右手，再练左手。
 * 指甲要求，左手除大拇指不能留指甲，右手大拇指建议留少许指甲，便于拨弦。左手的大拇指和右手的小拇指一般用不到。
+
 
 # Refer
 

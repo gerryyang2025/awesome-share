@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Read Children's World"
+title:  "读懂孩子的世界"
 date:   2024-09-02 08:30:00 +0800
 categories: 杂记
 ---

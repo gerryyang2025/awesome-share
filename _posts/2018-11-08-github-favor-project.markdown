@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Github Favor Project"
+title:  "GitHub 项目精选"
 date:   2019-07-10 08:30:00 +0800
 categories: 杂记
 ---
