@@ -123,6 +123,8 @@ nvm install node
 
 ## Install Claude Code
 
+参考：https://code.claude.com/docs/en/setup
+
 ``` bash
 # Install Claude Code
 npm install -g @anthropic-ai/claude-code
@@ -227,12 +229,123 @@ Claude Opus 4.5 is state-of-the-art on tests of real-world software engineering:
 
 
 
+# 在 Claude Code 中使用 MiniMax-M2.1
+
+![cc0](/assets/images/202601/cc0.png)
+
+参考：https://platform.minimaxi.com/docs/guides/text-ai-coding-tools
+
+MiniMax-M2.1 & MiniMax-M2.1-lightning 兼容 OpenAI 和 Anthropic 接口协议，适用于代码助手、Agent 工具、AI IDE 等多种场景。
+
+> MiniMax 开放平台提供两种计费方案接入文本模型：Coding Plan 以及 按量计费。您可按照使用需求选择。调用计费模式取决于您所使用的 API Key，不同类型的 Key 将触发不同的计费方式。
+
+![cc1](/assets/images/202601/cc1.png)
+
+在 `.bashrc` 添加下面命令：
+
+``` bash
+unset ANTHROPIC_AUTH_TOKEN
+unset ANTHROPIC_BASE_URL
+```
+
+
+## 安装 Claude Code
+
+可参考 [Claude Code 文档](https://docs.claude.com/en/docs/claude-code/setup) 进行安装。
+
+## 配置 MiniMax API
+
+* 安装 cc-switch
+
+[cc-switch](https://github.com/farion1231/cc-switch) 是一个便捷的工具，可以快速切换 Claude Code 的 API 配置。
+
+macOS:
+
+``` bash
+brew tap farion1231/ccswitch
+brew install --cask cc-switch
+brew upgrade --cask cc-switch
+```
+
+Windows:
+
+前往 [cc-switch GitHub Releases](https://github.com/farion1231/cc-switch/releases) 页面下载最新版本的安装包。
+
+下载完成后启动 cc-switch 应用：
+
+![cc2](/assets/images/202601/cc2.png)
+
+* 申请 MiniMax API Key
+  
+需要通过绑定银行卡进行实名认证。
+
+![cc4](/assets/images/202601/cc4.png)
+
+![cc5](/assets/images/202601/cc5.png)
+
+https://platform.minimaxi.com/user-center/payment/balance
+
+![cc6](/assets/images/202601/cc6.png)
+
+![cc7](/assets/images/202601/cc7.png)
+
+![cc8](/assets/images/202601/cc8.png)
+
+![cc9](/assets/images/202601/cc9.png)
+
+* 添加 MiniMax 配置
+
+启动 cc-switch，点击右上角 ”+” ，选择预设的 MiniMax 供应商，并填写用户的 MiniMax API Key。
+
+![cc3](/assets/images/202601/cc3.png)
+
+![cc10](/assets/images/202601/cc10.png)
+
+
+
+* 配置模型名称
+
+将模型名称全部改为 MiniMax-M2.1，完成后点击右下角的 “添加”。
+
+![cc12](/assets/images/202601/cc12.png)
+
+
+
+* 启用配置
+
+回到首页，点击 “启用” 即可开始使用。
+
+![cc11](/assets/images/202601/cc11.png)
+
+
+## 启动 Claude Code
+
+配置完成后，进入工作目录，在终端中运行 `claude` 命令以启动 Claude Code。
+
+## 信任文件夹
+
+启动后，选择 信任此文件夹 (Trust This Folder)，以允许 Claude Code 访问该文件夹中的文件，随后开始在 Claude Code 中使用 MiniMax-M2.1。
+
+
+![cc13](/assets/images/202601/cc13.png)
+
+![cc14](/assets/images/202601/cc14.png)
+
+![cc15](/assets/images/202601/cc15.png)
+
 
 
 
 # Q&A
 
 ## 国家地区访问限制问题
+
+如果没有清除以下 Anthropic 相关的环境变量，就会提示使用限制的提示：
+
+``` bash
+unset ANTHROPIC_AUTH_TOKEN
+unset ANTHROPIC_BASE_URL
+```
 
 Claude Code might not be available in your country. Check supported countries at https://anthropic.com/supported-countries
 
