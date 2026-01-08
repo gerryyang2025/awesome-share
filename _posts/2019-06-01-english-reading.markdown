@@ -63,6 +63,21 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
 
 # Words (柯林斯英汉双解大词典)
 
+* beloved /bɪˈlʌvɪd/
+  + ADJ A **beloved** person, thing, or place is one that you feel great affection for. 深爱的
+    - He lost his **beloved** wife last year. 他去年痛失爱妻。
+
+* hatch /hætʃ/
+  + V-T/V-I When a baby bird, insect, or other animal **hatches**, or when it **is hatched**, it comes out of its egg by breaking the shell. 使孵出; 孵出
+    - The young disappeared soon after they were hatched. 幼崽孵出后不久就不见了。
+  + V-T/V-I When an egg **hatches** or when a bird, insect, or other animal **hatches** an egg, the egg breaks open and a baby comes out. 孵化
+    - The eggs **hatch** after a week or ten days. 这些蛋1周或10天后孵化。
+  + V-T If you **hatch** a plot or a scheme, you think of it and work it out. 策划
+    - He has accused opposition parties of **hatching** a plot to assassinate the pope. 他曾指责各反对党阴谋策划暗杀教皇。
+  + N-COUNT A **hatch** is an opening in the deck of a ship, through which people or cargo can go. You can also refer to the door of this opening as a hatch. 舱口; 舱口盖
+    - He stuck his head up through the **hatch**. 他把脑袋伸出舱口。
+
+
 * indent /ɪnˈdent/
   + V-T When you **indent** a line of writing, you start it further away from the edge of the paper than all the other lines. 行首留空格
 
