@@ -56,9 +56,44 @@ Your CI can run `claude -p "If there are new text strings, translate them into F
 
 
 
+# Install
 
 
-## Install nvm
+## Native Install (Recommended)
+
+macOS, Linux, WSL:
+
+``` bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+![cc16](/assets/images/202601/cc16.png)
+
+![cc17](/assets/images/202601/cc17.png)
+
+``` bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc
+```
+
+```
+➜  ~ claude --help
+Usage: claude [options] [command] [prompt]
+
+Claude Code - starts an interactive session by default, use -p/--print for non-interactive output
+
+Arguments:
+  prompt                                            Your prompt
+
+Options:
+  --add-dir <directories...>                        Additional directories to allow tool access to
+  --agent <agent>                                   Agent for the current session. Overrides the 'agent'
+                                                    setting.
+...
+```
+
+## NPM 方式
+
+### Install nvm
 
 refer: [Installing nodejs and npm on linux](https://stackoverflow.com/questions/39981828/installing-nodejs-and-npm-on-linux)
 
@@ -121,7 +156,7 @@ nvm install node
 
 
 
-## Install Claude Code
+### Install Claude Code
 
 参考：https://code.claude.com/docs/en/setup
 
@@ -152,6 +187,7 @@ $ ls -l ~/.nvm/versions/node/v24.5.0/bin/claude
 lrwxrwxrwx 1 gerryyang users 52 Aug  6 16:50 /data/home/gerryyang/.nvm/versions/node/v24.5.0/bin/claude -> ../lib/node_modules/@anthropic-ai/claude-code/cli.js
 ```
 
+# How to use
 
 After the installation process completes, navigate to your project and start Claude Code:
 
@@ -172,10 +208,72 @@ Claude Code offers the following **authentication options**:
 > Claude Code securely stores your credentials. See [Credential Management](https://docs.anthropic.com/en/docs/claude-code/iam#credential-management) for details.
 
 
+
+
 # Get started
 
-* https://docs.anthropic.com/en/docs/claude-code/quickstart
+* [Get started with Claude](https://platform.claude.com/docs/en/get-started)
 * [Continue with Quickstart (5 mins)](https://docs.anthropic.com/en/docs/claude-code/quickstart)
+
+## Prerequisites
+
+* An Anthropic [Console account](https://platform.claude.com/)
+* An [API key](https://platform.claude.com/settings/keys)
+
+## Call the API
+
+* Set your API key
+
+Get your API key at the [Claude Console](https://platform.claude.com/settings/keys) and set it as an environment variable:
+
+``` bash
+export ANTHROPIC_API_KEY='your-api-key-here'
+```
+
+* Make your first API call
+
+Run this command to create a simple web search assistant:
+
+``` bash
+curl https://api.anthropic.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "claude-sonnet-4-5",
+    "max_tokens": 1000,
+    "messages": [
+      {
+        "role": "user",
+        "content": "What should I search for to find the latest developments in renewable energy?"
+      }
+    ]
+  }'
+```
+
+Example output:
+
+``` json
+{
+  "id": "msg_01HCDu5LRGeP2o7s2xGmxyx8",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+    {
+      "type": "text",
+      "text": "Here are some effective search strategies to find the latest renewable energy developments:\n\n## Search Terms to Use:\n- \"renewable energy news 2024\"\n- \"clean energy breakthrough\"\n- \"solar/wind/battery technology advances\"\n- \"green energy innovations\"\n- \"climate tech developments\"\n- \"energy storage solutions\"\n\n## Best Sources to Check:\n\n**News & Industry Sites:**\n- Renewable Energy World\n- GreenTech Media (now Wood Mackenzie)\n- Energy Storage News\n- CleanTechnica\n- PV Magazine (for solar)\n- WindPower Engineering & Development..."
+    }
+  ],
+  "model": "claude-sonnet-4-5",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 21,
+    "output_tokens": 305
+  }
+}
+```
+
+
 
 
 # Tips
@@ -216,6 +314,43 @@ export DISABLE_AUTOUPDATER=1
 claude update
 ```
 
+# Uninstall Claude Code
+
+If you need to uninstall Claude Code, follow the instructions for your installation method.
+
+## Native installation
+
+Remove the Claude Code binary and version files:
+
+macOS, Linux, WSL:
+
+``` bash
+rm -f ~/.local/bin/claude
+rm -rf ~/.local/share/claude
+```
+
+## NPM installation
+
+``` bash
+npm uninstall -g @anthropic-ai/claude-code
+```
+
+## Clean up configuration files (optional)
+
+> Removing configuration files will delete all your settings, allowed tools, MCP server configurations, and session history.
+
+To remove Claude Code settings and cached data:
+
+``` bash
+# Remove user settings and state
+rm -rf ~/.claude
+rm ~/.claude.json
+
+# Remove project-specific settings (run from your project directory)
+rm -rf .claude
+rm -f .mcp.json
+```
+
 
 # News
 
@@ -253,9 +388,28 @@ unset ANTHROPIC_BASE_URL
 
 可参考 [Claude Code 文档](https://docs.claude.com/en/docs/claude-code/setup) 进行安装。
 
+## 获取 API Key
+
+### Coding Plan API Key
+
+推荐您订阅 [Coding Plan](https://platform.minimaxi.com/subscribe/coding-plan), 为用户的编程提升效率。
+
+* 访问 Coding Plan 选择最适合的编程套餐
+* 前往 [账户管理/Conding Plan](https://platform.minimaxi.com/user-center/payment/coding-plan) 页面，查看订阅的 Coding Plan 套餐，并获得 Coding Plan 的 API Key，用于编程工具使用。
+
+
+## 开放平台 API Key（按量计费）
+
+* 访问 [MiniMax 开放平台](https://platform.minimaxi.com/user-center/basic-information/interface-key) (国际用户可访问 [MiniMax Developer Platform](https://platform.minimax.io/user-center/basic-information/interface-key))
+* 点击“**创建新的密钥**”按钮，输入项目名称以创建新的 API Key
+* 创建成功后，系统将展示 API Key。**请务必复制并妥善保存，该密钥只会显示一次，无法再次查看**
+
+
+
+
 ## 配置 MiniMax API
 
-* 安装 cc-switch
+### 安装 cc-switch
 
 [cc-switch](https://github.com/farion1231/cc-switch) 是一个便捷的工具，可以快速切换 Claude Code 的 API 配置。
 
@@ -275,7 +429,7 @@ Windows:
 
 ![cc2](/assets/images/202601/cc2.png)
 
-* 申请 MiniMax API Key
+### 申请 MiniMax API Key
 
 需要通过绑定银行卡进行实名认证。
 
@@ -293,7 +447,7 @@ https://platform.minimaxi.com/user-center/payment/balance
 
 ![cc9](/assets/images/202601/cc9.png)
 
-* 添加 MiniMax 配置
+### 添加 MiniMax 配置
 
 启动 cc-switch，点击右上角 ”+” ，选择预设的 MiniMax 供应商，并填写用户的 MiniMax API Key。
 
@@ -303,7 +457,7 @@ https://platform.minimaxi.com/user-center/payment/balance
 
 
 
-* 配置模型名称
+### 配置模型名称
 
 将模型名称全部改为 MiniMax-M2.1，完成后点击右下角的 “添加”。
 
@@ -311,11 +465,12 @@ https://platform.minimaxi.com/user-center/payment/balance
 
 
 
-* 启用配置
+### 启用配置
 
 回到首页，点击 “启用” 即可开始使用。
 
 ![cc11](/assets/images/202601/cc11.png)
+
 
 
 ## 启动 Claude Code
@@ -334,6 +489,13 @@ https://platform.minimaxi.com/user-center/payment/balance
 ![cc15](/assets/images/202601/cc15.png)
 
 
+## 执行 `/init` 命令生成 `CLAUDE.md`
+
+![cc18](/assets/images/202601/cc18.png)
+
+![cc19](/assets/images/202601/cc19.png)
+
+![cc20](/assets/images/202601/cc20.png)
 
 
 # Q&A
