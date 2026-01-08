@@ -2055,15 +2055,114 @@ https://github.com/gopherchina/conference
 * [Go 语言设计与实现](https://draveness.me/golang/)
 * [Dave Cheney的golang博客]
 
-# 开源代码
+# 常见解决方案
 
-## https://github.com/urfave/cli
+## https://github.com/urfave/cli (命令行工具)
 
 cli is a simple, fast, and fun package for building command line apps in Go. The goal is to enable developers to write fast and distributable command line applications in an expressive way.
 
-## https://github.com/gammazero/deque
+## https://github.com/gammazero/deque (双端队列)
 
 Fast ring-buffer deque ([double-ended queue](https://en.wikipedia.org/wiki/Double-ended_queue)) implementation. For a pictorial description, see the [Deque diagram](https://github.com/gammazero/deque/wiki)
+
+## https://github.com/gin-gonic/gin (HTTP 框架)
+
+Gin is a high-performance HTTP web framework written in Go. It provides a Martini-like API but with significantly better performance—up to 40 times faster—thanks to [httprouter](https://github.com/julienschmidt/httprouter). Gin is designed for building REST APIs, web applications, and microservices where speed and developer productivity are essential.
+
+被 GoLang 官方收录的 HTTP 框架，是一个高水准的顶级 HTTP 框架。
+
+
+## https://github.com/gorilla/mux (HTTP 框架)
+
+Package `gorilla/mux` implements a request router and dispatcher for matching incoming requests to their respective handler.
+
+100% 兼容标准库，提供了 HTTP 标准库没有的能力，例如：router 更强大的路由能力，中间件能力，参数接收等能力。
+
+## https://github.com/go-chi/chi (HTTP 框架)
+
+`chi` is a lightweight, idiomatic and composable router for building Go HTTP services. It's especially good at helping you write large REST API services that are kept maintainable as your project grows and changes. `chi` is built on the new `context` package introduced in Go 1.7 to handle signaling, cancelation and request-scoped values across a handler chain.
+
+轻量级的 HTTP 框架，和 gorilla/mux 框架一个级别，也是无缝兼容 HTTP 标准库，提供了很多强大的能力和中间件。
+
+
+## https://github.com/grpc/grpc-go (gRPC 框架)
+
+The Go implementation of [gRPC](https://grpc.io/): A high performance, open source, general RPC framework that puts mobile and HTTP/2 first. For more information see the [Go gRPC docs](https://grpc.io/docs/languages/go), or jump directly into the [quick start](https://grpc.io/docs/languages/go/quickstart).
+
+Google 出品的 RPC 框架，提供了编码，解码，序列化，通信协议等功能，是业界主流的 RPC 框架，被各大公司，k8s 使用，值得一读。
+
+
+## https://github.com/allegro/bigcache (缓存)
+
+Fast, concurrent, evicting in-memory cache written to keep big number of entries without impact on performance. BigCache keeps entries on heap but omits GC for them. To achieve that, operations on byte slices take place, therefore entries (de)serialization in front of the cache will be needed in most use cases.
+
+一款高性能的内存数据库，支持窗口过期等配置，适合做内存一级缓存设计。
+
+
+## https://github.com/bluele/gcache (缓存)
+
+Cache library for golang. It supports expirable Cache, `LFU`, `LRU` and `ARC`.
+
+一款支持 `LFU`, `LRU` and `ARC` 等多个维度的 cache 库，适合高性能的 cache in-memory for golang。
+
+
+## https://github.com/go-gorm/gorm (ORM 框架)
+
+The fantastic ORM library for Golang, aims to be developer friendly.
+
+MySQL ORM 扛把子，业界中也在广泛使用，一个全世界公认的 ORM 框架，xorm 也是如此 (xorm 支持读写分离，多引擎组，比 gorm 功能更多，更强大)。
+
+> ORM, or Object-Relational Mapping, is a programming technique that acts as a bridge between object-oriented languages (like Python, Java, C#) and relational databases, **allowing developers to interact with database tables as if they were objects, without writing raw SQL**. It simplifies data management by mapping classes to tables and objects to rows, enabling `CRUD` (**Create**, **Read**, **Update**, **Delete**) operations using the application's native objects and methods, not SQL, reducing development time and increasing portability between different databases.
+
+How it Works:
+
+* **Abstraction Layer**: An ORM creates a layer between your application code and the database.
+* **Mapping**: It translates database tables and columns into classes and attributes (properties) in your code, and individual table rows into object instances.
+* **Data Interaction**: Instead of writing `SELECT * FROM users WHERE id = 1`, you might write `User.get(id=1)`, and the ORM handles the SQL translation behind the scenes.
+
+Key Benefits:
+
+* **Simplicity**: Write database queries in your familiar programming language (e.g., Python, Java) instead of SQL.
+* **Portability**: Easily switch between different database systems (like MySQL, PostgreSQL) with minimal code changes.
+* **Productivity**: Speeds up development by abstracting repetitive SQL tasks, adhering to the **DRY** (**Don't Repeat Yourself**) principle.
+* **Security**: Helps prevent SQL injection vulnerabilities.
+
+## https://github.com/redis/go-redis
+
+`go-redis` is the official Redis client library for the Go programming language. It offers a straightforward interface for interacting with Redis servers.
+
+用于 go Redis 操作，高质量的 Redis API 框架，抽象设计，方法设计都很全面，值得使用。
+
+
+## https://github.com/GrantZheng/kit
+
+一款将 HTTP，gRPC 不同协议的 RPC 框架进行 transport 分离的微服务脚手架。
+
+
+## https://github.com/go-god/broker (Broker 封装)
+
+基于 Redis，Kafka，Pulsar 等不同的消息队列封装的 Broker，方便项目快速接入 Broker。
+
+
+# 学习资料
+
+## Go入门指南
+
+https://github.com/Unknwon/the-way-to-go_ZH_CN/blob/master/eBook/directory.md
+
+## Go语言设计与实现 (人民邮电出版社，2021-11，420页)
+
+https://book.douban.com/subject/35635836/
+
+讲述了 go 底层的方方面面，值得一读，特别适合 gopher 进阶学习。
+
+## Go语言学习指南: 惯例模式与编程实践 (机械工业出版社，2022，313页)
+
+https://book.douban.com/subject/35902219/
+
+教你如何写出地道的 go 代码，无论是新手，还是经验丰富的 gopher，都会从中受益。
+
+
 
 
 
