@@ -223,8 +223,8 @@ Claude Code offers the following **authentication options**:
 
 # Get started
 
-* [Get started with Claude](https://platform.claude.com/docs/en/get-started)
-* [Continue with Quickstart (5 mins)](https://docs.anthropic.com/en/docs/claude-code/quickstart)
+参考：[Get started with Claude](https://platform.claude.com/docs/en/get-started)
+
 
 ## Prerequisites
 
@@ -656,8 +656,271 @@ $ claude-minimax --version
 ![cc43](/assets/images/202601/cc43.png)
 
 
+# Interactive mode
+
+参考：https://code.claude.com/docs/en/interactive-mode
+
+Complete reference for keyboard shortcuts, input modes, and interactive features in Claude Code sessions.
+
+## Keyboard shortcuts
+
+![cc52](/assets/images/202601/cc52.png)
+
+### General controls
+
+![cc53](/assets/images/202601/cc53.png)
+
+### Text editing
+
+![cc54](/assets/images/202601/cc54.png)
+
+### Theme and display
+
+![cc55](/assets/images/202601/cc55.png)
 
 
+### Multiline input
+
+![cc56](/assets/images/202601/cc56.png)
+
+
+### Quick commands
+
+![cc57](/assets/images/202601/cc57.png)
+
+Slash commands: https://code.claude.com/docs/en/slash-commands
+
+
+## Vim editor mode
+
+Enable vim-style editing with `/vim` command or configure permanently via `/config`.
+
+
+## Command history
+
+Claude Code maintains command history for the current session:
+
+* History is stored per working directory
+* Cleared with `/clear` command
+* Use Up/Down arrows to navigate (see keyboard shortcuts above)
+* Note: History expansion (`!`) is disabled by default
+
+## Reverse search with Ctrl+R
+
+Press `Ctrl+R` to interactively search through your command history:
+
+![cc58](/assets/images/202601/cc58.png)
+
+The search displays matching commands with the search term highlighted, making it easy to find and reuse previous inputs.
+
+## Background bash commands
+
+Claude Code supports running bash commands in the background, allowing you to continue working while long-running processes execute.
+​
+
+
+
+# Slash commands
+
+参考：https://code.claude.com/docs/en/slash-commands
+
+Control Claude’s behavior during an interactive session with slash commands.
+
+​## Built-in slash commands
+
+https://code.claude.com/docs/en/slash-commands#built-in-slash-commands
+
+![cc59](/assets/images/202601/cc59.png)
+
+![cc60](/assets/images/202601/cc60.png)
+
+![cc61](/assets/images/202601/cc61.png)
+
+
+## Custom slash commands
+
+Custom slash commands allow you to define frequently used prompts as Markdown files that Claude Code can execute. Commands are organized by scope (project-specific or personal) and support namespacing through directory structures.
+
+![cc62](/assets/images/202601/cc62.png)
+
+More: https://code.claude.com/docs/en/slash-commands#custom-slash-commands
+
+## Plugin commands
+
+[Plugins](https://code.claude.com/docs/en/plugins) can provide custom slash commands that integrate seamlessly with Claude Code. Plugin commands work exactly like user-defined commands but are distributed through [plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces).
+
+More: https://code.claude.com/docs/en/slash-commands#plugin-commands
+
+## MCP slash commands
+
+MCP servers can expose prompts as slash commands that become available in Claude Code. These commands are dynamically discovered from connected MCP servers.
+
+More: https://code.claude.com/docs/en/slash-commands#mcp-slash-commands
+
+## SlashCommand tool
+
+The SlashCommand tool allows Claude to execute [custom slash commands](https://code.claude.com/docs/en/slash-commands#custom-slash-commands) programmatically during a conversation. This gives Claude the ability to invoke custom commands on your behalf when appropriate.
+
+To encourage Claude to use the SlashCommand tool, reference the command by name, including the slash, in your prompts or CLAUDE.md file. For example:
+
+``` bash
+> Run /write-unit-test when you are about to start writing tests.
+```
+
+More: https://code.claude.com/docs/en/slash-commands#slashcommand-tool
+
+## Skills vs slash commands
+
+**Slash commands** and **Agent Skills** serve different purposes in Claude Code:
+
+![cc63](/assets/images/202601/cc63.png)
+
+![cc64](/assets/images/202601/cc64.png)
+
+![cc65](/assets/images/202601/cc65.png)
+
+![cc66](/assets/images/202601/cc66.png)
+
+![cc67](/assets/images/202601/cc67.png)
+
+https://code.claude.com/docs/en/skills
+
+
+
+
+# CLI reference
+
+参考：https://code.claude.com/docs/en/cli-reference
+
+Complete reference for Claude Code command-line interface, including commands and flags.
+
+## CLI commands
+
+![cc47](/assets/images/202601/cc47.png)
+
+
+## CLI flags
+
+Customize Claude Code’s behavior with these command-line flags:
+
+
+* `--add-dir`
+  + Description: Add additional working directories for Claude to access (validates each path exists as a directory)
+  + Example: `claude --add-dir ../apps ../lib`
+
+* `--continue, -c`
+  + Description: Load the most recent conversation in the current directory
+  + Example: `claude --continue`
+
+* `--model`
+  + Description: Sets the model for the current session with an alias for the latest model (`sonnet` or `opus`) or a model’s full name
+  + Example: `claude --model claude-sonnet-4-5-20250929`
+
+* `--output-format`
+  + Description: Specify output format for print mode (options: text, json, stream-json)
+  + Example: `claude -p "query" --output-format json`
+
+![cc48](/assets/images/202601/cc48.png)
+
+* `--print, -p`
+  + Description: Print response without interactive mode (see [SDK documentation](https://docs.claude.com/en/docs/agent-sdk) for programmatic usage details) 
+  + Example: `claude -p "query"`
+
+* `--resume, -r`
+  + Description: Resume a specific session by ID or name, or show an interactive picker to choose a session
+  + Example: `claude --resume auth-refactor`
+
+* `--session-id`
+  + Description: Use a specific session ID for the conversation (must be a valid `UUID`)
+  + Example: `claude --session-id "550e8400-e29b-41d4-a716-446655440000"`
+
+* `--system-prompt`
+  + Description: Replace the entire system prompt with custom text (works in both interactive and print modes)
+  + Example: `claude --system-prompt "You are a Python expert"`
+
+* `--tools`
+  + Description: Restrict which built-in tools Claude can use (works in both interactive and print modes). Use "" to disable all, "default" for all, or tool names like "Bash,Edit,Read"
+  + Example: `claude --tools "Bash,Edit,Read"`
+
+* `--verbose`
+  + Description: Enable verbose logging, shows full turn-by-turn output (helpful for debugging in both print and interactive modes) 
+  + Example: `claude --verbose`
+
+
+### Agents flag format
+
+The `--agents` flag accepts a JSON object that defines one or more custom subagents. Each subagent requires a unique name (as the key) and a definition object with the following fields:
+
+![cc49](/assets/images/202601/cc49.png)
+
+Example:
+
+``` bash
+claude --agents '{
+  "code-reviewer": {
+    "description": "Expert code reviewer. Use proactively after code changes.",
+    "prompt": "You are a senior code reviewer. Focus on code quality, security, and best practices.",
+    "tools": ["Read", "Grep", "Glob", "Bash"],
+    "model": "sonnet"
+  },
+  "debugger": {
+    "description": "Debugging specialist for errors and test failures.",
+    "prompt": "You are an expert debugger. Analyze errors, identify root causes, and provide fixes."
+  }
+}'
+```
+
+For more details on creating and using subagents, see the [subagents documentation](https://code.claude.com/docs/en/sub-agents).
+​
+### System prompt flags
+
+Claude Code provides three flags for customizing the system prompt, each serving a different purpose:
+
+![cc50](/assets/images/202601/cc50.png)
+
+When to use each:
+
+* `--system-prompt`: Use when you need complete control over Claude’s system prompt. This removes all default Claude Code instructions, giving you a blank slate.
+
+``` bash
+claude --system-prompt "You are a Python expert who only writes type-annotated code"
+```
+
+* `--system-prompt-file`: Use when you want to load a custom prompt from a file, useful for team consistency or version-controlled prompt templates.
+
+``` bash
+claude -p --system-prompt-file ./prompts/code-review.txt "Review this PR"
+```
+
+* `--append-system-prompt`: Use when you want to add specific instructions while keeping Claude Code’s default capabilities intact. This is the safest option for most use cases.
+
+``` bash
+claude --append-system-prompt "Always use TypeScript and include JSDoc comments"
+```
+
+![cc51](/assets/images/202601/cc51.png)
+
+
+
+
+# Claude Code MCP
+
+参考：https://code.claude.com/docs/en/mcp
+
+
+# Subagents
+
+参考：https://code.claude.com/docs/en/sub-agents
+
+Create and use specialized AI subagents in Claude Code for task-specific workflows and improved context management.
+
+Custom subagents in Claude Code are specialized AI assistants that can be invoked to handle specific types of tasks. They enable more efficient problem-solving by providing task-specific configurations with customized system prompts, tools and a separate context window.
+
+# Agent Skills
+
+参考：https://code.claude.com/docs/en/skills
+
+Create, manage, and share Skills to extend Claude’s capabilities in Claude Code.
 
 
 
