@@ -8,6 +8,10 @@ categories: ML
 * Do not remove this line (it will not be displayed)
 {:toc}
 
+# AI Model Rankings
+
+https://openrouter.ai/rankings
+
 
 # [Intro to Large Language Models - Andrej Karpathy](https://www.youtube.com/watch?v=zjkBMFhNj_g)
 
