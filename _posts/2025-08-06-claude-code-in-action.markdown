@@ -276,7 +276,7 @@ Windows:
 ![cc2](/assets/images/202601/cc2.png)
 
 * 申请 MiniMax API Key
-  
+
 需要通过绑定银行卡进行实名认证。
 
 ![cc4](/assets/images/202601/cc4.png)
@@ -352,8 +352,11 @@ Claude Code might not be available in your country. Check supported countries at
 ![claude1](/assets/images/202508/claude1.png)
 
 
+# 使用参考
 
-
+* [国产大模型接入 Claude Code 教程：以 Doubao-Seed-Code 为例](https://www.ruanyifeng.com/blog/2025/11/doubao-seed-code.html)
+* [My Experience With Claude Code After 2 Weeks of Adventures](https://sankalp.bearblog.dev/my-claude-code-experience-after-2-weeks-of-usage/) (17 Jul, 2025)
+* [A Guide to Claude Code 2.0 and getting better at using coding agents](https://sankalp.bearblog.dev/my-experience-with-claude-code-20-and-how-to-get-better-at-using-coding-agents/) (28 Dec, 2025)
 
 
 # Refer
