@@ -9,7 +9,15 @@ categories: ML
 {:toc}
 
 
+# 测试 LLM 模型能力的提示词
 
+## 生成网页时钟的动画
+
+https://clocks.brianmoore.com/
+
+> Create HTML/CSS of an analog clock showing ${time}. Include numbers (or numerals) if you wish, and have a CSS animated second hand. Make it responsive and use a white background. Return ONLY the HTML/CSS code with no markdown formatting.
+
+翻译成中文就是："创建一个显示时间 ${time} 的模拟时钟的 HTML/CSS 代码。如果需要，可以包含数字，并添加 CSS 动画秒针。使其具有响应式设计，并使用白色背景。仅返回 HTML/CSS 代码，不要包含任何 Markdown 格式。"
 
 
 
