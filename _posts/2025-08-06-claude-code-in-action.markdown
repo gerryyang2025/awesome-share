@@ -17,6 +17,8 @@ Learn more in the [official documentation](https://docs.anthropic.com/en/docs/cl
 
 > Claude is a highly performant, trustworthy, and intelligent AI platform built by Anthropic. Claude excels at tasks involving language, reasoning, analysis, coding, and more.
 
+![cc_example](/assets/images/202601/cc_example.gif)
+
 The latest generation of Claude models:
 
 * **Claude Opus 4.5** - Most intelligent model, and an industry-leader for coding, agents, and computer use. [Learn more](https://www.anthropic.com/news/claude-opus-4-5).
@@ -287,15 +289,13 @@ Example output:
 
 
 
-# Tips
+# Common workflows
 
-``` bash
-# Should show an alias to ~/.claude/local/claude
-which claude
+参考：https://code.claude.com/docs/en/common-workflows
 
-# Check installation health
-claude doctor
-```
+Learn about common workflows with Claude Code.
+
+
 
 # Update Claude Code
 
@@ -946,6 +946,11 @@ Claude Code might not be available in your country. Check supported countries at
 * [国产大模型接入 Claude Code 教程：以 Doubao-Seed-Code 为例](https://www.ruanyifeng.com/blog/2025/11/doubao-seed-code.html)
 * [My Experience With Claude Code After 2 Weeks of Adventures](https://sankalp.bearblog.dev/my-claude-code-experience-after-2-weeks-of-usage/) (17 Jul, 2025)
 * [A Guide to Claude Code 2.0 and getting better at using coding agents](https://sankalp.bearblog.dev/my-experience-with-claude-code-20-and-how-to-get-better-at-using-coding-agents/) (28 Dec, 2025)
+
+
+# Changelog
+
+https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md
 
 
 # Refer
