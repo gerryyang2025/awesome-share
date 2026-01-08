@@ -36,9 +36,18 @@ https://clocks.brianmoore.com/
 * 基于此内容生成一个使用 Nano banana 生成的文章封面图提示词。
 
 
-# 画图
 
-参考：[Next AI Draw.io](https://github.com/DayuanJiang/next-ai-draw-io) 工具
+# 画图 
+
+## [Nano Banana Prompt Gallery](https://nanobananaprompt.org/prompts/)
+
+*  Add a realistic {beard_style} to the face in this photo, blended naturally with the original facial features. 
+
+![prompt1](/assets/images/202601/prompt1.png)
+
+
+
+## [Next AI Draw.io](https://github.com/DayuanJiang/next-ai-draw-io) 工具
 
 * Give me a **animated connector** diagram of transformer's architecture.
 
