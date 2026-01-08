@@ -15,6 +15,17 @@ categories: ML
 
 Learn more in the [official documentation](https://docs.anthropic.com/en/docs/claude-code/overview).
 
+> Claude is a highly performant, trustworthy, and intelligent AI platform built by Anthropic. Claude excels at tasks involving language, reasoning, analysis, coding, and more.
+
+The latest generation of Claude models:
+
+* **Claude Opus 4.5** - Most intelligent model, and an industry-leader for coding, agents, and computer use. [Learn more](https://www.anthropic.com/news/claude-opus-4-5).
+* **Claude Sonnet 4.5** - Balanced performance and practicality for most uses, including coding and agents. [Learn more](https://www.anthropic.com/news/claude-sonnet-4-5).
+* **Claude Haiku 4.5** - Fastest model with near-frontier intelligence. [Learn more](https://www.anthropic.com/news/claude-haiku-4-5).
+
+
+![cc21](/assets/images/202601/cc21.png)
+
 
 ## What Claude Code does for you
 
@@ -363,6 +374,25 @@ Claude Opus 4.5 is state-of-the-art on tests of real-world software engineering:
 ![opus](/assets/images/202512/opus.png)
 
 
+# MiniMax (国产)
+
+https://platform.minimaxi.com/subscribe/coding-plan
+
+![cc44](/assets/images/202601/cc44.png)
+
+![cc45](/assets/images/202601/cc45.png)
+
+
+**邀请码：**
+
+```
+🎁 MiniMax 跨年福利来袭！邀好友享 Coding Plan 双重好礼，助力开发体验！
+好友立享 9折 专属优惠 + Builder 权益，你赢返利 + 社区特权！
+👉 立即参与：https://platform.minimaxi.com/subscribe/coding-plan?code=5XvxeGS5Uv&source=link
+```
+
+![cc46](/assets/images/202601/cc46.png)
+
 
 # 在 Claude Code 中使用 MiniMax-M2.1
 
@@ -497,6 +527,140 @@ https://platform.minimaxi.com/user-center/payment/balance
 
 ![cc20](/assets/images/202601/cc20.png)
 
+## Claude Code CLI 的 Bash 脚本包装器
+
+新建一个 `claude-minimax` 脚本，将从 MiniMax M2 官网获取的[接口参数](https://platform.minimaxi.com/docs/api-reference/text-anthropic-api)填入。
+
+``` bash
+#!/usr/bin/env bash
+# Claude Code CLI wrapper for MiniMax API
+# Usage: ./claude-minimax [claude arguments]
+
+CLAUDE_BIN="$HOME/.local/bin/claude"
+
+# Set API credentials for MiniMax
+export ANTHROPIC_AUTH_TOKEN="Your Token"
+export ANTHROPIC_BASE_URL="https://api.minimaxi.com/anthropic"
+export ANTHROPIC_MODEL="MiniMax-M2"
+export API_TIMEOUT_MS=3000000
+
+# Optional: Use separate config directory
+export CLAUDE_CONFIG_DIR="$HOME/Tools/llm/claude/claude-minimax"
+
+# Execute Claude CLI with all passed arguments
+exec "$CLAUDE_BIN" "$@"
+```
+
+功能说明：
+
+* 设置 MiniMax API 的认证信息
+* 指定使用 MiniMax-M2 模型
+* 配置 API 超时时间为 3000000 毫秒（50分钟）
+* 使用独立的配置目录避免与官方 Claude 配置冲突
+* 将所有参数传递给原版 Claude CLI
+
+完成后，可以测试一下，看看能否正常运行。
+
+``` bash
+$ claude-minimax --version
+```
+
+![cc22](/assets/images/202601/cc22.png)
+
+
+## 在 VS Code 使用 Claude Code 生成网页时钟的测试
+
+第一步，新建一个本地目录作为项目目录，比如 `ai-clock`。然后，在 VS Code 里面打开这个目录 `ai-clock`，作为工作区。
+
+第二步，打开 VS Code 的菜单"终端/新建终端"，在这个终端窗口里面，输入 `claude-minimax`。这时，窗口会提示你授予权限，同意后，就会进入主界面，大概就是下面这样。
+
+![cc26](/assets/images/202601/cc26.png)
+
+![cc23](/assets/images/202601/cc23.png)
+
+![cc24](/assets/images/202601/cc24.png)
+
+现在，我们就能在 VS Code 里面使用命令行的 Claude Code 了。这时，你既可以使用 IDE 编写代码，又可以通过命令行使用 AI 模型，兼得两者的优势。
+
+第三步，在 Claude Code 的提示符后面，输入 `/init` 命令，用来在仓库里面生成一个 `CLAUDE.md` 文件，记录 AI 对这个仓库操作。
+
+![cc25](/assets/images/202601/cc25.png)
+
+![cc27](/assets/images/202601/cc27.png)
+
+![cc28](/assets/images/202601/cc28.png)
+
+由于示例仓库是空的，所以选择创建一个标准的 `CLAUDE.md` 模版文件。这个文件的作用是当作上下文，每次查询模型时，都会自动附上这个文件，以便模型了解代码库。
+
+![cc29](/assets/images/202601/cc29.png)
+
+如果在提示框输入反斜杠，Claude Code 就会显示所有可用的命令。通过这些命令，我们就能使用 Claude Code 的强大功能，完成各种 AI 操作了。这一步是 Claude Code 的基础用法，对所有项目都是通用的。
+
+![cc30](/assets/images/202601/cc30.png)
+
+第四步，在提示框输入前面的提示词（下图），让模型生成网页时钟。
+
+> Create HTML/CSS of an analog clock showing ${time}. Include numbers (or numerals) if you wish, and have a CSS animated second hand. Make it responsive and use a white background. Return ONLY the HTML/CSS code with no markdown formatting.
+
+翻译成中文就是："创建一个显示时间 ${time} 的模拟时钟的 HTML/CSS 代码。如果需要，可以包含数字，并添加 CSS 动画秒针。使其具有响应式设计，并使用白色背景。仅返回 HTML/CSS 代码，不要包含任何 Markdown 格式。"
+
+![cc31](/assets/images/202601/cc31.png)
+
+![cc32](/assets/images/202601/cc32.png)
+
+![aiclock-minimax2](/assets/images/202601/aiclock-minimax2.gif)
+
+重新执行 `/init` 命令更新 `CLAUDE.md` 文件。
+
+![cc34](/assets/images/202601/cc34.png)
+
+![cc35](/assets/images/202601/cc35.png)
+
+
+# 在 Cursor 中使用 MiniMax-M2.1
+
+参考：https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-cursor-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-1
+
+## 安装 Cursor
+
+* 通过 [Cursor 官网](https://cursor.com/) 下载并安装 Cursor
+* 打开 Cursor，右上角“设置”按钮，进入设置界面。点击“Sign in”按钮，登录自己的 Cursor 账户
+
+![cc37](/assets/images/202601/cc37.png)
+
+## 在 Cursor 中配置 MiniMax API
+
+![cc36](/assets/images/202601/cc36.png)
+
+* 点击左侧栏的 “Models”，进入模型配置页面
+* 展开 “API Keys” 部分，配置 API 信息：
+  + 勾选 “Override OpenAI Base URL”
+  + 在下方输入 MiniMax 的调用地址（国内用户使用 https://api.minimaxi.com/v1，国际用户使用 https://api.minimax.io/v1）
+* 在 OpenAI API Key 输入框，配置从 [MiniMax 开放平台](https://platform.minimaxi.com/user-center/basic-information/interface-key) (国际用户可访问 [MiniMax Developer Platform](https://platform.minimax.io/user-center/basic-information/interface-key)) 获取的 API Key
+* 点击 “OpenAI API Key” 栏右侧的按钮，在弹出的窗口中点击 “Enable OpenAI API Key” 按钮，完成设置验证
+* 在 Models 板块中，点击 “View All Models” 按钮，并点击 “Add Custom Model” 按钮
+* 输入模型名称 “MiniMax-M2.1” 后，点击 “Add” 按钮
+* 启用刚添加的 “MiniMax-M2.1” 模型
+* 在聊天面板中选择 “MiniMax-M2.1” 模型，开始使用 “MiniMax-M2.1”
+
+![cc40](/assets/images/202601/cc40.png)
+
+![cc41](/assets/images/202601/cc41.png)
+
+![cc42](/assets/images/202601/cc42.png)
+
+![cc38](/assets/images/202601/cc38.png)
+
+![cc39](/assets/images/202601/cc39.png)
+
+![cc43](/assets/images/202601/cc43.png)
+
+
+
+
+
+
+
 
 # Q&A
 
@@ -526,3 +690,4 @@ Claude Code might not be available in your country. Check supported countries at
 * https://www.anthropic.com/claude-code
 * https://github.com/anthropics/claude-code
 * https://docs.anthropic.com/en/docs/claude-code/overview
+* https://platform.claude.com/cookbooks
