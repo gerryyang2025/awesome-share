@@ -10,7 +10,25 @@ categories: ML
 
 # AI Model Rankings
 
+## OpenRouter
+
 https://openrouter.ai/rankings
+
+![openrouter](/assets/images/202601/openrouter.png)
+
+
+## Artificial Analysis
+
+https://artificialanalysis.ai/
+
+![aa](/assets/images/202601/aa.png)
+
+## Code Arena
+
+https://lmarena.ai/zh/leaderboard/
+
+![ca](/assets/images/202601/ca.png)
+
 
 
 # [Intro to Large Language Models - Andrej Karpathy](https://www.youtube.com/watch?v=zjkBMFhNj_g)
