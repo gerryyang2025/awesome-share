@@ -63,6 +63,11 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
 
 # Words (柯林斯英汉双解大词典)
 
+* cogitate /ˈkɒdʒɪteɪt/
+  + V-I If you are **cogitating**, you are thinking deeply about something. 深思
+    - He sat silently cogitating. 他静坐深思。
+
+
 * beloved /bɪˈlʌvɪd/
   + ADJ A **beloved** person, thing, or place is one that you feel great affection for. 深爱的
     - He lost his **beloved** wife last year. 他去年痛失爱妻。
