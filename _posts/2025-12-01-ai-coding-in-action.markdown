@@ -451,6 +451,8 @@ Spec-driven development means writing a “spec” before writing code with AI (
 
 # 年度最热编程语言 - AI 版
 
+![ai_code](/assets/images/202601/ai_code.png)
+
 ![ai_brain5](/assets/images/202512/ai_brain5.png)
 
 ![ai_brain6](/assets/images/202512/ai_brain6.png)
