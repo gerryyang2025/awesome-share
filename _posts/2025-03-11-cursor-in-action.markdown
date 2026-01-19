@@ -443,8 +443,59 @@ Cursor 使用**语言服务器协议**（`LSP`）来提供特定语言的功能�
 
 你现在可以在 Cursor 中直接通过 AI 代码评审来发现并修复 bug。它会检查你的改动并找出问题，你可以在侧边栏中查看。这也是对 Bugbot 的补充。Bugbot 运行在你的代码托管平台上，如 GitHub（包括 Enterprise Server）、GitLab 等。
 
+## 2.2 - Dec 10, 2025
+
+### 调试模式
+
+调试模式可以帮助你查明问题根源，并修复那些难以复现或理解的棘手 Bug。智能体不会立刻开始写代码，而是先提出假设、插入日志语句，并利用运行时信息精确定位问题，然后再进行有针对性的修复。
+
+![cursor_changelog1](/assets/images/202601/cursor_changelog1.png)
+
+More:
+
+* [重磅推出 Debug Mode：带运行时日志的 Agent](https://cursor.com/cn/blog/debug-mode)
+* [何时使用 Debug 模式](https://cursor.com/cn/docs/agent/modes#debug)
+
+**Debug 模式最适合用于处理：**
+
+1. 可复现的棘手 bug 或回归问题
+2. 性能问题和内存泄漏
+
+**调试模式使用提示：**
+
+1. **提供详细上下文**：你对 bug 及其复现方式描述得越详细，Agent 就能添加越多相关的监控和埋点。
+2. **按照复现步骤执行**：执行 Agent 提供的步骤，确保日志能捕获到实际问题。
+3. **必要时多次复现**：多次复现 bug 可以帮助 Agent 识别比较棘手的问题。
+
+**工作原理：**
+
+1. **探索并提出假设**：Agent 会探索相关文件、构建上下文，并针对潜在根因生成假设。
+2. **添加埋点**：Agent 会添加日志语句，将数据发送到运行在 Cursor 扩展中的本地调试服务器。
+3. **复现 Bug**：Debug Mode 会让你复现 Bug 并提供具体步骤。这能让你始终参与其中，并确保 Agent 捕获到真实的运行时行为。
+4. **分析日志**：复现完成后，Agent 会审查收集到的日志，根据运行时证据识别真正的根因。
+5. **进行针对性修复**：Agent 会执行有针对性的修复，直接处理根因——通常只需要改动几行代码。
+6. **验证并清理**：你可以重新执行复现步骤来验证修复。一旦确认，Agent 会移除所有埋点。
+
+### 浏览器布局和样式编辑器
+
+借助全新的浏览器侧边栏和组件树，同时进行设计与编码。移动元素、更新颜色、测试布局并实时调整 CSS，然后使用 agent 将更改即时应用到你的代码库中。你也可以选中多个元素，通过文字描述你想要的修改，让 agent 自动完成视觉调整。
+
+More: [Cursor Browser 的可视化编辑器](https://cursor.com/cn/blog/browser-visual-editor)
+
+![cursor_changelog3](/assets/images/202601/cursor_changelog3.mp4)
 
 
+### 多智能体评估
+
+在并行运行多个 Agent 时，Cursor 现在会自动对所有运行结果进行评估，并推荐最佳方案。被选中的 Agent 会附带一条注释，说明其被选中的原因。对最佳方案的评估只会在所有并行 Agent 全部完成之后进行。
+
+![cursor_changelog4](/assets/images/202601/cursor_changelog4.png)
+
+### 置顶对话
+
+在 Agent 侧边栏中，将对话置顶到顶部以便日后查阅。
+
+![cursor_changelog5](/assets/images/202601/cursor_changelog5.png)
 
 
 
@@ -505,6 +556,14 @@ Bugbot 会分析 PR 的 diff，并留下包含说明和修复建议的评论。�
 Bugbot 提供两个套餐：免费版 和 专业版。
 
 免费套餐：每位付费方案用户每月可获得有限次数的免费 PR 评审。团队中每位成员都有各自的免费评审次数。达到上限后，评审将暂停，直至下一个计费周期。您可随时升级到付费的 Bugbot 方案以享受无限次评审。
+
+
+
+## [Agent Skills](https://cursor.com/cn/docs/context/skills)
+
+Agent Skills 是一种用于为 AI Agent 扩展专门能力的开放标准。Skills 将特定领域的知识和工作流打包，Agent 可以利用这些内容来执行特定任务。
+
+
 
 
 
