@@ -122,14 +122,14 @@ Features:
 
 
 
-# Nano Banana (Gemini)
+## Nano Banana (Gemini)
 
 * https://aistudio.google.com/prompts/new_chat
 * https://aistudio.google.com/apps/bundled/pixshop?showPreview=true&showAssistant=true
 * https://nanobananaprompt.org/prompts/
 * https://github.com/JimmyLv/awesome-nano-banana
 
-## 手办 (Prompt)
+### 手办 (Prompt)
 
 ```
 Use the nano-banana model to create a 1/7 scale commercialized figure of thecharacter in the illustration, in a realistic style and environment. Place the figure on a computer desk, using a circular transparent acrylic base without any text.On the computer screen, display the ZBrush modeling process of the figure. Next to the computer screen, place a BANDAI-style toy packaging box printed with the original artwork.
@@ -143,7 +143,7 @@ transform this image into: A casual photograph of a collectible figure/model kit
 
 进一步，可以用[即梦](https://jimeng.jianying.com/)或[通义万相](https://tongyi.aliyun.com/wanxiang/)把图片转成视频。
 
-## 自拍照 (Prompt)
+### 自拍照 (Prompt)
 
 ```
 将上传的人物照片转换成高分辨率的肖像艺术作品，采用编辑类和现代艺术摄影风格。可以改变人物的动作姿势、表情、服饰、造型，增强画面张力。突出人物面部和光影质感。背景呈现柔和渐变效果，从中灰过渡到近乎纯白，营造出层次感与氛围感。细腻的胶片颗粒质感为画面增添了一种柔和质地，让人联想到经典的肖像摄影
@@ -157,7 +157,7 @@ transform this image into: A casual photograph of a collectible figure/model kit
 将上传的照片转换成高分辨率的彩色肖像摄影作品，采用编辑类和现代艺术摄影风格。背景呈现柔和渐变效果，从中灰过渡到近乎纯白，营造出层次感与氛围感。细腻的胶片颗粒质感为画面增添了一种柔和质地
 ```
 
-## 万圣节
+### 万圣节
 
 Maintain the character’s original appearance and details, add Halloween makeup devil horns and demonic features.  ([Featured Nano Banana AI Prompts](https://nanobananaprompt.org/))
 
