@@ -9,6 +9,106 @@ categories: ML
 {:toc}
 
 
+# 部署 LLM 和使用方案
+
+## [Ollama](https://github.com/ollama/ollama)
+
+Get up and running with large language models. Ollama 是一个开源工具，旨在帮助你在本地轻松运行和部署大型语言模型。
+
+英文测试：
+
+![ds_local4](/assets/images/202502/ds_local4.png)
+
+中文测试：
+
+![ds_local5](/assets/images/202502/ds_local5.png)
+
+
+## [Cherry Studio](https://github.com/CherryHQ/cherry-studio)
+
+除了通过 Terminal 与大模型交互，也可以通过 Cherry Studio 提供的 GUI 图形界面工具访问本地的大模型。例如：查看 Ollama 在本地监听的地址：`localhost:11434`，这是 Ollama 服务的默认接口地址。
+
+![ds_local6](/assets/images/202502/ds_local6.png)
+
+然后在 Cherry Studio 设置 -> 模型服务 -> Ollama 中，将 API 地址设置为 `http://localhost:11434/v1/`，并添加本地创建的模型，其中模型 ID 为：`modelscope.cn/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF`，添加完成后，点击检查，测试连接是否成功。**注意：模型 ID 务必填写与之前下载的模型版本完全一致的名称，否则会连接失败**。
+
+![ds_local7](/assets/images/202502/ds_local7.png)
+
+连接成功后，创建一个智能体 agent 命名为 `gerry_local_agent` 并设置使用本地创建的大模型 `modelscope.cn/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF`。
+
+![ds_local8](/assets/images/202502/ds_local8.png)
+
+测试功能：
+
+![ds_local9](/assets/images/202502/ds_local9.png)
+
+![ds_local10](/assets/images/202502/ds_local10.png)
+
+
+## [Continue](https://marketplace.visualstudio.com/items?itemName=Continue.continue) (VS CODE 扩展)
+
+Continue is the leading open-source AI code assistant. You can connect any models and any context to build custom autocomplete and chat experiences inside VS Code and JetBrains.
+
+配置选择本地部署的模型服务：
+
+![continue](/assets/images/202502/continue.png)
+
+通过 `command + I` 触发交互命令 (Edit highlighted code)，输入：实现计算一个最大公约数的代码。
+
+![continue2](/assets/images/202502/continue2.png)
+
+选中需要修改的代码，通过 `command + L` 获取当前代码内容 (Add to chat)，输入下一个指令：对当前代码生成注释。
+
+![continue3](/assets/images/202502/continue3.png)
+
+最后选择 accept 接受，完成代码编写。
+
+
+
+## [ima.copilot](https://ima.qq.com/) (会思考的知识库)
+
+ima.copilot (简称 ima) 是一款由腾讯混元大模型提供技术支持的智能工作台产品。
+
+![ima](/assets/images/202502/ima.png)
+
+
+
+
+## [Cursor](https://cursor.com/cn/docs)
+
+> Built to make you extraordinarily productive, **Cursor** is the best way to code with AI.
+
+`Cursor` 是 `VS Code` 的一个分支。这使我们能够专注于与 AI 进行编码的最佳方式，同时提供熟悉的文本编辑体验。
+
+![cursor0](/assets/images/202503/cursor0.png)
+
+详细介绍：[Cursor in Action](http://gerryyang.com/ml/2025/03/11/cursor-in-action.html)
+
+
+
+## [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview)
+
+> Claude is a highly performant, trustworthy, and intelligent AI platform built by Anthropic. Claude excels at tasks involving language, reasoning, analysis, coding, and more.
+
+**Claude Code** is an **agentic coding tool** that lives in your **terminal**, understands your codebase, and helps you code faster by executing routine tasks, explaining complex code, and handling git workflows -- **all through natural language commands**. Use it in your **terminal**, **IDE**, or `tag @claude` on Github.
+
+![cc_example](/assets/images/202601/cc_example.gif)
+
+详细介绍：[Claude Code in Action](http://gerryyang.com/ml/2025/08/06/claude-code-in-action.html)
+
+
+
+## [cline](https://cline.bot/) (AI assistant that can use your **CLI** a**N**d **E**ditor，支持 VS CODE 扩展)
+
+Autonomous coding agent right in your IDE, capable of creating/editing files, executing commands, using the browser, and more with your permission every step of the way.
+
+https://github.com/cline/cline
+
+![cline1](/assets/images/202601/cline1.png)
+
+![cline2](/assets/images/202601/cline2.png)
+
+
 
 # Drawing
 
