@@ -499,6 +499,78 @@ More: [Cursor Browser 的可视化编辑器](https://cursor.com/cn/blog/browser-
 
 
 
+## 2.4 - Jan 22, 2026
+
+
+### 子代理（Subagents）
+
+子代理是独立的代理，用于专门处理父代理任务中彼此独立的部分。它们并行运行，使用各自的上下文，并且可以配置自定义提示词、工具访问权限和模型。
+
+这样可以带来更快的整体执行速度、在主对话中提供更聚焦的上下文，以及针对每个子任务的专业能力。Cursor 默认提供用于分析你的代码库、运行终端命令和执行并行工作流的子代理。这些子代理会自动帮助提升你在编辑器和 [Cursor CLI](https://cursor.com/docs/cli/overview) 中的代理对话质量。你也可以按需定义自定义子代理。访问我们的[文档](https://cursor.com/docs/context/subagents)了解更多信息。
+
+![agent-subagents](/assets/images/202601/agent-subagents.mp4)
+
+
+### 技能
+
+Cursor 现在在编辑器和 [CLI](https://cursor.com/docs/cli/overview) 中支持 [Agent Skills](https://cursor.com/docs/context/skills)。当与特定领域的知识和工作流相关时，Agent 可以发现并应用这些技能。你也可以通过斜杠命令菜单来调用某个技能。
+
+
+子代理、技能与图像生成
+Agents 正在你的整个代码库中处理越来越复杂、运行时间更长的任务。本次版本引入了新的 agent 框架改进，以实现更好的上下文管理，并在编辑器和 CLI 中带来了许多提升使用体验的修复。
+
+#子代理（Subagents）
+子代理是独立的代理，用于专门处理父代理任务中彼此独立的部分。它们并行运行，使用各自的上下文，并且可以配置自定义提示词、工具访问权限和模型。
+
+0:15
+
+这样可以带来更快的整体执行速度、在主对话中提供更聚焦的上下文，以及针对每个子任务的专业能力。
+
+Cursor 默认提供用于分析你的代码库、运行终端命令和执行并行工作流的子代理。这些子代理会自动帮助提升你在编辑器和 Cursor CLI 中的代理对话质量。
+
+你也可以按需定义自定义子代理。访问我们的文档了解更多信息。
+
+#技能
+Cursor 现在在编辑器和 CLI 中支持 Agent Skills。当与特定领域的知识和工作流相关时，Agent 可以发现并应用这些技能。你也可以通过斜杠命令菜单来调用某个技能。
+
+0:11
+
+在 `SKILL.md` 文件中定义技能，其中可以包含自定义命令、脚本，以及用于根据当前任务增强 Agent 能力的说明。与始终生效的声明式 [rules](https://cursor.com/docs/context/rules) 相比，技能更适合用于[动态上下文发现](https://cursor.com/blog/dynamic-context-discovery)和过程式的“操作指南”类说明。这样既能让 Agent 拥有更高的灵活性，又能让上下文保持聚焦。
+
+![agent-skills-jan-23](/assets/images/202601/agent-skills-jan-23.mp4)
+
+### 图像生成
+
+直接通过 Cursor 的智能体生成图像。你可以用文字描述图像，或上传参考图片来引导底层图像生成模型（Google Nano Banana Pro）。
+
+生成的图像会以内联预览的形式返回，并默认保存到你的项目 `assets/` 文件夹中。这对于创建 UI 原型图、产品素材以及可视化架构图非常有用。
+
+![01-22-26-image-gen-3](/assets/images/202601/01-22-26-image-gen-3.mp4)
+
+
+### Cursor Blame 责任追踪
+
+在企业版中，[Cursor Blame](https://cursor.com/docs/integrations/cursor-blame) 在传统 git blame 的基础上加入 AI 归因，让你能清楚看到哪些代码是由 AI 生成、哪些是由人工编写。
+
+在审查或回顾代码时，每一行都会链接到生成该行代码的会话摘要，为你提供更改背后的上下文和推理过程。Cursor Blame 会区分来自 Tab 自动补全、Agent 运行（按模型细分）以及人工编辑的代码。它还可以帮助你跟踪整个团队代码库中的 AI 使用模式。
+
+![01-22-26-cursor-blame](/assets/images/202601/01-22-26-cursor-blame.mp4)
+
+
+### 来自 Agent 的澄清提问
+
+在 Plan 和 Debug 模式下供 Agent 使用的交互式问答工具，现在允许 Agent 在任何对话中提出澄清问题。
+
+在等待你的回复时，Agent 可以继续阅读文件、进行编辑或运行命令，并在你的回答到达后立即将其纳入后续操作。你还可以通过指示自定义子 Agent 和技能 "use the ask question tool"，来构建使用此工具的自定义子 Agent 和技能。
+
+![01-22-26-agent-ask-questions](/assets/images/202601/01-22-26-agent-ask-questions.mp4)
+
+
+
+
+
+
+
 # Q&A
 
 ## What is a `.mdc` file?
@@ -513,6 +585,108 @@ A:
 
 
 # 高级功能
+
+
+## [模式](https://cursor.com/cn/docs/agent/modes) (Mode)
+
+**Agent 提供针对特定任务优化的不同模式**。每种模式都启用了不同的能力和工具，以匹配你的工作流程需求。了解 [Agent 的工作原理](https://cursor.com/learn/agents)和[工具调用基础](https://cursor.com/learn/tool-calling)将帮助你为当前任务选择合适的模式。
+
+| **模式** | **适用场景** | **能力** | **工具**
+| -- | -- | -- | --
+| [Agent](https://cursor.com/cn/docs/agent/modes#agent) | 复杂功能、重构 | 自主探索、多文件编辑 | 启用全部工具
+| [Ask](https://cursor.com/cn/docs/agent/modes#ask) | 学习、规划、提问 | 只读探索，无自动修改 | 仅启用搜索工具
+| [Plan](https://cursor.com/cn/docs/agent/modes#plan) | 需要规划的复杂功能 | 在执行前创建详细计划，并提出澄清性问题 | 启用全部工具
+| [Debug](https://cursor.com/cn/docs/agent/modes#debug) | 棘手 Bug、回归问题 | 生成假设、日志埋点、运行时分析 | 全部工具 + 调试服务器
+
+
+### Agent
+
+适用于复杂编码任务的默认模式。Agent 会自主探索你的代码库、编辑多个文件、运行命令并修复错误，以完成你的请求。
+
+![agent_mode2](/assets/images/202601/agent_mode2.png)
+
+### Ask
+
+用于学习和探索的只读模式。Ask 会搜索你的代码库并提供答案，且不会对代码做出任何更改——非常适合在修改代码前先理解代码。
+
+![agent_mode3](/assets/images/202601/agent_mode3.png)
+
+### Plan
+
+Plan 模式会在编写任何代码之前先创建详细的实现计划。Agent 会分析你的代码库、提出澄清性问题，并生成一个可在构建前编辑的审阅用计划。在聊天输入框中按 `Shift+Tab` 以切换到 Plan 模式。**当你输入表明任务较为复杂的关键词时，Cursor 也会自动建议切换到该模式**。
+
+#### 工作原理
+
+1. Agent 会先提出一些澄清性问题，以了解你的需求
+2. 分析你的代码库以获取相关上下文
+3. 创建一份完整的实现计划
+4. 你可以通过聊天或 Markdown 文件审阅并编辑该计划
+5. 准备就绪后，点击构建该计划
+
+计划会以临时虚拟文件的形式打开，你可以查看和编辑。要将计划保存到你的工作区，点击 “Save to workspace”，它会被存储到 `.cursor/plans/` 中，方便后续查阅、团队协作和编写文档。
+
+#### 何时使用 Plan 模式
+
+Plan 模式最适合：
+
+* 具有多种可行方案的复杂功能
+* 涉及许多文件或多个系统的任务
+* 需求不清晰、需要先探索再厘清范围的工作
+* 你希望先审查整体方案的架构决策
+
+**对于一些简单、能很快完成的改动，或者你已经做过很多次的任务，直接使用 Agent 模式就可以了**。
+
+#### 从计划重新开始
+
+**有时 Agent 生成的内容和你想要的不一致。与其通过后续提示一点点修补，不如回到计划本身**。先回滚这些更改，然后把计划写得更具体、更清晰，再重新运行。这样通常比在中途修 Agent 更快，而且结果也更干净。
+
+> **对于较大的改动，多花一些时间制定一个精确、范围清晰的计划。最难的部分往往是先弄清楚应该做什么改动——这更适合由人来完成。给出合适的指令后，再把具体实现交给 Agent。**
+
+
+### Debug
+
+调试模式可以帮助你查明问题根源，并修复那些难以复现或理解的棘手 Bug。智能体不会立刻开始写代码，而是先提出假设、插入日志语句，并利用运行时信息精确定位问题，然后再进行有针对性的修复。
+
+![agent_mode4](/assets/images/202601/agent_mode4.png)
+
+#### 何时使用 Debug 模式
+
+Debug 模式最适合用于：
+
+* **能复现但想不明白原因的 Bug**：你知道有问题，但单靠读代码看不出明显原因
+* **竞态条件和时序问题**：依赖执行顺序或异步行为的问题
+* **性能问题和内存泄漏**：需要运行时性能分析（profiling）才能搞清楚的问题
+* **回归问题（以前能用现在坏了）**：当你需要追踪到底改了什么时
+
+当标准 Agent 交互难以处理某个 Bug 时，**Debug 模式提供了一种不同的思路——依赖运行时证据，而不是凭猜测去修复**。
+
+#### 工作原理
+
+1. **探索并提出假设**：Agent 会探索相关文件、构建上下文，并针对潜在根因生成多个假设。
+2. **添加埋点**：Agent 会添加日志语句，将数据发送到运行在 Cursor 扩展中的本地调试服务器。
+3. **复现 Bug**：Debug Mode 会让你复现 Bug 并提供具体步骤。这能让你始终参与其中，并确保 Agent 捕获到真实的运行时行为。
+4. **分析日志**：复现完成后，Agent 会审查收集到的日志，根据运行时证据识别真正的根因。
+5. **进行针对性修复**：Agent 会执行有针对性的修复，直接处理根因——通常只需要改动几行代码。
+6. **验证并清理**：你可以重新执行复现步骤来验证修复。一旦确认，Agent 会移除所有埋点。
+
+#### 调试模式使用提示
+
+* **提供详细上下文**：你对 bug 及其复现方式描述得越详细，Agent 的监控和埋点效果就会越好。请包含错误信息、堆栈跟踪和具体步骤。
+* **严格按照复现步骤执行**：执行 Agent 提供的步骤，确保日志能捕获到实际问题。
+* **必要时多次复现**：多次复现 bug 可以帮助 Agent 识别比较棘手的问题，比如竞态条件。
+* **明确期望行为与实际行为**：帮助 Agent 理解应该发生什么，以及现在实际发生了什么。
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## [Agent Review](https://cursor.com/cn/docs/agent/review#agent-review)
 
@@ -563,6 +737,283 @@ Bugbot 提供两个套餐：免费版 和 专业版。
 
 Agent Skills 是一种用于为 AI Agent 扩展专门能力的开放标准。Skills 将特定领域的知识和工作流打包，Agent 可以利用这些内容来执行特定任务。
 
+### 什么是技能？
+
+技能是一个可移植、支持版本控制的包，用于让 Agent 学会如何执行特定领域的任务。技能既可以包含说明性指令，也可以包含 Agent 可运行的脚本或代码。
+
+![agent_skills](/assets/images/202601/agent_skills.png)
+
+
+### 技能的工作原理
+
+Cursor 启动时，会自动从技能目录中发现并加载技能，并将它们提供给 Agent 使用。Agent 会看到所有可用技能，并根据当前上下文决定何时调用它们。你也可以在 Agent 对话中输入 `/` 并搜索技能名称来手动调用技能。
+
+### 技能目录
+
+技能会自动从以下位置加载：
+
+![agent_skills2](/assets/images/202601/agent_skills2.png)
+
+每个技能应为一个包含 `SKILL.md` 文件的文件夹：
+
+``` bash
+.cursor/
+└── skills/
+    └── my-skill/
+        └── SKILL.md
+```
+
+技能还可以包含脚本、参考文件和资源等可选目录：
+
+``` bash
+.cursor/
+└── skills/
+    └── deploy-app/
+        ├── SKILL.md
+        ├── scripts/
+        │   ├── deploy.sh
+        │   └── validate.py
+        ├── references/
+        │   └── REFERENCE.md
+        └── assets/
+            └── config-template.json
+```
+
+### SKILL.md 文件格式
+
+每个 Skill 都在带有 YAML 前置信息（frontmatter）的 `SKILL.md` 文件中定义：
+
+``` markdown
+---
+name: my-skill
+description: 简要描述此技能的功能及使用时机。
+---
+
+# 我的技能
+
+为 Agent 提供的详细指令。
+
+## 使用时机
+
+- 在以下情况使用此技能...
+- 此技能适用于...
+
+## 指令
+
+- 为 Agent 提供的分步指导
+- 特定领域的约定
+- 最佳实践和模式
+- 如需向用户澄清需求,请使用提问工具
+```
+
+> Frontmatter 字段
+
+![agent_skills3](/assets/images/202601/agent_skills3.png)
+
+### 禁用自动调用
+
+默认情况下，当 agent 判断某个 skill 相关时，会自动应用该 skill。将 `disable-model-invocation` 设为 **true**，可以让该 skill 的行为类似传统的斜杠命令（slash command），只有当你在聊天中显式输入 `/skill-name` 时，才会被包含进上下文。
+
+
+### 在技能中包含脚本
+
+技能可以包含 `scripts/` 目录，内含可由代理运行的可执行代码。在 `SKILL.md` 文件中使用相对于技能根目录的相对路径引用这些脚本。
+
+``` markdown
+---
+name: deploy-app
+description: 将应用部署到预发布或生产环境。在部署代码时使用,或当用户提及部署、发布或环境时使用。
+---
+
+# Deploy App
+
+Deploy the application using the provided scripts.
+
+## Usage
+
+Run the deployment script: `scripts/deploy.sh <environment>`
+
+Where `<environment>` is either `staging` or `production`.
+
+## Pre-deployment Validation
+
+Before deploying, run the validation script: `python scripts/validate.py`
+```
+
+当技能被调用时，agent 会读取这些指令并执行引用的脚本。脚本可以使用任何语言编写，例如 Bash、Python、JavaScript，或 agent 实现所支持的任何其他可执行格式。
+
+> **脚本应是自包含的，提供有用的错误信息，并能优雅地处理各种边界情况。**
+
+### 可选目录
+
+Skills 支持以下可选目录：
+
+![agent_skills4](/assets/images/202601/agent_skills4.png)
+
+**请让主 `SKILL.md` 文件保持简洁，将详细参考资料放在单独的文件中**。这样可以更高效地利用上下文，因为 Agents 会按需逐步加载资源——**只在需要时才加载**。
+
+### 查看技能
+
+要查看已发现的技能：
+
+1. 打开 **Cursor Settings**（Mac 上为 `Cmd+Shift+J`，Windows/Linux 上为 Ctrl+Shift+J）
+2. 前往 **Rules**
+3. 技能会显示在 **Agent Decides** 部分中
+
+### 从 GitHub 安装技能
+
+可以从 GitHub 仓库导入技能：
+
+1. 打开 **Cursor Settings** → **Rules**
+2. 在 **Project Rules** 部分，点击 **Add Rule**
+3. 选择 **Remote Rule (Github)**
+4. 输入 GitHub 仓库的 URL
+
+
+### 将规则和命令迁移到技能
+
+Cursor 在 2.4 中内置了一个 `/migrate-to-skills` 技能，帮助你将现有的动态规则和斜杠命令转换为技能。
+
+该迁移技能会转换：
+
+* **Dynamic rules**：使用 "Apply Intelligently" 配置的规则——即 alwaysApply: false（或未定义）且未定义 globs 模式的规则。这些会被转换为标准技能。
+* **Slash commands**：用户级和工作区级命令都会被转换为带有 disable-model-invocation: true 的技能，从而保留其显式调用行为。
+
+**迁移步骤：**
+
+1. 在 Agent 聊天中输入 `/migrate-to-skills`
+2. Agent 会识别符合条件的规则和命令并将其转换为技能
+3. 在 `.cursor/skills/` 中查看生成的技能
+
+> **具有 alwaysApply: true 或特定 globs 模式的规则不会被迁移，因为它们有与技能行为不同的显式触发条件。用户规则也不会被迁移，因为它们不存储在文件系统中。**
+
+
+### 了解更多
+
+Agent Skills 是一项开放标准。详见 [agentskills.io](https://agentskills.io/home)。
+
+
+
+
+## [Cursor CLI](https://cursor.com/cn/docs/cli/overview)
+
+借助 Cursor CLI，你可以直接在终端与 AI 代理交互，以编写、审阅和修改代码。无论你偏好交互式终端界面，还是为脚本与 CI 流水线进行输出式自动化，CLI 都能在你的工作环境中提供强大的编码协助。
+
+``` bash
+# 安装
+curl https://cursor.com/install -fsS | bash
+
+# 运行交互式会话
+agent
+```
+
+![cursor_cli](/assets/images/202601/cursor_cli.png)
+
+![cursor_cli2](/assets/images/202601/cursor_cli2.png)
+
+![cursor_cli3](/assets/images/202601/cursor_cli3.png)
+
+![cursor_cli4](/assets/images/202601/cursor_cli4.png)
+
+![cursor_cli5](/assets/images/202601/cursor_cli5.png)
+
+### 交互模式
+
+与代理开启对话会话，用于阐述你的目标、审阅建议的更改并批准命令：
+
+``` bash
+# 启动交互式会话
+agent
+
+# 使用初始提示启动
+agent "重构认证模块以使用 JWT 令牌"
+```
+
+### 非交互模式
+
+在脚本、CI 流水线或自动化等非交互场景下使用打印模式：
+
+``` bash
+# 使用特定提示和模型运行
+agent -p "find and fix performance issues" --model "gpt-5"
+
+# 包含 git 变更以供审查
+agent -p "review these changes for security issues" --output-format text
+```
+
+
+### 模式
+
+命令行界面支持与编辑器相同的模式。可通过斜杠命令、键盘快捷键或 `--mode` 参数在不同模式之间切换。有关每种模式的详细信息，请参见 [Agent 模式](https://cursor.com/docs/agent/modes)。
+
+![cursor_cli6](/assets/images/202601/cursor_cli6.png)
+
+
+### 交由 Cloud Agent 接管
+
+将你的对话推送到 [Cloud Agent](https://cursor.com/docs/cloud-agent)，让其在你离开时继续运行。在任意消息前加上 `&` 即可：
+
+``` bash
+# 向 Cloud Agent 发送任务
+& refactor the auth module and add comprehensive tests
+```
+
+在网页或移动端访问 [cursor.com/agents](https://cursor.com/agents)，继续处理你的 Cloud Agent 任务。
+
+
+### 会话
+
+继续之前的对话，在多次交互中保持上下文：
+
+``` bash
+# List all previous chats
+agent ls
+
+# Resume latest conversation
+agent resume
+
+# 恢复指定对话
+agent --resume="chat-id-here"
+```
+
+
+## [子代理](https://cursor.com/cn/docs/context/subagents)
+
+子代理是 Cursor 主代理可以将任务委派给的专业化 AI 助手。每个子代理都在自己的上下文窗口中运行，处理特定类型的工作，并将结果返回给父代理。使用子代理可以拆解复杂任务、并行开展工作，并在主对话中保留上下文。
+
+![cursor_subagent](/assets/images/202601/cursor_subagent.png)
+
+
+### 子代理如何运作
+
+当 Agent 遇到复杂任务时，它可以自动启动一个子代理。子代理会收到包含所有必要上下文的提示（prompt），自主执行，并在结束时返回一条包含结果的最终消息。子代理在全新的上下文中启动。父代理会在提示中加入相关信息，因为子代理无法访问之前的对话历史。
+
+子代理可以以两种模式之一运行：
+
+![cursor_subagent2](/assets/images/202601/cursor_subagent2.png)
+
+### 内置子代理
+
+Cursor 包含三个内置子代理，用于自动处理上下文占用较大的操作。这些子代理是基于对代理对话的分析而设计的，尤其是那些触及上下文窗口上限的场景。
+
+![cursor_subagent3](/assets/images/202601/cursor_subagent3.png)
+
+> 为什么存在这些子代理
+
+这三类操作有一些共同特征：它们会生成噪声较多的中间结果，需要专门的提示词和工具，并且可能消耗大量上下文。将它们作为子代理运行，可以解决多个问题：
+
+* **上下文隔离** — 中间输出保留在子代理内部，主代理只会看到最终总结。
+* **模型灵活性** — Explore 子代理默认使用更快的模型，这样可以在主代理执行一次搜索的时间内并行运行 10 次搜索。
+* **专用配置** — 每个子代理都有针对其特定任务优化的提示词和工具访问权限。
+* **成本效益** — 更快的模型成本更低。把高 token 开销的工作隔离到使用合适模型的子代理中，可以降低整体成本。
+
+**你不需要配置这些子代理。Agent 会在合适的时候自动使用它们。**
+
+### 何时使用 subagent
+
+![cursor_subagent4](/assets/images/202601/cursor_subagent4.png)
+
+> 如果你发现自己正为一个简单、单一用途的任务（例如 "generate a changelog" 或 "format imports"）创建 subagent，考虑改用一个 [skill](https://cursor.com/docs/context/skills)。
 
 
 
