@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Moltbot - Personal AI Assistant"
-date:   2026-01-29 23:00:00 +0800
+date:   2026-01-29 12:00:00 +0800
 categories: ML
 ---
 
