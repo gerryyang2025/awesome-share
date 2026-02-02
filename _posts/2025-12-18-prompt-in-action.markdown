@@ -36,6 +36,30 @@ https://clocks.brianmoore.com/
 * 基于此内容生成一个使用 Nano banana 生成的文章封面图提示词。
 
 
+# 英语学习小精灵 - 记住么
+
+请从 pdf 中解析 unit1 课文内容并生成对话文本，同时对每个对话添加中文翻译，并总结这个单元的重要句型和知识点。最后按照下面格式输出 ``` markdown xxx ``` 包裹的文本格式。
+
+``` markdown
+# 题目：Friends (好朋友的共同点) 
+# 场景：Kitty 正在介绍她的好朋友 Alice，并描述她们的性格、共同爱好以及经常一起做的事情。
+# 重点句型：
+  - We both like sport. (我们两个都喜欢运动。)
+  - We're in the same class. (我们在同一个班级。)
+  - We sometimes help old people cross the street. (我们有时帮助老人穿过马路。) 
+# 知识点：
+  - 核心形容词：`clever` (聪明的), `same` (相同的), `different` (不同的), `heavy` (重的), `bored` (无聊的), `easy` (容易的)
+  - 重点短语：`both` (两个都), `each other` (互相), `cross the street` (穿过马路), `carry heavy bags` (提重袋子), `make phone calls` (打电话)
+  - 语音知识：掌握字母组合 `dr` (dress) 和 `pr` (princess) 的发音
+
+
+Kitty: I'm Kitty. I have a friend. Her name's Alice. She's clever. We're in the same class. (吉蒂：我是吉蒂。我有一个朋友。她的名字叫艾丽丝。她很聪明。我们在同一个班级。) 
+Kitty: We both like sport. I like playing table tennis and Alice likes playing volleyball. (吉蒂：我们两个都喜欢运动。我喜欢打乒乓球，艾丽丝喜欢打排球。)
+Kitty: We both love animals. I have a cat and Alice has a dog. (吉蒂：我们两个都喜爱动物。我有一只猫，艾丽丝有一只狗。) 
+Kitty: We both like helping people. We sometimes help old people cross the street. We also help them carry heavy bags. (吉蒂：我们两个都喜欢帮助别人。我们有时帮助老人穿过马路。我们还帮他们提重袋子。)
+Kitty: We like each other. We're good friends. (吉蒂：我们喜欢彼此。我们是好朋友。)
+```
+
 
 # 画图 
 
