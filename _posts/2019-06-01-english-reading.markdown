@@ -63,6 +63,14 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
 
 # Words (柯林斯英汉双解大词典)
 
+* gist /dʒɪst/
+  + N-SING The **gist** of a speech, conversation, or piece of writing is its general meaning. 要点
+
+* animation /ˌænɪˈmeɪʃ(ə)n/
+  + N-UNCOUNT **Animation** is the process of making films in which drawings or puppets appear to move. 动画制作
+  + N-COUNT An **animation** is a film in which drawings or puppets appear to move. 动画片
+
+
 * cogitate /ˈkɒdʒɪteɪt/
   + V-I If you are **cogitating**, you are thinking deeply about something. 深思
     - He sat silently cogitating. 他静坐深思。
