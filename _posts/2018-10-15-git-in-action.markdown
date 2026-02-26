@@ -1077,14 +1077,8 @@ $cat .git-blame-ignore-revs
 
 ## 查看历史提交信息 - git log
 
+
 ``` bash
-
-# 查看当前仓库代码状态
-git status
-
-# 对比修改的内容
-git diff
-
 # 查看最近2次的提交统计信息
 git log --stat -2
 
@@ -1100,7 +1094,20 @@ git log --oneline -n3 --graph
 
 # 指定用户
 git log --oneline -n3 --author=gerryyang
+
+# 显示当前目录的更改日志（Change Log），可以使用 `git log` 命令并结合路径参数
+git log -- . # 它会列出当前目录（包括子目录）下所有提交的历史记录
+
+# 若需更详细信息或简略信息，可使用
+git log --stat -- .
+# 或
+git log --oneline -- .
+
+# 查看当前目录下特定文件的历史
+git log -- <filename>
+
 ```
+
 更多: [Git-基础-查看提交历史]
 
 [Git-基础-查看提交历史]: https://git-scm.com/book/zh/v1/Git-基础-查看提交历史
