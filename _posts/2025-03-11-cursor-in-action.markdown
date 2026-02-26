@@ -482,8 +482,6 @@ More:
 
 More: [Cursor Browser 的可视化编辑器](https://cursor.com/cn/blog/browser-visual-editor)
 
-![cursor_changelog3](/assets/images/202601/cursor_changelog3.mp4)
-
 
 ### 多智能体评估
 
@@ -507,8 +505,6 @@ More: [Cursor Browser 的可视化编辑器](https://cursor.com/cn/blog/browser-
 子代理是独立的代理，用于专门处理父代理任务中彼此独立的部分。它们并行运行，使用各自的上下文，并且可以配置自定义提示词、工具访问权限和模型。
 
 这样可以带来更快的整体执行速度、在主对话中提供更聚焦的上下文，以及针对每个子任务的专业能力。Cursor 默认提供用于分析你的代码库、运行终端命令和执行并行工作流的子代理。这些子代理会自动帮助提升你在编辑器和 [Cursor CLI](https://cursor.com/docs/cli/overview) 中的代理对话质量。你也可以按需定义自定义子代理。访问我们的[文档](https://cursor.com/docs/context/subagents)了解更多信息。
-
-![agent-subagents](/assets/images/202601/agent-subagents.mp4)
 
 
 ### 技能
@@ -537,7 +533,6 @@ Cursor 现在在编辑器和 CLI 中支持 Agent Skills。当与特定领域的�
 
 在 `SKILL.md` 文件中定义技能，其中可以包含自定义命令、脚本，以及用于根据当前任务增强 Agent 能力的说明。与始终生效的声明式 [rules](https://cursor.com/docs/context/rules) 相比，技能更适合用于[动态上下文发现](https://cursor.com/blog/dynamic-context-discovery)和过程式的“操作指南”类说明。这样既能让 Agent 拥有更高的灵活性，又能让上下文保持聚焦。
 
-![agent-skills-jan-23](/assets/images/202601/agent-skills-jan-23.mp4)
 
 ### 图像生成
 
@@ -545,7 +540,6 @@ Cursor 现在在编辑器和 CLI 中支持 Agent Skills。当与特定领域的�
 
 生成的图像会以内联预览的形式返回，并默认保存到你的项目 `assets/` 文件夹中。这对于创建 UI 原型图、产品素材以及可视化架构图非常有用。
 
-![01-22-26-image-gen-3](/assets/images/202601/01-22-26-image-gen-3.mp4)
 
 
 ### Cursor Blame 责任追踪
@@ -554,7 +548,6 @@ Cursor 现在在编辑器和 CLI 中支持 Agent Skills。当与特定领域的�
 
 在审查或回顾代码时，每一行都会链接到生成该行代码的会话摘要，为你提供更改背后的上下文和推理过程。Cursor Blame 会区分来自 Tab 自动补全、Agent 运行（按模型细分）以及人工编辑的代码。它还可以帮助你跟踪整个团队代码库中的 AI 使用模式。
 
-![01-22-26-cursor-blame](/assets/images/202601/01-22-26-cursor-blame.mp4)
 
 
 ### 来自 Agent 的澄清提问
@@ -563,7 +556,6 @@ Cursor 现在在编辑器和 CLI 中支持 Agent Skills。当与特定领域的�
 
 在等待你的回复时，Agent 可以继续阅读文件、进行编辑或运行命令，并在你的回答到达后立即将其纳入后续操作。你还可以通过指示自定义子 Agent 和技能 "use the ask question tool"，来构建使用此工具的自定义子 Agent 和技能。
 
-![01-22-26-agent-ask-questions](/assets/images/202601/01-22-26-agent-ask-questions.mp4)
 
 
 
