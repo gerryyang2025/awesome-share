@@ -33,6 +33,8 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 # Phrase
 
 
+* FOMO (fear of missing out) 错失恐惧症
+
 * watch your six (源自：疯狂动物城2)
 
 watch your six 是一个英语俚语，直译是“注意你的六点钟方向”。它源自军事术语，其中方向用时钟表示：12点为正前方，3点为右侧，6点为正后方，9点为左侧。因此，这个短语的引申意思是 **“小心背后”或“保持警惕”**，常用于提醒某人注意来自后方的危险或意外。
@@ -70,6 +72,23 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
   + N-UNCOUNT **Animation** is the process of making films in which drawings or puppets appear to move. 动画制作
   + N-COUNT An **animation** is a film in which drawings or puppets appear to move. 动画片
 
+
+* swarm /swɔːm/
+  + N-COUNT-COLL A **swarm of** bees or other insects is a large group of them flying together. 大群 (蜜蜂等昆虫)
+    - a swarm of locusts. 一大群蝗虫
+  + V-I When bees or other insects **swarm**, they move or fly in a large group. (蜜蜂或其他昆虫) 大群移动
+    - A dark cloud of bees comes **swarming** out of the hive. 黑压压的一大群蜜蜂从那座蜂巢涌过来。
+  + V to climb (a ladder, etc) by gripping with the hands and feet 爬(梯子等); 攀
+  + V-I When people **swarm** somewhere, they move there quickly in a large group. (人群) 涌往
+    - People **swarmed** to the stores, buying up everything in sight. 人们成群地涌到商场，看到什么就买什么。
+  + V-I If a place **is swarming with** people, it is full of people moving about in a busy way. 挤满
+    - Within minutes the area **was swarming with** officers who began searching a nearby wood. 几分钟之内这个地方挤满了警官，他们开始搜查附近的一片树林。
+
+
+
+* silicon /ˈsɪlɪkən/
+  + N-UNCOUNT **Silicon** is an element that is found in sand and in minerals such as quartz and granite. Silicon is used to make parts of computers and other electronic equipment. 硅
+    - The new chip will be made from a piece of silicon about the size of a postage stamp. 这种新的芯片将由大约邮票大小的一块硅片制成。
 
 * cogitate /ˈkɒdʒɪteɪt/
   + V-I If you are **cogitating**, you are thinking deeply about something. 深思
