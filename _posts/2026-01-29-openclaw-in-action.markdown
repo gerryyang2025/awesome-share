@@ -298,8 +298,77 @@ Minimal config:
 
 ![moltbot29](/assets/images/202601/moltbot29.png)
 
+# 使用 lighthouse 部署 OpenClaw 全能助手
+
+## 购买 OpenClaw 云服务
+
+在 https://cloud.tencent.com/act/pro/lighthouse-moltbot 上购买已经集成 OpenClaw 的服务。
+
+![openclaw5](/assets/images/202601/openclaw5.png)
+
+![openclaw6](/assets/images/202601/openclaw6.png)
+
+![openclaw7](/assets/images/202601/openclaw7.png)
+
+## 配置 OpenClaw
+
+![openclaw8](/assets/images/202601/openclaw8.png)
+
+![openclaw9](/assets/images/202601/openclaw9.png)
+
+![openclaw10](/assets/images/202601/openclaw10.png)
+
+
+## QQ开放平台申请机器人
+
+在 https://q.qq.com/#/ 完成实名注册认证，然后使用注册邮箱登陆。
+
+![openclaw11](/assets/images/202601/openclaw11.png)
+
+![openclaw12](/assets/images/202601/openclaw12.png)
+
+![openclaw13](/assets/images/202601/openclaw13.png)
+
+![openclaw14](/assets/images/202601/openclaw14.png)
+
+
+在管理页面获取到当前机器人的 AppID 和 AppSecret，并且把自己的服务器 IP 填入到白名单中。
+
+![openclaw15](/assets/images/202601/openclaw15.png)
+
+![openclaw16](/assets/images/202601/openclaw16.png)
+
+
+登陆终端测试 chatbot 功能是否正常。
+
+![openclaw17](/assets/images/202601/openclaw17.png)
+
+添加 QQ 群和自己的 QQ 号，以调用机器人。
+
+![openclaw18](/assets/images/202601/openclaw18.png)
+
+在手机端 QQ 中，添加机器人：设置 → 群机器人 → 其他
+
+![openclaw19](/assets/images/202601/openclaw19.png)
+
+![openclaw20](/assets/images/202601/openclaw20.png)
+
+## 实时搜索能力
+
+![openclaw21](/assets/images/202601/openclaw21.png)
+
+![openclaw22](/assets/images/202601/openclaw22.png)
+
+以配置 [finnhub](https://finnhub.io/dashboard) 查询股票价格为例：
+
+![openclaw23](/assets/images/202601/openclaw23.png)
+
+![openclaw24](/assets/images/202601/openclaw24.png)
+
+
 
 # Q&A
+
 
 ## MiniMax 接口配置
 
