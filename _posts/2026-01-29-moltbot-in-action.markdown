@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Moltbot - Personal AI Assistant"
+title:  "OpenClaw - Personal AI Assistant"
 date:   2026-01-29 12:00:00 +0800
 categories: ML
 ---
@@ -8,19 +8,33 @@ categories: ML
 * Do not remove this line (it will not be displayed)
 {:toc}
 
+# 使用示例
+
+![openclaw1](/assets/images/202601/openclaw1.png)
+
+![openclaw2](/assets/images/202601/openclaw2.png)
+
+![openclaw3](/assets/images/202601/openclaw3.png)
+
+![openclaw4](/assets/images/202601/openclaw4.png)
+
+
+
 # 背景介绍
+
+> 命名变化：ClawBot -> MoltBot -> OpenClaw
 
 > 可以拓展想象：你买了一台新电脑，里面有一个“幽灵实体”，你把键盘、鼠标和网络权限交给它，把它当成一个虚拟同事。你可以直接跟它说话，交代事情。凡是你能在电脑上做的事，这个 Agent 理论上都能替你完成。这就是它真正强大的地方。
 
-个人 AI 助手 **ClawdBot** 席卷硅谷，国内外社交平台上全是关于它的讨论。不过，项目创始人 **Peter Steinberger** 在 X 平台上发文表示，他被 Anthropic 强制要求更改名称的成 **Moltbot**，这并非他本人的决定。这次改名源于商标问题，但在操作过程中不仅搞砸了 GitHub 的账号更名，连 X 平台的原账号名也被加密货币推广者抢注了。最终，他的新账号名定为 `@moltbot`。使用 **Clawdbot** 后，网友们纷纷给出了很高的评价。“**它是迄今为止最伟大的 AI 应用，相当于你 24 小时全天候专属 AI 员工**”。Creator Buddy 创始人兼 CEO Alex Finn 盛赞道，“**这就是他们 (Anthropic) 希望 Claude Cowork 呈现的样子**”。当前，ClawdBot 项目已经开源：https://github.com/clawdbot/clawdbot。
+个人 AI 助手 **Clawdbot** 席卷硅谷，国内外社交平台上全是关于它的讨论。不过，项目创始人 **Peter Steinberger** 在 X 平台上发文表示，他被 Anthropic 强制要求更改名称的成 **Moltbot**，这并非他本人的决定。这次改名源于商标问题，但在操作过程中不仅搞砸了 GitHub 的账号更名，连 X 平台的原账号名也被加密货币推广者抢注了。最终，他的新账号名定为 `@moltbot`。使用 **Clawdbot** 后，网友们纷纷给出了很高的评价。“**它是迄今为止最伟大的 AI 应用，相当于你 24 小时全天候专属 AI 员工**”。Creator Buddy 创始人兼 CEO Alex Finn 盛赞道，“**这就是他们 (Anthropic) 希望 Claude Cowork 呈现的样子**”。当前，ClawdBot 项目已经开源：https://github.com/clawdbot/clawdbot。
 
 Alex 展示了给他的 Clawdbot 发信息，让它帮其预订下周六在一家餐厅的座位。当 OpenTable 预订失败时，Clawdbot 利用 ElevenLabs 的技术致电餐厅并完成了预订。
 
 ![moltbot21](/assets/images/202601/moltbot21.png)
 
-但 ClawdBot 真正让技术圈兴奋的，并不只是“能干活” ，而是其协作方式极其激进：不会写代码的人，也能直接提 PR。**原因很简单：它几乎是 100% 用 AI 写出来的**，PR 在这里更像是“我遇到了这个问题”，而不是“我写了一段多漂亮的代码”。更有意思的是，这个看似“全开源”的项目，偏偏故意留了一点不开源。创始人 Peter Steinberger 保留了一个名为“soul”的文件只占项目的 0.00001%。他说得很直白：这既是他的"秘密资产"，也是一个刻意留下来的安全靶子。大家真的在试着 hack 它，他就等着看模型到底守不守得住。到目前为止，“soul”还没被偷出来。作为忠实粉丝，Alex 表示这是自 Claude Code 发布以来，自己第一次连续两天没有用它。但是他的 ClawdBot Henry 已经连续 48 小时不停地 Vibe Coding。“**我这辈子都没写过这么多代码。Vibe Coding 已死，Vibe Orchestration 已来。**”
+但 Clawdbot 真正让技术圈兴奋的，并不只是“能干活” ，而是其协作方式极其激进：不会写代码的人，也能直接提 PR。**原因很简单：它几乎是 100% 用 AI 写出来的**，PR 在这里更像是“我遇到了这个问题”，而不是“我写了一段多漂亮的代码”。更有意思的是，这个看似“全开源”的项目，偏偏故意留了一点不开源。创始人 Peter Steinberger 保留了一个名为“soul”的文件只占项目的 0.00001%。他说得很直白：这既是他的"秘密资产"，也是一个刻意留下来的安全靶子。大家真的在试着 hack 它，他就等着看模型到底守不守得住。到目前为止，“soul”还没被偷出来。作为忠实粉丝，Alex 表示这是自 Claude Code 发布以来，自己第一次连续两天没有用它。但是他的 Clawdbot Henry 已经连续 48 小时不停地 Vibe Coding。“**我这辈子都没写过这么多代码。Vibe Coding 已死，Vibe Orchestration 已来。**”
 
-现在，Alex 想要退掉 Mac Mini，换一台价值 1 万美元的 Mac Studio。“我的 ClawdBot Henry 将控制一台人工智能超级计算机。Henry 将使用 Opus 作为大脑，并使用多个本地模型作为员工集群。” **Clawbot 并不是传统意义上只能回答问题的聊天机器人，它本质上是一个持续运行、可以执行任务的个人 AI 智能体**。你可以把它安装在自己的设备上，如 Mac、Windows、Linux，**它可以长期在线，不停地接收指令、处理任务、记住你的偏好和历史对话，随着时间积累变得更懂你、更有“记忆”**。
+现在，Alex 想要退掉 Mac Mini，换一台价值 1 万美元的 Mac Studio。“我的 Clawdbot Henry 将控制一台人工智能超级计算机。Henry 将使用 Opus 作为大脑，并使用多个本地模型作为员工集群。” **Clawbot 并不是传统意义上只能回答问题的聊天机器人，它本质上是一个持续运行、可以执行任务的个人 AI 智能体**。你可以把它安装在自己的设备上，如 Mac、Windows、Linux，**它可以长期在线，不停地接收指令、处理任务、记住你的偏好和历史对话，随着时间积累变得更懂你、更有“记忆”**。
 
 总的来说，**Clawbot 最令人震撼的地方有三点**：
 
@@ -42,7 +56,7 @@ Alex 展示了给他的 Clawdbot 发信息，让它帮其预订下周六在一�
 
 但也有网友称可以用一台免费的服务器运行着完全一样的程序，Alex 也称没必要花 600 美元买 Mac mini，有其他便宜得多的方式来运行 Clawbot。买 Mac mini 更多是个人偏好，而不是技术上的必要条件。你完全可以不买任何硬件，只需要一个 VPS。另外，云厂商们动作迅速，有网友发现腾讯云直接推出了 Clawbot 云服务。
 
-随着项目的火爆，其背后的开发者 Peter Steinberger 也备受关注。Peter 在“Open Source Friday”上分享了他一手打造 ClawdBot 的经过，从创建、创始到维护，全由他独自完成。有意思的是，此前甚至有传言称，Peter 可能是一个 bot、Agent，甚至本身就是 AI。而 Peter 的出现也让项目成员和关注者们确认了他是个“真人”。Peter 一度已经退休了，后来又从退休状态里出来开始折腾 AI。从外表来看，Peter 年轻有活力，完全不像已到退休年龄、可领取养老金的人。
+随着项目的火爆，其背后的开发者 Peter Steinberger 也备受关注。Peter 在“Open Source Friday”上分享了他一手打造 Clawdbot 的经过，从创建、创始到维护，全由他独自完成。有意思的是，此前甚至有传言称，Peter 可能是一个 bot、Agent，甚至本身就是 AI。而 Peter 的出现也让项目成员和关注者们确认了他是个“真人”。Peter 一度已经退休了，后来又从退休状态里出来开始折腾 AI。从外表来看，Peter 年轻有活力，完全不像已到退休年龄、可领取养老金的人。
 
 ![moltbot25](/assets/images/202601/moltbot25.png)
 
@@ -75,7 +89,7 @@ If you want the deeper reference pages, jump to: [Wizard](https://docs.molt.bot/
 
 
 
-# Moltbot (原 ClawdBot)
+# Moltbot (原 Clawdbot)
 
 
 [Moltbot](https://github.com/moltbot/moltbot) is a personal AI assistant you run on your own devices. It answers you on the channels you already use (WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, Microsoft Teams, WebChat), plus extension channels like BlueBubbles, Matrix, Zalo, and Zalo Personal. It can speak and listen on macOS/iOS/Android, and can render a live Canvas you control. The Gateway is just the control plane — the product is the assistant.
