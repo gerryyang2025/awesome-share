@@ -8,7 +8,9 @@ categories: ML
 * Do not remove this line (it will not be displayed)
 {:toc}
 
-# 使用示例
+# 快速开始
+
+官方文档：[OpenClaw 快速开始指南](https://docs.openclaw.ai/start/getting-started)
 
 ![openclaw1](/assets/images/202601/openclaw1.png)
 
@@ -353,17 +355,68 @@ Minimal config:
 
 ![openclaw20](/assets/images/202601/openclaw20.png)
 
-## 实时搜索能力
+
+## Web Search 能力
+
+### 配置 Brave API (收费)
+
+Brave Search 是内置的 web_search 工具，但是收费，可以让 OpenClaw 禁用它，并替换为其他免费的方案。
 
 ![openclaw21](/assets/images/202601/openclaw21.png)
 
 ![openclaw22](/assets/images/202601/openclaw22.png)
 
-以配置 [finnhub](https://finnhub.io/dashboard) 查询股票价格为例：
+### 配置 finnhub (免费)
+
+通过 [finnhub](https://finnhub.io/dashboard) 查询股票价格：
 
 ![openclaw23](/assets/images/202601/openclaw23.png)
 
 ![openclaw24](/assets/images/202601/openclaw24.png)
+
+### 配置 tavily (免费)
+
+https://www.tavily.com/
+
+
+
+
+## Skills
+
+![openclaw25](/assets/images/202601/openclaw25.png)
+
+
+## 更多用法
+
+[云上 OpenClaw 最全实践教程合辑](https://cloud.tencent.com/developer/article/2624973)
+
+
+
+# 常用命令
+
+``` bash
+# 打开终端
+openclaw tui
+```
+
+![openclaw28](/assets/images/202601/openclaw28.png)
+
+
+``` bash
+# 选择配置选项
+openclaw configure
+```
+
+![openclaw26](/assets/images/202601/openclaw26.png)
+
+
+``` bash
+# 重启 gateway 使得配置生效
+openclaw gateway restart
+```
+
+![openclaw27](/assets/images/202601/openclaw27.png)
+
 
 
 
