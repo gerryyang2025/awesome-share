@@ -65,6 +65,8 @@ QQbot 具备的 Skills 能力：
 
 ![openclaw4](/assets/images/202601/openclaw4.png)
 
+![openclaw46](/assets/images/202601/openclaw46.png)
+
 ## 使用示例2 - 生成图片
 
 ![openclaw34](/assets/images/202601/openclaw34.png)
@@ -78,10 +80,19 @@ QQbot 具备的 Skills 能力：
 
 ![openclaw44](/assets/images/202601/openclaw44.png)
 
+<audio controls>
+  <source src="/assets/audio/song.mp3" type="audio/mpeg">
+</audio>
+
+
 
 ## 使用示例4 - 生成视频
 
+![openclaw47](/assets/images/202601/openclaw47.png)
 
+<video width="100%" controls>
+    <source src="/assets/videos/cat_dance.mp4" type="video/mp4">
+</video>
 
 
 # Skills 最佳实践
@@ -578,26 +589,541 @@ https://www.tavily.com/
 
 # 常用命令
 
-## 打开终端 openclaw tui
+参考：https://zhuanlan.zhihu.com/p/2011017776756701009
+
+
+
+
+## 打开终端
+
+``` bash
+openclaw tui
+```
 
 ![openclaw28](/assets/images/202601/openclaw28.png)
 
+## 查看帮助
 
-## 选择配置选项 openclaw configure
+``` bash
+# 查看所有命令
+openclaw --help
+
+# 查看版本号
+openclaw --version
+
+# 查看特定命令的帮助
+openclaw <command> --help
+
+# 示例：查看 config 命令帮助
+openclaw config --help
+```
+
+## 初始化配置
+
+``` bash
+# 首次安装后初始化配置
+openclaw setup
+
+# 交互式引导配置（推荐新手）
+openclaw onboard
+
+# 打开控制面板
+openclaw dashboard
+```
+
+
+## 配置向导
+
+``` bash
+# 打开完整配置向导
+openclaw configure
+
+# 打开特定部分配置向导
+openclaw configure --section models
+openclaw configure --section providers
+openclaw configure --section channels
+```
 
 ![openclaw26](/assets/images/202601/openclaw26.png)
 
+## 查看配置
 
-## 重启 gateway 使得配置生效 openclaw gateway restart
+``` bash
+# 查看完整配置
+openclaw config get
+
+# 查看特定配置项
+openclaw config get models.default
+openclaw config get providers.mistral.apiKey
+
+# 查看特定部分配置
+openclaw config get --section models
+openclaw config get --section providers
+```
+
+## 设置配置
+
+``` bash
+# 设置默认模型
+openclaw config set models.default mistral:mixtral-8x7b
+
+# 设置快速模型
+openclaw config set models.fast mistral:mistral-7b
+
+# 配置 Mistral API Key
+openclaw config set providers.mistral.apiKey YOUR_API_KEY_HERE
+
+# 启用缓存
+openclaw config set cache.enabled true
+openclaw config set cache.maxSize 5000
+```
+
+
+## 启动/停止 Gateway
+
+``` bash
+# 启动 Gateway（默认端口 18789）
+openclaw gateway start
+
+# 自定义端口启动
+openclaw gateway start --port 19000
+
+# 强制启动（杀死占用进程）
+openclaw gateway start --force
+
+# 停止 Gateway
+openclaw gateway stop
+
+# 重启 Gateway
+openclaw gateway restart
+
+# 查看运行状态
+openclaw gateway status
+```
 
 ![openclaw27](/assets/images/202601/openclaw27.png)
 
-## 问题定位 openclaw logs --follow
+## 运行时 Gateway
+
+``` bash
+# 查看健康状态
+openclaw health
+```
+
+
+## 查看日志
+
+``` bash
+# 查看实时日志
+openclaw logs
+
+# 查看最近 50 行日志
+openclaw logs --lines 50
+
+# 查看错误日志
+openclaw logs --filter error
+
+# 持续监控日志
+openclaw logs --follow
+```
 
 ![openclaw32](/assets/images/202601/openclaw32.png)
 
 ![openclaw33](/assets/images/202601/openclaw33.png)
 
+## 创建新的会话 (清空 token 上下文)
+
+通过 `/new` 指令来新开一个会话
+
+![openclaw45](/assets/images/202601/openclaw45.png)
+
+
+## 系统服务管理
+
+``` bash
+# 使用 systemd 管理（推荐生产环境）
+sudo systemctl start openclaw-gateway
+sudo systemctl stop openclaw-gateway
+sudo systemctl restart openclaw-gateway
+sudo systemctl status openclaw-gateway
+
+# 开机自启动
+sudo systemctl enable openclaw-gateway
+```
+
+## 发送消息
+
+``` bash
+# 发送消息到当前会话
+openclaw message send --message "Hello"
+
+# 发送到特定目标（Telegram）
+openclaw message send \
+  --channel telegram \
+  --target @mychat \
+  --message "Hello from OpenClaw"
+
+# 发送到特定目标（WhatsApp）
+openclaw message send \
+  --channel whatsapp \
+  --target +8613800138000 \
+  --message "您好"
+
+# 发送到 Slack 频道
+openclaw message send \
+  --channel slack \
+  --target C1234567890 \
+  --message "@channel 重要通知"
+```
+
+## 发送媒体文件
+
+``` bash
+# 发送图片
+openclaw message send \
+  --channel telegram \
+  --target @mychat \
+  --media /tmp/photo.jpg \
+  --caption "这是一张图片"
+
+# 发送音频
+openclaw message send \
+  --channel whatsapp \
+  --target +8613800138000 \
+  --media /tmp/voice.mp3
+
+# 发送文档
+openclaw message send \
+  --channel telegram \
+  --target @mychat \
+  --media /tmp/report.pdf
+```
+
+## 查看技能列表
+
+``` bash
+# 查看所有已安装技能
+openclaw skills list
+
+# 搜索技能
+openclaw skills search weather
+
+# 查看技能详情
+openclaw skills show weather
+```
+
+## 安装/卸载技能
+
+``` bash
+# 安装技能
+openclaw skills install weather
+
+# 从指定来源安装
+openclaw skills install weather --source github
+
+# 指定版本安装
+openclaw skills install weather@1.2.0
+
+# 卸载技能
+openclaw skills uninstall weather
+```
+
+## 更新技能
+
+``` bash
+# 更新所有技能
+openclaw skills update
+
+# 更新特定技能
+openclaw skills update weather
+
+# 同步技能
+openclaw skills sync
+```
+
+## 技能开发
+
+``` bash
+# 创建新技能
+openclaw skills create my-skill
+
+# 验证技能
+openclaw skills validate my-skill
+
+# 打包技能
+openclaw skills pack my-skill
+```
+
+## 查看频道
+
+``` bash
+# 查看所有配置的频道
+openclaw channels list
+
+# 查看频道状态
+openclaw channels status
+
+# 查看特定频道详情
+openclaw channels show telegram
+```
+
+## 登录频道
+
+``` bash
+# Telegram 登录
+openclaw channels login --channel telegram
+
+# WhatsApp 登录（会显示 QR 码）
+openclaw channels login --channel whatsapp --verbose
+
+# Slack 登录
+openclaw channels login --channel slack
+
+# Discord 登录
+openclaw channels login --channel discord
+```
+
+## 频道测试
+
+``` bash
+# 测试频道连接
+openclaw channels test --channel telegram
+
+# 发送测试消息
+openclaw channels test \
+  --channel telegram \
+  --target @mychat \
+  --message "测试消息"
+```
+
+## 频道配置
+
+``` bash
+# 配置频道
+openclaw channels configure --channel telegram
+
+# 更新频道 Token
+openclaw channels update \
+  --channel telegram \
+  --token NEW_TOKEN
+
+# 启用/禁用频道
+openclaw channels enable telegram
+openclaw channels disable telegram
+```
+
+## 查看会话
+
+``` bash
+# 列出所有会话
+openclaw sessions
+
+# 列出活跃会话
+openclaw sessions --active
+
+# 列出特定频道的会话
+openclaw sessions --channel telegram
+
+# 显示最近 10 个会话
+openclaw sessions --limit 10
+```
+
+## 会话操作
+
+``` bash
+# 发送消息到会话
+openclaw sessions send \
+  --session <session-key> \
+  --message "你好"
+
+# 重置会话
+openclaw sessions reset <session-key>
+
+# 删除会话
+openclaw sessions delete <session-key>
+```
+
+## 查看节点
+
+``` bash
+# 查看所有配对的节点
+openclaw nodes list
+
+# 查看节点状态
+openclaw nodes status
+
+# 描述节点详情
+openclaw nodes describe <node-id>
+```
+
+## 节点操作
+
+``` bash
+# 发送通知到节点
+openclaw nodes notify \
+  --node my-phone \
+  --title "提醒" \
+  --body "该吃饭了"
+
+# 设置推送优先级
+openclaw nodes notify \
+  --node my-phone \
+  --priority timeSensitive \
+  --title "紧急通知" \
+  --body "快递到了"
+
+# 查看相册（手机）
+openclaw nodes camera-list --node my-phone
+
+# 拍照
+openclaw nodes camera-snap \
+  --node my-phone \
+  --facing back \
+  --output /tmp/photo.jpg
+```
+
+## 搜索记忆
+
+``` bash
+# 搜索记忆
+openclaw memory search "OpenClaw 配置"
+
+# 搜索并显示多行上下文
+openclaw memory search "配置" --lines 5
+
+# 搜索特定路径的记忆
+openclaw memory search "配置" --path MEMORY.md
+
+# 限制结果数量
+openclaw memory search "配置" --maxResults 10
+```
+
+## 记忆操作
+
+``` bash
+# 查看记忆统计
+openclaw memory stats
+
+# 清理过期记忆
+openclaw memory clean
+
+# 备份记忆
+openclaw memory backup --output /tmp/memory-backup.json
+```
+
+## 查看 Cron 任务
+
+``` bash
+# 列出所有任务
+openclaw cron list
+
+# 查看任务运行历史
+openclaw cron runs <job-id>
+
+# 查看调度器状态
+openclaw cron status
+```
+
+## 创建 Cron 任务
+
+``` bash
+# 创建定时任务（每天凌晨触发）
+openclaw cron add \
+  --name "daily-report" \
+  --schedule "0 0 * * *" \
+  --text "生成每日报告"
+
+# 创建重复任务（每 30 分钟）
+openclaw cron add \
+  --name "check-notifications" \
+  --schedule "*/30 * * * *" \
+  --text "检查通知"
+
+# 创建单次任务（特定时间）
+openclaw cron add \
+  --name "special-task" \
+  --schedule "at" \
+  --at "2026-03-01T10:00:00" \
+  --text "执行特殊任务"
+```
+
+## Cron 任务操作
+
+``` bash
+# 立即运行任务
+openclaw cron run <job-id>
+
+# 更新任务
+openclaw cron update <job-id> --schedule "0 6 * * *"
+
+# 删除任务
+openclaw cron remove <job-id>
+
+# 发送唤醒事件
+openclaw cron wake --text "检查新消息"
+```
+
+## 健康检查
+
+``` bash
+# 运行健康检查
+openclaw doctor
+
+# 快速修复常见问题
+openclaw doctor --fix
+
+# 检查特定组件
+openclaw doctor --check gateway
+openclaw doctor --check channels
+```
+
+## 系统状态
+
+``` bash
+# 查看频道健康状态
+openclaw status
+
+# 查看系统事件
+openclaw system events
+
+# 查看心跳状态
+openclaw system heartbeat
+```
+
+## 安全检查
+
+``` bash
+# 运行安全检查
+openclaw security audit
+
+# 检查权限配置
+openclaw security check-permissions
+
+# 检查 API Key 有效性
+openclaw security verify-keys
+```
+
+## 更新 OpenClaw
+
+``` bash
+# 查看更新
+openclaw update --dry-run
+
+# 执行更新
+openclaw update
+
+# 更新到特定版本
+openclaw update --tag 2026.2.22
+
+# 更新到 Beta 版
+openclaw update --channel beta
+
+# 安全更新流程
+cp ~/.openclaw/config.json ~/.openclaw/config.json.backup \
+  && openclaw update --dry-run \
+  && openclaw update \
+  && openclaw gateway restart
+```
 
 
 
