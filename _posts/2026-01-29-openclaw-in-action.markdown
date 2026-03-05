@@ -12,13 +12,197 @@ categories: ML
 
 官方文档：[OpenClaw 快速开始指南](https://docs.openclaw.ai/start/getting-started)
 
+
+# 使用示例
+
+## 在 tui 终端对话
+
+运行 `openclaw tui` 命令后进行对话。
+
+![openclaw0](/assets/images/202601/openclaw0.png)
+
+## 通过 QQ 客户端对话
+
+创建 QQ Channel 并绑定到 QQbot，然后在 QQ 客户端与 QQbot 进行对话。
+
 ![openclaw1](/assets/images/202601/openclaw1.png)
+
+注册的 QQbot 信息：
 
 ![openclaw2](/assets/images/202601/openclaw2.png)
 
+QQbot 具备的 Skills 能力：
+
 ![openclaw3](/assets/images/202601/openclaw3.png)
 
+
+## 使用示例1 - 配置 HTTP 服务
+
+通过 openclaw 配置一个常驻的 HTTP 服务（可以指定数据访问的目录和端口），可方便通过 Web 浏览器查看和下载 openclaw 在云服务器上生成的文件。
+
+``` bash
+# 数据访问目录
+/root/.openclaw/workspace/data
+
+# 服务访问端口
+8080
+```
+
+在 openclaw 创建完 HTTP 服务后，再在腾讯云控制台通过 AI 助手完成网络访问策略的配置：
+
+![openclaw36](/assets/images/202601/openclaw36.png)
+
+通过浏览器测试访问成功：
+
+![openclaw37](/assets/images/202601/openclaw37.png)
+
+![openclaw38](/assets/images/202601/openclaw38.png)
+
+![openclaw39](/assets/images/202601/openclaw39.png)
+
+
+## 使用示例1 - 实现小游戏
+
 ![openclaw4](/assets/images/202601/openclaw4.png)
+
+## 使用示例2 - 生成图片
+
+![openclaw34](/assets/images/202601/openclaw34.png)
+
+![openclaw35](/assets/images/202601/openclaw35.png)
+
+
+## 使用示例3 - 生成音乐
+
+![openclaw43](/assets/images/202601/openclaw43.png)
+
+![openclaw44](/assets/images/202601/openclaw44.png)
+
+
+## 使用示例4 - 生成视频
+
+
+
+
+# Skills 最佳实践
+
+> **注意**：
+>
+> 1. skills 中不能记录敏感信息防止泄漏，例如：LLM API Key 的信息，应该将 API Key 的信息配置在服务器独立的配置文件中，例如：`/root/.openclaw/workspace/.config/api-keys.json`，并只有服务器用户有查看权限。可以通过增加一个 security skill 来保证所需的安全约束。
+>
+> 2. openclaw 通过 `/root/.openclaw/workspace/TOOLS.md` 记录可以使用的 skills 技能，增删 skills 目录下的技能描述后，也需要同步更新 `TOOLS.md` 文件。
+
+通过 [ClawHub](https://clawhub.ai/) 安装所需的 skills。
+
+以安装 `self-improving-agent` 为例，可以使用以下的方法安装：
+
+1. Install any skill folder in one shot: `npx clawhub@latest install your_skill_name`
+2. 或者在 ClawHub 页面直接下载，https://wry-manatee-359.convex.site/api/v1/download?slug=self-improving-agent。
+3. 或者执行 `clawdhub install self-improving-agent` 命令。
+4. 也可以直接告诉 openclaw 让它来安装，例如：通过 https://clawhub.ai/ 安装 self-improving-agent 这个 skill。
+
+![openclaw41](/assets/images/202601/openclaw41.png)
+
+
+## [Find Skills](https://clawhub.ai/JimLiuxinghai/find-skills) 发现其他好用的 Skill
+
+Helps users discover and install agent skills when they ask questions like "how do I do X", "find a skill for X", "is there a skill that can...", or express interest in extending capabilities. This skill should be used when the user is looking for functionality that might exist as an installable skill.
+
+**使用场景：**
+
+你想做某件事，但不知道有没有对应的 Skill。例如：想做小红书图片，可以直接让 openclaw 帮你找个适合做小红书图片的技能。然后 openclaw 会根据搜索结果选择一个合适的技能。
+
+**实现原理：**
+
+1. 接收你的需求描述
+2. 向 ClawHub 发起搜索请求
+3. 对比不同 Skills 的匹配速度
+4. 推荐合适的选择
+
+
+
+##  [ClawSec](https://clawhub.ai/chrisochrisochriso-cmyk/clawsec) 安全防护
+
+Manage and operate ClawSec Monitor v3.0, a MITM HTTP/HTTPS proxy that logs AI agent traffic, detects exfiltration and injection threats in real time.
+
+## [Self-Improving Agent](https://clawhub.ai/pskoett/self-improving-agent) AI 自我进化
+
+Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Clau...
+
+**核心思想：**
+
+让 Agent 记住自己的错误，学到的东西，用户的纠正，并在后续会话中自动参考。
+
+**实现原理：**
+
+1. 自动监控。监听命令执行结果，用户反馈
+2. 结构化记录。将学习内容记录在 `.learnings/` 目录下的日志文件中。每条学习记录包括：ID，时间戳，优先级，摘要，复现步骤，建议修复方案
+3. 智能检索。遇到类似问题时，自动查询历史记录
+
+
+
+## [Tavily Web Search](https://clawhub.ai/arun-8687/tavily-search) 让 AI 拥有实时信息获取能力
+
+AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.
+
+## [Multi Search Engine](https://clawhub.ai/gpyAngyoujun/multi-search-engine) 适合中文信息搜索
+
+Multi search engine integration with 17 engines (8 CN + 9 Global). Supports advanced search operators, time filters, site search, privacy engines, and WolframAlpha knowledge queries. No API keys required.
+
+
+## [GitHub](https://clawhub.ai/steipete/github) 代码仓库的自然语言管理
+
+Interact with GitHub using the `gh` CLI. Use `gh issue`, `gh pr`, `gh run`, and `gh api` for issues, PRs, CI runs, and advanced queries.
+
+**使用场景：**
+
+GitHub Skill 通过集成 GitHub CLI 命令行工具（gh 命令行工具），让你可以用自然语言管理 GitHub 仓库。
+
+例如：
+
+1. 搜索开源项目：搜索 Python 爬虫相关的热门仓库。
+2. 管理 Issue：查看某仓库的高优先级 Issue。
+3. 代码审查：查看最新的 PR 有没有问题。
+4. 自动化报告：生成本周项目进展报告。
+
+**实现原理：**
+
+1. 理解用户的自然语言指令
+2. 转换为对应的 gh 命令
+3. 执行并返回结果
+
+
+## [Proactive Agent](https://clawhub.ai/halthelobster/proactive-agent) 从被动相应到主动服务
+
+Transform AI agents from task-followers into proactive partners that anticipate needs and continuously improve. Now with WAL Protocol, Working Buffer, Autonomous Crons, and battle-tested patterns. Part of the Hal Stack 🦞
+
+**使用场景：**
+
+让 openclaw 主动跟踪一个项目的学习进度。例如，每周五自动汇总学习成果，并主动推荐下周的学习计划。这种从“被动执行”到“主动服务”的转变，让 AI 更像一个真正的助理。
+
+**实现原理：**
+
+1. 心跳机制。每15分钟自动唤醒
+2. 任务监控。持续跟踪进行中的任务
+3. 自我迭代。优化工作流程
+
+## [Debug Methodology](https://clawhub.ai/abczsl520/debug-methodology) 问题调试
+
+Systematic debugging and problem-solving methodology. Activate when encountering unexpected errors, service failures, regression bugs, deployment issues, or...
+
+
+
+
+
+# Skills 数据备份和恢复 (重要)
+
+openclaw 保存 Skills 的目录是 `~/.openclaw/workspace/skills/`，在保证 Skills 中不存在敏感信息泄漏的情况下，可以将 skills 使用 git 来维护，也可以方便其他场景复用。
+
+
+![openclaw40](/assets/images/202601/openclaw40.png)
+
+![openclaw42](/assets/images/202601/openclaw42.png)
+
 
 
 
@@ -394,28 +578,26 @@ https://www.tavily.com/
 
 # 常用命令
 
-``` bash
-# 打开终端
-openclaw tui
-```
+## 打开终端 openclaw tui
 
 ![openclaw28](/assets/images/202601/openclaw28.png)
 
 
-``` bash
-# 选择配置选项
-openclaw configure
-```
+## 选择配置选项 openclaw configure
 
 ![openclaw26](/assets/images/202601/openclaw26.png)
 
 
-``` bash
-# 重启 gateway 使得配置生效
-openclaw gateway restart
-```
+## 重启 gateway 使得配置生效 openclaw gateway restart
 
 ![openclaw27](/assets/images/202601/openclaw27.png)
+
+## 问题定位 openclaw logs --follow
+
+![openclaw32](/assets/images/202601/openclaw32.png)
+
+![openclaw33](/assets/images/202601/openclaw33.png)
+
 
 
 
