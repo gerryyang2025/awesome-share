@@ -322,3 +322,9 @@ Finally, the **Temporal Web UI** allows you to inspect details of past and prese
 **AI 生成图片检测系统**，通过捕捉真实图片与 AI 生图之间的差异，帮助用户辨别图片是否由 AI 生成，维护数字内容生态的真实、可信。
 
 **AI 生成文本检测系统**，通过对海量 AI 生成文本和人类写作内容的学习，通过分析文本的特征和模式，可以较为准确地判断文本是否为 AI 生成，有助于防止学术抄袭、识别假新闻、保障证据可靠性等。
+
+
+# Refer
+
+* [Awesome LLM Apps](https://github.com/Shubhamsaboo/awesome-llm-apps)
+
