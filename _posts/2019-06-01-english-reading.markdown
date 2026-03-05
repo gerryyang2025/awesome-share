@@ -65,6 +65,11 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
 
 # Words (柯林斯英汉双解大词典)
 
+* specialist /ˈspeʃəlɪst/
+  + N-COUNT A **specialist** is a person who has a particular skill or knows a lot about a particular subject. 专家
+    - Peckham, himself a cancer specialist, is well aware of the wide variations in medical practice. 佩卡姆本人就是个癌症专家，非常清楚医疗实践中的广泛差异。
+
+
 * gist /dʒɪst/
   + N-SING The **gist** of a speech, conversation, or piece of writing is its general meaning. 要点
 
