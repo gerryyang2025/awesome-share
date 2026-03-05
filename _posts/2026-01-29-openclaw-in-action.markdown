@@ -84,19 +84,14 @@ QQ群聊天：
 
 ![openclaw44](/assets/images/202601/openclaw44.png)
 
-<audio controls>
-  <source src="{{ site.baseurl }}/assets/audio/song.mp3" type="audio/mpeg">
-</audio>
-
+http://106.55.160.81:8080/song.mp3
 
 
 ## 生成视频
 
 ![openclaw47](/assets/images/202601/openclaw47.png)
 
-<video width="100%" controls>
-    <source src="{{ site.baseurl }}/assets/videos/cat_dance.mp4" type="video/mp4">
-</video>
+http://106.55.160.81:8080/cat_dance_1772715932.mp4
 
 
 
