@@ -650,6 +650,26 @@ Custom subagents in Claude Code are specialized AI assistants that can be invoke
 Create, manage, and share Skills to extend Claude’s capabilities in Claude Code.
 
 
+# 最佳实践
+
+## /insights
+
+``` bash
+/insights               Generate a report analyzing your Claude Code sessions
+```
+
+![claude_code](/assets/images/202603/claude_code.png)
+
+![claude_code2](/assets/images/202603/claude_code2.png)
+
+参考：
+
+* https://www.natemeyvis.com/claude-codes-insights/
+* https://sonim1.com/en/blog/claude-code-insights/
+* https://www.zolkos.com/2026/02/04/deep-dive-how-claude-codes-insights-command-works.html
+* https://www.reddit.com/r/claude/comments/1qxatcf/til_claude_insights_actually_gives_you_good/
+
+
 
 
 # Q&A
