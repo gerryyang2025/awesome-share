@@ -12,6 +12,8 @@ categories: ML
 
 官方文档：[OpenClaw 快速开始指南](https://docs.openclaw.ai/start/getting-started)
 
+![openclaw0](/assets/images/202601/openclaw0.png)
+
 
 # 使用示例
 
@@ -19,24 +21,22 @@ categories: ML
 
 运行 `openclaw tui` 命令后进行对话。
 
-![openclaw0](/assets/images/202601/openclaw0.png)
+![openclaw1](/assets/images/202601/openclaw1.png)
 
 ## 通过 QQ 客户端对话
 
 创建 QQ Channel 并绑定到 QQbot，然后在 QQ 客户端与 QQbot 进行对话。
 
-![openclaw1](/assets/images/202601/openclaw1.png)
-
 注册的 QQbot 信息：
 
 ![openclaw2](/assets/images/202601/openclaw2.png)
 
-QQbot 具备的 Skills 能力：
+通过 QQbot 查看具备的 Skills 能力：
 
 ![openclaw3](/assets/images/202601/openclaw3.png)
 
 
-## 使用示例1 - 配置 HTTP 服务
+## 配置 HTTP 服务
 
 通过 openclaw 配置一个常驻的 HTTP 服务（可以指定数据访问的目录和端口），可方便通过 Web 浏览器查看和下载 openclaw 在云服务器上生成的文件。
 
@@ -61,38 +61,45 @@ QQbot 具备的 Skills 能力：
 ![openclaw39](/assets/images/202601/openclaw39.png)
 
 
-## 使用示例1 - 实现小游戏
+## 实现小游戏
 
 ![openclaw4](/assets/images/202601/openclaw4.png)
 
 ![openclaw46](/assets/images/202601/openclaw46.png)
 
-## 使用示例2 - 生成图片
+## 生成图片
+
+单独聊天：
 
 ![openclaw34](/assets/images/202601/openclaw34.png)
+
+QQ群聊天：
 
 ![openclaw35](/assets/images/202601/openclaw35.png)
 
 
-## 使用示例3 - 生成音乐
+## 生成音乐
 
 ![openclaw43](/assets/images/202601/openclaw43.png)
 
 ![openclaw44](/assets/images/202601/openclaw44.png)
 
 <audio controls>
-  <source src="/assets/audio/song.mp3" type="audio/mpeg">
+  <source src="{{ site.baseurl }}/assets/audio/song.mp3" type="audio/mpeg">
 </audio>
 
 
 
-## 使用示例4 - 生成视频
+## 生成视频
 
 ![openclaw47](/assets/images/202601/openclaw47.png)
 
 <video width="100%" controls>
-    <source src="/assets/videos/cat_dance.mp4" type="video/mp4">
+    <source src="{{ site.baseurl }}/assets/videos/cat_dance.mp4" type="video/mp4">
 </video>
+
+
+
 
 
 # Skills 最佳实践
