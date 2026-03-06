@@ -576,13 +576,6 @@ Brave Search 是内置的 web_search 工具，但是收费，可以让 OpenClaw 
 https://www.tavily.com/
 
 
-
-
-## Skills
-
-![openclaw25](/assets/images/202601/openclaw25.png)
-
-
 ## 更多用法
 
 [云上 OpenClaw 最全实践教程合辑](https://cloud.tencent.com/developer/article/2624973)
@@ -719,19 +712,16 @@ openclaw health
 # 查看实时日志
 openclaw logs
 
-# 查看最近 50 行日志
-openclaw logs --lines 50
-
-# 查看错误日志
-openclaw logs --filter error
-
 # 持续监控日志
 openclaw logs --follow
 ```
 
+
 ![openclaw32](/assets/images/202601/openclaw32.png)
 
+
 ![openclaw33](/assets/images/202601/openclaw33.png)
+
 
 ## 创建新的会话 (清空 token 上下文)
 
@@ -1073,10 +1063,6 @@ openclaw doctor
 
 # 快速修复常见问题
 openclaw doctor --fix
-
-# 检查特定组件
-openclaw doctor --check gateway
-openclaw doctor --check channels
 ```
 
 ## 系统状态
@@ -1135,11 +1121,46 @@ cp ~/.openclaw/config.json ~/.openclaw/config.json.backup \
 
 ## MiniMax 接口配置
 
-由于 Kimi、MiniMax、GLM 分了国际版和国内版，Clawdbot 默认集成的是国际版的接口地址，因此如果在配置模型时需要使用这三家的模型，则需要登录国际版控制台申请 API Key：
+由于 Kimi、MiniMax、GLM 分了国际版和国内版，Clawdbot 默认集成的是**国际版的接口地址**，因此如果在配置模型时需要使用这三家的模型，则需要登录国际版控制台申请 API Key：
 
 * Kimi：https://platform.moonshot.ai/
 * MiniMax：https://platform.minimax.io/
 * GLM：https://z.ai/manage-apikey/apikey-list
+
+
+## 升级 openclaw 版本之后用户之前安装的 skill 失效了
+
+问题现象：openclaw 升级到 2026.3.2 版本后，出现 openclaw 访问权限错误，工作区下 Skills (`/root/.openclaw/workspace/skills/`) 都会提示工具不可用。
+
+``` bash
+# openclaw --version
+2026.3.2
+```
+
+问题原因：openclaw 的版本权限收拢了，之前没有这个限制。查看 `cat /root/.openclaw/openclaw.json | grep profile`，新版本默认为 `messaging`，需要将其改为 `full`。
+
+## gateway 异常修复
+
+问题现象：使用 openclaw onboard 重新安装 gateway 出现异常导致 gateway 被删除且安装失败。
+
+![openclaw49](/assets/images/202601/openclaw49.png)
+
+使用 `openclaw gateway install --force` 重新安装也会提示失败。
+
+![openclaw48](/assets/images/202601/openclaw48.png)
+
+参考：https://www.answeroverflow.com/m/1478602967488790682?focus=1478602967488790682 找到了解决方法：
+
+* `systemctl --user is-enabled openclaw-gateway.service` → **not-found** means the systemd user unit was never installed
+* Let Doctor rewrite the service to a sane modern config (incl. PATH): `openclaw doctor --repair`
+* Restart: `openclaw gateway restart`
+* Verify: `systemctl --user status openclaw-gateway.service --no-pager && openclaw gateway status`
+* Log: `journalctl --user -u openclaw-gateway.service -n 200 --no-pager`
+
+
+## Link channel: unknown 错误
+
+问题现象：使用 tui channel 没有实时返回结果信息，而显示 `gateway connected | idle` 状态。
 
 
 
