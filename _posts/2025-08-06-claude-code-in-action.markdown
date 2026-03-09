@@ -670,6 +670,28 @@ Create, manage, and share Skills to extend Claude’s capabilities in Claude Cod
 * https://www.reddit.com/r/claude/comments/1qxatcf/til_claude_insights_actually_gives_you_good/
 
 
+## /loop (Manage scheduled tasks)
+
+Ask Claude in natural language to list or cancel tasks, or reference the underlying tools directly.
+
+示例：
+
+```
+what scheduled tasks do I have?
+cancel the deploy check job
+```
+
+Under the hood, Claude uses these tools:
+
+![claude_code3](/assets/images/202603/claude_code3.png)
+
+Each scheduled task has an 8-character ID you can pass to CronDelete. A session can hold up to 50 scheduled tasks at once.
+
+
+参考：
+
+* https://code.claude.com/docs/en/scheduled-tasks
+
 
 
 # Q&A
