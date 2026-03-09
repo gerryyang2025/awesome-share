@@ -67,11 +67,17 @@ categories: ML
 
 ![openclaw46](/assets/images/202601/openclaw46.png)
 
+![openclaw52](/assets/images/202601/openclaw52.png)
+
+![openclaw53](/assets/images/202601/openclaw53.png)
+
 ## 生成图片
 
 单独聊天：
 
 ![openclaw34](/assets/images/202601/openclaw34.png)
+
+![openclaw55](/assets/images/202601/openclaw55.png)
 
 QQ群聊天：
 
@@ -84,16 +90,20 @@ QQ群聊天：
 
 ![openclaw44](/assets/images/202601/openclaw44.png)
 
-http://106.55.160.81:8080/song.mp3
+[歌曲示例](http://106.55.160.81:8080/song.mp3)
 
 
 ## 生成视频
 
 ![openclaw47](/assets/images/202601/openclaw47.png)
 
-http://106.55.160.81:8080/cat_dance_1772715932.mp4
+[视频示例](http://106.55.160.81:8080/cat_dance_1772715932.mp4)
 
+> 注意：Minimax 模型服务提供的 coding plan 账户只支持文本模型，与语音模型，视频模型的 API Key 不通用。也就是，如果使用了语音或视频的生成功能，会从用户的余额账户中进行扣费，需要控制使用量，否则开销会比较大。
 
+![openclaw54](/assets/images/202601/openclaw54.png)
+
+![openclaw56](/assets/images/202601/openclaw56.png)
 
 
 
@@ -1128,7 +1138,21 @@ cp ~/.openclaw/config.json ~/.openclaw/config.json.backup \
 * GLM：https://z.ai/manage-apikey/apikey-list
 
 
-## 升级 openclaw 版本之后用户之前安装的 skill 失效了
+## 服务器的区域与模型选择
+
+问题原因：由于 Claude 不支持中国区使用，所以需要购买相应地域的机器。
+
+![openclaw50](/assets/images/202601/openclaw50.png)
+
+
+## LightHouse 文件管理器功能 (方便编辑)
+
+通过文件管理器方便修改编辑服务器上的文件。
+
+![openclaw51](/assets/images/202601/openclaw51.png)
+
+
+## 升级 openclaw 版本之后用户之前安装的 skill 失效了 (权限问题)
 
 问题现象：openclaw 升级到 2026.3.2 版本后，出现 openclaw 访问权限错误，工作区下 Skills (`/root/.openclaw/workspace/skills/`) 都会提示工具不可用。
 
@@ -1139,7 +1163,7 @@ cp ~/.openclaw/config.json ~/.openclaw/config.json.backup \
 
 问题原因：openclaw 的版本权限收拢了，之前没有这个限制。查看 `cat /root/.openclaw/openclaw.json | grep profile`，新版本默认为 `messaging`，需要将其改为 `full`。
 
-## gateway 异常修复
+## gateway 异常修复 (如何重新安装)
 
 问题现象：使用 openclaw onboard 重新安装 gateway 出现异常导致 gateway 被删除且安装失败。
 
@@ -1158,7 +1182,7 @@ cp ~/.openclaw/config.json ~/.openclaw/config.json.backup \
 * Log: `journalctl --user -u openclaw-gateway.service -n 200 --no-pager`
 
 
-## Link channel: unknown 错误
+## Link channel: unknown 错误 (TODO)
 
 问题现象：使用 tui channel 没有实时返回结果信息，而显示 `gateway connected | idle` 状态。
 
