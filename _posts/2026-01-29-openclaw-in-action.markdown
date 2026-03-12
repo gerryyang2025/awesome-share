@@ -12,6 +12,10 @@ categories: ML
 
 # 背景介绍
 
+![openclaw0](/assets/images/202601/openclaw0.png)
+
+![openclaw67](/assets/images/202601/openclaw67.png)
+
 > 命名变化：ClawBot -> MoltBot -> OpenClaw
 
 > 可以拓展想象：你买了一台新电脑，里面有一个“幽灵实体”，你把键盘、鼠标和网络权限交给它，把它当成一个虚拟同事。你可以直接跟它说话，交代事情。凡是你能在电脑上做的事，这个 Agent 理论上都能替你完成。这就是它真正强大的地方。
@@ -58,9 +62,7 @@ Alex 展示了给他的 Clawdbot 发信息，让它帮其预订下周六在一�
 
 官方文档：[OpenClaw 快速开始指南](https://docs.openclaw.ai/start/getting-started)
 
-![openclaw0](/assets/images/202601/openclaw0.png)
-
-Fastest chat: open the Control UI (no channel setup needed). Run `moltbot dashboard (PS: 找不到 moltbot 命令可使用 clawdbot 替换，建议将 moltbot 设置为 clawdbot 命令的别名)` and chat in the browser, or open `http://127.0.0.1:18789/` on the gateway host. Docs: [Dashboard](https://docs.molt.bot/web/dashboard) and [Control UI](https://docs.molt.bot/web/control-ui).
+Fastest chat: open the Control UI (no channel setup needed). Run `moltbot dashboard` (PS: 找不到 moltbot 命令可使用 clawdbot 替换，建议将 moltbot 设置为 clawdbot 命令的别名) and chat in the browser, or open `http://127.0.0.1:18789/` on the gateway host. Docs: [Dashboard](https://docs.molt.bot/web/dashboard) and [Control UI](https://docs.molt.bot/web/control-ui).
 
 Recommended path: use the **CLI onboarding wizard** (`moltbot onboard`). It sets up:
 
@@ -79,16 +81,58 @@ If you want the deeper reference pages, jump to: [Wizard](https://docs.molt.bot/
 ![moltbot28](/assets/images/202601/moltbot28.png)
 
 
+# 基础概念
+
+TODO
+
+* 工作空间
+  + `~/.openclaw/workspace/` 目录
+
+* 核心文件
+
+``` bash
+~/.openclaw/workspace/
+├── AGENTS.md       # 代理调度规则与标准作业程序
+├── BOOTSTRAP.md    # 初始化序列与核心系统提示词
+├── HEARTBEAT.md    # 定时执行逻辑与主动任务状态自检
+├── IDENTITY.md     # 代理身份定义与系统边界约束
+├── MEMORY.md       # 长期上下文数据与既定规则的持久化存储
+├── SOUL.md         # 响应语气、行为特征及输出格式配置
+├── TOOLS.md        # 工具授权注册表及调用参数规范
+├── USER.md         # 用户画像数据，包含特定偏好与交互限制配置
+├── memory/         # 日常运行日志与短期上下文存储
+└── skills/         # 已安装的第三方技能扩展目录
+```
+
+* 技能目录 (可自动识别的 skills)
+  + `~/.openclaw/skills/`，通过 clawhub 安装的技能，可自动识别
+  + ~/.openclaw/workspace/skills/，用户手动生成存放的技能，需要通过
+
+``` bash
+# 查看 OpenClaw 技能安装目录
+ls ~/.local/share/pnpm/global/5/.pnpm/openclaw@*/node_modules/openclaw/skills/
+```
+
+![openclaw59](/assets/images/202601/openclaw59.png)
 
 
+
+
+
+## 如何备份
+
+TODO
 
 # 使用示例
+
+TODO
 
 ## 在 tui 终端对话
 
 运行 `openclaw tui` 命令后进行对话。
 
 ![openclaw1](/assets/images/202601/openclaw1.png)
+
 
 ## 通过 QQ 客户端对话
 
@@ -98,9 +142,29 @@ If you want the deeper reference pages, jump to: [Wizard](https://docs.molt.bot/
 
 ![openclaw2](/assets/images/202601/openclaw2.png)
 
-通过 QQbot 查看具备的 Skills 能力：
+![openclaw60](/assets/images/202601/openclaw60.png)
+
+
+## 具备哪些技能
+
+通过 `openclaw skills list` 查看哪些技能可用：
+
+![openclaw57](/assets/images/202601/openclaw57.png)
+
+通过 `openclaw skills check` 查看哪些技能可用：
+
+![openclaw68](/assets/images/202601/openclaw68.png)
+
+通过 `openclaw skills info your_skill_name` 查看某项技能的具体描述：
+
+![openclaw58](/assets/images/202601/openclaw58.png)
+
+
+
+通过 QQ 查询：
 
 ![openclaw3](/assets/images/202601/openclaw3.png)
+
 
 
 ## 配置 HTTP 服务
@@ -171,6 +235,26 @@ QQ群聊天：
 ![openclaw54](/assets/images/202601/openclaw54.png)
 
 ![openclaw56](/assets/images/202601/openclaw56.png)
+
+## 腾讯文档
+
+配置腾讯文档的 Token 和 MCP 服务：
+
+![openclaw61](/assets/images/202601/openclaw61.png)
+
+![openclaw62](/assets/images/202601/openclaw62.png)
+
+![openclaw63](/assets/images/202601/openclaw63.png)
+
+![openclaw64](/assets/images/202601/openclaw64.png)
+
+![openclaw65](/assets/images/202601/openclaw65.png)
+
+![openclaw66](/assets/images/202601/openclaw66.png)
+
+
+
+
 
 
 # OpenClaw 最佳实践
@@ -1296,3 +1380,4 @@ cp ~/.openclaw/config.json ~/.openclaw/config.json.backup \
 * [云上Moltbot（原Clawdbot）最全实践指南合辑](https://cloud.tencent.com/developer/article/2624973)
 * [云上Moltbot（原Clawdbot）接入企业微信完全指南](https://cloud.tencent.com/developer/article/2625147)
 * [云上Moltbot（原Clawdbot）接入QQ完全指南](https://cloud.tencent.com/developer/article/2625097)
+* [搞懂这7个配置文件让你的OpenClaw变智能助手](https://feinterview.poetries.top/blog/openclaw-7-config-files)
