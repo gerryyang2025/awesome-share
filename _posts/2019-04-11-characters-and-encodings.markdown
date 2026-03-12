@@ -3,6 +3,10 @@ layout: post
 title:  "Characters and Encodings"
 date:   2019-04-11 08:00:00 +0800
 categories: 基础理论
+tags:
+  - Characters and Encodings
+  - 基础理论
+
 ---
 
 * Do not remove this line (it will not be displayed)

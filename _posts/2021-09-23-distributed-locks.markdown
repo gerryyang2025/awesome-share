@@ -3,6 +3,10 @@ layout: post
 title:  "Distributed Locks"
 date:   2021-09-23 12:00:00 +0800
 categories: 分布式
+tags:
+  - Distributed Locks
+  - 分布式
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -93,9 +97,9 @@ int timeout_op() {
 ## Redis (SETNX/SET/DEL)
 
 > refer:
-> 
+>
 > 1. 官方介绍 http://redis.io/topics/distlock
-> 
+>
 > 2. 其他观点 https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html
 
 `SETNX`(SET if Not eXists)或者`SET`(EX/PX/NX/XX，Redis 2.6.12)和`DEL`，实现分布式锁。
@@ -182,5 +186,5 @@ etcd提供了一套实现分布式锁原子操作`CAS`（CompareAndSwap）的API
 
 * [Everything I know about distributed locks](https://davidecerbo.medium.com/everything-i-know-about-distributed-locks-2bf54de2df71)
 * [Distributed Locking with Redis](https://carlosbecker.com/posts/distributed-locks-redis)
-* [Distributed Locks are Dead; Long Live Distributed Locks!](https://hazelcast.com/blog/long-live-distributed-locks/)	
+* [Distributed Locks are Dead; Long Live Distributed Locks!](https://hazelcast.com/blog/long-live-distributed-locks/)
 * [How to do distributed locking](https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html)

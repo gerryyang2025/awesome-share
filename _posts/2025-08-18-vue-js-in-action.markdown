@@ -3,6 +3,10 @@ layout: post
 title:  "Vue.js in Action"
 date:   2025-08-18 12:30:00 +0800
 categories: Web
+tags:
+  - Vue.js
+  - Web
+
 ---
 
 * Do not remove this line (it will not be displayed)

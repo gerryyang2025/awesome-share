@@ -3,6 +3,10 @@ layout: post
 title:  "MultiThread in Action"
 date:   2023-07-24 12:00:00 +0800
 categories: Linux
+tags:
+  - MultiThread
+  - Linux
+
 ---
 
 * Do not remove this line (it will not be displayed)

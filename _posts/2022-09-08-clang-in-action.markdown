@@ -3,6 +3,10 @@ layout: post
 title:  "Clang in Action"
 date:   2022-09-08 18:00:00 +0800
 categories: [GCC/Clang]
+tags:
+  - Clang
+  - GCC/Clang
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,9 @@ layout: post
 title:  "Inside the C++ Object Model (深度探索 C++对象模型)"
 date:   2024-05-13 12:00:00 +0800
 categories: [C/C++]
+tags:
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

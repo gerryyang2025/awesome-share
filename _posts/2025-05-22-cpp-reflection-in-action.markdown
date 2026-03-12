@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Reflection in Action"
 date:   2025-05-22 20:30:00 +0800
 categories: [C/C++]
+tags:
+  - CPP Reflection
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

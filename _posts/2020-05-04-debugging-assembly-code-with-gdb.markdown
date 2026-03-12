@@ -3,6 +3,9 @@ layout: post
 title:  "Debugging Assembly Code with GDB"
 date:   2020-05-04 08:00:00 +0800
 categories: [Debuggers]
+tags:
+  - Debuggers
+
 ---
 
 * Do not remove this line (it will not be displayed)

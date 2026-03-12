@@ -3,6 +3,10 @@ layout: post
 title:  "Helm in Action"
 date:   2022-07-20 12:30:00 +0800
 categories: 云原生
+tags:
+  - Helm
+  - 云原生
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,10 @@ layout: post
 title:  "Minimax in Action"
 date:   2026-02-28 12:30:00 +0800
 categories: ML
+tags:
+  - Minimax
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)

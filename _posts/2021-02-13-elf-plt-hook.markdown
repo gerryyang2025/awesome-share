@@ -3,6 +3,10 @@ layout: post
 title:  "ELF PLT Hook"
 date:   2021-02-13 13:00:00 +0800
 categories: [GCC/Clang]
+tags:
+  - ELF PLT Hook
+  - GCC/Clang
+
 ---
 
 * Do not remove this line (it will not be displayed)

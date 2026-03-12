@@ -3,6 +3,10 @@ layout: post
 title:  "gperftools in Action"
 date:   2021-06-18 21:00:00 +0800
 categories: [Linux Performance]
+tags:
+  - gperftools
+  - Linux Performance
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Optimzing"
 date:   2021-09-21 08:30:00 +0800
 categories: C/C++
+tags:
+  - CPP Optimzing
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

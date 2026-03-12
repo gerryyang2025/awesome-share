@@ -3,6 +3,10 @@ layout: post
 title:  "TCMalloc in Action"
 date:   2022-08-07 11:00:00 +0800
 categories: [Linux Performance]
+tags:
+  - TCMalloc
+  - Linux Performance
+
 ---
 
 * Do not remove this line (it will not be displayed)

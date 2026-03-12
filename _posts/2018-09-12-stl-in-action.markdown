@@ -3,6 +3,10 @@ layout: post
 title:  "STL in Action"
 date:   2018-09-12 22:46:00 +0800
 categories: [C/C++]
+tags:
+  - STL
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

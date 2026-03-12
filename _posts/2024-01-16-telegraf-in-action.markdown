@@ -3,6 +3,10 @@ layout: post
 title:  "Telegraf in Action"
 date:   2024-01-16 20:22:00 +0800
 categories: 云原生
+tags:
+  - Telegraf
+  - 云原生
+
 ---
 
 * Do not remove this line (it will not be displayed)

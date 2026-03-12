@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Cpplint in Action"
 date:   2022-03-31 12:22:00 +0800
 categories: [C/C++]
+tags:
+  - CPP Cpplint
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -37,7 +41,6 @@ Cpplint 是一个 Python 编写的基于 Google 代码规范的检测工具。�
 
 
 
-  
 
-	
-	
+
+

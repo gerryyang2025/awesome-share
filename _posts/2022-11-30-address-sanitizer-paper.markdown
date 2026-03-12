@@ -3,6 +3,10 @@ layout: post
 title:  "AddressSanitizer: A Fast Address Sanity Checker (Paper 2012)"
 date:   2022-11-30 20:30:00 +0800
 categories: [Linux Performance]
+tags:
+  - AddressSanitizer
+  - Linux Performance
+
 ---
 
 * Do not remove this line (it will not be displayed)

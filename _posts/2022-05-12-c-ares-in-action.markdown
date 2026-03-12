@@ -3,6 +3,10 @@ layout: post
 title:  "C-ares in Action"
 date:   2022-05-12 11:30:00 +0800
 categories: [TCP/IP]
+tags:
+  - C-ares
+  - TCP/IP
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -53,7 +57,7 @@ The `getaddrinfo()` function allocates and initializes a linked list of addrinfo
 
 The `getaddrinfo` function call alone causes over 100 system calls! But getaddrinfo does a lot before these system calls, and it does quite a bit after them, too. See more: [What does getaddrinfo do?](https://jameshfisher.com/2018/02/03/what-does-getaddrinfo-do/)
 
-`getaddrinfo` doesn’t know anything about files, DNS, or any other way to find the address for a host. Instead, `getaddrinfo` gets a list of these “sources” at runtime from another file, `/etc/nsswitch.conf`, the “Name Service Switch”. 
+`getaddrinfo` doesn’t know anything about files, DNS, or any other way to find the address for a host. Instead, `getaddrinfo` gets a list of these “sources” at runtime from another file, `/etc/nsswitch.conf`, the “Name Service Switch”.
 
 ```
 $cat /etc/nsswitch.conf
@@ -150,19 +154,19 @@ int main(void)
   //struct sockaddr_in* internet_addr = (struct sockaddr_in*) addr->ai_addr;
   //printf("google.com is at: %s\n", inet_ntoa(internet_addr->sin_addr));
 
-  for (res = addr; res != NULL; res = res->ai_next) { 
+  for (res = addr; res != NULL; res = res->ai_next) {
     struct sockaddr_in* psa = (struct sockaddr_in*) res->ai_addr;
     inet_ntop(AF_INET, &(psa->sin_addr), strIP, INET_ADDRSTRLEN);
     printf("%s\n", strIP);
   }
 
-  freeaddrinfo(addr); 
+  freeaddrinfo(addr);
   return 0;
 }
 ```
 
 ```
-$./a.out 
+$./a.out
 142.251.42.238
 142.251.42.238
 142.251.42.238
@@ -182,7 +186,7 @@ int SelectIP(const std::string& strHostName, std::string& strIP)
         LOG_ERROR("getaddrinfo host(%s) err(%s)\n", strHostName.c_str(), gai_strerror(result));
         return 1;
     }
-    
+
     for (res = addr; res != NULL; res = res->ai_next)
     {
         struct sockaddr_in* psa = (struct sockaddr_in*)res->ai_addr;
@@ -215,26 +219,26 @@ int main(void)
 
     /* resolve the domain name into a list of addresses */
     error = getaddrinfo("www.example.com", NULL, NULL, &result);
-    if (error != 0) {   
+    if (error != 0) {
         if (error == EAI_SYSTEM) {
             perror("getaddrinfo");
         } else {
             fprintf(stderr, "error in getaddrinfo: %s\n", gai_strerror(error));
-        }   
+        }
         exit(EXIT_FAILURE);
-    }   
+    }
 
     /* loop over all returned results and do inverse lookup */
-    for (res = result; res != NULL; res = res->ai_next) {   
+    for (res = result; res != NULL; res = res->ai_next) {
         char hostname[NI_MAXHOST];
-        error = getnameinfo(res->ai_addr, res->ai_addrlen, hostname, NI_MAXHOST, NULL, 0, 0); 
+        error = getnameinfo(res->ai_addr, res->ai_addrlen, hostname, NI_MAXHOST, NULL, 0, 0);
         if (error != 0) {
             fprintf(stderr, "error in getnameinfo: %s\n", gai_strerror(error));
             continue;
         }
         if (*hostname != '\0')
             printf("hostname: %s\n", hostname);
-    }   
+    }
 
     freeaddrinfo(result);
     return 0;
@@ -243,7 +247,7 @@ int main(void)
 
 # C-ares
 
-> This is c-ares, an asynchronous resolver library. It is intended for applications which need to perform DNS queries without blocking, or need to perform multiple DNS queries in parallel. 
+> This is c-ares, an asynchronous resolver library. It is intended for applications which need to perform DNS queries without blocking, or need to perform multiple DNS queries in parallel.
 
 `c-ares` is a C library for asynchronous DNS requests (including name resolves). C89 compatibility, [MIT licensed](https://c-ares.org/license.html), builds for and runs on POSIX, Windows, Netware, Android and many more operating systems.
 
@@ -642,14 +646,14 @@ $./ares_gethostbyname2
 
 # Interface
 
-More: [c-ares documentation](https://c-ares.org/docs.html) 
+More: [c-ares documentation](https://c-ares.org/docs.html)
 
 
 ## ares_init
 
 ``` cpp
 #include <ares.h>
- 
+
 int ares_init(ares_channel *channelptr)
 ```
 
@@ -675,7 +679,7 @@ void ares_gethostbyaddr(ares_channel channel, const void *addr, int addrlen, int
 
 The `ares_gethostbyaddr` function initiates a host query by address on the name service channel identified by channel. The parameters addr and addrlen give the address as a series of bytes, and family gives the type of address. When the query is complete or has failed, the ares library will invoke callback. Completion or failure of the query may happen immediately, or may happen during a later call to ares_process(3), ares_destroy(3) or ares_cancel(3).
 
-The callback argument `arg` is copied from the `ares_gethostbyaddr` argument `arg`. The callback argument `status` indicates whether the query succeeded and, if not, how it failed. 
+The callback argument `arg` is copied from the `ares_gethostbyaddr` argument `arg`. The callback argument `status` indicates whether the query succeeded and, if not, how it failed.
 
 The callback argument `timeouts` reports how many times a query timed out during the execution of the given request.
 
@@ -736,7 +740,7 @@ while (1)
     {
         break;
     }
-        
+
     tvp = ares_timeout(channel, NULL, &tv);
     count = select(nfds, &readers, &writers, NULL, tvp);
     ares_process(channel, &readers, &writers);
@@ -836,7 +840,7 @@ resolve1 : 4248534 ns
 ## c-ares 和网络相关的调用情况
 
 ```
-$strace -s1024 -tt -e trace=network  ./performance_compare 
+$strace -s1024 -tt -e trace=network  ./performance_compare
 11:24:19.110979 socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 3
 11:24:19.111332 connect(3, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("9.166.31.254")}, 16) = 0
 11:24:19.111470 sendto(3, "s\224\1\0\0\1\0\0\0\0\0\0\tgerryyang\3com\7default\3svc\7cluster\5local\0\0\1\0\1", 57, MSG_NOSIGNAL, NULL, 0) = 57
@@ -889,7 +893,7 @@ resolve2 : 13396723 ns
 ## getaddrinfo 和网络相关的调用情况
 
 ```
-$strace -s1024 -tt -e trace=network  ./performance_compare 
+$strace -s1024 -tt -e trace=network  ./performance_compare
 11:32:46.239270 socket(PF_NETLINK, SOCK_RAW, 0) = 3
 11:32:46.239459 bind(3, {sa_family=AF_NETLINK, pid=0, groups=00000000}, 12) = 0
 11:32:46.239733 getsockname(3, {sa_family=AF_NETLINK, pid=3627407, groups=00000000}, [12]) = 0
@@ -944,7 +948,7 @@ resolve2 : 8803496 ns
 
 const int MAXCNT = 10000;
 
-class ScopedTimer 
+class ScopedTimer
 {
 	public:
 		ScopedTimer(const char* name): m_name(name), m_beg(std::chrono::high_resolution_clock::now()) { }

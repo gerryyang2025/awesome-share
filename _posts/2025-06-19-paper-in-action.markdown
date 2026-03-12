@@ -3,6 +3,9 @@ layout: post
 title:  "Paper in Action"
 date:   2025-06-19 12:30:00 +0800
 categories: Papers
+tags:
+  - Paper
+
 ---
 
 * Do not remove this line (it will not be displayed)

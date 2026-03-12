@@ -3,6 +3,9 @@ layout: post
 title:  "Protocol Buffers in Action"
 date:   2021-04-05 20:00:00 +0800
 categories: [Protocol Buffers,]
+tags:
+  - Protocol Buffers
+
 ---
 
 * Do not remove this line (it will not be displayed)

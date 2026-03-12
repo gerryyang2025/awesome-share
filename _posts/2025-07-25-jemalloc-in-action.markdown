@@ -3,6 +3,10 @@ layout: post
 title:  "Jemalloc in Action"
 date:   2025-07-25 12:30:00 +0800
 categories: [Linux Performance]
+tags:
+  - Jemalloc
+  - Linux Performance
+
 ---
 
 * Do not remove this line (it will not be displayed)

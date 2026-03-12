@@ -3,6 +3,9 @@ layout: post
 title:  "Linux Performance 诊断"
 date:   2018-12-05 20:00:00 +0800
 categories: [Linux Performance]
+tags:
+  - Linux Performance
+
 ---
 
 * Do not remove this line (it will not be displayed)

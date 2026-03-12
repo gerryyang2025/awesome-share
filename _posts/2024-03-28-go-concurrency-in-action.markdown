@@ -3,6 +3,10 @@ layout: post
 title:  "Go Concurrency in Action"
 date:   2018-11-08 20:22:00 +0800
 categories: GoLang
+tags:
+  - Go Concurrency
+  - GoLang
+
 ---
 
 * Do not remove this line (it will not be displayed)

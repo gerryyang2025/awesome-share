@@ -3,6 +3,9 @@ layout: post
 title:  "ETCD in Action"
 date:   2023-09-09 09:00:00 +0800
 categories: ETCD
+tags:
+  - ETCD
+
 ---
 
 * Do not remove this line (it will not be displayed)

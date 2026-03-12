@@ -3,6 +3,10 @@ layout: post
 title:  "Ast-grep in Action"
 date:   2025-07-24 18:00:00 +0800
 categories: Tools
+tags:
+  - Ast-grep
+  - Tools
+
 ---
 
 * Do not remove this line (it will not be displayed)

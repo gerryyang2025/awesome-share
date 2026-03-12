@@ -3,6 +3,10 @@ layout: post
 title:  "Luapb in Action"
 date:   2023-1-11 20:00:00 +0800
 categories: Lua
+tags:
+  - Luapb
+  - Lua
+
 ---
 
 * Do not remove this line (it will not be displayed)

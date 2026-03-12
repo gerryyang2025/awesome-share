@@ -3,6 +3,10 @@ layout: post
 title:  "Go Framework in Action"
 date:   2025-03-12 20:00:00 +0800
 categories: GoLang
+tags:
+  - Go Framework
+  - GoLang
+
 ---
 
 * Do not remove this line (it will not be displayed)

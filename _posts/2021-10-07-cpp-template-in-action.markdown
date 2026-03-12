@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Template in Action"
 date:   2021-10-07 21:00:00 +0800
 categories: [C/C++]
+tags:
+  - CPP Template
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

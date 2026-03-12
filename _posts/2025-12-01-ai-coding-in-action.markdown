@@ -3,6 +3,10 @@ layout: post
 title:  "AI Coding in Action"
 date:   2025-12-01 12:30:00 +0800
 categories: ML
+tags:
+  - AI Coding
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)

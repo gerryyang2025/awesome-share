@@ -3,6 +3,9 @@ layout: post
 title:  "Questions about Dev"
 date:   2020-02-22 20:00:00 +0800
 categories: 杂记
+tags:
+  - 杂记
+
 ---
 
 * Do not remove this line (it will not be displayed)

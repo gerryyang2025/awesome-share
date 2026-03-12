@@ -3,6 +3,10 @@ layout: post
 title:  "Go Template in Action"
 date:   2023-05-20 12:00:00 +0800
 categories: [GoLang]
+tags:
+  - Go Template
+  - GoLang
+
 ---
 
 * Do not remove this line (it will not be displayed)

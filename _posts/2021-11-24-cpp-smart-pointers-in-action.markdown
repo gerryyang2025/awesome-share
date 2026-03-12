@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Smart Pointers in Action"
 date:   2021-11-24 08:30:00 +0800
 categories: [C/C++]
+tags:
+  - CPP Smart Pointers
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

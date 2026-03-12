@@ -3,6 +3,10 @@ layout: post
 title:  "AI Tools in Action"
 date:   2025-08-01 12:30:00 +0800
 categories: ML
+tags:
+  - AI Tools
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)

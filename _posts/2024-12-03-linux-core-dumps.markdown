@@ -3,6 +3,10 @@ layout: post
 title:  "Linux Core Dumps"
 date:   2024-12-03 12:00:00 +0800
 categories: [Debuggers]
+tags:
+  - Linux Core Dumps
+  - Debuggers
+
 ---
 
 * Do not remove this line (it will not be displayed)

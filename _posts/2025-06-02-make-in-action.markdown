@@ -3,6 +3,10 @@ layout: post
 title:  "Make in Action"
 date:   2025-06-02 20:00:00 +0800
 categories: [GCC/Clang]
+tags:
+  - Make
+  - GCC/Clang
+
 ---
 
 * Do not remove this line (it will not be displayed)

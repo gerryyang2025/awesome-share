@@ -3,6 +3,9 @@ layout: post
 title:  "Bash in Action"
 date:   2019-09-02 17:00:00 +0800
 categories: [Bash]
+tags:
+  - Bash
+
 ---
 
 * Do not remove this line (it will not be displayed)

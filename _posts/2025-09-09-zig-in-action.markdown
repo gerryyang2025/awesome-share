@@ -3,6 +3,9 @@ layout: post
 title:  "Zig in Action"
 date:   2025-09-09 12:00:00 +0800
 categories: Zig
+tags:
+  - Zig
+
 ---
 
 * Do not remove this line (it will not be displayed)

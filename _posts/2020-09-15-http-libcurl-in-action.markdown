@@ -3,6 +3,10 @@ layout: post
 title:  "HTTP Libcurl in Action"
 date:   2020-09-08 14:30:00 +0800
 categories: [TCP/IP]
+tags:
+  - HTTP Libcurl
+  - TCP/IP
+
 ---
 
 * Do not remove this line (it will not be displayed)

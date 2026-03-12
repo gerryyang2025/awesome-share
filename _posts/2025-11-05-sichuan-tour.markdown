@@ -3,6 +3,10 @@ layout: post
 title:  "川西自驾"
 date:   2025-11-05 20:00:00 +0800
 categories: 杂记
+tags:
+  - 川西自驾
+  - 杂记
+
 ---
 
 * Do not remove this line (it will not be displayed)

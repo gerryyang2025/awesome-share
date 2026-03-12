@@ -3,6 +3,10 @@ layout: post
 title:  "Linux eBPF in Action"
 date:   2024-06-26 12:00:00 +0800
 categories: Linux
+tags:
+  - Linux eBPF
+  - Linux
+
 ---
 
 * Do not remove this line (it will not be displayed)

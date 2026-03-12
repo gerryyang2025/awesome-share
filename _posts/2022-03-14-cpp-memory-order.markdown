@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Memory Order"
 date:   2022-03-14 15:00:00 +0800
 categories: [C/C++]
+tags:
+  - CPP Memory Order
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -35,7 +39,7 @@ b
 c
 a
 c
-a 
+a
 b
 ```
 
@@ -82,7 +86,7 @@ typedef enum memory_order {
 **The default behavior of all atomic operations in the library provides for sequentially consistent ordering (see discussion below). That default can hurt performance,** but the library's atomic operations can be given an additional std::memory_order argument to specify the exact constraints, beyond atomicity, that the compiler and processor must enforce for that operation.
 
 
-## memory_order_relaxed	
+## memory_order_relaxed
 
 Relaxed operation: there are no synchronization or ordering constraints imposed on other reads or writes, only this operation's atomicity is guaranteed
 
@@ -98,7 +102,7 @@ r1 = y.load(std::memory_order_relaxed); // A
 x.store(r1, std::memory_order_relaxed); // B
 
 // Thread 2:
-r2 = x.load(std::memory_order_relaxed); // C 
+r2 = x.load(std::memory_order_relaxed); // C
 y.store(42, std::memory_order_relaxed); // D
 ```
 
@@ -125,16 +129,16 @@ Typical use for relaxed memory ordering is incrementing counters, such as the re
 #include <iostream>
 #include <thread>
 #include <atomic>
- 
+
 std::atomic<int> cnt = {0};
- 
+
 void f()
 {
     for (int n = 0; n < 1000; ++n) {
         cnt.fetch_add(1, std::memory_order_relaxed);
     }
 }
- 
+
 int main()
 {
     std::vector<std::thread> v;
@@ -154,7 +158,7 @@ int main()
 
 memory_order_release
 
-A store operation with this memory order performs the **release operation**: no reads or writes in the current thread can be reordered **after this store**. All writes in the current thread are visible in other threads that acquire the same atomic variable (see Release-Acquire ordering below) and writes that carry a dependency into the atomic variable become visible in other threads that consume the same atomic 
+A store operation with this memory order performs the **release operation**: no reads or writes in the current thread can be reordered **after this store**. All writes in the current thread are visible in other threads that acquire the same atomic variable (see Release-Acquire ordering below) and writes that carry a dependency into the atomic variable become visible in other threads that consume the same atomic
 
 memory_order_acquire
 
@@ -177,17 +181,17 @@ The synchronization is established only between the threads releasing and acquir
 #include <atomic>
 #include <cassert>
 #include <string>
- 
+
 std::atomic<std::string*> ptr;
 int data;
- 
+
 void producer()
 {
     std::string* p  = new std::string("Hello");
     data = 42;
     ptr.store(p, std::memory_order_release);
 }
- 
+
 void consumer()
 {
     std::string* p2;
@@ -196,7 +200,7 @@ void consumer()
     assert(*p2 == "Hello"); // never fires
     assert(data == 42); // never fires
 }
- 
+
 int main()
 {
     std::thread t1(producer);
@@ -213,16 +217,16 @@ The following example demonstrates transitive release-acquire ordering across th
 #include <atomic>
 #include <cassert>
 #include <vector>
- 
+
 std::vector<int> data;
 std::atomic<int> flag = {0};
- 
+
 void thread_1()
 {
     data.push_back(42);
     flag.store(1, std::memory_order_release);
 }
- 
+
 void thread_2()
 {
     int expected=1;
@@ -230,14 +234,14 @@ void thread_2()
         expected = 1;
     }
 }
- 
+
 void thread_3()
 {
     while (flag.load(std::memory_order_acquire) < 2)
         ;
     assert(data.at(0) == 42); // will never fire
 }
- 
+
 int main()
 {
     std::thread a(thread_1);
@@ -260,17 +264,17 @@ This example demonstrates dependency-ordered synchronization for pointer-mediate
 #include <atomic>
 #include <cassert>
 #include <string>
- 
+
 std::atomic<std::string*> ptr;
 int data;
- 
+
 void producer()
 {
     std::string* p  = new std::string("Hello");
     data = 42;
     ptr.store(p, std::memory_order_release);
 }
- 
+
 void consumer()
 {
     std::string* p2;
@@ -279,7 +283,7 @@ void consumer()
     assert(*p2 == "Hello"); // never fires: *p2 carries dependency from ptr
     assert(data == 42); // may or may not fire: data does not carry dependency from ptr
 }
- 
+
 int main()
 {
     std::thread t1(producer);
@@ -310,21 +314,21 @@ This example demonstrates a situation where sequential ordering is necessary. An
 #include <thread>
 #include <atomic>
 #include <cassert>
- 
+
 std::atomic<bool> x = {false};
 std::atomic<bool> y = {false};
 std::atomic<int> z = {0};
- 
+
 void write_x()
 {
     x.store(true, std::memory_order_seq_cst);
 }
- 
+
 void write_y()
 {
     y.store(true, std::memory_order_seq_cst);
 }
- 
+
 void read_x_then_y()
 {
     while (!x.load(std::memory_order_seq_cst))
@@ -333,7 +337,7 @@ void read_x_then_y()
         ++z;
     }
 }
- 
+
 void read_y_then_x()
 {
     while (!y.load(std::memory_order_seq_cst))
@@ -342,7 +346,7 @@ void read_y_then_x()
         ++z;
     }
 }
- 
+
 int main()
 {
     std::thread a(write_x);
@@ -384,7 +388,7 @@ Checks whether the atomic operations on all objects of this type are lock-free. 
 #include <iostream>
 #include <utility>
 #include <atomic>
- 
+
 struct A { int a[100]; };
 struct B { int x, y; };
 int main()
@@ -421,23 +425,23 @@ Atomically replaces the current value with the result of arithmetic addition of 
 #include <iostream>
 #include <thread>
 #include <atomic>
- 
+
 std::atomic<long long> data{10};
- 
+
 void do_work(int thread_num)
 {
     long long val = data.fetch_add(1, std::memory_order_relaxed);
     std::cout << "thread:" << thread_num << ", val:" << val << std::endl;
 }
- 
+
 int main()
 {
     std::thread th0{do_work, 0};
     std::thread th1{do_work, 1};
     std::thread th2{do_work, 2};
-    
+
     th0.join(); th1.join(); th2.join();
- 
+
     std::cout << "Result : " << data << '\n';
 }
 /*
@@ -486,7 +490,7 @@ struct node
     node* next;
     node(const T& data) : data(data), next(nullptr) {}
 };
- 
+
 template<typename T>
 class stack
 {
@@ -495,10 +499,10 @@ class stack
     void push(const T& data)
     {
       node<T>* new_node = new node<T>(data);
- 
+
       // put the current value of head into new_node->next
       new_node->next = head.load(std::memory_order_relaxed);
- 
+
       // now make new_node the new head, but if the head
       // is no longer what's stored in new_node->next
       // (some other thread must have inserted a node just now)
@@ -507,8 +511,8 @@ class stack
                                         std::memory_order_release,
                                         std::memory_order_relaxed))
           ; // the body of the loop is empty
- 
-// Note: the above use is not thread-safe in at least 
+
+// Note: the above use is not thread-safe in at least
 // GCC prior to 4.8.3 (bug 60272), clang prior to 2014-05-05 (bug 18899)
 // MSVC prior to 2014-03-17 (bug 819819). The following is a workaround:
 //      node<T>* old_head = head.load(std::memory_order_relaxed);

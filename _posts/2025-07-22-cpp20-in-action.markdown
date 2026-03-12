@@ -3,6 +3,10 @@ layout: post
 title:  "C++20 in Action"
 date:   2025-07-22 12:30:00 +0800
 categories: [C/C++]
+tags:
+  - C++20
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

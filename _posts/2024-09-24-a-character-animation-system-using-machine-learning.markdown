@@ -3,6 +3,11 @@ layout: post
 title:  "一种使用机器学习的角色动画系统"
 date:   2024-09-24 05:00:00 +0800
 categories: [Game]
+tags:
+  - 机器学习
+  - 角色动画系统
+  - Game
+
 ---
 
 * Do not remove this line (it will not be displayed)

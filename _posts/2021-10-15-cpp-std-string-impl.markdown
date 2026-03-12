@@ -3,6 +3,10 @@ layout: post
 title:  "CPP std::string Implentation (COW/SSO)"
 date:   2021-10-15 12:30:00 +0800
 categories: [C/C++]
+tags:
+  - C/C++ ABI
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -17,7 +21,7 @@ categories: [C/C++]
 int main()
 {
     printf("%lu\n", sizeof(std::string));
-    
+
     std::string s1 = "a";
     std::string s2 = s1;
     printf("%p\n%p", s1.c_str(), s2.c_str());
@@ -69,7 +73,7 @@ int main()
 {
     std::string s("hello");
     print("init", s);
-    
+
     for (size_t i = 0; i != 24; ++i) {
         s.push_back('+');
         //std::cout << i << ":" << s << std::endl;
@@ -95,7 +99,7 @@ template<typename _CharT, typename _Traits = char_traits<_CharT>,
          typename _Alloc = allocator<_CharT> >
 class basic_string;
 typedef basic_string<char> string;
- 
+
 // refer:
 // gcc-releases-gcc-4.8.5/libstdc++-v3/include/bits/basic_string.h
 
@@ -109,7 +113,7 @@ class basic_string
     size_type _M_capacity;
     _Atomic_word _M_refcount;
   };
- 
+
   struct _Rep : _Rep_base
   {
   };
@@ -121,13 +125,13 @@ class basic_string
 
     _CharT* _M_p; // The actual data.
   };
- 
+
   // Data Members (private)
   mutable _Alloc_hider _M_dataplus;
-  
+
   _CharT* _M_data() const
   { return _M_dataplus._M_p; }
- 
+
   _Rep* _M_rep() const
   { return &((reinterpret_cast<_Rep*> (_M_data()))[-1]); }
 };
@@ -144,15 +148,15 @@ class basic_string
   {
     _Alloc_hider(pointer __dat, const _Alloc& __a = _Alloc())
         : allocator_type(__a), _M_p(__dat) { }
- 
+
     pointer _M_p; // The actual data.
   };
- 
+
   _Alloc_hider	_M_dataplus;
   size_type     _M_string_length;
- 
+
   enum { _S_local_capacity = 15 / sizeof(_CharT) };
- 
+
   union
   {
       _CharT           _M_local_buf[_S_local_capacity + 1];
@@ -161,11 +165,11 @@ class basic_string
 };
 ```
 
-# libstdc++ vs libc++ 
+# libstdc++ vs libc++
 
 > libc++ is not binary compatible with gcc's libstdc++ (except for some low level stuff such as operator new). For example the std::string in gcc's libstdc++ is refcounted, whereas in libc++ it uses the "short string optimization". If you were to accidentally mix these two strings in the same program (and mistake them for the same data structure), you would inevitably get a run time crash.
 
-refer: 
+refer:
 
 * [Why can't clang with libc++ in c++0x mode link this boost::program_options example?](https://stackoverflow.com/questions/8454329/why-cant-clang-with-libc-in-c0x-mode-link-this-boostprogram-options-examp/8457799#8457799)
 * [Is it safe to link 2 different standard c++ library in one project](https://stackoverflow.com/questions/27894380/is-it-safe-to-link-2-different-standard-c-library-in-one-project)
@@ -178,7 +182,6 @@ refer:
 * [GCC5 std::string新变化](http://www.pandademo.com/2017/04/new-changes-of-gcc5-std-string/)
 * [C++的string-两手抓的内存分配](https://zhuanlan.zhihu.com/p/187499607)
 
-  
 
-	
-	
+
+

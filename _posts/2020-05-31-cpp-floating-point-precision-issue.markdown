@@ -3,6 +3,9 @@ layout: post
 title:  "CPP Floating-point Precision Issue"
 date:   2020-05-31 16:00:00 +0800
 categories: [C/C++]
+tags:
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -54,7 +57,7 @@ bool AreSame(double a, double b) {
 
 ``` cpp
 double a = 12.03;
-double b = 22; 
+double b = 22;
 long long c = a * b * 100000000L;
 printf("c[%lld]\n", c);              // 26465999999
 c = a * 100000000L * b;
@@ -64,14 +67,14 @@ printf("c[%lld]\n", c);              // 26466000000
 亦或在`python`中：
 
 ```
-Python 2.7.5 (default, Jun 17 2014, 18:11:42) 
+Python 2.7.5 (default, Jun 17 2014, 18:11:42)
 [GCC 4.8.2 20140120 (Red Hat 4.8.2-16)] on linux2
 Type "help", "copyright", "credits" or "license" for more information.
 >>> 1.1 + 0.1
 1.2000000000000002
 ```
 
-* Actually, the error is because there is no way to map 0.1 to a finite binary floating point number. 
+* Actually, the error is because there is no way to map 0.1 to a finite binary floating point number.
 * Most fractions can't be converted to a decimal with exact precision. A good explanation is here:  [Floating Point Arithmetic: Issues and Limitations](https://docs.python.org/release/2.5.1/tut/node16.html)
 
 > **What can I do to avoid this problem?**
@@ -114,7 +117,7 @@ int main()
 
     decimal tiny("0.0000000000000000000000000000000000000000000001");
     decimal huge("100000000000000000000000000000000000000000000000");
-    decimal a = tiny;         
+    decimal a = tiny;
 
     while (a != huge)
     {
@@ -181,7 +184,7 @@ BigDecimal(double);    // 创建一个具有参数，所指定双精度值的对
 BigDecimal(long);      // 创建一个具有参数，所指定长整数值的对象
 BigDecimal(String);    // 创建一个具有参数，所指定以字符串表示的数值的对象
 
-// 方法                    
+// 方法
 add(BigDecimal);       // BigDecimal对象中的值相加，然后返回这个对象
 subtract(BigDecimal);  // BigDecimal对象中的值相减，然后返回这个对象
 multiply(BigDecimal);  // BigDecimal对象中的值相乘，然后返回这个对象
@@ -198,30 +201,30 @@ intValue();            // 将BigDecimal对象中的值以整数返回
 源码说明：
 
 ``` java
-    /* The results of this constructor can be somewhat unpredictable.  
-     * One might assume that writing {@codenew BigDecimal(0.1)} in  
-     * Java creates a {@code BigDecimal} which is exactly equal to  
-     * 0.1 (an unscaled value of 1, with a scale of 1), but it is  
-     * actually equal to  
-     * 0.1000000000000000055511151231257827021181583404541015625.  
-     * This is because 0.1 cannot be represented exactly as a  
-     * {@codedouble} (or, for that matter, as a binary fraction of  
-     * any finite length).  Thus, the value that is being passed  
-     * <i>in</i> to the constructor is not exactly equal to 0.1,  
-     * appearances notwithstanding.  
-       ……  
-        * When a {@codedouble} must be used as a source for a  
-     * {@code BigDecimal}, note that this constructor provides an  
-     * exact conversion; it does not give the same result as  
-     * converting the {@codedouble} to a {@code String} using the  
-     * {@link Double#toString(double)} method and then using the  
-     * {@link #BigDecimal(String)} constructor.  To get that result,  
-     * use the {@codestatic} {@link #valueOf(double)} method.  
-     * </ol>  
+    /* The results of this constructor can be somewhat unpredictable.
+     * One might assume that writing {@codenew BigDecimal(0.1)} in
+     * Java creates a {@code BigDecimal} which is exactly equal to
+     * 0.1 (an unscaled value of 1, with a scale of 1), but it is
+     * actually equal to
+     * 0.1000000000000000055511151231257827021181583404541015625.
+     * This is because 0.1 cannot be represented exactly as a
+     * {@codedouble} (or, for that matter, as a binary fraction of
+     * any finite length).  Thus, the value that is being passed
+     * <i>in</i> to the constructor is not exactly equal to 0.1,
+     * appearances notwithstanding.
+       ……
+        * When a {@codedouble} must be used as a source for a
+     * {@code BigDecimal}, note that this constructor provides an
+     * exact conversion; it does not give the same result as
+     * converting the {@codedouble} to a {@code String} using the
+     * {@link Double#toString(double)} method and then using the
+     * {@link #BigDecimal(String)} constructor.  To get that result,
+     * use the {@codestatic} {@link #valueOf(double)} method.
+     * </ol>
      */
-public BigDecimal(double val) {  
-    this(val,MathContext.UNLIMITED);  
-}  
+public BigDecimal(double val) {
+    this(val,MathContext.UNLIMITED);
+}
 ```
 
 

@@ -3,6 +3,10 @@ layout: post
 title:  "Cppcheck in Action"
 date:   2025-07-28 12:00:00 +0800
 categories: Tools
+tags:
+  - Cppcheck
+  - Tools
+
 ---
 
 * Do not remove this line (it will not be displayed)

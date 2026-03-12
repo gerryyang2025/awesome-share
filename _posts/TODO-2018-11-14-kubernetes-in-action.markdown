@@ -2,7 +2,10 @@
 layout: post
 title:  "Kubernetes in Action"
 date:   2018-11-14 20:22:00 +0800
-categories: https
+categories: 云原生
+tags:
+  - Kubernetes
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -22,7 +25,7 @@ k8s的好处：
 * Never Outgrow
 	+ Whether testing locally or running a global enterprise, Kubernetes flexibility grows with you to deliver your applications consistently and easily no matter how complex your need is.
 * Run Anywhere
-	+ Kubernetes is open source giving you the freedom to take advantage of on-premises, hybrid, or public cloud infrastructure, letting you effortlessly move workloads to where it matters to you. 
+	+ Kubernetes is open source giving you the freedom to take advantage of on-premises, hybrid, or public cloud infrastructure, letting you effortlessly move workloads to where it matters to you.
 
 
 # [k8s setup]
@@ -103,7 +106,7 @@ traefik-ingress-controller-n2gt6                  1/1     Running   0          1
 [k8s官网]: https://kubernetes.io/
 
 [k8s官方下载地址]: https://kubernetes.io/docs/imported/release/notes/
-  
+
 [How to install Vagrant on Ubuntu 18.04]: https://linuxize.com/post/how-to-install-vagrant-on-ubuntu-18-04/
 
 [kubernetes github]: https://github.com/kubernetes/kubernetes

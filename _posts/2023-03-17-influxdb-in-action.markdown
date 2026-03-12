@@ -3,6 +3,10 @@ layout: post
 title:  "InfluxDB in Action"
 date:   2023-03-17 08:30:00 +0800
 categories: DB
+tags:
+  - InfluxDB
+  - DB
+
 ---
 
 * Do not remove this line (it will not be displayed)

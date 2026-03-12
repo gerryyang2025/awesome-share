@@ -3,6 +3,9 @@ layout: post
 title:  "How debuggers work: Part 1 - Basics"
 date:   2024-07-06 12:00:00 +0800
 categories: [Debuggers]
+tags:
+  - Debuggers
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,10 @@ layout: post
 title:  "tRPC-Go in Action"
 date:   2023-04-13 12:30:00 +0800
 categories: GoLang
+tags:
+  - tRPC-Go
+  - GoLang
+
 ---
 
 * Do not remove this line (it will not be displayed)

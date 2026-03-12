@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Effective"
 date:   2020-07-13 09:00:00 +0800
 categories: [C/C++]
+tags:
+  - CPP Effective
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -24,7 +28,7 @@ public:
 ```
 
 ## 2 对象的复制
- 
+
  `copy构造函数`被用来“以同型对象初始化自我对象”，`copy assignment操作符`被用来“从另一个同型对象中拷贝其值到自我对象”。
 
 ```cpp
@@ -88,7 +92,7 @@ void fun()
 }
 
 /*
-$gcc -o overload_test overload_test.c 
+$gcc -o overload_test overload_test.c
 overload_test.c:18:6: error: redefinition of 'fun'
 void fun(int a)
      ^
@@ -198,14 +202,14 @@ int main()
   player.get_scores();
 
   GamePlayer player2;
-  printf("player.NumTurns[%d] player2.NumTurns[%d]\n", 
+  printf("player.NumTurns[%d] player2.NumTurns[%d]\n",
       player.get_numturns(), player2.get_numturns());
 
   return 0;
 }
 /*
 GamePlayer::NumTurns[5]
-0 1 2 3 4 
+0 1 2 3 4
 player.NumTurns[5] player2.NumTurns[5]
  */
 ```
@@ -252,7 +256,7 @@ int main()
   player.get_scores();
 
   GamePlayer player2;
-  printf("player.NumTurns[%d] player2.NumTurns[%d]\n", 
+  printf("player.NumTurns[%d] player2.NumTurns[%d]\n",
       player.get_numturns(), player2.get_numturns());
 
   return 0;
@@ -260,7 +264,7 @@ int main()
 /*
 addr GamePlayer::NumTurns[0x102092f30]
 GamePlayer::NumTurns[5]
-0 1 2 3 4 
+0 1 2 3 4
 addr GamePlayer::NumTurns[0x102092f30]
 addr GamePlayer::NumTurns[0x102092f30]
 player.NumTurns[5] player2.NumTurns[5]
@@ -269,7 +273,7 @@ player.NumTurns[5] player2.NumTurns[5]
 通过提供定义式，我们就可以获取class专属常量的地址。
 
 > 注意：
-> 
+>
 > * NumTurns的定义式中没有赋值是因为，class常量已在声明时获得了初值，因此定义时不可以再设置初值。
 > * 我们无法利用`#define`创建一个class专属常量，因为#define并不能限制作用域（scope），一旦宏被定义，它就在其后的编译过程中有效，除非在某处被`#undef`。因此，`#define`不仅不能用来定义class专属常量，也不能提供任何封装性。
 
@@ -327,7 +331,7 @@ inline void callWithMax(const T& a, const T& b)
 这个`template`根据实例化可以产出一整群函数，每个函数都接受两个同类型对象，并以其中较大的调用f。这里不需要在函数本体中为参数加上括号，也不需要操心参数被计算的次数，同时，由于callWithMax是个真正的函数，它遵守作用域和访问规则，因此可以写出**一个class内的private inline函数，而对于宏是无法完成的**。
 
 > 请记住：
-> 
+>
 > * 对于单纯常量，最好以`const`对象或`enum`替换`#define`
 > * 对于形似函数的宏，最好改用`inline函数`替换`#define`
 
@@ -363,7 +367,7 @@ const std::vector<int>::iterator iter = vec.begin();
 
 std::vector<int>::const_iterator citer = vec.begin();
 *citer = 10;    // error
-++citer;        // ok 
+++citer;        // ok
 ```
 
 const成员函数
@@ -391,7 +395,7 @@ public:
   }
 public:
   // operator[] for const object
-  const char& operator[] (std::size_t position) const 
+  const char& operator[] (std::size_t position) const
   {
     return text[position];
   }
@@ -442,7 +446,7 @@ public:
   }
 public:
   // operator[] for const object
-  char& operator[] (std::size_t position) const 
+  char& operator[] (std::size_t position) const
   {
     return pText[position];
   }
@@ -502,7 +506,7 @@ public:
   }
 
   // operator[] for const object
-  char& operator[] (std::size_t position) const 
+  char& operator[] (std::size_t position) const
   {
     return pText[position];
   }
@@ -537,7 +541,7 @@ int main()
   return 0;
 }
 /*
-$./mutable 
+$./mutable
 g
 length: do strlen... 5
 J
@@ -553,7 +557,7 @@ length: 5
 
 ```cpp
   // operator[] for const object
-  const char& operator[] (std::size_t position) const 
+  const char& operator[] (std::size_t position) const
   {
     // bounds checking
     // log access data
@@ -593,7 +597,7 @@ public:
   }
 public:
   // operator[] for const object
-  const char& operator[] (std::size_t position) const 
+  const char& operator[] (std::size_t position) const
   {
     // bounds checking
     // log access data
@@ -642,12 +646,12 @@ char& operator[]()
 const char& operator[]() const
 g
 const char& operator[]() const
-y 
+y
  */
 ```
 
 > 请记住：
-> 
+>
 > * 将某些东西声明为`const`可帮助编译器侦测出错误用法。`const`可被施加于任何作用域内的对象、函数参数、函数返回类型、成员函数本体。
 > * 编译器强制实施`bitwise constness`，但你编写程序时应该使用“概念上的常量性”。
 > * 当`const`和`non-const`成员函数有着实质等价的实现时，令`non-const`版本调用`const`版本可避免代码重复。
@@ -700,7 +704,7 @@ FileSystem& tfs()
 注意：这些函数内含static对象的事实使它们在多线程系统中带有不确定性。处理这种麻烦的方法是，在程序的单线程启动阶段，手工调用所有reference-returning函数，这可消除与初始化有关的`race conditions（竞速形势）`。
 
 > 请记住
-> 
+>
 > * 为内置类型对象进行手工初始化，因为C++不保证初始化它们。
 > * 构造函数最好使用成员初值列（`member initialization list`），而不要在构造函数本体内使用赋值操作（`assignment`）。初值列列出的成员变量，其排列次序应该和它们在class中的声明次序相同。
 > * 为免除跨编译单元的初始化次序问题，请以`local static`对象替换`non-local static`对象。
@@ -725,9 +729,9 @@ class Empty {};
 class Empty {
 public:
     Empty()                       // default构造函数
-    {}        
+    {}
     Empty(const Empty& rhs)       // copy构造函数
-    {} 
+    {}
     ~Empty()                      // 析构函数（是否是virtual呢？）
     {}
     Empty& operator=(const Empty& rhs)  // copy assignment操作符
@@ -780,7 +784,7 @@ int main()
   NamedObject<int> no1("gerry", 1);
   NamedObject<int> no2(no1);         // 调用copy构造函数
   NamedObject<int> no3("yang", 2);
-  
+
   no3 = no1;
   std::cout << no3.nameValue << "\n";
 
@@ -822,12 +826,12 @@ void copy_friend(HomeForSale& lhs, HomeForSale& rhs)
   lhs = rhs;
 }
 
-class HomeForSale 
+class HomeForSale
 {
   friend void copy_friend(HomeForSale& lhs, HomeForSale& rhs);
 
 public:
-  HomeForSale() 
+  HomeForSale()
   {
   }
   HomeForSale(const std::string& lhs) :
@@ -886,12 +890,12 @@ int main()
 #include<iostream>
 #include<string>
 
-class HomeForSale 
+class HomeForSale
 {
   friend void copy_friend(HomeForSale& lhs, HomeForSale& rhs);
 
 public:
-  HomeForSale() 
+  HomeForSale()
   {
   }
   HomeForSale(const std::string& lhs) :
@@ -948,7 +952,7 @@ private:
 class HomeForSale : private Uncopyable
 {
 public:
-  HomeForSale() 
+  HomeForSale()
   {
   }
   HomeForSale(const std::string& lhs) :
@@ -976,7 +980,7 @@ private:
 int main()
 {
   HomeForSale h1("first");
-  
+
   HomeForSale h2 = h1;    // error
   HomeForSale h3(h1);     // error
 
@@ -1026,7 +1030,7 @@ private:
   int v2;
 };
 
-int main() 
+int main()
 {
   // derived obj;
   base *b = new derived;
@@ -1068,7 +1072,7 @@ private:
   int v2;
 };
 
-int main() 
+int main()
 {
   // derived obj;
   base *b = new derived;
@@ -1087,9 +1091,9 @@ derived()
 ```
 
 > *观点1*：任何class只要带有virtual函数，都几乎确定应该也有一个virtual析构函数。
-> 
+>
 > *观点2*：如果class不含virtual函数，通常表示它并不意图被用做一个base class。当class不企图被当做base class，令其析构函数为virtual往往是一个馊主意。因为，欲实现出virtual函数，对象必须携带某些信息，主要用来在运行期决定哪一个virtual函数该被调用。这份信息通常是由一个所谓`vptr(virtual table pointer)`指出，`vptr`指向一个由函数指针构成的数组，称为`vtbl(virtual table)`。每一个带有virtual函数的class都有一个相应的`vtbl`。当对象调用某一virtual函数，实际被调用的函数取决于该对象的`vptr`所指的那个`vtbl`（编译器在其中寻找合适的函数指针）。这样，如果base class内含virtual函数，那么其对象的体积会增加，在32-bits计算机体系结构中将多占用32bits（vptr大小）；而在64-bits计算机体系结构中多占用64bits（指针大小为8字节）。
-> 
+>
 > *观点3*：**标准库string不含任何virtual函数，但有时程序员会错误地把它当做base class**。那么，当你在程序任意某处无意间将一个`pointer-to-specialstring`转换为一个`pointer-to-string`，然后将转换所得的那个`string指针`delete掉，则立刻被流放到"不明确行为上"。很不幸C++目前没有提供类似Java的`final classes`禁止派生的机制。
 
 ``` cpp
@@ -1103,17 +1107,17 @@ class Dummy : public std::string
 {
 
 public:
-    Dummy() { 
-        cout << "Dummy()" << endl; 
+    Dummy() {
+        cout << "Dummy()" << endl;
     }
-    ~Dummy() { 
-        cout << "~Dummy()" << endl; 
+    ~Dummy() {
+        cout << "~Dummy()" << endl;
         delete[] no_del_member;
         cout << "delete[] no_del_member" << endl;
     }
-    
-    Dummy(const char *str) : std::string(str) { 
-        cout << "Dummy(const char *str)" << endl; 
+
+    Dummy(const char *str) : std::string(str) {
+        cout << "Dummy(const char *str)" << endl;
         no_del_member = new char[8]();
         snprintf(no_del_member, 8, "hello");
         cout << no_del_member << endl;
@@ -1129,7 +1133,7 @@ int main()
     cout << str->size() << endl;
 
     delete str; // error, no delete no_del_member, Memory leak !
-    
+
     return 0;
 }
 /*
@@ -1300,7 +1304,7 @@ no_virtual_in_ctor_dtor.cpp:9:2: note: 'logTransaction' declared here
         virtual void logTransaction() const = 0;
         ^
 1 warning generated.
- 
+
  */
 ```
 发现无法调用`derived class`的函数，在编译期间就报错了。把`pure virtual`去掉：
@@ -1348,7 +1352,7 @@ int main()
 }
 /*
 g++ -o no_virtual_in_ctor_dtor no_virtual_in_ctor_dtor.cpp
-./no_virtual_in_ctor_dtor 
+./no_virtual_in_ctor_dtor
 Transaction()
 Transaction::logTransaction()
  */
@@ -1421,7 +1425,7 @@ g++ -o no_virtual_in_ctor_dtor no_virtual_in_ctor_dtor.cpp
 Transaction()
 Transaction::logTransaction(): 1+
 Transaction()
-Transaction::logTransaction(): 2+ 
+Transaction::logTransaction(): 2+
  */
 ```
 
@@ -1491,7 +1495,7 @@ int main()
   w.print();
 }
 /*
- ./operator 
+ ./operator
 1
 2
 100
@@ -1508,7 +1512,7 @@ int main()
 
 ```cpp
 // 潜在的自我赋值
-a[i] = a[j];  
+a[i] = a[j];
 *px = *py;
 ```
 
@@ -1549,7 +1553,7 @@ Widget& Widget::operator=(const Widget& rhs)
 Widget& Widget::operator=(const Widget& rhs)
 {
   if (this == &rhs) return *this;   // identity test
-  
+
   delete pb;
   pb = new Bitmap(*rhs.pb);
   return *this;
@@ -1624,7 +1628,7 @@ void f()
     Investment* pInv = createInvestment();  // 调用factory函数，返回一个动态对象
     // do something
     // ...
-    
+
     delete pInv;  // 释放动态对象
 }
 ```
@@ -1686,7 +1690,7 @@ void f()
 {
     // 使用shared_ptr
     std::tr1::shared_ptr<Investment> pInv(createInvestment());
-    
+
     // do something
     // ...
 
@@ -1723,7 +1727,7 @@ void f()
 using namespace std;
 
 int main()
-{  
+{
   // 馊主意，会用上错误的delete形式，而且编译器不是提示编译错误
   std::auto_ptr<std::string> aps(new std::string[10]);
   std::shared_ptr<int> spi(new int[1024]);
@@ -1762,7 +1766,7 @@ class Lock
         // 释放资源
         ~Lock()
         { unlock(mutexPtr); }
-       
+
     private:
         Mutex *mutexPtr;
 };
@@ -1873,7 +1877,7 @@ delete array;
 > delete的最大问题在于：即将被删除的内存究竟存有多少对象，这个问题的答案决定了有多少个析构函数必须被调用。
 
 | 单一对象 | 对象数组
-| -- | -- 
+| -- | --
 | object | n Object Object Object ...
 
 当你对着一个指针使用delete，唯一能够让delete知道内存中是否存在一个数组大小记录的办法就是：**使用delete时加上中括号（方括号）**，delete便认定指针指向一个数组，否则，它便认定指针指向单一对象。
@@ -1970,7 +1974,7 @@ public:
 
 Date d(30, 3, 1995);                   // 错误，类型不匹配
 Date d(Day(30), Month(3), Year(1995)); // 错误，类型不匹配
-Date d(Month(3), Day(30), Year(1995)); // OK 
+Date d(Month(3), Day(30), Year(1995)); // OK
 ```
 
 可见，明智而审慎地导入`新类型`对预防"接口被误用"有神奇疗效。但是，当保证了正确的类型后，如何限制其合理的值呢。例如，一年只有12个月，所以Month应该反映这一事实。一个办法是利用enum表现月份，但enum不具备我们系统拥有的类型安全性，例如，enum可被拿来当一个int使用。比较安全的做法是，`预先定义所有有效的Month`。
@@ -1982,7 +1986,7 @@ public:
     static Month Feb() { return Month(2); }
     // ...
     static Month Dec() { return Month(12); }
-    
+
 private:
     explicit Month(int m);   // 阻止生成新的月份
 };
@@ -2029,7 +2033,7 @@ std::tr1::shared_ptr<Investment> createInvestment()
 > 1. 好的接口，很容易被正确使用，不容易被误用。
 > 2. "促进正确使用"的办法包括，接口的一致性，内置类型的行为兼容。
 > 3. “阻止误用”的办法包括，建立新类型，限制类型上的操作，束缚对象值，消除客户的资源管理责任。
-> 4. `tr1::shared_ptr`支持定制删除器（custom deleter）。这可防范`cross-DLL problem`，可被用来自动解除互斥锁等等。 
+> 4. `tr1::shared_ptr`支持定制删除器（custom deleter）。这可防范`cross-DLL problem`，可被用来自动解除互斥锁等等。
 
 ## 2 Treat class design as type design
 
@@ -2378,7 +2382,7 @@ Base* pb = &d; // 隐式地将Derived* 转换为Base*
 
 ```cpp
 class Base {
-public: 
+public:
     virtual void dosomething() {} // 空实现
 };
 
@@ -2437,7 +2441,7 @@ class PointMgr {
 public:
   PointMgr() : m_point(1, 1) {
   }
-  
+
   // error: binding of reference to type 'Point' to a value of type 'const Point' drops qualifiers
   //Point& getPoint() const {
 
@@ -2470,7 +2474,7 @@ int main()
   // error
   //point_mgr.getPoint().setX(2);
   //point_mgr.getPoint().setY(2);
-  
+
   point_mgr.getPoint().show(); // 1,1
 
 }
@@ -2534,7 +2538,7 @@ void PrettyMenu::changeBackground(std::istream& imgSrc)
 {
     using std::swap;
     Lock ml(&mutex);
-    
+
     std::tr1::shared_ptr<PMImpl> pNew(new PMImpl(*pImpl)); // 获取副本
     pNew->bgImage.reset(new Image(imgSrc));                // 修改副本
     ++pNex->imageChanges;
@@ -2637,7 +2641,7 @@ private:
 `Person`class只内含一个指针成员，指向其实现类`PersonImpl`。这种设计被称为：**pimpl idion (pimpl是 Pointer to implementation的缩写)**。这样的设计下，`Person`的客户端就完全与`Date`,`Addresses`以及`Persons`的实现细节分离了。这些class的任何实现修改都不需要`Person`客户端重新编译。同时，由于客户无法看到`Person`的实现细节，也就不会写出什么：取决于内部细节的代码。**这真正是“接口与实现分离”**。
 
 > **分离的关键在于**：以“声明的依赖性”代替“定义的依赖性”。现实中，让头文件尽可能自我满足，万一做不到，则让它与其他文件内的声明式（而非定义式）相依。
-> 
+>
 
 其他每一件事，都源于这个简单的设计策略：
 1，如果使用`object references`或`object pointers`可以完成任务，**就不要使用**`object`。（你可以只靠一个类型声明式，就定义出指向该类型的`references`和`pointer`；但如果定义某类型的`objects`，就需要用到该类型的定义式）。
@@ -2658,8 +2662,8 @@ int main()
   printf("main\n");
   return 0;
 }
-$g++ -o declare_var declare_var.cpp 
-$./declare_var 
+$g++ -o declare_var declare_var.cpp
+$./declare_var
 main
 ```
 
@@ -2708,7 +2712,7 @@ class RealPerson: public Person {
 public:
     RealPerson(const std::string& name, const Date& birthday, const Address& addr) : theName(name), theBirthDate(birthday), theAddress(addr)
     {}
-   
+
     virtual ~RealPerson() {}
     std::string name() const;
     std::string birthDate() const;
@@ -2784,7 +2788,7 @@ public:
     std::cout << "virtual void Base::f2()\n";
   }
   void f3();
-    
+
 };
 
 class Derived: public Base {
@@ -2833,7 +2837,7 @@ Differentiate between inheritance of interface and inheritance of implementation
 * 函数接口（function interfaces）继承
 * 函数实现（function implementations）继承
 
-```cpp 
+```cpp
 class Shape {
 public:
     // 三种被继承的接口
@@ -2890,7 +2894,7 @@ public:
         int ret = doHealthValue();   // 做真正的工作
         do_something_after();
     }
-    
+
 private:
     virtual int doHealthValue() const { // derived classes可以重新定义它
         // 缺省实现
@@ -2913,7 +2917,7 @@ public:
     explicit GameCharacter(HealthCalcFunc hcf = defaultHealthCalc) : healthFunc(hcf) {
         // init
     }
-    
+
     int healthValue() const {
         return healthFunc(*this);
     }

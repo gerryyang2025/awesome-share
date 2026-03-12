@@ -3,6 +3,10 @@ layout: post
 title:  "Modern CMake in Action"
 date:   2022-07-31 16:30:00 +0800
 categories: [GCC/Clang]
+tags:
+  - Modern CMake
+  - GCC/Clang
+
 ---
 
 * Do not remove this line (it will not be displayed)

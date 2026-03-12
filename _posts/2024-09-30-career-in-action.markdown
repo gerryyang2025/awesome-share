@@ -3,6 +3,9 @@ layout: post
 title:  "职场的那些事"
 date:   2024-09-30 09:00:00 +0800
 categories: 杂记
+tags:
+  - 杂记
+
 ---
 
 * Do not remove this line (it will not be displayed)

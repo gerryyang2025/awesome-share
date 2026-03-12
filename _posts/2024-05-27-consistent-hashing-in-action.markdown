@@ -3,6 +3,10 @@ layout: post
 title:  "Consistent Hashing in Action"
 date:   2024-05-27 12:30:00 +0800
 categories: 基础理论
+tags:
+  - Consistent Hashing
+  - 基础理论
+
 ---
 
 * Do not remove this line (it will not be displayed)

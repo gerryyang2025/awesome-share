@@ -3,6 +3,9 @@ layout: post
 title:  "The Basic Principles of Computers"
 date:   2020-01-30 08:33:00 +0800
 categories: CPU
+tags:
+  - CPU
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -24,7 +27,6 @@ categories: CPU
 
 
 
-  
 
-	
-	
+
+

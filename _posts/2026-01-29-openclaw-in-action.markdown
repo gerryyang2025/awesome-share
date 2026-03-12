@@ -3,6 +3,10 @@ layout: post
 title:  "OpenClaw - Personal AI Assistant"
 date:   2026-01-29 12:00:00 +0800
 categories: ML
+tags:
+  - OpenClaw
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -85,10 +89,16 @@ If you want the deeper reference pages, jump to: [Wizard](https://docs.molt.bot/
 
 TODO
 
-* 工作空间
-  + `~/.openclaw/workspace/` 目录
+## 工作空间
 
-* 核心文件
+OpenClaw 的工作空间是智能体运行时的唯一工作目录，它包含了定义智能体人格、行为准则和日常记忆的所有核心文件。默认位置：`~/.openclaw/workspace`。
+
+> 重要区分：工作空间（~/.openclaw/workspace）和 OpenClaw 的全局配置目录（~/.openclaw/）是两个不同的地方。后者存放着配置文件、密钥和会话记录，备份时两者都需要考虑。
+
+
+## 核心配置
+
+![openclaw69](/assets/images/202601/openclaw69.png)
 
 ``` bash
 ~/.openclaw/workspace/
@@ -104,9 +114,12 @@ TODO
 └── skills/         # 已安装的第三方技能扩展目录
 ```
 
-* 技能目录 (可自动识别的 skills)
-  + `~/.openclaw/skills/`，通过 clawhub 安装的技能，可自动识别
-  + ~/.openclaw/workspace/skills/，用户手动生成存放的技能，需要通过
+## 技能树 (可自动识别的 skills)
+
+不同目录：
+
+* `~/.openclaw/skills/`，通过 clawhub 安装的技能，可自动识别
+* ~/.openclaw/workspace/skills/，用户手动生成存放的技能，需要通过
 
 ``` bash
 # 查看 OpenClaw 技能安装目录
@@ -117,9 +130,7 @@ ls ~/.local/share/pnpm/global/5/.pnpm/openclaw@*/node_modules/openclaw/skills/
 
 
 
-## 核心配置
 
-![openclaw69](/assets/images/202601/openclaw69.png)
 
 
 

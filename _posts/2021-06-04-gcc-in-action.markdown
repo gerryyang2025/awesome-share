@@ -3,6 +3,9 @@ layout: post
 title:  "GCC in Action"
 date:   2021-06-04 08:00:00 +0800
 categories: [GCC/Clang]
+tags:
+  - GCC/Clang
+
 ---
 
 * Do not remove this line (it will not be displayed)

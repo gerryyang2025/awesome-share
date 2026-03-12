@@ -3,6 +3,9 @@ layout: post
 title:  "MySQL in Action"
 date:   2019-12-25 09:15:00 +0800
 categories: MySQL
+tags:
+  - MySQL
+
 ---
 
 * Do not remove this line (it will not be displayed)

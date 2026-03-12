@@ -3,6 +3,9 @@ layout: post
 title:  "School English Notes"
 date:   2026-01-17 12:30:00 +0800
 categories: 英语学习
+tags:
+  - 英语学习
+
 ---
 * Do not remove this line (it will not be displayed)
 {:toc}

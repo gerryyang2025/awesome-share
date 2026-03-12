@@ -3,6 +3,10 @@ layout: post
 title:  "GitHub 使用 SMS 登录失败且丢失 github-recovery-codes 的账户恢复方法"
 date:   2025-04-18 12:30:00 +0800
 categories: 版本控制
+tags:
+  - GitHub
+  - 版本控制
+
 ---
 
 * Do not remove this line (it will not be displayed)

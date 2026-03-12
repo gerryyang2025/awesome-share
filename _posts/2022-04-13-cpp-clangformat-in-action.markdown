@@ -3,6 +3,10 @@ layout: post
 title:  "CPP ClangFormat in Action"
 date:   2022-04-13 10:00:00 +0800
 categories: [C/C++]
+tags:
+  - CPP ClangFormat
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

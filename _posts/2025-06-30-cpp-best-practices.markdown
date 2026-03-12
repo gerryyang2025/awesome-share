@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Best Practices"
 date:   2025-06-30 20:30:00 +0800
 categories: [C/C++]
+tags:
+  - CPP Best Practices
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

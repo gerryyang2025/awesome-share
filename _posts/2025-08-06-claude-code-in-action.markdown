@@ -3,6 +3,10 @@ layout: post
 title:  "Claude Code in Action"
 date:   2025-08-06 12:30:00 +0800
 categories: ML
+tags:
+  - Claude Code
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)

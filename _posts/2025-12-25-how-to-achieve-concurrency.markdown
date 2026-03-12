@@ -3,6 +3,10 @@ layout: post
 title:  "How to Achieve Concurrency"
 date:   2025-12-25 08:30:00 +0800
 categories: [GoLang]
+tags:
+  - Go Concurrency
+  - GoLang
+
 ---
 
 * Do not remove this line (it will not be displayed)

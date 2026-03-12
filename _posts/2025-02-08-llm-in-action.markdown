@@ -3,6 +3,10 @@ layout: post
 title:  "LLM in Action"
 date:   2025-02-08 12:00:00 +0800
 categories: ML
+tags:
+  - LLM
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)

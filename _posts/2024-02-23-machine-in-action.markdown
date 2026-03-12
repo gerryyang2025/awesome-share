@@ -3,6 +3,9 @@ layout: post
 title:  "Machine Learning in Action"
 date:   2024-02-23 17:00:00 +0800
 categories: ML
+tags:
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)

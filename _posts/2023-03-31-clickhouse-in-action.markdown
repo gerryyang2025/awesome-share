@@ -3,6 +3,9 @@ layout: post
 title:  "ClickHouse in Action"
 date:   2023-03-31 12:30:00 +0800
 categories: ClickHouse
+tags:
+  - ClickHouse
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,9 @@ layout: post
 title:  "知识拼图：收集碎片，拼凑我的世界真相"
 date:   2022-08-16 20:30:00 +0800
 categories: 杂记
+tags:
+  - 杂记
+
 ---
 
 * Do not remove this line (it will not be displayed)

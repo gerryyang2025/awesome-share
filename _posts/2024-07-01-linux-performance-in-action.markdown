@@ -3,6 +3,9 @@ layout: post
 title:  "Linux Performance in Action"
 date:   2024-07-01 12:00:00 +0800
 categories: [Linux Performance]
+tags:
+  - Linux Performance
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,10 @@ layout: post
 title:  "HAProxy in Action"
 date:   2018-11-08 20:22:00 +0800
 categories: https
+tags:
+  - HAProxy
+  - https
+
 ---
 
 * Do not remove this line (it will not be displayed)

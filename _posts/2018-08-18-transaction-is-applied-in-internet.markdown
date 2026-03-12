@@ -3,6 +3,9 @@ layout: post
 title:  "事务在互联网场景中的应用"
 date:   2018-08-18 14:08:00 +0800
 categories: 分布式
+tags:
+  - 分布式
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -143,13 +146,13 @@ COMMIT;
 `ACID`表示原子性，一致性，隔离性和持久性。一个运行良好的事务处理系统，必须具备这些标准特征。事务的ACID特性可以确保银行不会弄丢你的钱。
 
 ```
-1. 原子性（atomicity） 
+1. 原子性（atomicity）
 对于一个事务来说，不可能只执行其中一部分操作，这就是事务的原子性。
-2. 一致性（consistency） 
+2. 一致性（consistency）
 数据库总是从一个一致性的状态转换到另外一个一致性的状态。
-3. 隔离性（isolation） 
+3. 隔离性（isolation）
 通常来说（根据不同的隔离级别），一个事务所做的修改在最终提交以前，对其他事务是不可见的。
-4. 持久性（durability） 
+4. 持久性（durability）
 一旦事务提交，则其所做的修改就会永久保存在数据库中。
 ```
 
@@ -159,7 +162,7 @@ MySQL InnoDB存储引擎，实现的是基于多版本的并发控制协议`MVCC
 
 在MVCC并发控制中，读操作可以分成两类：`快照读` (snapshot read)与`当前读` (current read)。快照读，读取的是记录的可见版本 (有可能是历史版本)，不用加锁。当前读，读取的是记录的最新版本，并且，当前读返回的记录，都会加上锁，保证其他事务不会再并发修改这条记录。在一个支持MVCC并发控制的系统中，哪些读操作是快照读？哪些操作又是当前读呢？以MySQL InnoDB为例：
 
- 
+
 `快照读`：简单的select操作，属于快照读，不加锁。(当然，也有例外)
 ```
 select * from table where ?;
@@ -190,16 +193,16 @@ https://stackoverflow.com/tags/innodb/info
 
 在SQL标准中定义了`四种`隔离级别。每一种级别都规定了一个事务中所做的修改，哪些在事务内和事务间是可见的，哪些是不可见的。较低级别的隔离通常可以执行更高的并发，系统的开销也更低。每种存储引擎实现的隔离级别不尽相同，请查阅具体相关手册。
 
-1. `READ UNCOMMITTED`（未提交读） 
+1. `READ UNCOMMITTED`（未提交读）
 在此级别，事务中的修改即使没有提交，对其他事务也都是可见的，即，“赃读”。（实际应用中，很少使用）
 
-2. `READ COMMITTED`（提交读，不可重复读） 
+2. `READ COMMITTED`（提交读，不可重复读）
 大多数数据的默认隔离级别都是此级别（Oracle是，但MySQL不是）。此级别满足隔离性的简单定义：一个事务开始时，只能看见已经提交的事务所做的修改（或者，一个事务从开始直到提交之前，所做的任何修改对其他事务都是不可见的）。此级别，也称为“不可重复读”，因为两次执行同样的查询，可能会得到不一样的结果。此级别可以解决：`脏读`。
 
-3. `REPEATABLE READ`（可重复读） 
+3. `REPEATABLE READ`（可重复读）
 此级别保证了在同一个事务中，多次读取同样纪录的结果是一致的。此级别，是MySQL的默认事务隔离级别。此级别可以解决：`脏读`和`不可重复读`。
 
-4. `SERIALIZABLE`（可串行化） 
+4. `SERIALIZABLE`（可串行化）
 此级别是最高的隔离级别。它通过强制事务串行执行，避免了“幻读”的问题。此级别，会在读取的每一行数据上都加锁，所以可能导致大量的超时和锁争用的问题。（实际应用中也很少使用这个隔离级别，只有在非常需要确保数据的一致性而且可以接受没有并发的情况下，才考虑使用此级别）。此级别可以解决：`脏读`，`不可重复读`和`幻读`。
 
 | 隔离级别 | 功能
@@ -240,12 +243,12 @@ set global transaction isolation level repeatable read | serializable | ...;
 set autocommit=off 或者 start transaction
 ```
 
-例子： 
+例子：
 
 ```
 START TRANSACTION;
-事务A：在整个执行阶段，会将某数据项的值从1开始，加1操作，直到变成10之后进行事务提交。 
-事务B：查看此数据项的值，请问在不同的隔离级别下看到的值是多少？ 
+事务A：在整个执行阶段，会将某数据项的值从1开始，加1操作，直到变成10之后进行事务提交。
+事务B：查看此数据项的值，请问在不同的隔离级别下看到的值是多少？
 事务C：执行和事务A类似的操作，将此数据项从10累加到20，然后进行提交。
 COMMIT;
 ```
@@ -356,7 +359,7 @@ MySQL XA**事务状态**变化：(详见[XA Transaction States])
 
 1. 使用`XA START`启动一个XA事务，并把它置为**ACTIVE状态**。
 2. 对一个ACTIVE XA事务，发布构成事务的SQL语句，然后发布一个`XA END`语句，`XA END`把事务置为**IDLE状态**。
-3. 对一个IDLE XA事务， 发布一个`XA PREPARE`语句。把事务置为**PREPARE状态**，此时XA RECOVER 语句的输出包含事务的xid值(XA RECOVER语句会列出所有处于PREPARE状态的XA事务)。 
+3. 对一个IDLE XA事务， 发布一个`XA PREPARE`语句。把事务置为**PREPARE状态**，此时XA RECOVER 语句的输出包含事务的xid值(XA RECOVER语句会列出所有处于PREPARE状态的XA事务)。
 4. 对一个PREPARE XA事务，可以发布一个`XA COMMIT`语句来提交和终止事务，或者发布一个`XA ROLLBACK`来回滚并终止事务。
 
 下面是`XA Transaction SQL Syntax`的一些用法，其中`xid`，即全局唯一事务ID通常是由`Transaction Manager`生成。
@@ -406,13 +409,13 @@ set session transaction isolation level SERIALIZABLE;
 
 ## TCC
 
-`Tentative Operation`也称为`Try-Confirm-Cancel`，最早由[Atomikos]提出。 
+`Tentative Operation`也称为`Try-Confirm-Cancel`，最早由[Atomikos]提出。
 
 Pat helland在2007年也发表了一篇相同观点的文章[Life beyond Distributed Transactions: an Apostate’s Opinion]，考虑在无限扩展的应用场景下，业务层不应该关心底层扩展所带来的问题，应该由统一的平台或者框架来屏蔽底层扩展所带来的差异。并提出了一种`Performing Tentative(不确定的) Business Operations`处理流程(**workflow**)，即`TCC流程`(**Tentative Operations, Confirmation, and Cancellation**)，来减少分布式场景可能导致的不一致(**uncertainty**)问题。
 
 ![2007_scale_agnostic](/assets/images/201808/2007_scale_agnostic.png)
 
-``` 
+```
 To reach an agreement across entities, one entity has to ask another to accept some uncertainty. This is done by sending a message which requests a commitment but leaves open the possibility of cancellation. This is called a tentative operation and it represented by a message
 flowing between two entities. At the end of this step, one of the entities agrees to abide by the wishes of the other.
 ```
@@ -536,7 +539,7 @@ Seata Community
 
 ![seata](/assets/images/201808/seata.png)
 
-**Fescar定义3个组件来协调分布式事务的处理过程：** 
+**Fescar定义3个组件来协调分布式事务的处理过程：**
 
 * Transaction Coordinator (TC)：事务协调器，维护全局事务的运行状态，负责协调并驱动全局事务的提交或回滚。
 * Transaction Manager (TM)：控制全局事务的边界，负责开启一个全局事务，并最终发起全局提交或全局回滚的决议。
@@ -574,7 +577,7 @@ Seata Community
 Evolution from the two phases commit protocol:
 
 Phase 1：commit business data and rollback log in the same local transaction, then release local lock and connection resources.
-Phase 2：for commit case, do the work asynchronously and quickly. 
+Phase 2：for commit case, do the work asynchronously and quickly.
          for rollback case, do compensation, base on the rollback log created in the phase 1.
 ```
 
@@ -640,7 +643,7 @@ XA的原生支持。(TBD)
 
 1. 高性能(XA有性能问题)。
 2. 易用性(减少入侵)。
-3. 强一致(最终一致业务受限多)。 
+3. 强一致(最终一致业务受限多)。
 
 关于GTS的几个问题：
 

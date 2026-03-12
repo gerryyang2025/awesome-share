@@ -3,6 +3,9 @@ layout: post
 title:  "Nginx in Action"
 date:   2021-09-07 20:00:00 +0800
 categories: Nginx
+tags:
+  - Nginx
+
 ---
 
 * Do not remove this line (it will not be displayed)

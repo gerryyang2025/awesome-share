@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Calling Conventions (函数调用约定)"
 date:   2025-01-15 12:30:00 +0800
 categories: [C/C++]
+tags:
+  - CPP Calling Conventions
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

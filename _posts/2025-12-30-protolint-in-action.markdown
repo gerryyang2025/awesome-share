@@ -3,6 +3,10 @@ layout: post
 title:  "Protolint in Action"
 date:   2025-12-30 08:00:00 +0800
 categories: [Protocol Buffers,]
+tags:
+  - Protolint
+  - Protocol Buffers
+
 ---
 
 * Do not remove this line (it will not be displayed)

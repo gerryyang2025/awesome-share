@@ -3,6 +3,9 @@ layout: post
 title:  "Redis 5.0.0 in Action"
 date:   2018-10-23 13:00:00 +0800
 categories: Redis
+tags:
+  - Redis
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -24,7 +27,7 @@ categories: Redis
 | memcached | 使用内存存储的键值缓存 | 键值之间的映射 | 创建命令、读取命令、更新命令、删除命令以及其他几个命令 | 为提升性能而设的多线程服务器
 | MySQL | 关系数据库 | 每个数据库可以包含多个表，每个表可以包含多个行，可以处理多个表的视图(view)，支持空间(spatial)和第三方扩展 | SELECT, INSERT, UPDATE, DELETE, 函数, 存储过程 | 支持ACID性质(需要使用InnoDB)，主从复制，主主复制
 | PostgreSQL | 关系数据库 | 基本同MySQL | 基本同MySQL | 支持ACID性质，主从复制，由第三方支持的多主复制
-| MongoDB| 使用硬盘存储(on-disk)的非关系文档存储 | 每个数据库可以包含多个表，每个表可以包含多个schema-less的BSON文档 | 创建命令，读取命令，更新命令，删除命令，条件查询命令等 | 支持map-reduce操作，主从复制，分片，空间索引(spatial index) 
+| MongoDB| 使用硬盘存储(on-disk)的非关系文档存储 | 每个数据库可以包含多个表，每个表可以包含多个schema-less的BSON文档 | 创建命令，读取命令，更新命令，删除命令，条件查询命令等 | 支持map-reduce操作，主从复制，分片，空间索引(spatial index)
 
 Redis是一个支持网络，以键值对的形式存储数据，可基于内存亦可持久性的开源数据库。从数据库的类型分类来说，Redis有别于传统关系型数据库(如Oracle，MySQL)的表结构，也与其他NoSQL(如Neo4j，MongoDB等)有本质的区别。常与Redis进行比较的数据库是Memcached，两者都是存储键值对，但在底层实现上却有较大的不同。
 
@@ -113,13 +116,13 @@ redis-cli shutdown
 | src | contains the Redis implementation, written in `C`
 | tests | contains the unit tests, implemented in `Tcl`
 | deps | contains libraries Redis uses
-| utils | 
+| utils |
 | some files | Makefile/README.md/redis.conf/sentinel.conf/...
 
 关于deps目录的补充说明：
 
-* Everything needed to compile Redis is inside this directory; your system just needs to provide `libc`, `a POSIX compatible interface` and `a C compiler`. 
-* Notably **deps** contains a copy of `jemalloc`, which is the default allocator of Redis under Linux. 
+* Everything needed to compile Redis is inside this directory; your system just needs to provide `libc`, `a POSIX compatible interface` and `a C compiler`.
+* Notably **deps** contains a copy of `jemalloc`, which is the default allocator of Redis under Linux.
 * Note that under deps there are also things which started with the Redis project, but for which the main repository is not antirez/redis. An exception to this rule is deps/geohash-int which is the low level geocoding library used by Redis: it originated from a different project, but at this point it diverged so much that it is developed as a separated entity directly inside the Redis repository.
 
 ## src/server.h
@@ -204,7 +207,7 @@ typedef struct dict {
 list *clients;              /* List of active clients */
 ```
 
-### server.master 
+### server.master
 
 a special client, the master, if the instance is a replica.
 
@@ -551,7 +554,7 @@ Redis最简单的一种值类型，可以用来存储一个网页，或者存储
 | SET $key $value xx | 如果key已经存在，允许覆盖
 
 ```
-./redis-cli       
+./redis-cli
 127.0.0.1:6379> set mykey
 (error) ERR wrong number of arguments for 'set' command
 127.0.0.1:6379> set mykey value
@@ -576,10 +579,10 @@ OK
 
 | 命令 | 含义 | 应用场景
 | -- | -- | --
-| incr | 加 1 | 
+| incr | 加 1 |
 | incrby | 加 $n |
-| decr | 减 1 | 
-| decrby | 减 $n | 
+| decr | 减 1 |
+| decrby | 减 $n |
 | getset | 设置新值，并返回老值 | 比如，按周期统计
 
 
@@ -847,7 +850,7 @@ Redis的集合，以`无序`的方式来存储多个`不同的元素`。
 | zrem key-name member [member ...] | 从有序集合里移除给定的成员，并返回被移除成员的数量
 | zcard key-name | 返回有序集合包含的成员数量
 | zincrby key-name increment member | 将member成员的分值加上increment
-| zcount key-name min max | 返回分值介于min和max之间的成员数量 
+| zcount key-name min max | 返回分值介于min和max之间的成员数量
 | zrank key-name member | 返回成员member在有序集合中的排名
 | zscore key-name member | 返回成员member的分值
 | zrange key-name start stop [withscores] | 返回有序集合中排名介于start和stop之间的成员，如果给定了可选的withscores选项，那么命令会将成员的分值也一并返回
@@ -969,7 +972,7 @@ Bitmaps are not an actual data type, but a set of bit-oriented operations define
 
 问题：记录unique元素的功能，对存储空间要求较高。
 
-Usually counting unique items requires using an amount of memory proportional to the number of items you want to count, because you need to remember the elements you have already seen in the past in order to avoid counting them multiple times. 
+Usually counting unique items requires using an amount of memory proportional to the number of items you want to count, because you need to remember the elements you have already seen in the past in order to avoid counting them multiple times.
 
 解决方案：
 
@@ -1067,7 +1070,7 @@ Redis uses the same Lua interpreter to run all the commands. Also Redis guarante
 However this also means that executing slow scripts is not a good idea. It is not hard to create fast scripts, as the script overhead is very low, but if you are going to use slow scripts you should be aware that while the script is running no other client can execute commands.
 ```
 
-refer: 
+refer:
 
 * [transaction](https://redisbook.readthedocs.io/en/latest/feature/transaction.html)
 * [官方- Transactions](https://redis.io/topics/transactions)

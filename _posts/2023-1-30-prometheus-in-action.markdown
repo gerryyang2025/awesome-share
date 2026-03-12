@@ -3,6 +3,10 @@ layout: post
 title:  "Prometheus in Action"
 date:   2023-1-30 20:00:00 +0800
 categories: 云原生
+tags:
+  - Prometheus
+  - 云原生
+
 ---
 
 * Do not remove this line (it will not be displayed)

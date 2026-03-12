@@ -3,6 +3,10 @@ layout: post
 title:  "MongoDB in Action"
 date:   2025-03-12 12:30:00 +0800
 categories: 数据库
+tags:
+  - MongoDB
+  - 数据库
+
 ---
 
 * Do not remove this line (it will not be displayed)

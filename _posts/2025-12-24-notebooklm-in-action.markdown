@@ -3,6 +3,10 @@ layout: post
 title:  "NotebookLM in Action"
 date:   2025-12-24 08:30:00 +0800
 categories: ML
+tags:
+  - NotebookLM
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,9 @@ layout: post
 title:  "Scarlett话剧英语学习记录"
 date:   2018-11-08 19:55:00 +0800
 categories: 英语学习
+tags:
+  - 英语学习
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -20,7 +23,7 @@ categories: 英语学习
 | Bye | bye | Have a nice day 美好的一天
 | Please wait a minute | ok, no problem | Just take your time. 慢慢来
 | xxx | 认为对方说的很对 yes/right | Exactly/Tell me about it 就是啊
-| xxx | 当没听清对方需要别人重复时, Pardon | I'm sorry?/Excuse me? 通过升调表疑问语气，自然且地道  
+| xxx | 当没听清对方需要别人重复时, Pardon | I'm sorry?/Excuse me? 通过升调表疑问语气，自然且地道
 
 # 2019-04-13
 
@@ -30,7 +33,7 @@ Teacher: Kayli & Diya
 
 关键单词:
 
-* Farm Animals (dogs/ducks/rabbits/frog/squirrel/birds/pig) 
+* Farm Animals (dogs/ducks/rabbits/frog/squirrel/birds/pig)
 * elephant/kangaroo/monkey/penguin/snake/polar bear
 
 课堂目标:
@@ -49,7 +52,7 @@ Teacher: Kayli & Diya
 * 重点学习歌曲`Let's go to the zoo`
 * 画图农场。
 
-功课: 
+功课:
 * 反复听歌曲，熟悉音准和听力。
 * 下周会涉及让孩子根据歌词意思编舞，循序渐进能表演完整的歌曲。
 
@@ -76,7 +79,7 @@ Key Gestures
 
 ```
 Stomp like elephants !
-Let's go 
+Let's go
 And stomp like the elephants do.
 Let's go to the zoo.
 And stomp like the elephants do.
@@ -93,7 +96,7 @@ Swing like monkeys.
 Let's go to the zoo.
 And swing like the monkeys do.
 [Pretend to swing from a tree]
-Let's go to the zoo. 
+Let's go to the zoo.
 And swing like the monkeys do.
 [Swing around the room like monkeys]
 
@@ -322,10 +325,10 @@ what do you want? I want cars. 5 yuan, thank you.
 
 Scarlett今天很主动，除了中途别的孩子练习的时候会不够专注之外，在每个活动中都非常积极。很多次都第一个举手根老师说"Let my try"。单词记忆还需要回家多练习。
 
-	
+
 # 2018-10-20
 
-Teacher: Cristal 
+Teacher: Cristal
 Assistent: Diya (迪亚)
 
 ## 学习内容
@@ -347,7 +350,7 @@ Assistent: Diya (迪亚)
 
 # 2018-10-13
 
-Teacher: Cristal 
+Teacher: Cristal
 Assistent: Diya (迪亚)
 
 ## 学习内容
@@ -381,7 +384,7 @@ Scarlett今天特别积极，当老师问谁要上台写字的时候立刻举手
 
 # 2018-09-22
 
-Teacher: Cristal 
+Teacher: Cristal
 Assistent: Diya (迪亚)
 
 ## 学习内容
@@ -410,7 +413,7 @@ Assistent: Diya (迪亚)
 
 # 2018-09-15
 
-Teacher: Cristal 
+Teacher: Cristal
 Assistent: Diya (迪亚)
 
 ## 学习内容
@@ -438,7 +441,7 @@ Assistent: Diya (迪亚)
 
 # 2018-09-08
 
-Teacher: Cristal 
+Teacher: Cristal
 Assistent: Diya (迪亚)
 
 ## 学习内容

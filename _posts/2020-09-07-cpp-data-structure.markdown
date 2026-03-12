@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Data Structure"
 date:   2020-09-07 08:00:00 +0800
 categories: [C/C++]
+tags:
+  - Data Structure
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

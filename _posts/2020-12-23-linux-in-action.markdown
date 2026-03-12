@@ -3,6 +3,9 @@ layout: post
 title:  "Linux in Action"
 date:   2021-01-02 17:00:00 +0800
 categories: Linux
+tags:
+  - Linux
+
 ---
 
 * Do not remove this line (it will not be displayed)

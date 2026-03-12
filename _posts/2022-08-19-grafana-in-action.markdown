@@ -3,6 +3,10 @@ layout: post
 title:  "Grafana in Action"
 date:   2022-08-19 12:30:00 +0800
 categories: Tools
+tags:
+  - Grafana
+  - Tools
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,9 @@ layout: post
 title:  "CPP Virtual Method Table"
 date:   2021-10-24 12:00:00 +0800
 categories: [C/C++]
+tags:
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

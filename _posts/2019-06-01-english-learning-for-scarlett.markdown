@@ -3,6 +3,9 @@ layout: post
 title:  "English Learning for Scarlett"
 date:   2023-09-17 15:00:00 +0800
 categories: 英语学习
+tags:
+  - 英语学习
+
 ---
 
 * Do not remove this line (it will not be displayed)

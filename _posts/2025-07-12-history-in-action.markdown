@@ -3,6 +3,10 @@ layout: post
 title:  "中国通史 (History of China)"
 date:   2025-07-12 12:00:00 +0800
 categories: 杂记
+tags:
+  - 中国通史
+  - 杂记
+
 ---
 
 * Do not remove this line (it will not be displayed)

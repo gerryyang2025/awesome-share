@@ -3,6 +3,9 @@ layout: post
 title:  "一致性共识算法在互联网场景中的应用"
 date:   2018-08-25 23:30:00 +0800
 categories: 分布式
+tags:
+  - 分布式
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -22,7 +25,7 @@ Google, LADIS 2009报告称：**硬件的不可靠性，必须从软件层面解
 
 [分布式系统的事务处理]的文章，讲述了常见的处理一致性问题的方法。一致性的问题主要来源于：
 
-1. 一台服务器的性能不足以提供足够的能力服务于所有的网络请求。     -- 需要扩容，解决性能问题  
+1. 一台服务器的性能不足以提供足够的能力服务于所有的网络请求。     -- 需要扩容，解决性能问题
 2. 我们总是害怕我们的这台服务器停机，造成服务不可用或是数据丢失。 -- 需要扩容，解决单点问题
 
 因此，通常的做法是：
@@ -149,7 +152,7 @@ FLP 原理实际上说明对于允许节点失效情况下，纯粹异步系统�
 
 More：
 
-* [The Raft Consensus Algorithm] 
+* [The Raft Consensus Algorithm]
 * [寻找一种易于理解的一致性算法（扩展版）]
 * [Raft: Understandable Distributed Consensus]
 

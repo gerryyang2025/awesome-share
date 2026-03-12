@@ -3,6 +3,10 @@ layout: post
 title:  "Abseil in Action"
 date:   2022-08-07 18:30:00 +0800
 categories: [C/C++]
+tags:
+  - Abseil
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

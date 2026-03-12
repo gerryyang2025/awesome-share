@@ -3,6 +3,10 @@ layout: post
 title:  "如何科学的上网"
 date:   2018-08-01 23:25:00 +0800
 categories: 杂记
+tags:
+  - 如何科学的上网
+  - 杂记
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -62,12 +66,12 @@ refer: [Create a SOCKS5 Proxy Server with Shadowsocks on Ubuntu and CentOS 7](ht
 
 ## 付费服务
 
-* [devpn.live](https://devpn.live/)  
+* [devpn.live](https://devpn.live/)
 
 [我的推广链接](https://goen.win/mygki8)
 
 
-* [云梯](https://yunti-16.xyz/index.html) 
+* [云梯](https://yunti-16.xyz/index.html)
 	- 主站：www.yuntiss.top
 	- 备用站：www.yuntiss.site
 

@@ -3,6 +3,10 @@ layout: post
 title:  "AI Hardware in Action"
 date:   2025-10-30 21:30:00 +0800
 categories: ML
+tags:
+  - AI Hardware
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -26,7 +30,7 @@ categories: ML
     - 更少的执行单元（ALU: 算术逻辑单元）- **因为 CPU 的核数有限，过多的 ALU 也使用不了**
     - 更高的时钟速度（频率）
   + **低时延访问**
-  + 最新 CPU 引入更多的并行 
+  + 最新 CPU 引入更多的并行
   + 组成
     - Control: 控制器
     - Cache: L1/L2/L3 缓存
@@ -151,7 +155,7 @@ AI Agent (人工智能代理) 是具备环境感知，自主决策与行动执�
 | 图形处理器 (GPU / GPGPU) | Nvidia / AMD | 1. 中大模块，中大数据集 2. 向量计算 (浮点 + 整型，用于图形，视频处理) 为主 + 矩阵计算 3. 基于 CUDA 或者 OpenCL 框架的应用
 | 神经网络处理器 (TPU / NPU) | Huawei / Google / Habana | 1. 矩阵计算为主 + 稠密向量计算 2. 基于 TensorFlow，Pytorch 框架
 | 现场可编程门阵列 (FPGA) | Xilinx (AMD) / Altera (Intel) | 1. 中大模块，中大数据集 2. 计算密集应用 3. 高性能，高能效 4. 基础软件 (驱动，微码)适配
-| 特定应用集成电路 (ASIC) | 众多厂商 | 1. 高度计算密集特定算法，算子 2. 性能和能效最高 3. 基础软件适配 
+| 特定应用集成电路 (ASIC) | 众多厂商 | 1. 高度计算密集特定算法，算子 2. 性能和能效最高 3. 基础软件适配
 
 * FPGA: Field Programmable Gate Array
 * ASIC: Application Sepcific Integrated Circuit

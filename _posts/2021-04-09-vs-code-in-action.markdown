@@ -3,6 +3,9 @@ layout: post
 title:  "VS Code in Action"
 date:   2021-04-09 08:00:00 +0800
 categories: [VS Code,]
+tags:
+  - VS Code
+
 ---
 
 * Do not remove this line (it will not be displayed)

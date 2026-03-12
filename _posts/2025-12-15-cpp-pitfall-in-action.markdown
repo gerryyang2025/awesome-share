@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Pitfall in Action"
 date:   2025-12-15 08:30:00 +0800
 categories: [C/C++]
+tags:
+  - CPP Pitfall
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

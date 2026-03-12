@@ -3,6 +3,9 @@ layout: post
 title:  "CPP Unit Testing Framework"
 date:   2021-12-12 20:00:00 +0800
 categories: [C/C++]
+tags:
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

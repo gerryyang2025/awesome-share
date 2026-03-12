@@ -3,6 +3,10 @@ layout: post
 title:  "MCP in Action"
 date:   2025-04-13 20:00:00 +0800
 categories: ML
+tags:
+  - MCP
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,10 @@ layout: post
 title:  "SVN in Action"
 date:   2021-03-20 20:00:00 +0800
 categories: 版本控制
+tags:
+  - SVN
+  - 版本控制
+
 ---
 
 * Do not remove this line (it will not be displayed)

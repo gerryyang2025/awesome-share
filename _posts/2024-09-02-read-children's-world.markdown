@@ -3,6 +3,10 @@ layout: post
 title:  "读懂孩子的世界"
 date:   2024-09-02 08:30:00 +0800
 categories: 杂记
+tags:
+  - 读懂孩子的世界
+  - 杂记
+
 ---
 
 * Do not remove this line (it will not be displayed)

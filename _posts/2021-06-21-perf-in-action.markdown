@@ -3,6 +3,10 @@ layout: post
 title:  "Perf in Action"
 date:   2021-06-21 12:00:00 +0800
 categories: [Linux Performance]
+tags:
+  - Perf
+  - Linux Performance
+
 ---
 
 * Do not remove this line (it will not be displayed)

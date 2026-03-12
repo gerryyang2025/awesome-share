@@ -3,6 +3,10 @@ layout: post
 title: "My App in Action"
 date:   2025-03-16 01:38:00 +0800
 categories: ML
+tags:
+  - My App
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)

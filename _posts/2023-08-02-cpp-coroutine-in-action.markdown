@@ -3,6 +3,10 @@ layout: post
 title:  "C++ Coroutine in Action"
 date:   2023-08-02 12:30:00 +0800
 categories: [C/C++]
+tags:
+  - C++ Coroutine
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

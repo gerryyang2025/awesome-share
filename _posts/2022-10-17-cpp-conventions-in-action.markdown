@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Conventions in Action"
 date:   2025-07-14 12:00:00 +0800
 categories: [C/C++]
+tags:
+  - CPP Conventions
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,10 @@ layout: post
 title:  "Regular Expressions in Action"
 date:   2020-08-07 11:00:00 +0800
 categories: 编程语言
+tags:
+  - Regular Expressions
+  - 编程语言
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -33,14 +37,13 @@ categories: 编程语言
 ^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$
 ```
 
-refer: 
+refer:
 
 * [Regular Expressions Cookbook - 7.16. Matching IPv4 Addresses](https://www.oreilly.com/library/view/regular-expressions-cookbook/9780596802837/ch07s16.html)
 
 
 
 
-  
 
-	
-	
+
+

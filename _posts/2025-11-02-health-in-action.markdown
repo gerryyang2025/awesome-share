@@ -3,6 +3,9 @@ layout: post
 title:  "健康之道"
 date:   2025-11-02 21:00:00 +0800
 categories: 杂记
+tags:
+  - 杂记
+
 ---
 
 * Do not remove this line (it will not be displayed)

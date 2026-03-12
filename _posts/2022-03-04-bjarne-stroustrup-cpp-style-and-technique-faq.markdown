@@ -3,12 +3,15 @@ layout: post
 title:  "Bjarne Stroustrup's C++ Style and Technique FAQ (Reading)"
 date:   2022-03-04 20:35:00 +0800
 categories: [C/C++]
+tags:
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)
 {:toc}
 
-These are questions about C++ Style and Technique that people ask me often. 
+These are questions about C++ Style and Technique that people ask me often.
 
 For more general questions, see my [general FAQ](https://www.stroustrup.com/bs_faq.html).
 
@@ -400,7 +403,7 @@ struct Point {
 };
 
 Point p1(1,2);
-Point p2 = p1;	
+Point p2 = p1;
 ```
 
 Here we get `p2.x==p1.x` and `p2.y==p1.y`. That's often exactly what you want (and essential for C compatibility), but consider:
@@ -518,7 +521,7 @@ protected:	// common data (for implementers of Shapes)
 };
 
 class Circle : public Shape {
-public:	
+public:
 	void draw() const;
 	void rotate(int) { }
 	// ...
@@ -528,7 +531,7 @@ protected:
 };
 
 class Triangle : public Shape {
-public:	
+public:
 	void draw() const;
 	void rotate(int);
 	// ...
@@ -563,7 +566,7 @@ public:		// interface to users of Shapes
 };
 
 class Circle : public Shape {
-public:	
+public:
 	void draw() const;
 	void rotate(int) { }
 	Point center() const { return cent; }
@@ -576,7 +579,7 @@ protected:
 };
 
 class Triangle : public Shape {
-public:	
+public:
 	void draw() const;
 	void rotate(int);
 	Point center() const;
@@ -607,9 +610,9 @@ struct Common {
 	Color col;
 	// ...
 };
-	
+
 class Circle : public Shape, protected Common {
-public:	
+public:
 	void draw() const;
 	void rotate(int) { }
 	Point center() const { return cent; }
@@ -620,7 +623,7 @@ protected:
 };
 
 class Triangle : public Shape, protected Common {
-public:	
+public:
 	void draw() const;
 	void rotate(int);
 	Point center() const;
@@ -755,7 +758,7 @@ public:
 
 void Base::f() { std::cout << "Base::f()\n"; }
 
-class Derived : public Base 
+class Derived : public Base
 {
 public:
 	void f();
@@ -765,13 +768,13 @@ void Derived::f() { std::cout << "Derived::f()\n"; }
 
 int main()
 {
-    Derived d;  
+    Derived d;
     d.f();  // Derived::f()
 
     Base* pb = new Derived();
     pb->f();  // Derived::f()
 
-    pb->Base::f(); // Base::f() 
+    pb->Base::f(); // Base::f()
 }
 ```
 
@@ -1028,7 +1031,7 @@ void compute(cmplx z, double d)
 
 	cmplx& z3 = *new cmplx(z+d);	// Java style (assuming Java could overload +)
 	z3 = f(z3);
-	delete &z3;	
+	delete &z3;
 }
 ```
 
@@ -1059,7 +1062,7 @@ see: https://www.stroustrup.com/bs_faq2.html#constraints
 
 ## Why can't I assign a vector<Apple*> to a vector<Fruit*>?
 
-Because that would open a hole in the type system. 
+Because that would open a hole in the type system.
 
 see: https://www.stroustrup.com/bs_faq2.html#conversion
 
@@ -1136,7 +1139,7 @@ void f(vector<int>& v)
 	Sum s = 0;	// initial value 0
 	s = for_each(v.begin(), v.end(), s);	// gather the sum of all elements
 	cout << "the sum is " << s << "\n";
-	
+
 	// or even:
 	cout << "the sum is " << for_each(v.begin(), v.end(), Sum(0)) << "\n";
 }
@@ -1167,7 +1170,7 @@ Function objects are extensively used to provide flexibility in the standard lib
 template< class InputIt, class UnaryFunction >
 UnaryFunction for_each( InputIt first, InputIt last, UnaryFunction f );
 
-/* 
+/*
 f	-	function object, to be applied to the result of dereferencing every iterator in the range [first, last)
         The signature of the function should be equivalent to the following:
 		void fun(const Type &a);
@@ -1342,7 +1345,6 @@ vector<Any> v;
 
 
 
-  
 
-	
-	
+
+

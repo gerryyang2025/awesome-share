@@ -3,6 +3,9 @@ layout: post
 title:  "Pithy Wisdom: Go Proverbs for Philosophy and Pedagogy"
 date:   2025-12-24 12:30:00 +0800
 categories: [GoLang]
+tags:
+  - GoLang
+
 ---
 
 * Do not remove this line (it will not be displayed)

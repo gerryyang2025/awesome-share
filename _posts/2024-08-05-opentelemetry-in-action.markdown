@@ -3,6 +3,10 @@ layout: post
 title:  "OpenTelemetry in Action"
 date:   2024-08-05 20:00:00 +0800
 categories: 云原生
+tags:
+  - OpenTelemetry
+  - 云原生
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,10 @@ layout: post
 title:  "Specification-Driven Development (SDD) in Action"
 date:   2025-11-25 18:00:00 +0800
 categories: ML
+tags:
+  - Machine Learning
+  - SDD
+
 ---
 
 * Do not remove this line (it will not be displayed)

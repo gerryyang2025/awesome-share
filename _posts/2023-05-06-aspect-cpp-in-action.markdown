@@ -3,6 +3,10 @@ layout: post
 title:  "AspectC++ in Action"
 date:   2023-05-06 09:30:00 +0800
 categories: C/C++
+tags:
+  - AspectC++
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,9 @@ layout: post
 title:  "诗针词线：在庸常的褶痕里临水照见微光"
 date:   2025-11-12 08:30:00 +0800
 categories: 杂记
+tags:
+  - 杂记
+
 ---
 
 * Do not remove this line (it will not be displayed)

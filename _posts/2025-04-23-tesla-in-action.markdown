@@ -3,6 +3,10 @@ layout: post
 title:  "Tesla in Action"
 date:   2025-04-23 12:00:00 +0800
 categories: 杂记
+tags:
+  - Tesla
+  - 杂记
+
 ---
 
 * Do not remove this line (it will not be displayed)

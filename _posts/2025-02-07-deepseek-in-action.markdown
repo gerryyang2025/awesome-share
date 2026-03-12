@@ -3,6 +3,10 @@ layout: post
 title:  "DeepSeek in Action"
 date:   2025-02-07 12:00:00 +0800
 categories: ML
+tags:
+  - DeepSeek
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)

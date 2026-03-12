@@ -3,6 +3,10 @@ layout: post
 title:  "Concurrency in CPP"
 date:   2020-09-09 08:00:00 +0800
 categories: [C/C++]
+tags:
+  - Concurrency
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

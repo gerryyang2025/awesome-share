@@ -3,6 +3,9 @@ layout: post
 title:  "吉他入门"
 date:   2018-09-03 22:00:00 +0800
 categories: 杂记
+tags:
+  - 杂记
+
 ---
 
 * Do not remove this line (it will not be displayed)

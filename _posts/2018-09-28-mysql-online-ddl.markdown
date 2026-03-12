@@ -3,6 +3,9 @@ layout: post
 title:  "MySQL online DDL原理"
 date:   2018-09-28 09:15:00 +0800
 categories: MySQL
+tags:
+  - MySQL
+
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -31,17 +34,17 @@ MySQL online DDL(Data Definition Language)主要解决的问题是，满足在�
 ## MySQL 5.7 online DDL
 
 ``` sql
-ALTER TABLE testdb.testtable ADD COLUMN _new_column 
+ALTER TABLE testdb.testtable ADD COLUMN _new_column
 ALGORITHM = inplace,LOCK = default;
 ```
 
 `ALGORITHM`子句用来指定执行DDL所采用的方式，取值为`{DEFAULT|INPLACE|COPY}`
 
-* ALGORITHM = COPY  
+* ALGORITHM = COPY
 	+ 执行DDL的过程中采用表拷贝的方式进行，过程中会阻塞所有的DML
-* ALGORITHM = INPLACE 
+* ALGORITHM = INPLACE
 	+ 执行DDL的过程中不发生表拷贝，过程中允许并发执行DML
-* ALGORITHM = DEFAULT 
+* ALGORITHM = DEFAULT
 	+ 默认选项，MYSQL会自动选择最优的执行方式，原则是尽量保证DML的并发操作
 
 
@@ -65,8 +68,8 @@ ALGORITHM = inplace,LOCK = default;
 依然存在的问题：
 
 * 在原表中仍然存在排他锁，有锁等待的风险
-* 增量日志大小是有限制的 (innodb_online_alter_log_max_size) 
-* 有可能造成较大的主备延迟 (Bug#73196) 
+* 增量日志大小是有限制的 (innodb_online_alter_log_max_size)
+* 有可能造成较大的主备延迟 (Bug#73196)
 * 无法暂停
 
 ## PT-OLINE-SCHEMA-CHANGE
@@ -84,7 +87,7 @@ ALGORITHM = inplace,LOCK = default;
 4. 将旧表的数据拷贝到新表中，同时通过触发器将旧表中的操作映射到新表
 5. 如果原表有外键约束，处理外键
 6. 原表重命名为old表，new表重命名为原表，整个过程为原子操作
-7. 删除old表(默认) 
+7. 删除old表(默认)
 
 ## GH-OST
 

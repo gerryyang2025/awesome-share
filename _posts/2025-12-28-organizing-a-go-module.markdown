@@ -3,6 +3,10 @@ layout: post
 title:  "Organizing a Go module"
 date:   2025-12-28 12:00:00 +0800
 categories: [GoLang]
+tags:
+  - Go module
+  - GoLang
+
 ---
 
 * Do not remove this line (it will not be displayed)

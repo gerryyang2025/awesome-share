@@ -3,6 +3,10 @@ layout: post
 title:  "Agentic Design Patterns Reading (智能体设计模式)"
 date:   2025-10-15 12:30:00 +0800
 categories: ML
+tags:
+  - Agentic
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)

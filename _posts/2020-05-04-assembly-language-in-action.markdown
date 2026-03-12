@@ -3,6 +3,9 @@ layout: post
 title:  "Assembly Language in Action"
 date:   2020-05-04 08:00:00 +0800
 categories: [Assembly Language,]
+tags:
+  - Assembly Language
+
 ---
 
 * Do not remove this line (it will not be displayed)

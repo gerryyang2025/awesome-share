@@ -3,6 +3,9 @@ layout: post
 title:  "Game in Action"
 date:   2022-10-19 08:00:00 +0800
 categories: Game
+tags:
+  - Game
+
 ---
 
 * Do not remove this line (it will not be displayed)

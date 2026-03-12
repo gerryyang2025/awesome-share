@@ -3,6 +3,9 @@ layout: post
 title:  "Go in Action"
 date:   2019-04-14 10:00:00 +0800
 categories: [GoLang]
+tags:
+  - GoLang
+
 ---
 
 * Do not remove this line (it will not be displayed)

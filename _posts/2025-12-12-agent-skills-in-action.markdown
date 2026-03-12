@@ -3,6 +3,10 @@ layout: post
 title:  "Agent Skills in Action"
 date:   2025-12-12 12:30:00 +0800
 categories: ML
+tags:
+  - Agent Skills
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)

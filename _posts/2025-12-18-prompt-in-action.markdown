@@ -3,6 +3,10 @@ layout: post
 title:  "Prompt in Action"
 date:   2025-12-18 12:30:00 +0800
 categories: ML
+tags:
+  - Prompt
+  - Machine Learning
+
 ---
 
 * Do not remove this line (it will not be displayed)

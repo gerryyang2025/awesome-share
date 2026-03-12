@@ -3,6 +3,10 @@ layout: post
 title:  "CPP 数字安全计算"
 date:   2024-12-20 08:30:00 +0800
 categories: [C/C++]
+tags:
+  - CPP 数字安全计算
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

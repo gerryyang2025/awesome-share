@@ -3,6 +3,9 @@ layout: post
 title:  "开始新的学习和写作"
 date:   2018-08-01 23:25:00 +0800
 categories: 杂记
+tags:
+  - 杂记
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Memory Pool"
 date:   2022-05-27 12:00:00 +0800
 categories: [C/C++]
+tags:
+  - CPP Memory Pool
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

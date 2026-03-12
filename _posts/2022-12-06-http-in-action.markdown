@@ -3,6 +3,10 @@ layout: post
 title:  "HTTP in Action"
 date:   2022-12-06 12:00:00 +0800
 categories: [TCP/IP]
+tags:
+  - HTTP
+  - TCP/IP
+
 ---
 
 * Do not remove this line (it will not be displayed)

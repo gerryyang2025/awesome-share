@@ -3,6 +3,11 @@ layout: post
 title:  "Prometheus vs. VictoriaMetrics (VM)"
 date:   2024-09-13 12:00:00 +0800
 categories: 云原生
+tags:
+  - Prometheus
+  - VictoriaMetrics
+  - 云原生
+
 ---
 
 * Do not remove this line (it will not be displayed)

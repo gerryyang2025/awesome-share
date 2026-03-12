@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Memory Leak"
 date:   2023-07-13 12:30:00 +0800
 categories: [C/C++]
+tags:
+  - CPP Memory Leak
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

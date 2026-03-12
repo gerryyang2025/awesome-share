@@ -3,6 +3,10 @@ layout: post
 title:  "Using Go Modules"
 date:   2021-06-04 12:00:00 +0800
 categories: GoLang
+tags:
+  - Using Go Modules
+  - GoLang
+
 ---
 
 * Do not remove this line (it will not be displayed)

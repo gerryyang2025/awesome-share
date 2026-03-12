@@ -3,6 +3,10 @@ layout: post
 title:  "Vite in Action"
 date:   2025-10-21 08:00:00 +0800
 categories: Web
+tags:
+  - Vite
+  - Web
+
 ---
 
 * Do not remove this line (it will not be displayed)

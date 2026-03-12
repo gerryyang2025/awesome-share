@@ -3,6 +3,10 @@ layout: post
 title:  "AddressSanitizer (ASan) - A Fast Memory Error Detector"
 date:   2021-10-15 08:30:00 +0800
 categories: [Linux Performance]
+tags:
+  - AddressSanitizer
+  - Linux Performance
+
 ---
 
 * Do not remove this line (it will not be displayed)

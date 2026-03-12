@@ -3,6 +3,9 @@ layout: post
 title:  "Pulsar in Action"
 date:   2018-11-15 12:30:00 +0800
 categories: pulsar
+tags:
+  - Pulsar
+
 ---
 
 * Do not remove this line (it will not be displayed)

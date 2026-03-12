@@ -3,6 +3,10 @@ layout: post
 title:  "CMake in Action"
 date:   2020-12-13 11:30:00 +0800
 categories: [GCC/Clang]
+tags:
+  - CMake
+  - GCC/Clang
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,10 @@ layout: post
 title:  "Javascript in Action"
 date:   2023-06-13 08:30:00 +0800
 categories: Web
+tags:
+  - Javascript
+  - Web
+
 ---
 
 * Do not remove this line (it will not be displayed)

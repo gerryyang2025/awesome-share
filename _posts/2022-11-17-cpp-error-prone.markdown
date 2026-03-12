@@ -3,6 +3,10 @@ layout: post
 title:  "CPP Error Prone"
 date:   2022-11-17 12:30:00 +0800
 categories: [C/C++]
+tags:
+  - CPP Error Prone
+  - C/C++
+
 ---
 
 * Do not remove this line (it will not be displayed)

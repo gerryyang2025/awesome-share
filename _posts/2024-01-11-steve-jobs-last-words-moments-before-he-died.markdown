@@ -3,6 +3,10 @@ layout: post
 title:  "Steve Jobs Last Words"
 date:   2024-01-11 08:30:00 +0800
 categories: 英语学习
+tags:
+  - Steve Jobs Last Words
+  - 英语学习
+
 ---
 
 * Do not remove this line (it will not be displayed)

@@ -3,6 +3,10 @@ layout: post
 title:  "bpftrace in Action"
 date:   2023-05-09 12:30:00 +0800
 categories: [Linux Performance]
+tags:
+  - bpftrace
+  - Linux Performance
+
 ---
 
 * Do not remove this line (it will not be displayed)

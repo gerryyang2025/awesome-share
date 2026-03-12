@@ -3,6 +3,10 @@ layout: post
 title:  "Linux Kernel in Action"
 date:   2024-01-18 12:00:00 +0800
 categories: Linux
+tags:
+  - Linux Kernel
+  - Linux
+
 ---
 
 * Do not remove this line (it will not be displayed)
