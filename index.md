@@ -1,6 +1,5 @@
 ---
 layout: home
-title: 首页
 ---
 
 <div class="home-content">
