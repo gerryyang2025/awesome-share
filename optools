@@ -91,6 +91,10 @@ status_jekyll() {
     return 0
   fi
   echo "[run] status: stopped"
+  if [ -f "${LOG_FILE}" ]; then
+    echo "[run] ---- last 50 lines of ${LOG_FILE} ----"
+    tail -n 50 "${LOG_FILE}" || true
+  fi
   return 1
 }
 
@@ -188,17 +192,23 @@ start_jekyll() {
   (bundle exec jekyll "${jekyll_args[@]}" >> "${LOG_FILE}" 2>&1) &
   echo "$!" > "${PID_FILE}"
 
-  # If it exits immediately, show some logs to help debugging.
-  sleep 2
-  if ! kill -0 "$(cat "${PID_FILE}" 2>/dev/null)" >/dev/null 2>&1; then
-    echo "[run] ERROR: jekyll exited shortly after start. Showing recent logs:"
-    echo "[run] ---- last 200 lines of ${LOG_FILE} ----"
-    tail -n 200 "${LOG_FILE}" || true
-    echo "[run] ---- error hints (from last 400 lines) ----"
-    tail -n 400 "${LOG_FILE}" 2>/dev/null | grep -nE "Liquid Exception|Error:|FATAL|fatal|No such file|could not locate|Missing|undefined method|Invalid|Permission denied" -C 2 || true
-    rm -f "${PID_FILE}" || true
-    return 1
-  fi
+  # If it exits shortly after start, show some logs to help debugging.
+  # Some failures happen after the initial boot, so we watch for a few seconds.
+  local pid
+  pid="$(cat "${PID_FILE}" 2>/dev/null || true)"
+  local i
+  for i in $(seq 1 10); do
+    if [ -z "${pid}" ] || ! kill -0 "${pid}" >/dev/null 2>&1; then
+      echo "[run] ERROR: jekyll exited shortly after start. Showing recent logs:"
+      echo "[run] ---- last 200 lines of ${LOG_FILE} ----"
+      tail -n 200 "${LOG_FILE}" || true
+      echo "[run] ---- error hints (from last 400 lines) ----"
+      tail -n 400 "${LOG_FILE}" 2>/dev/null | grep -nE "Liquid Exception|Error:|FATAL|fatal|No such file|could not locate|Missing|undefined method|Invalid|Permission denied|Configuration file:|Dependency Error" -C 2 || true
+      rm -f "${PID_FILE}" || true
+      return 1
+    fi
+    sleep 1
+  done
 
   echo "[run] done. pid=$(cat "${PID_FILE}")"
   return 0
