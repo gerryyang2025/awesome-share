@@ -192,7 +192,10 @@ start_jekyll() {
   sleep 2
   if ! kill -0 "$(cat "${PID_FILE}" 2>/dev/null)" >/dev/null 2>&1; then
     echo "[run] ERROR: jekyll exited shortly after start. Showing recent logs:"
-    tail -n 120 "${LOG_FILE}" || true
+    echo "[run] ---- last 200 lines of ${LOG_FILE} ----"
+    tail -n 200 "${LOG_FILE}" || true
+    echo "[run] ---- error hints (from last 400 lines) ----"
+    tail -n 400 "${LOG_FILE}" 2>/dev/null | grep -nE "Liquid Exception|Error:|FATAL|fatal|No such file|could not locate|Missing|undefined method|Invalid|Permission denied" -C 2 || true
     rm -f "${PID_FILE}" || true
     return 1
   fi
