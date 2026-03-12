@@ -65,6 +65,28 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
 
 # Words (柯林斯英汉双解大词典)
 
+* spawn /spɔːn/
+  + N-UNCOUNT **Spawn** is a soft, jelly-like substance containing the eggs of fish, or of animals such as frogs. (鱼、蛙等的)卵
+    - her passion for collecting frog **spawn**. 她对采蛙卵的热爱。
+  + V-I When fish or animals such as frogs **spawn**, they lay their eggs. (鱼、蛙等)产卵
+  + V-T If something **spawns** something else, it causes it to happen or to be created. 引发
+    - Tyndall's inspired work **spawned** a whole new branch of science. 廷德尔有创见的工作发展出了一个新的科学分支。
+
+* invoice /ˈɪnvɔɪs/
+  + N-COUNT An **invoice** is a document that lists goods that have been supplied or services that have been done, and says how much money you owe for them. 费用清单; 发票
+    - We will then send you an invoice for the total course fees. 然后我们将寄给你一张全部课程费用的发票。
+  + V-T If you **invoice** someone, you send them a bill for goods or services you have provided them with. 给…开具发票
+    - The agency **invoices** the client who then pays the full amount to the agency. 那个代销处给客户开具发票，然后客户向代销处支付全部的款项。
+
+* prorate /prəʊˈreɪt/
+  + V-T If a cost is **prorated**, it is divided or assessed in a proportional way. 按比例分配; 摊派
+    - If weather and/or sea conditions cause your trip to return early, the boat fare will be prorated. 如果因天气和/或海上的原因导致提前返程，会按比例退还船费。
+
+* vault /vɔːlt/
+  + N-COUNT A **vault** is a secure room where money and other valuable things can be kept safely. 保险库
+    - Most of the money was in storage in bank **vaults**. 这笔钱的一大部分是存放在银行保险库中的。
+
+
 * specialist /ˈspeʃəlɪst/
   + N-COUNT A **specialist** is a person who has a particular skill or knows a lot about a particular subject. 专家
     - Peckham, himself a cancer specialist, is well aware of the wide variations in medical practice. 佩卡姆本人就是个癌症专家，非常清楚医疗实践中的广泛差异。
