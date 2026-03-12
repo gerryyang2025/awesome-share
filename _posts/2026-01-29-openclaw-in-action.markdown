@@ -8,11 +8,78 @@ categories: ML
 * Do not remove this line (it will not be displayed)
 {:toc}
 
+
+
+# 背景介绍
+
+> 命名变化：ClawBot -> MoltBot -> OpenClaw
+
+> 可以拓展想象：你买了一台新电脑，里面有一个“幽灵实体”，你把键盘、鼠标和网络权限交给它，把它当成一个虚拟同事。你可以直接跟它说话，交代事情。凡是你能在电脑上做的事，这个 Agent 理论上都能替你完成。这就是它真正强大的地方。
+
+个人 AI 助手 **Clawdbot** 席卷硅谷，国内外社交平台上全是关于它的讨论。不过，项目创始人 **Peter Steinberger** 在 X 平台上发文表示，他被 Anthropic 强制要求更改名称的成 **Moltbot**，这并非他本人的决定。这次改名源于商标问题，但在操作过程中不仅搞砸了 GitHub 的账号更名，连 X 平台的原账号名也被加密货币推广者抢注了。最终，他的新账号名定为 `@moltbot`。使用 **Clawdbot** 后，网友们纷纷给出了很高的评价。“**它是迄今为止最伟大的 AI 应用，相当于你 24 小时全天候专属 AI 员工**”。Creator Buddy 创始人兼 CEO Alex Finn 盛赞道，“**这就是他们 (Anthropic) 希望 Claude Cowork 呈现的样子**”。当前，ClawdBot 项目已经开源：https://github.com/clawdbot/clawdbot。
+
+Alex 展示了给他的 Clawdbot 发信息，让它帮其预订下周六在一家餐厅的座位。当 OpenTable 预订失败时，Clawdbot 利用 ElevenLabs 的技术致电餐厅并完成了预订。
+
+![moltbot21](/assets/images/202601/moltbot21.png)
+
+但 Clawdbot 真正让技术圈兴奋的，并不只是“能干活” ，而是其协作方式极其激进：不会写代码的人，也能直接提 PR。**原因很简单：它几乎是 100% 用 AI 写出来的**，PR 在这里更像是“我遇到了这个问题”，而不是“我写了一段多漂亮的代码”。更有意思的是，这个看似“全开源”的项目，偏偏故意留了一点不开源。创始人 Peter Steinberger 保留了一个名为“soul”的文件只占项目的 0.00001%。他说得很直白：这既是他的"秘密资产"，也是一个刻意留下来的安全靶子。大家真的在试着 hack 它，他就等着看模型到底守不守得住。到目前为止，“soul”还没被偷出来。作为忠实粉丝，Alex 表示这是自 Claude Code 发布以来，自己第一次连续两天没有用它。但是他的 Clawdbot Henry 已经连续 48 小时不停地 Vibe Coding。“**我这辈子都没写过这么多代码。Vibe Coding 已死，Vibe Orchestration 已来。**”
+
+现在，Alex 想要退掉 Mac Mini，换一台价值 1 万美元的 Mac Studio。“我的 Clawdbot Henry 将控制一台人工智能超级计算机。Henry 将使用 Opus 作为大脑，并使用多个本地模型作为员工集群。” **Clawbot 并不是传统意义上只能回答问题的聊天机器人，它本质上是一个持续运行、可以执行任务的个人 AI 智能体**。你可以把它安装在自己的设备上，如 Mac、Windows、Linux，**它可以长期在线，不停地接收指令、处理任务、记住你的偏好和历史对话，随着时间积累变得更懂你、更有“记忆”**。
+
+总的来说，**Clawbot 最令人震撼的地方有三点**：
+
+1. **它几乎可以完全控制你的电脑**。它没有传统意义上的“护栏”，不局限在某几个功能里，而是可以像一个真正坐在电脑前的人一样，操作你电脑上的一切。
+2. **它拥有近乎无限的长期记忆**。Clawbot 内置了一套非常复杂的记忆系统。说过的话、做过的事，都会不断被记录下来。每次对话结束后，它都会自动总结聊过的内容，并把关键信息提取出来，存进长期记忆中。
+3. **它完全通过聊天应用来交互**。你平时用哪些聊天工具，Clawbot 就能在哪儿跟你对话，这意味着，只要打开一个聊天软件，就可以通过一条消息把任务交给 Clawbot 去做。现在 Clawbot 支持 WhatsApp、Telegram、Slack、Discord、Google Chat、Signal、iMessage、Microsoft Teams、WebChat 等，还有 BlueBubbles、Matrix、Zalo 以及 Zalo Personal。
+
+> 不过，如此放开的权限让其几乎没有护栏，这带来很大的安全隐患，现在 GitHub 上有 500 多个安全的问题，这也让部分网友望而却步。对此，很多使用过的用户几乎都表示，不建议一开始就把 Clawbot 装在主力电脑上。“在你还不熟悉它之前，把它放在一个独立环境里是最安全的选择。”
+
+![moltbot22](/assets/images/202601/moltbot22.png)
+
+不过大家没有想到，这个 AI 员工首先带火的竟然是 **Mac Mini**。很多人为了运行 Clawdbot 会专门买一台电脑，而大部分选择了 Mac Mini，原因是它便宜、兼容好、功率低、安静、占地小。谷歌 DeepMind 产品经理 Logan Kilpatrick 都忍不住订了台 Mac Mini。
+
+![moltbot23](/assets/images/202601/moltbot23.png)
+
+更有网友晒出自己一口气买了 40 台 Mac mini 来运行 Clawdbot。
+
+![moltbot24](/assets/images/202601/moltbot24.png)
+
+但也有网友称可以用一台免费的服务器运行着完全一样的程序，Alex 也称没必要花 600 美元买 Mac mini，有其他便宜得多的方式来运行 Clawbot。买 Mac mini 更多是个人偏好，而不是技术上的必要条件。你完全可以不买任何硬件，只需要一个 VPS。另外，云厂商们动作迅速，有网友发现腾讯云直接推出了 Clawbot 云服务。
+
+随着项目的火爆，其背后的开发者 Peter Steinberger 也备受关注。Peter 在“Open Source Friday”上分享了他一手打造 Clawdbot 的经过，从创建、创始到维护，全由他独自完成。有意思的是，此前甚至有传言称，Peter 可能是一个 bot、Agent，甚至本身就是 AI。而 Peter 的出现也让项目成员和关注者们确认了他是个“真人”。Peter 一度已经退休了，后来又从退休状态里出来开始折腾 AI。从外表来看，Peter 年轻有活力，完全不像已到退休年龄、可领取养老金的人。
+
+![moltbot25](/assets/images/202601/moltbot25.png)
+
+
+
+
+
 # 快速开始
 
 官方文档：[OpenClaw 快速开始指南](https://docs.openclaw.ai/start/getting-started)
 
 ![openclaw0](/assets/images/202601/openclaw0.png)
+
+Fastest chat: open the Control UI (no channel setup needed). Run `moltbot dashboard (PS: 找不到 moltbot 命令可使用 clawdbot 替换，建议将 moltbot 设置为 clawdbot 命令的别名)` and chat in the browser, or open `http://127.0.0.1:18789/` on the gateway host. Docs: [Dashboard](https://docs.molt.bot/web/dashboard) and [Control UI](https://docs.molt.bot/web/control-ui).
+
+Recommended path: use the **CLI onboarding wizard** (`moltbot onboard`). It sets up:
+
+* model/auth (OAuth recommended)
+* gateway settings
+* channels (WhatsApp/Telegram/Discord/Mattermost (plugin)/…)
+* pairing defaults (secure DMs)
+* workspace bootstrap + skills
+* optional background service
+
+If you want the deeper reference pages, jump to: [Wizard](https://docs.molt.bot/start/wizard), [Setup](https://docs.molt.bot/start/setup), [Pairing](https://docs.molt.bot/start/pairing), [Security](https://docs.molt.bot/gateway/security).
+
+
+![moltbot27](/assets/images/202601/moltbot27.png)
+
+![moltbot28](/assets/images/202601/moltbot28.png)
+
+
+
 
 
 # 使用示例
@@ -104,6 +171,98 @@ QQ群聊天：
 ![openclaw54](/assets/images/202601/openclaw54.png)
 
 ![openclaw56](/assets/images/202601/openclaw56.png)
+
+
+# OpenClaw 最佳实践
+
+随着使用时间变长，OpenClaw 会积累越来越多的上下文和记忆。如果不加控制，同一个问题的 Token 消耗可能从几千一路涨到几万甚至几十万。以下介绍几种简单实用的降本方法。
+
+叠加使用：
+
+1. 日常随手用 `/compact`、`/reset`、`/new` 掌控当前对话长度
+2. 在架构上拆分多 Agent，让不同任务各用各的脑
+3. 逐步把长期知识迁移到 memory / 知识库，用 memory-search 做“精确查找”，而不是“暴力塞上下文”
+
+合理组合这些手段，你会很快看到两个变化：一是对话响应更稳定、跑偏更少，二是每个月的 Token 账单不再一路爬坡。
+
+## 斜杠命令，快速瘦身当前会话
+
+
+### /compact (压缩当前会话上下文)
+
+* 作用：让 OpenClaw 对当前会话历史做一次“总结压缩”，尽量保留关键信息，丢掉多余的细节，从而在后续对话中显著降低 Token 消耗。
+* 使用场景：
+  + 和机器人聊了很久，一个问题前面要带一大段历史
+  + 明显感觉响应变慢、价格飙升，但又不想完全清空上下文
+  + 当前话题还要继续，但不需要保留所有细节
+* 用法：在当前聊天窗口直接发送：`/compact`
+* OpenClaw 会尝试把之前的对话收敛为较短的“摘要记忆”，并在后续对话中优先使用这个摘要，减少每次请求的上下文长度。
+
+
+### /reset (保留记忆，重置当前话题)
+
+* 作用：重置当前会话的短期上下文，但保留长期记忆和全局配置。可以理解为「这段对话从头来过，但你之前帮我记住的关键信息仍然存在」。
+* 使用场景：
+  + 当前话题已经结束，接下来要聊完全不同的事情
+  + 上下文已经很臃肿，继续往下聊 Token 会越来越高
+  + 但你又不希望清空所有历史记忆（比如个人偏好、团队代号、项目背景等）
+* 用法：在当前聊天窗口直接发送：`/reset`
+* 执行后：
+  + 当前对话线程的历史上下文会被清空
+  + Agent 的长期记忆（写入 MEMORY / 重要存档）仍然会保留
+  + 后续问题会在“新话题”的上下文里继续
+
+
+### /new (开启一段全新的对话)
+
+* 作用：创建一个真正“从零开始”的新会话，可以类比为「新建一个对话标签页」。
+* 使用场景：
+  + 想在同一个频道里，彻底开启一个全新的对话
+  + 不希望任何历史上下文干扰当前的问题
+  + 需要做 AB 对比测试——一个会话保留上下文，另外一个完全从头
+* 用法：在当前聊天窗口直接发送：`/new`
+* 执行后，OpenClaw 会以“新会话”的身份与你对话。通常来说，这比在原线程里不断滚动历史、继续追加问题要更加节省 Token。
+
+
+## 多 Agent 分工 (从架构层面降低 Token 消耗)
+
+当你开始用 OpenClaw 同时承载：写文档、写代码、运营维护、团队管理等多种任务时，所有内容都堆在一个 Agent 的大脑里，会带来两个明显问题：
+
+* 记忆越来越杂乱。写代码、写周报、写公告、记代号，全都在同一个 workspace 中，模型在每次生成时都要从**一大堆不相关内容**中筛出有用信息。
+* 每个会话的上下文越来越长。为了让它“记得住”之前的讨论，你会不断把历史信息喂给同一个 Agent，这会持续放大每一次调用的 Token。
+
+更合理的做法是：像组织团队那样拆分 Agent。
+
+* 为不同团队/不同飞书群/不同职能，配置各自独立的 Agent
+* 每个 Agent 有自己的 workspace、记忆、技能、模型
+* 某个团队的长对话、知识积累，只占用对应 Agent 的上下文，而不是污染整个系统
+
+这样做的收益包括：
+
+* 单个 Agent 的上下文更干净，模型推理时不必在无关信息中“找针”
+* 每类任务使用自己的对话历史，整体 Token 消耗更可控
+* 出问题时，排查和优化也可以针对某个 Agent 独立进行
+
+在实际项目里，经常是一套组合拳：先通过多 Agent 分工，从架构层面把大脑拆干净，再在每个 Agent 内部用 `/compact`、`/reset` 控制单次对话的上下文长度。
+
+
+## 用 memory-search 替代无限长对话
+
+除了直接控制上下文本身，还有一种更“聪明”的方式来降低 Token：不要把所有东西都塞进同一段对话，而是让 Agent 学会“查资料”。
+
+OpenClaw 提供了 memory-search 能力，可以让 Agent 在需要时主动去查找历史记忆，而不是靠把所有历史对话一股脑地塞进上下文。一个典型思路是：
+
+1. 把关键信息固化到 memory 文件知识库中
+2. 开启 memory-search
+3. 让 Agent 在需要时用“查询”的方式取回小块相关内容，而不是每次都携带整段历史上下文参与推理
+
+这样一来：
+
+* 模型输入中只包含当前问题 + 与之高度相关的一小段记忆
+* 不需要为了“怕它忘”而在每次对话里重复大量背景
+* 在复杂项目里，长远看比“全靠上下文”更节省、也更稳定
+
+memory-search 是 OpenClaw 默认开启的机制，你要做的就是在进行完一轮完整的对话，或是在 OpenClaw 完成一轮任务后，养成让龙虾记忆重要信息的习惯，可以直接从对话框告诉它就行。例如：**总结和记忆下目前的关键信息 (到 MEMORY.md)**。
 
 
 
@@ -225,75 +384,6 @@ openclaw 保存 Skills 的目录是 `~/.openclaw/workspace/skills/`，在保证 
 ![openclaw40](/assets/images/202601/openclaw40.png)
 
 ![openclaw42](/assets/images/202601/openclaw42.png)
-
-
-
-
-# 背景介绍
-
-> 命名变化：ClawBot -> MoltBot -> OpenClaw
-
-> 可以拓展想象：你买了一台新电脑，里面有一个“幽灵实体”，你把键盘、鼠标和网络权限交给它，把它当成一个虚拟同事。你可以直接跟它说话，交代事情。凡是你能在电脑上做的事，这个 Agent 理论上都能替你完成。这就是它真正强大的地方。
-
-个人 AI 助手 **Clawdbot** 席卷硅谷，国内外社交平台上全是关于它的讨论。不过，项目创始人 **Peter Steinberger** 在 X 平台上发文表示，他被 Anthropic 强制要求更改名称的成 **Moltbot**，这并非他本人的决定。这次改名源于商标问题，但在操作过程中不仅搞砸了 GitHub 的账号更名，连 X 平台的原账号名也被加密货币推广者抢注了。最终，他的新账号名定为 `@moltbot`。使用 **Clawdbot** 后，网友们纷纷给出了很高的评价。“**它是迄今为止最伟大的 AI 应用，相当于你 24 小时全天候专属 AI 员工**”。Creator Buddy 创始人兼 CEO Alex Finn 盛赞道，“**这就是他们 (Anthropic) 希望 Claude Cowork 呈现的样子**”。当前，ClawdBot 项目已经开源：https://github.com/clawdbot/clawdbot。
-
-Alex 展示了给他的 Clawdbot 发信息，让它帮其预订下周六在一家餐厅的座位。当 OpenTable 预订失败时，Clawdbot 利用 ElevenLabs 的技术致电餐厅并完成了预订。
-
-![moltbot21](/assets/images/202601/moltbot21.png)
-
-但 Clawdbot 真正让技术圈兴奋的，并不只是“能干活” ，而是其协作方式极其激进：不会写代码的人，也能直接提 PR。**原因很简单：它几乎是 100% 用 AI 写出来的**，PR 在这里更像是“我遇到了这个问题”，而不是“我写了一段多漂亮的代码”。更有意思的是，这个看似“全开源”的项目，偏偏故意留了一点不开源。创始人 Peter Steinberger 保留了一个名为“soul”的文件只占项目的 0.00001%。他说得很直白：这既是他的"秘密资产"，也是一个刻意留下来的安全靶子。大家真的在试着 hack 它，他就等着看模型到底守不守得住。到目前为止，“soul”还没被偷出来。作为忠实粉丝，Alex 表示这是自 Claude Code 发布以来，自己第一次连续两天没有用它。但是他的 Clawdbot Henry 已经连续 48 小时不停地 Vibe Coding。“**我这辈子都没写过这么多代码。Vibe Coding 已死，Vibe Orchestration 已来。**”
-
-现在，Alex 想要退掉 Mac Mini，换一台价值 1 万美元的 Mac Studio。“我的 Clawdbot Henry 将控制一台人工智能超级计算机。Henry 将使用 Opus 作为大脑，并使用多个本地模型作为员工集群。” **Clawbot 并不是传统意义上只能回答问题的聊天机器人，它本质上是一个持续运行、可以执行任务的个人 AI 智能体**。你可以把它安装在自己的设备上，如 Mac、Windows、Linux，**它可以长期在线，不停地接收指令、处理任务、记住你的偏好和历史对话，随着时间积累变得更懂你、更有“记忆”**。
-
-总的来说，**Clawbot 最令人震撼的地方有三点**：
-
-1. **它几乎可以完全控制你的电脑**。它没有传统意义上的“护栏”，不局限在某几个功能里，而是可以像一个真正坐在电脑前的人一样，操作你电脑上的一切。
-2. **它拥有近乎无限的长期记忆**。Clawbot 内置了一套非常复杂的记忆系统。说过的话、做过的事，都会不断被记录下来。每次对话结束后，它都会自动总结聊过的内容，并把关键信息提取出来，存进长期记忆中。
-3. **它完全通过聊天应用来交互**。你平时用哪些聊天工具，Clawbot 就能在哪儿跟你对话，这意味着，只要打开一个聊天软件，就可以通过一条消息把任务交给 Clawbot 去做。现在 Clawbot 支持 WhatsApp、Telegram、Slack、Discord、Google Chat、Signal、iMessage、Microsoft Teams、WebChat 等，还有 BlueBubbles、Matrix、Zalo 以及 Zalo Personal。
-
-> 不过，如此放开的权限让其几乎没有护栏，这带来很大的安全隐患，现在 GitHub 上有 500 多个安全的问题，这也让部分网友望而却步。对此，很多使用过的用户几乎都表示，不建议一开始就把 Clawbot 装在主力电脑上。“在你还不熟悉它之前，把它放在一个独立环境里是最安全的选择。”
-
-![moltbot22](/assets/images/202601/moltbot22.png)
-
-不过大家没有想到，这个 AI 员工首先带火的竟然是 **Mac Mini**。很多人为了运行 Clawdbot 会专门买一台电脑，而大部分选择了 Mac Mini，原因是它便宜、兼容好、功率低、安静、占地小。谷歌 DeepMind 产品经理 Logan Kilpatrick 都忍不住订了台 Mac Mini。
-
-![moltbot23](/assets/images/202601/moltbot23.png)
-
-更有网友晒出自己一口气买了 40 台 Mac mini 来运行 Clawdbot。
-
-![moltbot24](/assets/images/202601/moltbot24.png)
-
-但也有网友称可以用一台免费的服务器运行着完全一样的程序，Alex 也称没必要花 600 美元买 Mac mini，有其他便宜得多的方式来运行 Clawbot。买 Mac mini 更多是个人偏好，而不是技术上的必要条件。你完全可以不买任何硬件，只需要一个 VPS。另外，云厂商们动作迅速，有网友发现腾讯云直接推出了 Clawbot 云服务。
-
-随着项目的火爆，其背后的开发者 Peter Steinberger 也备受关注。Peter 在“Open Source Friday”上分享了他一手打造 Clawdbot 的经过，从创建、创始到维护，全由他独自完成。有意思的是，此前甚至有传言称，Peter 可能是一个 bot、Agent，甚至本身就是 AI。而 Peter 的出现也让项目成员和关注者们确认了他是个“真人”。Peter 一度已经退休了，后来又从退休状态里出来开始折腾 AI。从外表来看，Peter 年轻有活力，完全不像已到退休年龄、可领取养老金的人。
-
-![moltbot25](/assets/images/202601/moltbot25.png)
-
-
-
-
-
-# Quick Start
-
-Fastest chat: open the Control UI (no channel setup needed). Run `moltbot dashboard (PS: 找不到 moltbot 命令可使用 clawdbot 替换，建议将 moltbot 设置为 clawdbot 命令的别名)` and chat in the browser, or open `http://127.0.0.1:18789/` on the gateway host. Docs: [Dashboard](https://docs.molt.bot/web/dashboard) and [Control UI](https://docs.molt.bot/web/control-ui).
-
-Recommended path: use the **CLI onboarding wizard** (`moltbot onboard`). It sets up:
-
-* model/auth (OAuth recommended)
-* gateway settings
-* channels (WhatsApp/Telegram/Discord/Mattermost (plugin)/…)
-* pairing defaults (secure DMs)
-* workspace bootstrap + skills
-* optional background service
-
-If you want the deeper reference pages, jump to: [Wizard](https://docs.molt.bot/start/wizard), [Setup](https://docs.molt.bot/start/setup), [Pairing](https://docs.molt.bot/start/pairing), [Security](https://docs.molt.bot/gateway/security).
-
-
-![moltbot27](/assets/images/202601/moltbot27.png)
-
-![moltbot28](/assets/images/202601/moltbot28.png)
-
-
 
 
 
