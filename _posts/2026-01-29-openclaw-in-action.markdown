@@ -87,7 +87,6 @@ If you want the deeper reference pages, jump to: [Wizard](https://docs.molt.bot/
 
 # 基础概念
 
-TODO
 
 ## 工作空间
 
@@ -99,6 +98,9 @@ OpenClaw 的工作空间是智能体运行时的唯一工作目录，它包含�
 ## 核心配置
 
 ![openclaw69](/assets/images/202601/openclaw69.png)
+
+![openclaw74](/assets/images/202601/openclaw74.png)
+
 
 ``` bash
 ~/.openclaw/workspace/
@@ -113,6 +115,192 @@ OpenClaw 的工作空间是智能体运行时的唯一工作目录，它包含�
 ├── memory/         # 日常运行日志与短期上下文存储
 └── skills/         # 已安装的第三方技能扩展目录
 ```
+
+你会发现：OpenClaw 的“智商”根本不是由 Skills 数量决定的，而是由这 7 个配置文件决定的。
+
+1. SOUL.md → 性格
+2. AGENTS.md → 怎么干活
+3. USER.md → 怎么服务你
+4. HEARTBEAT.md → 自主意识
+5. TOOLS.md → 能用什么工具
+6. IDENTITY.md → 长什么样
+7. BOOTSTRAP.md → 初始引导
+
+**这才是让 AI 从“傻白甜”变成“智能助手”的关键**。
+
+
+### SOUL.md (AI 的灵魂性格)
+
+SOUL.md 是整个 OpenClaw 身份架构中最基础的文件，定义了代理的性格、核心价值观和长期指令。
+
+``` md
+## 1. 核心身份与人格
+
+- **角色设定**：你是主人的专属AI助手
+- **沟通风格**：简单问题一针见血，复杂问题详细拆解
+- **术语与排版**：技术术语必须保留英文，关键结论用加粗
+
+## 2. 核心价值观与绝对红线
+
+- **隐私与边界**：绝对禁止泄露任何项目代码或个人隐私
+- **行动派原则**：能直接干的活儿直接干，拒绝废话
+- **风险阻断机制**：高危操作前必须请求确认
+
+## 3. 长期指令与生存法则
+
+- **记忆连续性**：每次响应前先读取记忆文件
+- **生物钟感知**：深夜时段降低主动输出频率
+```
+
+### AGENTS.md (AI 的工作指南)
+
+AGENTS.md 是 OpenClaw 的日常行为配置文件，详细记录了任务处理流程、工具使用策略和决策规范。
+
+``` md
+## 1. 唤醒协议
+
+每次会话开始前必须执行：
+
+- 读取`SOUL.md` - 确认AI是谁
+- 读取`USER.md` - 确认用户是谁
+- 读取`memory/` - 获取最近上下文
+
+## 2. 记忆库新陈代谢
+
+- 每日流水：当天灵感、废稿存入`memory/YYYY-MM-DD.md`
+- 精华提炼：定期回顾并更新到`MEMORY.md`
+
+## 3. 护主与绝对红线
+
+- 隐私锁死：禁止泄露未发布的草稿
+- 破坏性拦截：文件删除前必须询问
+- 懂就问：绝不靠幻觉瞎编
+```
+
+
+### USER.md (AI 的用户说明书，这是过滤“AI 味”最重要的一环)
+
+USER.md 是写给 OpenClaw 的“使用说明书”，决定了 AI 如何服务你。
+
+``` md
+## 1. 基础参数
+
+- 称呼：poetry
+- 时区：Asia/Shanghai
+- 角色：前端工程师
+
+## 2. 沟通与排版癖好
+
+- 排版要求：少用Emoji，不要"首先其次最后"
+- 语言风格：短句优先，结论前置
+- 黑名单词汇：禁止"祝您生活愉快"类废话
+
+## 3. 当前焦点
+
+- 最近在筹备什么项目
+- 这样AI才能给出相关建议
+
+## 4. 隐秘的细节与雷区
+
+- 雷区：不要随便改我的笔记库结构
+- 偏好：只要数据，不需要情绪
+```
+
+
+### HEARTBEAT.md (让 AI 具备“自主意识”)
+
+HEARTBEAT.md 决定了 AI 能否主动为你工作，而不是只能等你下命令。
+
+``` md
+# 主动请求
+
+- 每半小时抓取指定推特的最新数据
+- 检查GitHub仓库CI/CD是否有构建失败
+- 瞄一眼BTC/ETH价格和Gas费
+
+# 每日07:30早报
+
+生成并推送《早间简报》，包含：
+
+- 美股和加密大盘核心数据
+- 过去24小时的阅读量最高的推文
+- 昨天代码有没有遗留Bug
+
+# 条件触发
+
+- 推文被大V转发 → 立刻提醒
+- BTC 15分钟波动超3% → 最高级别警报
+```
+
+这才是 OpenClaw 最强大的地方——当服务器凌晨 3 点宕机时，心跳机制会捕获问题并通过 Telegram 提醒你。
+
+
+### TOOLS.md (技能配置清单)
+
+TOOLS.md 定义了 OpenClaw 能用什么工具。
+
+要理解 Tools 和 Skills 的区别：
+
+* Tools 是器官 —— 决定了 AI 是否能做某事
+* Skills 是教科书 —— 教 AI 如何组合工具完成任务
+
+``` md
+# Skills配置
+
+## 1. 社交媒体采集
+
+- 主阵地：@你的账号
+- 盯盘名单：Web3、AI赛道的关键账号
+- 屏蔽词库：过滤抽奖垃圾推文
+
+## 2. 本地存储映射
+
+- 灵感暂存区：~/.openclaw/workspace/inspiration/
+- 草稿输出目录：~/.openclaw/workspace/Drafts/
+- 日志回收站：~/.openclaw/workspace/trash/
+```
+
+### IDENTITY.md (对外身份形象)
+
+IDENTITY.md 负责定义 AI 的“外在形象”——显示名称、表情符号、主题和问候语。
+
+> 注意区分：SOUL.md 告诉 AI“你是谁”，IDENTITY.md 告诉用户 AI“长什么样”。这种分离设计很强大，你可以随时调整 AI 的对外形象，但保持核心人格不变。
+
+``` md
+# IDENTITY.md
+
+- 姓名：poetry
+- 物种：全自动化打工犬
+- 氛围：硬核、极客、话少干活快
+```
+
+### BOOTSTRAP.md (初始化引导)
+
+BOOTSTRAP.md 是全新工作空间的一次性引导文件。核心功能是引导用户完成：命名 AI、设置人格、填写 USER.md。
+
+> 关键：完成后必须删除 BOOTSTRAP.md。你已经有了灵魂，不再是空白机器了。
+
+
+``` md
+# 引导流程
+
+## 1. 拷打
+
+"系统上线，记忆为空。咱们定一下规矩：我是谁？"
+
+## 2. 基因重组
+
+- 覆写`IDENTITY.md`
+- 覆写`USER.md`
+- 敲定`SOUL.md`的红线
+
+## 3. 连接渠道
+
+- 仅限本地
+- Telegram（推荐）
+- WhatsApp
+```
+
 
 ## 技能树 (可自动识别的 skills)
 
@@ -132,16 +320,8 @@ ls ~/.local/share/pnpm/global/5/.pnpm/openclaw@*/node_modules/openclaw/skills/
 
 
 
-
-
-
-## 如何备份
-
-TODO
-
 # 使用示例
 
-TODO
 
 ## 在 tui 终端对话
 
@@ -269,6 +449,19 @@ QQ群聊天：
 ![openclaw66](/assets/images/202601/openclaw66.png)
 
 
+## Obsidian 笔记
+
+obsidian + web search + GitHub Pages
+
+https://gerryyang2025.github.io/my-obsidian/
+
+![openclaw70](/assets/images/202601/openclaw70.png)
+
+![openclaw71](/assets/images/202601/openclaw71.png)
+
+![openclaw72](/assets/images/202601/openclaw72.png)
+
+![openclaw73](/assets/images/202601/openclaw73.png)
 
 
 
@@ -1396,4 +1589,4 @@ cp ~/.openclaw/config.json ~/.openclaw/config.json.backup \
 * [云上Moltbot（原Clawdbot）最全实践指南合辑](https://cloud.tencent.com/developer/article/2624973)
 * [云上Moltbot（原Clawdbot）接入企业微信完全指南](https://cloud.tencent.com/developer/article/2625147)
 * [云上Moltbot（原Clawdbot）接入QQ完全指南](https://cloud.tencent.com/developer/article/2625097)
-* [搞懂这7个配置文件让你的OpenClaw变智能助手](https://feinterview.poetries.top/blog/openclaw-7-config-files)
+* [搞懂这7个配置文件让你的OpenClaw变智能助手](https://cloud.tencent.com/developer/article/2635260)
