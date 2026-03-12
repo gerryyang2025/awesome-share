@@ -3,9 +3,11 @@
 set -euo pipefail
 
 LOG_FILE="${LOG_FILE:-run.log}"
+PID_FILE="${PID_FILE:-.jekyll.pid}"
 MIN_RUBY_VERSION="${MIN_RUBY_VERSION:-3.1.0}"
 AUTO_FIX="${AUTO_FIX:-1}"
 RBENV_RUBY_VERSION="${RBENV_RUBY_VERSION:-3.2.3}"
+DEBUG="${DEBUG:-0}"
 
 COMMAND="${1:-}"
 APP_NAME="${APP_NAME:-jekyll}"
@@ -22,9 +24,11 @@ Usage:
 
 Env:
   LOG_FILE=run.log              Output log file
+  PID_FILE=.jekyll.pid          PID file for the background process
   MIN_RUBY_VERSION=3.1.0        Minimum Ruby version
   AUTO_FIX=1                    Auto-fix Ruby via rbenv (Ubuntu) when too old
   RBENV_RUBY_VERSION=3.2.3      Ruby version to install via rbenv
+  DEBUG=0                       Set to 1 to add jekyll --trace output
 EOF
 }
 
@@ -42,6 +46,23 @@ maybe_sudo() {
 }
 
 stop_jekyll() {
+  if [ -f "${PID_FILE}" ]; then
+    local pid
+    pid="$(cat "${PID_FILE}" 2>/dev/null || true)"
+    if [ -n "${pid}" ] && kill -0 "${pid}" >/dev/null 2>&1; then
+      echo "[run] stopping ${APP_NAME} (pid ${pid})..."
+      kill "${pid}" || true
+      sleep 1
+      if kill -0 "${pid}" >/dev/null 2>&1; then
+        echo "[run] WARNING: still running, forcing stop..."
+        kill -9 "${pid}" || true
+      fi
+      rm -f "${PID_FILE}" || true
+      return 0
+    fi
+    rm -f "${PID_FILE}" || true
+  fi
+
   if pgrep -f "jekyll serve" >/dev/null 2>&1; then
     echo "[run] stopping ${APP_NAME}..."
     pkill -f "jekyll serve" || true
@@ -55,6 +76,15 @@ stop_jekyll() {
 }
 
 status_jekyll() {
+  if [ -f "${PID_FILE}" ]; then
+    local pid
+    pid="$(cat "${PID_FILE}" 2>/dev/null || true)"
+    if [ -n "${pid}" ] && kill -0 "${pid}" >/dev/null 2>&1; then
+      echo "[run] status: running (pid ${pid})"
+      return 0
+    fi
+  fi
+
   if pgrep -f "jekyll serve" >/dev/null 2>&1; then
     echo "[run] status: running"
     pgrep -af "jekyll serve" || true
@@ -136,6 +166,41 @@ EOF
   return 0
 }
 
+start_jekyll() {
+  local -a jekyll_args
+  jekyll_args=(serve)
+
+  if [ "${DEBUG}" = "1" ]; then
+    jekyll_args+=(--trace)
+  fi
+
+  {
+    echo "================================================================"
+    echo "[run] $(date '+%Y-%m-%d %H:%M:%S') starting jekyll"
+    echo "[run] pwd: $(pwd)"
+    echo "[run] ruby: $(ruby -e 'print RUBY_VERSION')"
+    echo "[run] bundler: $(bundle -v)"
+    echo "[run] cmd: bundle exec jekyll ${jekyll_args[*]}"
+    echo "================================================================"
+  } >> "${LOG_FILE}"
+
+  # Run in background, keep stdout+stderr in one file, and record PID.
+  (bundle exec jekyll "${jekyll_args[@]}" >> "${LOG_FILE}" 2>&1) &
+  echo "$!" > "${PID_FILE}"
+
+  # If it exits immediately, show some logs to help debugging.
+  sleep 2
+  if ! kill -0 "$(cat "${PID_FILE}" 2>/dev/null)" >/dev/null 2>&1; then
+    echo "[run] ERROR: jekyll exited shortly after start. Showing recent logs:"
+    tail -n 120 "${LOG_FILE}" || true
+    rm -f "${PID_FILE}" || true
+    return 1
+  fi
+
+  echo "[run] done. pid=$(cat "${PID_FILE}")"
+  return 0
+}
+
 auto_fix_ruby() {
   if [ "$AUTO_FIX" != "1" ]; then
     return 1
@@ -197,8 +262,7 @@ case "$COMMAND" in
     stop_jekyll
     check_env
     echo "[run] launching jekyll (logs: ${LOG_FILE})"
-    bundle exec jekyll serve >> "${LOG_FILE}" 2>&1 &
-    echo "[run] done. pid=$!"
+    start_jekyll
     ;;
   stop)
     stop_jekyll
