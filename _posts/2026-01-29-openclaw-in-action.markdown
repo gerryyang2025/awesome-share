@@ -117,6 +117,11 @@ ls ~/.local/share/pnpm/global/5/.pnpm/openclaw@*/node_modules/openclaw/skills/
 
 
 
+## 核心配置
+
+![openclaw69](/assets/images/202601/openclaw69.png)
+
+
 
 
 ## 如何备份
