@@ -71,7 +71,7 @@ This site uses [jekyll-theme-chirpy](https://github.com/cotes2020/jekyll-theme-c
 
 ### Common deployment issue (Ruby too old)
 
-If your server is using Ruby 2.x (e.g. Ruby 2.5), `bundle install` / `./run.sh` will fail for Chirpy/Jekyll 4.x. Upgrade Ruby first, then reinstall gems.
+If your server is using Ruby 2.x (e.g. Ruby 2.5), `bundle install` / `./optools start` will fail for Chirpy/Jekyll 4.x. Upgrade Ruby first, then reinstall gems.
 
 ## Optional enhancements
 
@@ -109,10 +109,10 @@ bundle exec jekyll serve
 
 ```bash
 # Start the blog server
-./run.sh
+./optools start
 
 # Stop the blog server
-./stop.sh
+./optools stop
 ```
 
 # 📊 Blog Statistics

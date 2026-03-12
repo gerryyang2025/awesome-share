@@ -13,11 +13,11 @@ This is a personal Jekyll-powered blog (Gerry's blog) containing technical tutor
 bundle install
 
 # Start development server
-./run.sh
+./optools start
 # Or directly: bundle exec jekyll serve
 
 # Stop the server
-./stop.sh
+./optools stop
 ```
 
 ## Blog Structure
