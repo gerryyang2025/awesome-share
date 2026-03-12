@@ -2,7 +2,7 @@
 layout: post
 title:  "iPerf in Action"
 date:   2025-11-20 20:00:00 +0800
-categories: [Linux, Linux Performance]
+categories: [Linux Performance]
 ---
 
 * Do not remove this line (it will not be displayed)
