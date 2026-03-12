@@ -2,7 +2,7 @@
 layout: post
 title:  "CPP Algorithm"
 date:   2020-04-25 14:00:00 +0800
-categories: [C/C++, Data Structure/Algorithm]
+categories: [C/C++]
 ---
 
 * Do not remove this line (it will not be displayed)
