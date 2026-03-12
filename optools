@@ -7,13 +7,13 @@ MIN_RUBY_VERSION="${MIN_RUBY_VERSION:-3.1.0}"
 AUTO_FIX="${AUTO_FIX:-1}"
 RBENV_RUBY_VERSION="${RBENV_RUBY_VERSION:-3.2.3}"
 
-COMMAND="${1:-start}"
+COMMAND="${1:-}"
 APP_NAME="${APP_NAME:-jekyll}"
 
 usage() {
   cat <<'EOF'
 Usage:
-  ./optools start       Start Jekyll in background (default)
+  ./optools start       Start Jekyll in background
   ./optools stop        Stop running Jekyll processes
   ./optools restart     Stop then start
   ./optools status      Show whether Jekyll is running
@@ -188,6 +188,10 @@ auto_fix_ruby() {
 }
 
 case "$COMMAND" in
+  "")
+    usage
+    exit 0
+    ;;
   start)
     echo "[run] starting..."
     stop_jekyll
