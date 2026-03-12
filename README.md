@@ -60,9 +60,9 @@ This ancient Chinese proverb reflects my approach to learning and sharing knowle
 
 
 
-# Homepage (Index) Layout
+# Theme: Chirpy
 
-The blog homepage is built from `index.md` with layout `home`. Current structure:
+This site uses [jekyll-theme-chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) (see [Jekyll docs: overriding theme defaults](https://jekyllrb.com/docs/themes/#overriding-theme-defaults)). Current structure:
 
 - **文章分类** – Posts grouped by category in a card grid; each card shows category name and post links.
 - **文章列表** – Single chronological list of all posts with date and title (no duplicate "Posts" block from the theme).
@@ -72,9 +72,9 @@ Custom layout and styles:
 - `_layouts/home.html` – Overrides Minima’s home layout so only the content from `index.md` is shown (theme’s default "Posts" section is removed to avoid duplication).
 - `assets/css/home.css` – Home-only styles: section titles, category grid, post list with date + link, responsive behavior.
 
-## Further optimization suggestions
+## Optional enhancements
 
-1. **Pagination** – With 200+ posts, add `jekyll-paginate` or `jekyll-paginate-v2` and paginate the 文章列表 section to improve load time and scrolling.
+1. **Pagination** (optional) – With 200+ posts, add `jekyll-paginate` or `jekyll-paginate-v2` and paginate the 文章列表 section to improve load time and scrolling.
 2. **Excerpts** – Set `show_excerpts: true` in `_config.yml` and add `excerpt` or `excerpt_separator` in posts to show short summaries in the list.
 3. **Category pages** – Add a dedicated layout or collection for each category (e.g. `/categories/go/`) so "文章分类" can link to category pages instead of listing all posts on the index.
 4. **Search** – Add client-side search (e.g. Simple Jekyll Search, Lunr) or a static JSON index for finding posts by title/category.
@@ -82,11 +82,13 @@ Custom layout and styles:
 6. **RSS** – The theme’s RSS link is removed from the home layout; ensure `jekyll-feed` is used and add an RSS link in `_includes/footer.html` or the header if desired.
 7. **Performance** – Lazy-load or limit the number of posts in the initial 文章列表 (e.g. latest 20), with a “View all” link to a full archive page.
 
+**Chirpy theme**: Requires Ruby ~> 3.1 and Jekyll ~> 4.3. Run `bundle install` after upgrading Ruby. Posts use permalink `/posts/:title/`; navigation is in `_tabs/`.
+
 # 🚀 Getting Started
 
 ## Prerequisites
 
-- Ruby (for Jekyll)
+- Ruby **3.1+** (for Jekyll 4 and Chirpy)
 - Bundler
 - Git
 
