@@ -52,10 +52,13 @@ social_preview_image: ""
 toc: true
 
 comments:
-  provider: ""
-  disqus: { shortname: "" }
-  utterances: { repo: "" }
-  giscus: {}
+  # Keep empty (null) to disable comments globally.
+  provider:
+  disqus:
+    shortname:
+  utterances:
+    repo:
+  giscus:
 
 assets:
   self_host: { enabled: false, env: "" }
@@ -93,7 +96,7 @@ defaults:
       type: posts
     values:
       layout: post
-      comments: true
+      comments: false
       toc: true
       permalink: /posts/:title/
   - scope:
