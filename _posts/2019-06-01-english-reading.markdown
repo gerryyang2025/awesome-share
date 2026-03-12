@@ -68,6 +68,13 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
 
 # Words (柯林斯英汉双解大词典)
 
+* obsidian /ɒbˈsɪdɪən/
+  + N a dark volcanic glass formed by very rapid solidification of lava 黑曜石 (Also called Iceland agate)
+
+* agate /ˈæɡət/
+  + N-VAR **Agate** is a very hard stone which is used to make jewellery. 玛瑙
+
+
 * spawn /spɔːn/
   + N-UNCOUNT **Spawn** is a soft, jelly-like substance containing the eggs of fish, or of animals such as frogs. (鱼、蛙等的)卵
     - her passion for collecting frog **spawn**. 她对采蛙卵的热爱。
