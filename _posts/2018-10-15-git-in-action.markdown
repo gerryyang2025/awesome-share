@@ -1877,30 +1877,6 @@ echo "pre-commit end"
 
 向服务器提交时，Git LFS把文件上传到一个专用的存储区域，同时保存一份指针（文本文件）在原有的版本库中。 当另外一个人拉取，他将首先拉取到指针，此时Git LFS解析这个指针，并把实际文件内容取回到本地。 文件每有一个新版本时，就会创建一个新指针，并向服务器上传，这样服务器上就有了多个历史版本，从而实现了基本的版本管理。
 
-# Git与GitHub
-
-`GitHub`主要为开发者提供`Git`仓库的托管服务，拥有一只`octocat`的吉祥物。截止2013年12月，GitHub托管的仓库数已超过1000万。GitHub这一服务为开源世界带来了社会化编程的概念。在GitHub上进行交流时用到的Issue, Wiki等都可以用`FGM(Git Flavored Markdown)`语法表述。
-
-在GitHub上公开源代码时可以指定相关的许可协议。实际使用时，只需将`LICENSE`文件加入仓库，并在`README.md`文件中声明使用了何种许可协议即可。
-
-* 修正的BSD许可协议
-* Apache许可协议
-* MIT许可协议 (https://opensource.org/licenses/mit-license.php)
-
-```
-Copyright <YEAR> <COPYRIGHT HOLDER>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-```
-
-关于GitHub的更多功能：
-
-* https://github.com/features
-* https://github.com/trending
 
 # 免密提交
 
@@ -2067,31 +2043,6 @@ refer:
 * [Connecting to GitHub with SSH](https://help.github.com/articles/connecting-to-github-with-ssh/)
 * [Best way to use multiple SSH private keys on one client](https://stackoverflow.com/questions/2419566/best-way-to-use-multiple-ssh-private-keys-on-one-client)
 
-# GitHub 常用缩写
-
-| 缩写                       | 全称                                            | 含义                         |
-| -------------------------- | ----------------------------------------------- | ---------------------------- |
-| PR                         | Pull Request                                    | 拉取请求，给其他项目提交代码 |
-| MR                         | Merge Request                                   | 合并请求                     |
-| LGTM                       | Looks Good To Me                                | 可以合并，没有问题           |
-| SGTM                       | Sounds Good to Me                               | 可以合并                     |
-| WIP                        | Work In Progress                                | 开发中                       |
-| PTAL                       | Please Take A Look                              | 请求维护者review             |
-| TBR                        | To Be Reviewed                                  | 请求维护者review             |
-| TL;DR                      | Too Long; Didn't Read                           | 太长懒得看                   |
-| TBD                        | To Be Done/Defined/Discussed/Decided/Determined | 待定                         |
-| AFAIK                      | As far as I know                                | 据我所知                     |
-| IIRC                       | If I recall correctly                           | 如果我没记错的话             |
-| CC                         | Carbon Copy                                     | 抄送                         |
-| ACK                        | Acknowledgement                                 | 同意                         |
-| NACK/NAK                   | Negative Acknowledgement                        | 不同意                       |
-| TYPO                       |                                                 | 拼写错误                     |
-| WFM                        | Works For Me                                    | 测试结果对我有效             |
-| MUST                       |                                                 | 必须修改                     |
-| Duplicate of #123          |                                                 | 关闭重复的issue              |
-| close/closes/closed #issue |                                                 | 关闭issue                    |
-| fix/fixes/fixed #issue     |                                                 | 修复issue                    |
-| resolve/resolves/resolved  |                                                 | 解决issue                    |
 
 # Issue 规范
 
@@ -2270,7 +2221,7 @@ git commit --amend --reset-author --no-edit
 
 
 
-# Git相关工具
+# Git 相关工具
 
 ## Sourcetree
 
@@ -2289,6 +2240,116 @@ https://tortoisegit.org/
 Assorted git-related scripts and tools.
 
 https://github.com/MestreLion/git-tools
+
+
+# GitHub
+
+## Git 与 GitHub
+
+`GitHub`主要为开发者提供`Git`仓库的托管服务，拥有一只`octocat`的吉祥物。截止2013年12月，GitHub托管的仓库数已超过1000万。GitHub这一服务为开源世界带来了社会化编程的概念。在GitHub上进行交流时用到的Issue, Wiki等都可以用`FGM(Git Flavored Markdown)`语法表述。
+
+在GitHub上公开源代码时可以指定相关的许可协议。实际使用时，只需将`LICENSE`文件加入仓库，并在`README.md`文件中声明使用了何种许可协议即可。
+
+* 修正的BSD许可协议
+* Apache许可协议
+* MIT许可协议 (https://opensource.org/licenses/mit-license.php)
+
+```
+Copyright <YEAR> <COPYRIGHT HOLDER>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+关于GitHub的更多功能：
+
+* https://github.com/features
+* https://github.com/trending
+
+
+## GitHub 常用缩写
+
+| 缩写                       | 全称                                            | 含义                         |
+| -------------------------- | ----------------------------------------------- | ---------------------------- |
+| PR                         | Pull Request                                    | 拉取请求，给其他项目提交代码 |
+| MR                         | Merge Request                                   | 合并请求                     |
+| LGTM                       | Looks Good To Me                                | 可以合并，没有问题           |
+| SGTM                       | Sounds Good to Me                               | 可以合并                     |
+| WIP                        | Work In Progress                                | 开发中                       |
+| PTAL                       | Please Take A Look                              | 请求维护者review             |
+| TBR                        | To Be Reviewed                                  | 请求维护者review             |
+| TL;DR                      | Too Long; Didn't Read                           | 太长懒得看                   |
+| TBD                        | To Be Done/Defined/Discussed/Decided/Determined | 待定                         |
+| AFAIK                      | As far as I know                                | 据我所知                     |
+| IIRC                       | If I recall correctly                           | 如果我没记错的话             |
+| CC                         | Carbon Copy                                     | 抄送                         |
+| ACK                        | Acknowledgement                                 | 同意                         |
+| NACK/NAK                   | Negative Acknowledgement                        | 不同意                       |
+| TYPO                       |                                                 | 拼写错误                     |
+| WFM                        | Works For Me                                    | 测试结果对我有效             |
+| MUST                       |                                                 | 必须修改                     |
+| Duplicate of #123          |                                                 | 关闭重复的issue              |
+| close/closes/closed #issue |                                                 | 关闭issue                    |
+| fix/fixes/fixed #issue     |                                                 | 修复issue                    |
+| resolve/resolves/resolved  |                                                 | 解决issue                    |
+
+
+## 配置 GitHub Pages
+
+### 方法一：通过 GitHub 仓库设置（推荐）
+
+* 配置 GitHub Pages：仓库 - 打开页面 → Settings → Pages
+  - Source 选择 Deploy from a branch
+  - Branch 选择 main (或 master)
+  - Folder 选择 / (root)
+  - 点击 Save
+
+* 等待部署
+  - 等待 1-2 分钟
+  - 访问 https://yourusername.github.io/h5-snake-game/
+
+
+![github1](/assets/images/202603/github1.png)
+
+![github2](/assets/images/202603/github2.png)
+
+### 方法二：使用 GitHub Actions（自动部署）
+
+自动部署，每次 push 后立即生效，首次配置稍复杂。
+
+在仓库根目录创建 `.github/workflows/deploy.yml`
+
+``` yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+
+
 
 
 
