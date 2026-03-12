@@ -115,6 +115,8 @@ bundle exec jekyll serve
 ./optools stop
 ```
 
+By default, the dev server listens on port **8080** (configured in `_config.yml`).
+
 # 📊 Blog Statistics
 
 - **Total Posts**: 200+ technical articles and tutorials
