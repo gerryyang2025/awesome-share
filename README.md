@@ -62,15 +62,16 @@ This ancient Chinese proverb reflects my approach to learning and sharing knowle
 
 # Theme: Chirpy
 
-This site uses [jekyll-theme-chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) (see [Jekyll docs: overriding theme defaults](https://jekyllrb.com/docs/themes/#overriding-theme-defaults)). Current structure:
+This site uses [jekyll-theme-chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) (see [Jekyll docs: overriding theme defaults](https://jekyllrb.com/docs/themes/#overriding-theme-defaults)).
 
-- **文章分类** – Posts grouped by category in a card grid; each card shows category name and post links.
-- **文章列表** – Single chronological list of all posts with date and title (no duplicate "Posts" block from the theme).
+- **Requirements**: Ruby **>= 3.1** and Jekyll **~> 4.3** (Chirpy depends on Jekyll 4.3 and Ruby ~> 3.1).
+- **Home**: `index.html` uses layout `home` (rendered by the theme).
+- **Tabs**: Navigation pages are under `_tabs/` (Categories/Tags/Archives/About).
+- **Permalinks**: Posts default to `/posts/:title/` (configured in `_config.yml`).
 
-Custom layout and styles:
+### Common deployment issue (Ruby too old)
 
-- `_layouts/home.html` – Overrides Minima’s home layout so only the content from `index.md` is shown (theme’s default "Posts" section is removed to avoid duplication).
-- `assets/css/home.css` – Home-only styles: section titles, category grid, post list with date + link, responsive behavior.
+If your server is using Ruby 2.x (e.g. Ruby 2.5), `bundle install` / `./run.sh` will fail for Chirpy/Jekyll 4.x. Upgrade Ruby first, then reinstall gems.
 
 ## Optional enhancements
 
@@ -78,17 +79,15 @@ Custom layout and styles:
 2. **Excerpts** – Set `show_excerpts: true` in `_config.yml` and add `excerpt` or `excerpt_separator` in posts to show short summaries in the list.
 3. **Category pages** – Add a dedicated layout or collection for each category (e.g. `/categories/go/`) so "文章分类" can link to category pages instead of listing all posts on the index.
 4. **Search** – Add client-side search (e.g. Simple Jekyll Search, Lunr) or a static JSON index for finding posts by title/category.
-5. **Theme customization** – To change global colors/fonts, copy Minima’s `_sass/minima.scss` and `assets/main.scss` into the repo and adjust variables; keep `assets/css/home.css` for index-only tweaks.
-6. **RSS** – The theme’s RSS link is removed from the home layout; ensure `jekyll-feed` is used and add an RSS link in `_includes/footer.html` or the header if desired.
-7. **Performance** – Lazy-load or limit the number of posts in the initial 文章列表 (e.g. latest 20), with a “View all” link to a full archive page.
-
-**Chirpy theme**: Requires Ruby ~> 3.1 and Jekyll ~> 4.3. Run `bundle install` after upgrading Ruby. Posts use permalink `/posts/:title/`; navigation is in `_tabs/`.
+5. **Theme customization** – Override theme files by adding the same paths under `_layouts`, `_includes`, `_sass`, or `assets` (Jekyll will use your site files before the theme gem).
+6. **RSS** – Ensure `jekyll-feed` is enabled (already in `_config.yml`) and link the feed in the theme UI if needed.
+7. **Performance** – Lazy-load or limit the number of posts in the initial list (e.g. latest 20), with a “View all” link to a full archive page.
 
 # 🚀 Getting Started
 
 ## Prerequisites
 
-- Ruby **3.1+** (for Jekyll 4 and Chirpy)
+- Ruby **3.1+** (required for Chirpy / Jekyll 4.3)
 - Bundler
 - Git
 
@@ -133,6 +132,6 @@ bundle exec jekyll serve
 
 ---
 
-*Built with ❤️ using Jekyll and the Minima theme*
+*Built with ❤️ using Jekyll and the Chirpy theme*
 
 
