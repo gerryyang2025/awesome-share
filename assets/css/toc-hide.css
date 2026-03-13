@@ -1,0 +1,15 @@
+/* Hide Chirpy right-side Contents (TOC) panel, but keep in-article {:toc} */
+
+/* Right-side TOC bar and popup (class names from Chirpy/tocbot integration) */
+.toc-bar,
+.toc-popup,
+.toc-popup-content {
+  display: none !important;
+}
+
+/* Generic tocbot containers on the side (do NOT affect kramdown {:toc}, which uses #markdown-toc) */
+#toc,
+#toc-wrapper,
+#toc-sidebar {
+  display: none !important;
+}
