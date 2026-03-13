@@ -647,6 +647,11 @@ https://gerryyang2025.github.io/my-obsidian/
 
 合理组合这些手段，你会很快看到两个变化：一是对话响应更稳定、跑偏更少，二是每个月的 Token 账单不再一路爬坡。
 
+PS: 可以通过 `/status` 查看当前会话的 Token 使用量。
+
+
+![openclaw90](/assets/images/202601/openclaw90.png)
+
 ## 斜杠命令，快速瘦身当前会话
 
 
