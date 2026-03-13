@@ -838,9 +838,9 @@ openclaw 保存 Skills 的目录是 `~/.openclaw/workspace/skills/`，在保证 
 ![openclaw42](/assets/images/202601/openclaw42.png)
 
 
+# OpenClaw 基础用法
 
-
-# Moltbot (原 Clawdbot)
+## Moltbot (原 Clawdbot)
 
 
 [Moltbot](https://github.com/moltbot/moltbot) is a personal AI assistant you run on your own devices. It answers you on the channels you already use (WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, Microsoft Teams, WebChat), plus extension channels like BlueBubbles, Matrix, Zalo, and Zalo Personal. It can speak and listen on macOS/iOS/Android, and can render a live Canvas you control. The Gateway is just the control plane — the product is the assistant.
@@ -855,7 +855,7 @@ If you want a personal, single-user assistant that feels local, fast, and always
 
 ![moltbot20](/assets/images/202601/moltbot20.png)
 
-# What It Does
+## What It Does
 
 * **Runs on Your Machine**
   + Mac, Windows, or Linux. Anthropic, OpenAI, or local models. Private by default - your data stays yours.
@@ -876,13 +876,13 @@ If you want a personal, single-user assistant that feels local, fast, and always
   + Extend with community skills or build your own. It can even write its own.
 
 
-# Works With Everything
+## Works With Everything
 
-See https://www.molt.bot/integrations.
+See https://openclaw.ai/integrations.
 
 
 
-# Install the CLI (recommended)
+## Install the CLI (recommended)
 
 Works on macOS, Windows & Linux. The one-liner installs `Node.js` and everything else for you.
 
@@ -936,7 +936,7 @@ The wizard installs the Gateway daemon (launchd/systemd user service) so it stay
 ![moltbot18](/assets/images/202601/moltbot18.png)
 
 
-# [Uninstall](https://docs.molt.bot/install/uninstall)
+## [Uninstall](https://docs.molt.bot/install/uninstall)
 
 Uninstall the gateway service + local data (CLI remains).
 
@@ -947,7 +947,7 @@ moltbot uninstall --dry-run
 ```
 
 
-# Run the onboarding wizard (and install the service)
+## Run the onboarding wizard (and install the service)
 
 ``` bash
 moltbot onboard --install-daemon
@@ -965,7 +965,7 @@ What you’ll choose:
 Wizard doc: [Wizard](https://docs.molt.bot/start/wizard)
 
 
-# Auth: where it lives (important)
+## Auth: where it lives (important)
 
 * **Recommended Anthropic path**: set an API key (wizard can store it for service use). `claude setup-token` is also supported if you want to reuse Claude Code credentials.
 * Auth profiles (OAuth + API keys): `~/.clawdbot/agents/<agentId>/agent/auth-profiles.json`
@@ -976,7 +976,7 @@ Headless/server tip: do OAuth on a normal machine first, then copy `oauth.json` 
 ![moltbot30](/assets/images/202601/moltbot30.png)
 
 
-# Start the Gateway
+## Start the Gateway
 
 If you installed the service during onboarding, the Gateway should already be running:
 
@@ -995,7 +995,7 @@ moltbot gateway --port 18789 --verbose
 Dashboard (local loopback): `http://127.0.0.1:18789/` If a token is configured, paste it into the Control UI settings (stored as `connect.params.auth.token`).
 
 
-# Quick verify (2 min)
+## Quick verify (2 min)
 
 ``` bash
 moltbot status
@@ -1017,37 +1017,6 @@ moltbot security audit --deep
 
 
 
-
-
-
-# Channles
-
-## [Imessage](https://docs.molt.bot/channels/imessage)
-
-Status: external CLI integration. Gateway spawns imsg rpc (JSON-RPC over stdio).
-
-### Quick setup (beginner)
-
-1. Ensure Messages is signed in on this Mac.
-2. Install `imsg`: `brew install steipete/tap/imsg`
-3. Configure Moltbot with `channels.imessage.cliPath` and `channels.imessage.dbPath`.
-4. Start the gateway and approve any macOS prompts (Automation + Full Disk Access).
-
-Minimal config:
-
-``` json
-{
-  channels: {
-    imessage: {
-      enabled: true,
-      cliPath: "/usr/local/bin/imsg",
-      dbPath: "/Users/<you>/Library/Messages/chat.db"
-    }
-  }
-}
-```
-
-![moltbot29](/assets/images/202601/moltbot29.png)
 
 # 使用 lighthouse 部署 OpenClaw 全能助手
 
