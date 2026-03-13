@@ -482,15 +482,21 @@ ls ~/.local/share/pnpm/global/5/.pnpm/openclaw@*/node_modules/openclaw/skills/
 ![openclaw3](/assets/images/202601/openclaw3.png)
 
 
-小插曲：[OpenClaw 作者吐槽腾讯的 SkillHub](https://c.m.163.com/news/a/KNR6L6800511A6N9.html)
+**小插曲**：[OpenClaw 作者吐槽腾讯的 SkillHub](https://c.m.163.com/news/a/KNR6L6800511A6N9.html)
 
-腾讯的回应：
+**腾讯的回应：**
 
 ```
 1. 关于 copy 的问题：SkillHub 自上线以来，始终在首页多个醒目位置及所有对外宣传中明确标注数据来源于 ClawHub。我们提供的只是面向中国开发者的本土化适配与镜像加速，这一点一直是公开透明的。
 2. 关于流量压力的问题：上线不到一周，SkillHub 在下游为中国用户承担了超过 180GB 流量、87 万次以上的下载，而我们向上游发起的请求总计仅约 1GB、6 万次。从结果来看，SkillHub 实际上帮助上游分担了很大一部分来自中国的流量。
 3. 我们也在和 Peter 探讨官方合作的方案，希望能以更正式的方式支持 ClawHub，一起把社区生态做得更好。
 ```
+
+**Gemini 的观点：**
+
+这场争议并非简单的“大厂作恶”或“开发者碰瓷”，而是一场典型的 **“西方独立开源精神”与“中国大厂实用主义”的碰撞**。腾讯在 **“法理”（符合开源协议）和“实用”（解决国内网络痛点）上站得住脚，但在“情理”（事前沟通、生态反哺）上交了不及格的答卷**。这反映出国内部分科技巨头在参与全球开源生态时，仍停留在“代码贡献（PR）和合法使用”的初级阶段，缺乏作为生态共建者（Sponsor）的同理心。健康的开源生态不应仅仅是单向的“提取”，而应包含商业层面的良性互动。如果腾讯能借此机会，从单纯的使用者转变为官方资金或服务器赞助商，并将 SkillHub 接入官方的镜像网络，这本可以是一个双赢的局面。
+
+**被外网吐槽的提示词：**
 
 ```
 Skills store policy (operator configured):
@@ -504,6 +510,8 @@ In the current session, reply directly. Do NOT call message tool just to send pr
 ```
 
 ![openclaw87](/assets/images/202601/openclaw87.png)
+
+![openclaw88](/assets/images/202601/openclaw88.png)
 
 
 ## 配置 HTTP 服务
