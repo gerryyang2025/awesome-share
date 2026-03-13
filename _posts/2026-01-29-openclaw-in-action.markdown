@@ -1136,36 +1136,96 @@ https://www.tavily.com/
 
 # 常用命令
 
-参考：https://zhuanlan.zhihu.com/p/2011017776756701009
+以 OpenClaw 2026.3.2 版本为例：
 
+```
+# openclaw -h
 
+🦞 OpenClaw 2026.3.2 (85377a2) — I don't just autocomplete—I auto-commit (emotionally), then ask you to review (logically).
 
+Usage: openclaw [options] [command]
 
-## 打开终端
+Options:
+  --dev                Dev profile: isolate state under ~/.openclaw-dev, default gateway port 19001, and shift derived ports (browser/canvas)
+  -h, --help           Display help for command
+  --log-level <level>  Global log level override for file + console (silent|fatal|error|warn|info|debug|trace)
+  --no-color           Disable ANSI colors
+  --profile <name>     Use a named profile (isolates OPENCLAW_STATE_DIR/OPENCLAW_CONFIG_PATH under ~/.openclaw-<name>)
+  -V, --version        output the version number
 
-``` bash
-openclaw tui
+Commands:
+  Hint: commands suffixed with * have subcommands. Run <command> --help for details.
+  acp *                Agent Control Protocol tools
+  agent                Run one agent turn via the Gateway
+  agents *             Manage isolated agents (workspaces, auth, routing)
+  approvals *          Manage exec approvals (gateway or node host)
+  browser *            Manage OpenClaw's dedicated browser (Chrome/Chromium)
+  channels *           Manage connected chat channels (Telegram, Discord, etc.)
+  clawbot *            Legacy clawbot command aliases
+  completion           Generate shell completion script
+  config *             Non-interactive config helpers (get/set/unset/file/validate). Default: starts setup wizard.
+  configure            Interactive setup wizard for credentials, channels, gateway, and agent defaults
+  cron *               Manage cron jobs via the Gateway scheduler
+  daemon *             Gateway service (legacy alias)
+  dashboard            Open the Control UI with your current token
+  devices *            Device pairing + token management
+  directory *          Lookup contact and group IDs (self, peers, groups) for supported chat channels
+  dns *                DNS helpers for wide-area discovery (Tailscale + CoreDNS)
+  docs                 Search the live OpenClaw docs
+  doctor               Health checks + quick fixes for the gateway and channels
+  gateway *            Run, inspect, and query the WebSocket Gateway
+  health               Fetch health from the running gateway
+  help                 Display help for command
+  hooks *              Manage internal agent hooks
+  logs                 Tail gateway file logs via RPC
+  memory *             Search and reindex memory files
+  message *            Send, read, and manage messages
+  models *             Discover, scan, and configure models
+  node *               Run and manage the headless node host service
+  nodes *              Manage gateway-owned node pairing and node commands
+  onboard              Interactive onboarding wizard for gateway, workspace, and skills
+  pairing *            Secure DM pairing (approve inbound requests)
+  plugins *            Manage OpenClaw plugins and extensions
+  qr                   Generate iOS pairing QR/setup code
+  reset                Reset local config/state (keeps the CLI installed)
+  sandbox *            Manage sandbox containers for agent isolation
+  secrets *            Secrets runtime reload controls
+  security *           Security tools and local config audits
+  sessions *           List stored conversation sessions
+  setup                Initialize local config and agent workspace
+  skills *             List and inspect available skills
+  status               Show channel health and recent session recipients
+  system *             System events, heartbeat, and presence
+  tui                  Open a terminal UI connected to the Gateway
+  uninstall            Uninstall the gateway service + local data (CLI remains)
+  update *             Update OpenClaw and inspect update channel status
+  webhooks *           Webhook helpers and integrations
+
+Examples:
+  openclaw models --help
+    Show detailed help for the models command.
+  openclaw channels login --verbose
+    Link personal WhatsApp Web and show QR + connection logs.
+  openclaw message send --target +15555550123 --message "Hi" --json
+    Send via your web session and print JSON result.
+  openclaw gateway --port 18789
+    Run the WebSocket Gateway locally.
+  openclaw --dev gateway
+    Run a dev Gateway (isolated state/config) on ws://127.0.0.1:19001.
+  openclaw gateway --force
+    Kill anything bound to the default gateway port, then start it.
+  openclaw gateway ...
+    Gateway control via WebSocket.
+  openclaw agent --to +15555550123 --message "Run summary" --deliver
+    Talk directly to the agent using the Gateway; optionally send the WhatsApp reply.
+  openclaw message send --channel telegram --target @mychat --message "Hi"
+    Send via your Telegram bot.
+
+Docs: docs.openclaw.ai/cli
 ```
 
-![openclaw28](/assets/images/202601/openclaw28.png)
 
-## 查看帮助
-
-``` bash
-# 查看所有命令
-openclaw --help
-
-# 查看版本号
-openclaw --version
-
-# 查看特定命令的帮助
-openclaw <command> --help
-
-# 示例：查看 config 命令帮助
-openclaw config --help
-```
-
-## 初始化配置
+## 配置相关
 
 ``` bash
 # 首次安装后初始化配置
@@ -1177,9 +1237,6 @@ openclaw onboard
 # 打开控制面板
 openclaw dashboard
 ```
-
-
-## 配置向导
 
 ``` bash
 # 打开完整配置向导
@@ -1193,40 +1250,8 @@ openclaw configure --section channels
 
 ![openclaw26](/assets/images/202601/openclaw26.png)
 
-## 查看配置
 
-``` bash
-# 查看完整配置
-openclaw config get
-
-# 查看特定配置项
-openclaw config get models.default
-openclaw config get providers.mistral.apiKey
-
-# 查看特定部分配置
-openclaw config get --section models
-openclaw config get --section providers
-```
-
-## 设置配置
-
-``` bash
-# 设置默认模型
-openclaw config set models.default mistral:mixtral-8x7b
-
-# 设置快速模型
-openclaw config set models.fast mistral:mistral-7b
-
-# 配置 Mistral API Key
-openclaw config set providers.mistral.apiKey YOUR_API_KEY_HERE
-
-# 启用缓存
-openclaw config set cache.enabled true
-openclaw config set cache.maxSize 5000
-```
-
-
-## 启动/停止 Gateway
+## 启停 Gateway
 
 ``` bash
 # 启动 Gateway（默认端口 18789）
@@ -1246,16 +1271,12 @@ openclaw gateway restart
 
 # 查看运行状态
 openclaw gateway status
-```
 
-![openclaw27](/assets/images/202601/openclaw27.png)
-
-## 运行时 Gateway
-
-``` bash
 # 查看健康状态
 openclaw health
 ```
+
+![openclaw27](/assets/images/202601/openclaw27.png)
 
 
 ## 查看日志
@@ -1268,344 +1289,10 @@ openclaw logs
 openclaw logs --follow
 ```
 
-
 ![openclaw32](/assets/images/202601/openclaw32.png)
-
 
 ![openclaw33](/assets/images/202601/openclaw33.png)
 
-
-## 创建新的会话 (清空 token 上下文)
-
-通过 `/new` 指令来新开一个会话
-
-![openclaw45](/assets/images/202601/openclaw45.png)
-
-
-## 系统服务管理
-
-``` bash
-# 使用 systemd 管理（推荐生产环境）
-sudo systemctl start openclaw-gateway
-sudo systemctl stop openclaw-gateway
-sudo systemctl restart openclaw-gateway
-sudo systemctl status openclaw-gateway
-
-# 开机自启动
-sudo systemctl enable openclaw-gateway
-```
-
-## 发送消息
-
-``` bash
-# 发送消息到当前会话
-openclaw message send --message "Hello"
-
-# 发送到特定目标（Telegram）
-openclaw message send \
-  --channel telegram \
-  --target @mychat \
-  --message "Hello from OpenClaw"
-
-# 发送到特定目标（WhatsApp）
-openclaw message send \
-  --channel whatsapp \
-  --target +8613800138000 \
-  --message "您好"
-
-# 发送到 Slack 频道
-openclaw message send \
-  --channel slack \
-  --target C1234567890 \
-  --message "@channel 重要通知"
-```
-
-## 发送媒体文件
-
-``` bash
-# 发送图片
-openclaw message send \
-  --channel telegram \
-  --target @mychat \
-  --media /tmp/photo.jpg \
-  --caption "这是一张图片"
-
-# 发送音频
-openclaw message send \
-  --channel whatsapp \
-  --target +8613800138000 \
-  --media /tmp/voice.mp3
-
-# 发送文档
-openclaw message send \
-  --channel telegram \
-  --target @mychat \
-  --media /tmp/report.pdf
-```
-
-## 查看技能列表
-
-``` bash
-# 查看所有已安装技能
-openclaw skills list
-
-# 搜索技能
-openclaw skills search weather
-
-# 查看技能详情
-openclaw skills show weather
-```
-
-## 安装/卸载技能
-
-``` bash
-# 安装技能
-openclaw skills install weather
-
-# 从指定来源安装
-openclaw skills install weather --source github
-
-# 指定版本安装
-openclaw skills install weather@1.2.0
-
-# 卸载技能
-openclaw skills uninstall weather
-```
-
-## 更新技能
-
-``` bash
-# 更新所有技能
-openclaw skills update
-
-# 更新特定技能
-openclaw skills update weather
-
-# 同步技能
-openclaw skills sync
-```
-
-## 技能开发
-
-``` bash
-# 创建新技能
-openclaw skills create my-skill
-
-# 验证技能
-openclaw skills validate my-skill
-
-# 打包技能
-openclaw skills pack my-skill
-```
-
-## 查看频道
-
-``` bash
-# 查看所有配置的频道
-openclaw channels list
-
-# 查看频道状态
-openclaw channels status
-
-# 查看特定频道详情
-openclaw channels show telegram
-```
-
-## 登录频道
-
-``` bash
-# Telegram 登录
-openclaw channels login --channel telegram
-
-# WhatsApp 登录（会显示 QR 码）
-openclaw channels login --channel whatsapp --verbose
-
-# Slack 登录
-openclaw channels login --channel slack
-
-# Discord 登录
-openclaw channels login --channel discord
-```
-
-## 频道测试
-
-``` bash
-# 测试频道连接
-openclaw channels test --channel telegram
-
-# 发送测试消息
-openclaw channels test \
-  --channel telegram \
-  --target @mychat \
-  --message "测试消息"
-```
-
-## 频道配置
-
-``` bash
-# 配置频道
-openclaw channels configure --channel telegram
-
-# 更新频道 Token
-openclaw channels update \
-  --channel telegram \
-  --token NEW_TOKEN
-
-# 启用/禁用频道
-openclaw channels enable telegram
-openclaw channels disable telegram
-```
-
-## 查看会话
-
-``` bash
-# 列出所有会话
-openclaw sessions
-
-# 列出活跃会话
-openclaw sessions --active
-
-# 列出特定频道的会话
-openclaw sessions --channel telegram
-
-# 显示最近 10 个会话
-openclaw sessions --limit 10
-```
-
-## 会话操作
-
-``` bash
-# 发送消息到会话
-openclaw sessions send \
-  --session <session-key> \
-  --message "你好"
-
-# 重置会话
-openclaw sessions reset <session-key>
-
-# 删除会话
-openclaw sessions delete <session-key>
-```
-
-## 查看节点
-
-``` bash
-# 查看所有配对的节点
-openclaw nodes list
-
-# 查看节点状态
-openclaw nodes status
-
-# 描述节点详情
-openclaw nodes describe <node-id>
-```
-
-## 节点操作
-
-``` bash
-# 发送通知到节点
-openclaw nodes notify \
-  --node my-phone \
-  --title "提醒" \
-  --body "该吃饭了"
-
-# 设置推送优先级
-openclaw nodes notify \
-  --node my-phone \
-  --priority timeSensitive \
-  --title "紧急通知" \
-  --body "快递到了"
-
-# 查看相册（手机）
-openclaw nodes camera-list --node my-phone
-
-# 拍照
-openclaw nodes camera-snap \
-  --node my-phone \
-  --facing back \
-  --output /tmp/photo.jpg
-```
-
-## 搜索记忆
-
-``` bash
-# 搜索记忆
-openclaw memory search "OpenClaw 配置"
-
-# 搜索并显示多行上下文
-openclaw memory search "配置" --lines 5
-
-# 搜索特定路径的记忆
-openclaw memory search "配置" --path MEMORY.md
-
-# 限制结果数量
-openclaw memory search "配置" --maxResults 10
-```
-
-## 记忆操作
-
-``` bash
-# 查看记忆统计
-openclaw memory stats
-
-# 清理过期记忆
-openclaw memory clean
-
-# 备份记忆
-openclaw memory backup --output /tmp/memory-backup.json
-```
-
-## 查看 Cron 任务
-
-``` bash
-# 列出所有任务
-openclaw cron list
-
-# 查看任务运行历史
-openclaw cron runs <job-id>
-
-# 查看调度器状态
-openclaw cron status
-```
-
-## 创建 Cron 任务
-
-``` bash
-# 创建定时任务（每天凌晨触发）
-openclaw cron add \
-  --name "daily-report" \
-  --schedule "0 0 * * *" \
-  --text "生成每日报告"
-
-# 创建重复任务（每 30 分钟）
-openclaw cron add \
-  --name "check-notifications" \
-  --schedule "*/30 * * * *" \
-  --text "检查通知"
-
-# 创建单次任务（特定时间）
-openclaw cron add \
-  --name "special-task" \
-  --schedule "at" \
-  --at "2026-03-01T10:00:00" \
-  --text "执行特殊任务"
-```
-
-## Cron 任务操作
-
-``` bash
-# 立即运行任务
-openclaw cron run <job-id>
-
-# 更新任务
-openclaw cron update <job-id> --schedule "0 6 * * *"
-
-# 删除任务
-openclaw cron remove <job-id>
-
-# 发送唤醒事件
-openclaw cron wake --text "检查新消息"
-```
 
 ## 健康检查
 
@@ -1615,19 +1302,6 @@ openclaw doctor
 
 # 快速修复常见问题
 openclaw doctor --fix
-```
-
-## 系统状态
-
-``` bash
-# 查看频道健康状态
-openclaw status
-
-# 查看系统事件
-openclaw system events
-
-# 查看心跳状态
-openclaw system heartbeat
 ```
 
 ## 安全检查
@@ -1654,15 +1328,6 @@ openclaw update
 
 # 更新到特定版本
 openclaw update --tag 2026.2.22
-
-# 更新到 Beta 版
-openclaw update --channel beta
-
-# 安全更新流程
-cp ~/.openclaw/config.json ~/.openclaw/config.json.backup \
-  && openclaw update --dry-run \
-  && openclaw update \
-  && openclaw gateway restart
 ```
 
 
@@ -1728,24 +1393,16 @@ cp ~/.openclaw/config.json ~/.openclaw/config.json.backup \
 
 问题现象：使用 tui channel 没有实时返回结果信息，而显示 `gateway connected | idle` 状态。
 
-
-
-
+![openclaw89](/assets/images/202601/openclaw89.png)
 
 
 
 
 # Refer
 
-* https://www.molt.bot/
-* https://docs.molt.bot/
-* https://github.com/moltbot/moltbot
-* https://docs.molt.bot/getting-started
-* https://docs.molt.bot/start/getting-started
-* https://docs.molt.bot/help/troubleshooting
-* https://docs.molt.bot/help/faq
+* https://openclaw.ai/
+* https://github.com/openclaw/openclaw
+* https://docs.openclaw.ai/start/getting-started
+* https://docs.openclaw.ai/help/troubleshooting
+* https://docs.openclaw.ai/help/faq
 * [被 Anthropic 强制要求改名！Clawdbot 创始人一人开发、100% AI 写代码](https://www.infoq.cn/news/Nb7WV3WYhhCoGdlq6MZy)
-* [云上Moltbot（原Clawdbot）最全实践指南合辑](https://cloud.tencent.com/developer/article/2624973)
-* [云上Moltbot（原Clawdbot）接入企业微信完全指南](https://cloud.tencent.com/developer/article/2625147)
-* [云上Moltbot（原Clawdbot）接入QQ完全指南](https://cloud.tencent.com/developer/article/2625097)
-* [搞懂这7个配置文件让你的OpenClaw变智能助手](https://cloud.tencent.com/developer/article/2635260)
