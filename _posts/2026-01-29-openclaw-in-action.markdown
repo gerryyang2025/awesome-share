@@ -13,12 +13,67 @@ tags:
 {:toc}
 
 
+# AI 工具汇总
+
+## 编程开发
+
+* [Cursor](https://cursor.com/cn/agents)
+* [Claude Code CLI](https://code.claude.com/docs/en/overview) (Anthropic)
+* [Gemini CLI](https://gemini.google.com/app) (Google)
+* [Codex](https://openai.com/zh-Hans-CN/codex/) (OpenAI)
+* [CodeBuddy](https://www.codebuddy.ai/) (Tencent)
+* [TRAE](https://www.trae.ai/) (字节)
+
+
+## 办公学习
+
+司外：
+
+* [豆包](https://www.doubao.com/chat/) (字节)
+* [DeepSeek](https://www.deepseek.com/) (深度求索)
+* [NotebookML - 了解任何事物](https://notebooklm.google/) (Google)
+* [秘塔 AI 搜索](https://metaso.cn/)
+* [千问](https://www.qianwen.com/) (阿里)
+* [元宝](https://yuanbao.tencent.com/chat/naQivTmsDa) (Tencent)
+* [小云雀](https://xyq.jianying.com/) (字节)
+* [可灵 AI](https://klingai.com/cn/) (快手)
+
+Tencent 司内：
+
+* [ima - 个人知识库](https://ima.qq.com/)
+* [乐享 - 团队协作知识库](https://lexiang.tencent.com/)
+* [Vedas - 职场效率搭子](https://ai.woa.com/#/vedas/agent/home)
+* [Knot - 搭建专属知识库](https://knot.woa.com/knowledge/list)
+* [With - 对话即开发](https://with.woa.com/)
+
+
+## 个人自研工具
+
+* [LLM News](http://llmnews.gerryyang.com/)
+* [英语学习助手](http://english.gerryyang.com/)
+* [H5 小游戏](https://gerryyang2025.github.io/h5-snake-game/)
+* [Obsidian 在线笔记](https://gerryyang2025.github.io/my-obsidian/)
+
 
 # 背景介绍
 
+2026年03月03日，[OpenClaw](https://github.com/openclaw/openclaw) 登顶 GitHub 软件 Star 数历史第一，已超越 [Linux](https://github.com/torvalds/linux)，正式加冕史上最受欢迎开源项目。OpenClaw 算得上 GitHub 上最重要的开源项目吗？理性的答案依然是否定的。拥有 **22万** 颗星的 Linux 至今默默支撑着全球绝大多数的服务器和智能设备，那是互联网跳动的稳定脉搏。然而，在短短四个月内让超过 **30万** 人愿意为之驻足并点亮星标，OpenClaw 已经证明了自己是当下技术情绪的最大公约数。
+
 ![openclaw0](/assets/images/202601/openclaw0.png)
 
+2026年03月13日的数据：
+
+![openclaw77](/assets/images/202601/openclaw77.png)
+
+![openclaw78](/assets/images/202601/openclaw78.png)
+
+**巴菲特**的搭档，投资家**查理.芒格**有句名言：**拿着锤子的人，看啥都像钉子**。查理.芒格说的“锤子”，可以认为是做事的“思维方式”，而“钉子”就是一件事在这种思维方式之下，看起来像什么样子。**芒格**的这句话想表达，**过度依赖特定工具或方法会导致认知偏差，主张通过跨学科学习建立多元思维模型**。
+
 ![openclaw67](/assets/images/202601/openclaw67.png)
+
+2026年03月12日，九号电动车官宣正式接入 OpenClaw，开放车辆信息查询能力 (**只读权限**)，包括：开关机状态，充电状态，定位信息，里程数据等。不包括反向控车指令，例如：远程解锁，调速控制等。
+
+![openclaw76](/assets/images/202601/openclaw76.png)
 
 > 命名变化：ClawBot -> MoltBot -> OpenClaw
 
@@ -57,6 +112,30 @@ Alex 展示了给他的 Clawdbot 发信息，让它帮其预订下周六在一�
 随着项目的火爆，其背后的开发者 Peter Steinberger 也备受关注。Peter 在“Open Source Friday”上分享了他一手打造 Clawdbot 的经过，从创建、创始到维护，全由他独自完成。有意思的是，此前甚至有传言称，Peter 可能是一个 bot、Agent，甚至本身就是 AI。而 Peter 的出现也让项目成员和关注者们确认了他是个“真人”。Peter 一度已经退休了，后来又从退休状态里出来开始折腾 AI。从外表来看，Peter 年轻有活力，完全不像已到退休年龄、可领取养老金的人。
 
 ![moltbot25](/assets/images/202601/moltbot25.png)
+
+
+
+# 类似 OpenClaw 的 AI 智能体产品汇总表
+
+| **产品名称** | **类型** | **发布时间** | **部署方式** | **付费模式** | **特点/定位** | **适用人群** |
+| --- | --- | --- | --- | --- | --- | --- |
+| OpenClaw | 开源鼻祖 | 2026-01 | 本地/云端 | 免费开源，自付API费 | 开源本地AI智能体，远程操控电脑、自动化任务 | 开发者、极客 |
+| 阿里 CoPaw | 国产大厂 | 2026-02-28 | 本地+云端 | 免费开源，企业版付费 | 端云双模，深度打通钉钉/飞书，办公友好 | 办公、企业、开发者 |
+| 腾讯 WorkBuddy | 国产大厂 | 2026-03-09 | 本地/云端 | 个人免费，专业版付费 | 一键部署，集成企业微信/QQ/腾讯文档 | 办公、团队协作用户 |
+| 腾讯 QClaw | 国产大厂 | 2026-03 | 本地 | 内测免费 | 微信扫码即用，兼容OpenClaw，技能丰富 | 个人、轻量办公 |
+| 字节 ArkClaw | 国产大厂 | 2026-03-10 | 云端SaaS | 免费额度+订阅 | 网页零配置，支持豆包模型，飞书适配 | 普通用户、飞书用户 |
+| 猎豹 EasyClaw | 国产工具 | 2026-02 | 本地 | 免费+会员 | 本地沙箱、可视化配置，兼容OpenClaw | 个人、普通办公 |
+| 有道 LobsterAI | 国产开源 | 2026-02 | 本地 | 完全免费开源 | 全中文环境，适合二次开发 | 开发者、学生 |
+| NanoClaw | 开源轻量 | 2026-01底 | 本地 | 免费开源 | 极简安全，容器隔离，启动快、体积小 | 开发者、旧设备用户 |
+| PicoClaw | 开源轻量 | 2026-02-09 | 本地 | 免费开源 | 极致轻量化，嵌入式友好 | 极客、嵌入式开发者 |
+| Nanobot | 开源轻量 | 2026-02 | 本地 | 免费开源 | 代码精简，科研友好，模块化 | 科研、开发者 |
+| IronClaw | 开源安全 | 2026-02 | 本地 | 免费开源 | Rust重写，零信任架构，安全性高 | 安全敏感、技术用户 |
+| ZeroClaw | 开源本地 | 2026-02 | 本地 | 免费开源 | Rust单二进制，本地优先，无厂商锁定 | 隐私优先用户 |
+| KimiClaw | 云端托管 | 2026-02-15 | 云端 | 付费订阅 | 月之暗面出品，云端运行，技能丰富 | 免部署、即用即走 |
+| MaxClaw | 云端托管 | 2026-02-26 | 云端 | 免费试用+订阅 | MiniMax出品，超长记忆，云端一键部署 | 重度AI使用者 |
+| TrustClaw | 企业安全 | 2026-03 | 云端 | 企业订阅 | 企业级云沙箱，OAuth认证，安全可控 | 企业、敏感数据场景 |
+| Manus AI/Lindy | 企业级平台 | 2026-01 | 云端 | 海外订阅制 | 通用AI Agent，团队协作与流程自动化 | 企业、团队 |
+| OpenClaw Cloud | 官方托管 | 2026-02 | 云端 | 订阅制 | OpenClaw官方云版，开源+省心运维 | 原OpenClaw用户 |
 
 
 
@@ -116,7 +195,7 @@ OpenClaw 的工作空间是智能体运行时的唯一工作目录，它包含�
 └── skills/         # 已安装的第三方技能扩展目录
 ```
 
-你会发现：OpenClaw 的“智商”根本不是由 Skills 数量决定的，而是由这 7 个配置文件决定的。
+> OpenClaw 的“智商”根本不是由 Skills 数量决定的，而是由这 7 个配置文件决定的。
 
 1. SOUL.md → 性格
 2. AGENTS.md → 怎么干活
@@ -302,12 +381,14 @@ BOOTSTRAP.md 是全新工作空间的一次性引导文件。核心功能是引�
 ```
 
 
-## 技能树 (可自动识别的 skills)
+## Skills 技能
+
+> 注意：需要是 OpenClaw 可自动识别的 skills，可以通过 `openclaw skills check` 确认查看。
 
 不同目录：
 
 * `~/.openclaw/skills/`，通过 clawhub 安装的技能，可自动识别
-* ~/.openclaw/workspace/skills/，用户手动生成存放的技能，需要通过
+* ~/.openclaw/workspace/skills/，用户自定义生成存放的技能
 
 ``` bash
 # 查看 OpenClaw 技能安装目录
@@ -341,7 +422,10 @@ ls ~/.local/share/pnpm/global/5/.pnpm/openclaw@*/node_modules/openclaw/skills/
 ![openclaw60](/assets/images/202601/openclaw60.png)
 
 
-## 具备哪些技能
+## 配置技能
+
+* [ClawHub](https://clawhub.ai/) (官方)
+* [SkillHub](https://skillhub.tencent.com/) (Tencent)
 
 通过 `openclaw skills list` 查看哪些技能可用：
 
@@ -354,7 +438,6 @@ ls ~/.local/share/pnpm/global/5/.pnpm/openclaw@*/node_modules/openclaw/skills/
 通过 `openclaw skills info your_skill_name` 查看某项技能的具体描述：
 
 ![openclaw58](/assets/images/202601/openclaw58.png)
-
 
 
 通过 QQ 查询：
@@ -398,6 +481,8 @@ ls ~/.local/share/pnpm/global/5/.pnpm/openclaw@*/node_modules/openclaw/skills/
 
 ![openclaw53](/assets/images/202601/openclaw53.png)
 
+[小游戏示例](https://gerryyang2025.github.io/h5-snake-game/)
+
 ## 生成图片
 
 单独聊天：
@@ -424,7 +509,11 @@ QQ群聊天：
 
 ![openclaw47](/assets/images/202601/openclaw47.png)
 
-[视频示例](http://106.55.160.81:8080/cat_dance_1772715932.mp4)
+[视频示例1](http://106.55.160.81:8080/cat_dance_1772715932.mp4)
+
+![openclaw75](/assets/images/202601/openclaw75.png)
+
+[视频示例2](http://106.55.160.81:8080/brad_pitt_vs_tom_cruise_1773333936.mp4)
 
 > 注意：Minimax 模型服务提供的 coding plan 账户只支持文本模型，与语音模型，视频模型的 API Key 不通用。也就是，如果使用了语音或视频的生成功能，会从用户的余额账户中进行扣费，需要控制使用量，否则开销会比较大。
 
@@ -462,6 +551,8 @@ https://gerryyang2025.github.io/my-obsidian/
 ![openclaw72](/assets/images/202601/openclaw72.png)
 
 ![openclaw73](/assets/images/202601/openclaw73.png)
+
+![openclaw79](/assets/images/202601/openclaw79.png)
 
 
 
