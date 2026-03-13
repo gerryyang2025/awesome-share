@@ -1,0 +1,51 @@
+/* TOC sidebar: show heading level hierarchy (indent by level) */
+
+/* tocbot-generated TOC: .toc-link has data-level="2" for h2, "3" for h3, etc. */
+#toc-sidebar .toc-link[data-level="2"],
+.toc-popup-content .toc-link[data-level="2"] {
+  padding-left: 0;
+  font-weight: 600;
+}
+
+#toc-sidebar .toc-link[data-level="3"],
+.toc-popup-content .toc-link[data-level="3"] {
+  padding-left: 1rem;
+  font-size: 0.95em;
+}
+
+#toc-sidebar .toc-link[data-level="4"],
+.toc-popup-content .toc-link[data-level="4"] {
+  padding-left: 2rem;
+  font-size: 0.9em;
+}
+
+#toc-sidebar .toc-link[data-level="5"],
+.toc-popup-content .toc-link[data-level="5"] {
+  padding-left: 2.5rem;
+  font-size: 0.875em;
+}
+
+/* Fallback: nested .toc-list (if data-level not present) */
+#toc-sidebar .toc-list .toc-list .toc-link,
+.toc-popup-content .toc-list .toc-list .toc-link {
+  padding-left: 1rem;
+}
+
+#toc-sidebar .toc-list .toc-list .toc-list .toc-link,
+.toc-popup-content .toc-list .toc-list .toc-list .toc-link {
+  padding-left: 2rem;
+}
+
+/* Any tocbot TOC container (e.g. #toc, .toc) */
+#toc .toc-link[data-level="2"],
+.toc .toc-link[data-level="2"] { padding-left: 0; font-weight: 600; }
+#toc .toc-link[data-level="3"],
+.toc .toc-link[data-level="3"] { padding-left: 1rem; font-size: 0.95em; }
+#toc .toc-link[data-level="4"],
+.toc .toc-link[data-level="4"] { padding-left: 2rem; font-size: 0.9em; }
+#toc .toc-link[data-level="5"],
+.toc .toc-link[data-level="5"] { padding-left: 2.5rem; font-size: 0.875em; }
+#toc .toc-list .toc-list .toc-link,
+.toc .toc-list .toc-list .toc-link { padding-left: 1rem; }
+#toc .toc-list .toc-list .toc-list .toc-link,
+.toc .toc-list .toc-list .toc-list .toc-link { padding-left: 2rem; }
