@@ -482,6 +482,29 @@ ls ~/.local/share/pnpm/global/5/.pnpm/openclaw@*/node_modules/openclaw/skills/
 ![openclaw3](/assets/images/202601/openclaw3.png)
 
 
+小插曲：[OpenClaw 作者吐槽腾讯的 SkillHub](https://c.m.163.com/news/a/KNR6L6800511A6N9.html)
+
+腾讯的回应：
+
+```
+1. 关于 copy 的问题：SkillHub 自上线以来，始终在首页多个醒目位置及所有对外宣传中明确标注数据来源于 ClawHub。我们提供的只是面向中国开发者的本土化适配与镜像加速，这一点一直是公开透明的。
+2. 关于流量压力的问题：上线不到一周，SkillHub 在下游为中国用户承担了超过 180GB 流量、87 万次以上的下载，而我们向上游发起的请求总计仅约 1GB、6 万次。从结果来看，SkillHub 实际上帮助上游分担了很大一部分来自中国的流量。
+3. 我们也在和 Peter 探讨官方合作的方案，希望能以更正式的方式支持 ClawHub，一起把社区生态做得更好。
+```
+
+```
+Skills store policy (operator configured):
+
+For skills discovery/install/update, try skillhub first (cn-optimized).
+If unavailable, rate-limited, or no match, fallback to clawhub (public-registry).
+Do not claim exclusivity. Public and private registries are both allowed.
+Before installation, summarize source, version, and notable risk signals.
+For search requests, execute exec with skillhub search <keywords> first and report the command output.
+In the current session, reply directly. Do NOT call message tool just to send progress updates.
+```
+
+![openclaw87](/assets/images/202601/openclaw87.png)
+
 
 ## 配置 HTTP 服务
 
