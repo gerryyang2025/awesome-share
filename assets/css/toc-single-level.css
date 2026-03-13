@@ -1,30 +1,15 @@
-/* Right-side Contents: only show top-level headings (e.g. H2) */
+/* Right-side Contents: only show first-level items in TOC (nested items hidden).
+ * We只针对 Chirpy 右侧 TOC 容器，避免影响正文里的 {:toc} (#markdown-toc)。
+ */
 
-/* 确保 Chirpy 的 TOC 面板本身是可见的（覆盖之前可能的隐藏样式） */
-.toc-bar,
-.toc-popup,
-.toc-popup-content,
-#toc,
-#toc-wrapper,
-#toc-sidebar {
-  display: block !important;
-}
-
-/* tocbot 生成的链接：只显示 data-level="2"（H2），更深层级在右侧隐藏 */
-.toc-link[data-level="3"],
-.toc-link[data-level="4"],
-.toc-link[data-level="5"],
-.toc-link[data-level="6"] {
+/* 在右侧弹出/侧边栏中，隐藏嵌套的第二级及以下目录列表 */
+.toc-popup-content .toc-list .toc-list,
+.toc-popup-content .toc-list .toc-list .toc-list,
+#toc-sidebar .toc-list .toc-list,
+#toc-sidebar .toc-list .toc-list .toc-list {
   display: none !important;
 }
 
-/* 兼容没有 data-level 时的嵌套结构：隐藏二级及更深层 ul/li */
-.toc-list .toc-list,
-.toc-list .toc-list .toc-list {
-  display: none !important;
-}
-
-/* 注意：不要影响正文里的 kramdown TOC（#markdown-toc） */
-#markdown-toc {
-  display: block;
-}
+/* 保守处理：不要基于 data-level 做过滤，交给 tocbot 决定层级，
+ * 我们只根据“是否嵌套”来把子级目录藏起来。
+ */
