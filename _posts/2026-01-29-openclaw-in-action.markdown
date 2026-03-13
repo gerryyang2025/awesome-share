@@ -138,6 +138,43 @@ Alex 展示了给他的 Clawdbot 发信息，让它帮其预订下周六在一�
 | OpenClaw Cloud | 官方托管 | 2026-02 | 云端 | 订阅制 | OpenClaw官方云版，开源+省心运维 | 原OpenClaw用户 |
 
 
+# 腾讯 OpenClaw 产品矩阵
+
+官网对外官宣的 5 个产品位：**自研龙虾**、**本地虾**、**云端虾**、**企业虾**、**云桌面虾**。
+
+更多：[腾讯外网“小龙虾”产品矩阵](https://d6fbd1f30235453981326435040d50c7.ap-singapore.myide.io/)
+
+* [WorkBuddy](https://copilot.tencent.com/work/)，[腾讯版“小龙虾”WorkBuddy正式上线，不用部署“开箱即用”](https://news.qq.com/rain/a/20260309A06LRY00)
+* [QClaw](https://claw.guanjia.qq.com/)，[腾讯QClaw官网上线：可一键部署“龙虾”，兼容QQ、微信](https://news.qq.com/rain/a/20260309A057A700)
+* [腾讯云 Lighthouse + OpenClaw](https://cloud.tencent.com/product/lighthouse)，[玩转OpenClaw｜云上OpenClaw一键秒级部署指南](https://cloud.tencent.com/developer/article/2624003)
+* [腾讯云 ADP](https://cloud.tencent.com/product/tcadp)，[产品介绍](https://cloud.tencent.com/document/product/1759/104193)
+* [腾讯云桌面 CVD](https://cloud.tencent.com/product/cvd)，[部署 OpenClaw（Moltbot/Clawdbot）智能 AI 助手](https://cloud.tencent.com/document/product/1291/128042)
+
+产品定位对比：
+
+![openclaw80](/assets/images/202601/openclaw80.png)
+
+![openclaw86](/assets/images/202601/openclaw86.png)
+
+资源要求对比：
+
+![openclaw81](/assets/images/202601/openclaw81.png)
+
+AI 模型对比：
+
+![openclaw82](/assets/images/202601/openclaw82.png)
+
+接入渠道对比：
+
+![openclaw83](/assets/images/202601/openclaw83.png)
+
+应用场景对比：
+
+![openclaw84](/assets/images/202601/openclaw84.png)
+
+成本对比：
+
+![openclaw85](/assets/images/202601/openclaw85.png)
 
 
 
