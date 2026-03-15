@@ -2023,7 +2023,7 @@ When declaring an empty slice, prefer
 
 {% highlight golang %}
 var t []string
-{% highlight over %}
+{% endhighlight %}
 {% highlight golang %}
 t := []string{}
 {% endhighlight %}
@@ -2219,4 +2219,3 @@ https://book.douban.com/subject/35902219/
 [Jaeger]: https://github.com/jaegertracing/jaeger
 [go-chassis]: https://github.com/go-chassis/go-chassis
 [learn-go-with-tests]: https://github.com/quii/learn-go-with-tests
-{% endhighlight %}
