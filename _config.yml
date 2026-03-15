@@ -126,7 +126,8 @@ compress_html:
   profile: false
   blanklines: true
   ignore:
-    envs: [development]
+    # Disable compression so code blocks keep newlines (compress was collapsing <pre> content)
+    envs: [development, production]
 
 exclude:
   - "*.gem"

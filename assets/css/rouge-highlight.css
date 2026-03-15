@@ -5,6 +5,15 @@
   margin: 0;
 }
 
+/* Ensure code block line breaks are preserved (required when compress is disabled) */
+.highlight pre,
+.highlight pre code,
+.figure .highlight pre,
+.figure .highlight pre code {
+  white-space: pre;
+  overflow-x: auto;
+}
+
 .highlight .c,
 .highlight .c1,
 .highlight .cm,
