@@ -419,7 +419,7 @@ In the rest of the article I will use only `Intel syntax` because it’s the one
 | lea     eax,[ebx+ecx]        |  leal    (%ebx,%ecx),%eax          |
 | sub     eax,[ebx+ecx*4h-20h] |  subl    -0x20(%ebx,%ecx,0x4),%eax |
 +------------------------------+------------------------------------+
-{% highlight text %}
+{% endhighlight %}
 
 refer: http://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html
 
@@ -1434,4 +1434,3 @@ In your case you are clearing all the bits of `EAX` (32bits register) except the
 
 * [All programmers MUST learn C and Assembly](https://blog.packagecloud.io/eng/2017/04/21/deconstruct-2017-all-programmers-must-learn-c-and-assembly/)
 * [C AND ASSEMBLY](https://devarea.com/c-and-assembly/#.ZAmojOxBw0Q)
-{% endhighlight %}
