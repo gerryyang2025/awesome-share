@@ -279,7 +279,7 @@ test:
 
 # 使用示例
 
-``` yaml
+```yaml
 # YAML Ain't Markup Language
 
 person:
@@ -346,7 +346,7 @@ Let's take a look at the documentation
 
 One example of this can also be found in the [documentation](http://yaml.org/spec/1.1/#YAML%20directive/) for directive `YAML`
 
-``` yaml
+```yaml
 %YAML 1.2 # Attempt parsing
            # with a warning
 ---

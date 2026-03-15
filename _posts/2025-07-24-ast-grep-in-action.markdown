@@ -368,7 +368,7 @@ Now you have learnt the basic of ast-grep's pattern syntax and searching. Patter
 
 A minimal ast-grep rule looks like this.
 
-``` yaml
+```yaml
 id: no-await-in-promise-all
 language: TypeScript
 rule:
@@ -443,7 +443,7 @@ Below is the full list of fields in a rule object. Every rule field is optional 
 
 The equivalent rule object interface in `TypeScript` is also provided for reference.
 
-``` yaml
+```yaml
 rule:
   # atomic rule
   pattern: 'search.pattern'
@@ -539,7 +539,7 @@ But for a quick primer, a rule can have a pattern and we can extract meta variab
 
 For example, the rule below will match the `console.log('Hello World')`.
 
-``` yaml
+```yaml
 rule:
   pattern: console.log($GREET)
 ```
@@ -578,7 +578,7 @@ Atomic rule defines the most basic matching rule that determines whether one syn
 
 Pattern will match one single syntax node according to the [pattern syntax](https://ast-grep.github.io/guide/pattern-syntax.html).
 
-``` yaml
+```yaml
 rule:
   pattern: console.log($GREETING)
 ```
@@ -606,7 +606,7 @@ Let's see how **pattern object** can solve the ambiguity(模棱两可) in the cl
 
 The **pattern object** below instructs ast-grep to select the `field_definition` node as the pattern target.
 
-``` yaml
+```yaml
 pattern:
   selector: field_definition
   context: class A { $FIELD = $INIT }
@@ -621,7 +621,7 @@ pattern:
 
 In this way, the pattern is parsed as `field_definition` instead of `assignment_expression`. See [playground](https://ast-grep.github.io/playground.html#eyJtb2RlIjoiQ29uZmlnIiwibGFuZyI6ImphdmFzY3JpcHQiLCJxdWVyeSI6IiRGSUVMRCA9ICRJTklUIiwicmV3cml0ZSI6IkRlYnVnLmFzc2VydCIsImNvbmZpZyI6InJ1bGU6XG4gIHBhdHRlcm46XG4gICAgc2VsZWN0b3I6IGZpZWxkX2RlZmluaXRpb25cbiAgICBjb250ZXh0OiBjbGFzcyBBIHsgJEZJRUxEID0gJElOSVQgfVxuIiwic291cmNlIjoiYSA9IDEyM1xuY2xhc3MgQSB7XG4gIGEgPSAxMjNcbn0ifQ==) in action.
 
-``` yaml
+```yaml
 rule:
   pattern:
     selector: field_definition
@@ -683,7 +683,7 @@ Instead, we can use `kind` to specify the AST node type defined in [tree-sitter 
 
 Back to our example, we can look up class property's kind from the playground.
 
-``` yaml
+```yaml
 rule:
   kind: field_definition
 ```
@@ -717,7 +717,7 @@ Here are some situations that you can effectively use `kind`:
 
 The `regex` atomic rule will match the AST node by its text against a Rust regular expression.
 
-``` yaml
+```yaml
 rule:
   regex: "\w+"
 ```
@@ -736,7 +736,7 @@ You should almost always combine `regex` with other atomic rules to make sure th
 
 `nthChild` is heavily inspired by CSS's [nth-child pseudo-class](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child), and it accepts similar forms of arguments.
 
-``` yaml
+```yaml
 # a number to match the exact nth child
 nthChild: 3
 
@@ -761,7 +761,7 @@ nthChild:
 
 The following rule will match the second number in the JavaScript array.
 
-``` yaml
+```yaml
 rule:
   kind: number
   nthChild: 2
@@ -783,7 +783,7 @@ const arr = [ 1, 2, 3, ]
 
 `range` rule accepts a range object with `start` and `end` fields. Each field is an object with `line` and `column` fields.
 
-``` yaml
+```yaml
 rule:
   range:
     start:

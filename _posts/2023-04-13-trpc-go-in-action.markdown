@@ -54,7 +54,7 @@ trpc create --protofile=qqchatsvr.proto --rpconly
 
 * 可以在 `trpc_go.yaml` 的 server service 中额外添加 HTTP RPC 服务：
 
-``` yaml
+```yaml
     - name: trpc.test.helloworld.Greeter  # service 的名字服务路由名称
       ip: 127.0.0.1                       # 服务监听 ip 地址
       port: 8080                          # 服务监听端口
@@ -141,7 +141,7 @@ filter.Register("name", filter1, filter2) // 拦截器名字自己随便定义�
 
 ### 配置文件开启使用
 
-``` yaml
+```yaml
 server:
  filter:  # 对所有 service 全部生效
    - name1  # 上面第三步注册到框架中的 server 拦截器名字

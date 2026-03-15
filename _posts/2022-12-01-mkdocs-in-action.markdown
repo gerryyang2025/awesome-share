@@ -105,7 +105,7 @@ Open the `docs/index.md` document in your text editor of choice, change the init
 
 Now try editing the configuration file: `mkdocs.yml`. Change the [site_name](https://www.mkdocs.org/user-guide/configuration/#site_name) setting to MkLorum and save the file.
 
-``` yaml
+```yaml
 site_name: MkLorum
 site_url: https://example.com/
 ```
@@ -127,7 +127,7 @@ curl 'https://jaspervdj.be/lorem-markdownum/markdown.txt' > docs/about.md
 
 As our documentation site will **include some navigation headers**, you may want to edit the configuration file and add some information about the order, title, and nesting of each page in the navigation header by adding a nav setting:
 
-``` yaml
+```yaml
 site_name: MkLorum
 site_url: https://example.com/
 nav:
@@ -148,7 +148,7 @@ Try the menu items and navigate back and forth between pages. Then click on **Se
 
 Now change the configuration file to alter how the documentation is displayed by changing the theme. Edit the `mkdocs.yml` file and add a [theme](https://www.mkdocs.org/user-guide/configuration/#theme) setting:
 
-``` yaml
+```yaml
 site_name: MkLorum
 site_url: https://example.com/
 nav:

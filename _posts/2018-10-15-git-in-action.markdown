@@ -2326,7 +2326,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 在仓库根目录创建 `.github/workflows/deploy.yml`
 
-``` yaml
+```yaml
 name: Deploy to GitHub Pages
 
 on:

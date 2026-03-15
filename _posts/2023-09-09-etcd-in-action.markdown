@@ -2708,7 +2708,7 @@ nano $HOME/playground/etcd-ansible/playbook.yaml
 
 Inside playbook.yaml, add the following lines:
 
-``` yaml
+```yaml
 - hosts: etcd
   tasks:
     - name: "Retrieve hostname"
@@ -2764,7 +2764,7 @@ nano $HOME/playground/etcd-ansible/playbook.yaml
 
 Replace the entirety of the `playbook.yaml` file with the following contents:
 
-``` yaml
+```yaml
 - hosts: etcd
   become: True
   tasks:
@@ -2928,7 +2928,7 @@ nano $HOME/playground/etcd-ansible/playbook.yaml
 
 Append the following highlighted task to the end of our existing tasks:
 
-``` yaml
+```yaml
     - name: "Create a etcd service"
       copy:
         src: files/etcd.service
@@ -2987,7 +2987,7 @@ nano $HOME/playground/etcd-ansible/playbook.yaml
 
 Append the following task to the end of the list of tasks:
 
-``` yaml
+```yaml
     - name: "Create a data directory"
       file:
         path: /var/lib/etcd/{{ inventory_hostname }}.etcd
@@ -3032,7 +3032,7 @@ nano $HOME/playground/etcd-ansible/playbook.yaml
 Append the following tasks to the list of tasks to create a directory and upload the templated configuration file into it:
 
 
-``` yaml
+```yaml
     - name: "Create directory for etcd configuration"
       file:
         path: /etc/etcd
@@ -3088,7 +3088,7 @@ nano $HOME/playground/etcd-ansible/playbook.yaml
 
 Append the following tasks to the end of the task list:
 
-``` yaml
+```yaml
     - name: "Enable the etcd service"
       command: systemctl enable etcd
     - name: "Start the etcd service"
@@ -3270,7 +3270,7 @@ nano $HOME/playground/etcd-ansible/playbook.yaml
 
 Then, before the "Create a data directory" task, add a task to stop the etcd service:
 
-``` yaml
+```yaml
 - hosts: etcd
   become: True
   tasks:
@@ -3287,7 +3287,7 @@ Then, before the "Create a data directory" task, add a task to stop the etcd ser
 Next, update the "Create a data directory" task to first delete the data directory and recreate it:
 
 
-``` yaml
+```yaml
 - hosts: etcd
   become: True
   tasks:

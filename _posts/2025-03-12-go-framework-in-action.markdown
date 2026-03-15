@@ -589,7 +589,7 @@ logger.Info("Server started",
 
 * 持续集成
 
-``` yaml
+```yaml
 # 示例 GitHub Actions 配置
 name: CI
 on: [push]
@@ -617,7 +617,7 @@ swag init -g cmd/myapp/main.go
   - 使用`golangci-lint`进行静态检查
   - 设置`pre-commit`钩子
 
-``` yaml
+```yaml
 # .pre-commit-config.yaml
 repos:
 - repo: https://github.com/golangci/golangci-lint

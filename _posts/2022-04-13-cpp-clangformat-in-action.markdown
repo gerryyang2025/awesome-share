@@ -78,7 +78,7 @@ The `-U0` will create a diff without context lines (the script would format thos
 
 The `.clang-format` file uses `YAML` format:
 
-``` yaml
+```yaml
 key1: value1
 key2: value2
 # A comment.
@@ -87,7 +87,7 @@ key2: value2
 
 An example of a configuration file for multiple languages:
 
-``` yaml
+```yaml
 ---
 # We'll use defaults from the LLVM style, but with 4 columns indentation.
 BasedOnStyle: LLVM
@@ -110,7 +110,7 @@ DisableFormat: true
 
 执行 clang-format -style=google -dump-config 命令的输出：
 
-``` yaml
+```yaml
 ---
 Language:        Cpp
 # BasedOnStyle:  Google

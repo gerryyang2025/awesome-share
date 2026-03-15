@@ -201,7 +201,7 @@ protolint -v                                # print protolint version (when used
 
 `protolint` is available as a [pre-commit hook](https://pre-commit.com/). Add this to your `.pre-commit-config.yaml` in your repository to run protolint with Go:
 
-``` yaml
+```yaml
 repos:
   - repo: https://github.com/yoheimuta/protolint
     rev: v0.56.3 # Select a release here
@@ -211,7 +211,7 @@ repos:
 
 For Docker-based execution, use the `protolint-docker` hook:
 
-``` yaml
+```yaml
 repos:
   - repo: https://github.com/yoheimuta/protolint
     hooks:
@@ -533,7 +533,7 @@ Refer to [_example/config/.protolint.yaml](https://github.com/yoheimuta/protolin
 
 `protolint` will automatically search a current working directory for the config file by default and successive parent directories all the way up to the root directory of the filesystem. And it can search the specified directory with `-config_dir_path` flag. It can also search the specified file with `--config_path` flag.
 
-``` yaml
+```yaml
 ---
 # Lint directives.
 lint:

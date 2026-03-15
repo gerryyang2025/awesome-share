@@ -558,7 +558,7 @@ The above will first check to see if `.name` is empty. If it is not, it will ret
 
 yaml 配置：
 
-``` yaml
+```yaml
 UpdateMgr:
   EpollMgr: {Type: "BY_MICROSECOND", Interval: "1000"}
   LibEventMgr: {Type: "BY_MICROSECOND", Interval: "1000"}
