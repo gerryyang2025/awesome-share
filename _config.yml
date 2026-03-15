@@ -9,6 +9,7 @@ tagline: 他山之石，可以攻玉
 description: >-
   他山之石，可以攻玉
 
+# Use https if your site is served over HTTPS.
 url: "http://gerryyang.com"
 baseurl: ""
 # Base URL for share/copy links (use production domain so shares are correct when serving locally)
@@ -32,8 +33,10 @@ webmaster_verifications:
   bing: ""
   baidu: ""
 
+# Chirpy expects each platform to have an `id` key when enabled.
 analytics:
-  google: "UA-NNNNNNNN-N"
+  google:
+    id: "" # e.g. UA-NNNNNNNN-N or G-XXXXXXXXXX
   goatcounter: {}
   umami: {}
   matomo: {}
