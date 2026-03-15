@@ -841,6 +841,7 @@ clang-tidy --checks='clang-analyzer-*,modernize-*,readability-*' test.cpp
 `.clang-tidy `配置内容如下，可根据[官方定义的规则](https://clang.llvm.org/extra/clang-tidy/checks/list.html)进行自定义，同时也可以参考其他开源项目的配置示例。
 
 {% highlight text %}
+---
 # @refer
 # https://clang.llvm.org/extra/clang-tidy/checks/list.html
 # https://github.com/googleapis/google-cloud-cpp/blob/main/.clang-tidy
@@ -897,7 +898,7 @@ CheckOptions:
   - { key: readability-function-cognitive-complexity.Threshold, value: 100 }
   - { key: readability-implicit-bool-conversion.AllowPointerConditions, value: 1}
 
-{% highlight text %}
+{% endhighlight %}
 
 * [Setting a sub-option to clang-tidy](https://stackoverflow.com/questions/53185985/setting-a-sub-option-to-clang-tidy)
 
@@ -1716,4 +1717,3 @@ This document describes the required and optional components in a complete toolc
 * [Clang Compiler User’s Manual](https://clang.llvm.org/docs/UsersManual.html)
 
 
-{% endhighlight %}
