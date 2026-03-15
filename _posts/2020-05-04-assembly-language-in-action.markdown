@@ -406,6 +406,7 @@ mov $1, %rax
 In the rest of the article I will use only `Intel syntax` because it’s the one supported by `NASM`.
 
 {% highlight text %}
++------------------------------+------------------------------------+
 |       Intel Code             |      AT&T Code                     |
 +------------------------------+------------------------------------+
 | mov     eax,1                |  movl    $1,%eax                   |
@@ -531,10 +532,7 @@ $ hexdump example.o
 0000180 0000 0000 0000 0000 0000 0000 0000 0000
 0000190 6500 6178 706d 656c 612e 6d73 0000 0000
 00001a0
-{% endhighlight %}
 
-
-{% highlight text %}
 $ ld -o example example.o
 ld: warning: cannot find entry symbol _start; not setting start address
 {% endhighlight %}
@@ -547,9 +545,7 @@ section .text
 _start:
 {% endhighlight %}
 
-
 **This is the tiniest program that can be linked successfully, but it does nothing**. Not only, it does nothing, but it fails to execute:
-
 
 {% highlight text %}
 $ nasm -f elf64 -o example.o example.asm

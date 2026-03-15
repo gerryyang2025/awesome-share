@@ -10,8 +10,8 @@ out = []
 i = 0
 while i < lines.size
   line = lines[i]
-  # Match opening fence: ```lang or ``` (lang may contain - or +, e.g. ```-wunused-function)
-  if line =~ /\A```([^\s\r\n]*)\s*\r?\n\z/
+  # Match opening fence: ```lang or ``` lang (optional space after ```)
+  if line =~ /\A```\s*([^\s\r\n]*)\s*\r?\n\z/
     raw_lang = $1
     lang = raw_lang.empty? ? "text" : (raw_lang =~ /\A[\w+]+\z/ ? raw_lang : "text")
     i += 1
