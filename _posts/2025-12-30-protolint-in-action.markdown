@@ -533,7 +533,7 @@ Refer to [_example/config/.protolint.yaml](https://github.com/yoheimuta/protolin
 
 `protolint` will automatically search a current working directory for the config file by default and successive parent directories all the way up to the root directory of the filesystem. And it can search the specified directory with `-config_dir_path` flag. It can also search the specified file with `--config_path` flag.
 
-```yaml
+{% highlight yaml %}
 # .protolint.yaml
 # Lint directives.
 lint:
@@ -709,8 +709,7 @@ lint:
     syntax_consistent:
       # Default is proto3.
       version: proto2
-```
-
+{% endhighlight %}
 
 # Exit codes
 
