@@ -1,9 +1,18 @@
 /* Hide Chirpy right-side Contents (TOC) panel, but keep in-article {:toc} */
 
-/* Right-side TOC bar and popup (class names from Chirpy/tocbot integration) */
+/* Desktop: right-side TOC bar and popup */
 .toc-bar,
 .toc-popup,
 .toc-popup-content {
+  display: none !important;
+}
+
+/* Mobile: bar and button that open the Contents popup (Chirpy uses #toc-bar, .toc-trigger, #toc-solo-trigger) */
+#toc-bar,
+#toc-solo-trigger,
+.toc-trigger,
+#toc-popup,
+#toc-popup-content {
   display: none !important;
 }
 
