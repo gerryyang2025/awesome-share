@@ -28,8 +28,11 @@ Env:
   MIN_RUBY_VERSION=3.1.0        Minimum Ruby version
   AUTO_FIX=1                    Auto-fix Ruby via rbenv (Ubuntu) when too old
   RBENV_RUBY_VERSION=3.2.3      Ruby version to install via rbenv
-  DEBUG=0                       Set to 1 to add jekyll --trace output
+  DEBUG=0                       Set to 1 to add jekyll --trace (for debugging Liquid/build errors)
 EOF
+  echo ""
+  echo "For Jekyll/Liquid errors, run with trace:  DEBUG=1 ./optools start"
+  echo "Then check run.log or:  tail -f run.log"
 }
 
 run_cmd() {
@@ -204,6 +207,8 @@ start_jekyll() {
       tail -n 200 "${LOG_FILE}" || true
       echo "[run] ---- error hints (from last 400 lines) ----"
       tail -n 400 "${LOG_FILE}" 2>/dev/null | grep -nE "Liquid Exception|Error:|FATAL|fatal|No such file|could not locate|Missing|undefined method|Invalid|Permission denied|Configuration file:|Dependency Error" -C 2 || true
+      echo "[run] ----"
+      echo "[run] For full stack trace, run:  DEBUG=1 ./optools start   (then see run.log)"
       rm -f "${PID_FILE}" || true
       return 1
     fi

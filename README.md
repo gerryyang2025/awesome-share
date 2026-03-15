@@ -156,7 +156,7 @@ Use the **optools** script for environment checks, start/stop, and status:
 ./optools help         # show help
 ```
 
-- The dev server listens on **port 8080** by default (`_config.yml`). Set `DEBUG=1` when starting to get `--trace` and extra log output if the process exits early.
+- The dev server listens on **port 8080** by default (`_config.yml`). For debugging (e.g. Liquid/build errors), set `DEBUG=1` to append `--trace` to the serve command: `DEBUG=1 ./optools start`, then inspect `run.log` (or `tail -f run.log`).
 
 # 📊 Blog Statistics
 
