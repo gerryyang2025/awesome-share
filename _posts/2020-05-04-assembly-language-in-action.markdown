@@ -436,10 +436,10 @@ sudo apt-get install nasm
 
 You can verify it installed correctly:
 
-```
+{% highlight text %}
 $ nasm -v
 NASM version 2.13.02
-```
+{% endhighlight %}
 
 # Assembling a program
 
@@ -533,21 +533,25 @@ $ hexdump example.o
 00001a0
 {% endhighlight %}
 
+
+{% highlight text %}
 $ ld -o example example.o
 ld: warning: cannot find entry symbol _start; not setting start address
-{% highlight text %}
+{% endhighlight %}
 
 An assembly program needs a`_start` entry point. Let’s modify our example so it works:
 
-{% endhighlight %}
+{% highlight text %}
 section .text
   global _start
 _start:
-{% highlight text %}
+{% endhighlight %}
+
 
 **This is the tiniest program that can be linked successfully, but it does nothing**. Not only, it does nothing, but it fails to execute:
 
-{% endhighlight %}
+
+{% highlight text %}
 $ nasm -f elf64 -o example.o example.asm
 $ hexdump example.o
 0000000 457f 464c 0102 0001 0000 0000 0000 0000
@@ -587,11 +591,10 @@ $ hexdump example.o
 $ ld -o example example.o
 $ ./example
 -bash: ./example: cannot execute binary file: Exec format error
-{% highlight text %}
+{% endhighlight %}
 
 **Adding an instruction** to our program fixes this problem:
 
-{% endhighlight %}
 {% highlight text %}
 section .text
   global _start
