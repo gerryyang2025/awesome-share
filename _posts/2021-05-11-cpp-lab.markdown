@@ -5600,11 +5600,13 @@ Answers:
 The C++ standard, 7.5.2 dcl.link, says:
 
 > Linkage between C++ and non-C++ code fragments can be achieved using a linkage-specification:
-> ``` cpp
->linkage-specification:
+>
+> {% highlight cpp %}
+> linkage-specification:
 >   extern string-literal { declaration-seqopt}
 >   extern string-literal declaration
->```
+> {% endhighlight %}
+>
 > The string-literal indicates the required language linkage. This International Standard specifies the semantics for the string-literals "C" and "C++". Use of a string-literal other than "C" or "C++" is conditionally supported, with implementation-defined semantics. [ Note: Therefore, a linkage-specification with a string literal that is unknown to the implementation requires a diagnostic. —end note ] [ Note: It is recommended that the spelling of the string-literal be taken from the document defining that language. For example, Ada (not ADA) and Fortran or FORTRAN, depending on the vintage. —end note ]
 
 So in principle, implementers can choose to support other linkage specifications than C and C++.

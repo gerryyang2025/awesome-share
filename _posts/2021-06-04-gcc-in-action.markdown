@@ -512,10 +512,8 @@ int main()
 {% highlight text %}
 # gcc -E main.cc
 
- static const char __me_bin6[] __attribute__ ((__used__)) __attribute__((section(".bininfo"),unused)) = "Ver_" "" "(" "gerry" ")" "-[" "Jun 13 2022" " " "18:04:18" "][gcc_" "4.8.5 20150623 (Red Hat 4.8.5-39)" "]";
- ```
+ static const char __me_bin6[] __attribute__ ((__used__)) __attribute__((section(".bininfo"),unused)) = "Ver_" "" "(" "gerry" ")" "-[" "Jun 13 2022" " " "18:04:18" "][gcc_"  "4.8.5 20150623 (Red Hat 4.8.5-39)" "]";
 
- ```
 $objdump -s a.out | grep .bininfo -A10
 Contents of section .bininfo:
  400820 5665725f 28676572 7279292d 5b4a756e  Ver_(gerry)-[Jun
@@ -528,7 +526,6 @@ Contents of section .eh_frame_hdr:
  40087c 8c000000 a4fdffff 5c000000 91feffff  ........\.......
  40088c b4000000 abfeffff d4000000 e8feffff  ................
  40089c f4000000 04ffffff 14010000 74ffffff  ............t...
- ```
 
 
 * https://gcc.gnu.org/onlinedocs/gcc-3.2/gcc/Variable-Attributes.html

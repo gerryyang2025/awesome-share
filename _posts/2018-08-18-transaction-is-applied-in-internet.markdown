@@ -166,7 +166,6 @@ MySQL InnoDB存储引擎，实现的是基于多版本的并发控制协议`MVCC
 `快照读`：简单的select操作，属于快照读，不加锁。(当然，也有例外)
 {% highlight text %}
 select * from table where ?;
- ```
 
 `当前读`：特殊的读操作，插入/更新/删除操作，属于当前读，需要加锁。
 {% endhighlight %}

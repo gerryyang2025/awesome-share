@@ -242,25 +242,25 @@ Kitty: We like each other. We're good friends. (吉蒂：我们喜欢彼此。�
     *   `duration`：视频时长，目前通常为6秒。
     *   `resolution`：分辨率，如 `"1080P"`。
 *   **代码示例**：
-    ```python
-    import os, time, requests
-    api_key = os.environ["MINIMAX_API_KEY"]
-    headers = {"Authorization": f"Bearer {api_key}"}
+{% highlight python %}
+import os, time, requests
+api_key = os.environ["MINIMAX_API_KEY"]
+headers = {"Authorization": f"Bearer {api_key}"}
 
-    # 1. 创建任务
-    url = "https://api.minimaxi.com/v1/video_generation"
-    payload = {
-        "prompt": "镜头拍摄一个女性坐在咖啡馆里，女人抬头看着窗外，镜头缓缓移动拍摄到窗外的街道，画面呈现暖色调，色彩浓郁，氛围轻松惬意。",
-        "model": "MiniMax-Hailuo-2.3",
-        "duration": 6,
-        "resolution": "1080P",
-    }
-    response = requests.post(url, headers=headers, json=payload)
-    task_id = response.json()["task_id"]
+# 1. 创建任务
+url = "https://api.minimaxi.com/v1/video_generation"
+payload = {
+    "prompt": "镜头拍摄一个女性坐在咖啡馆里，女人抬头看着窗外，镜头缓缓移动拍摄到窗外的街道，画面呈现暖色调，色彩浓郁，氛围轻松惬意。",
+    "model": "MiniMax-Hailuo-2.3",
+    "duration": 6,
+    "resolution": "1080P",
+}
+response = requests.post(url, headers=headers, json=payload)
+task_id = response.json()["task_id"]
 
-    # 2. 轮询状态... (需实现轮询逻辑)
-    # 3. 获取文件... (需实现获取逻辑)
-    ```
+# 2. 轮询状态... (需实现轮询逻辑)
+# 3. 获取文件... (需实现获取逻辑)
+{% endhighlight %}
 
 
 > 模式二：根据图片生成视频 (Image-to-Video)
@@ -271,15 +271,15 @@ Kitty: We like each other. We're good friends. (吉蒂：我们喜欢彼此。�
     *   `first_frame_image`：起始图片的**可公开访问的URL**。
     *   `prompt`：描述基于首帧图像发生的**运动或变化**，可使用**图生视频Prompt公式**（见下文）。
 *   **代码示例** (关键Payload):
-    ```python
-    payload = {
-        "prompt": "Contemporary dance, the people in the picture are performing contemporary dance.",
-        "first_frame_image": "https://filecdn.minimax.chat/public/85c96368-6ead-4eae-af9c-116be878eac3.png",
-        "model": "MiniMax-Hailuo-2.3",
-        "duration": 6,
-        "resolution": "1080P",
-    }
-    ```
+{% highlight python %}
+payload = {
+    "prompt": "Contemporary dance, the people in the picture are performing contemporary dance.",
+    "first_frame_image": "https://filecdn.minimax.chat/public/85c96368-6ead-4eae-af9c-116be878eac3.png",
+    "model": "MiniMax-Hailuo-2.3",
+    "duration": 6,
+    "resolution": "1080P",
+}
+{% endhighlight %}
 
 > 模式三：首尾帧生成视频 (Start&End-frame-to-Video)
 
@@ -290,16 +290,16 @@ Kitty: We like each other. We're good friends. (吉蒂：我们喜欢彼此。�
     *   `last_frame_image`：结束图片URL。
     *   `prompt`：描述从首帧到尾帧的演变过程，如“A little girl grow up.”。
 *   **代码示例** (关键Payload):
-    ```python
-    payload = {
-        "prompt": "A little girl grow up.",
-        "first_frame_image": "https://.../start.jpeg",
-        "last_frame_image": "https://.../end.jpeg",
-        "model": "MiniMax-Hailuo-02", # 注意模型名称可能不同
-        "duration": 6,
-        "resolution": "1080P"
-    }
-    ```
+{% highlight python %}
+payload = {
+    "prompt": "A little girl grow up.",
+    "first_frame_image": "https://.../start.jpeg",
+    "last_frame_image": "https://.../end.jpeg",
+    "model": "MiniMax-Hailuo-02", # 注意模型名称可能不同
+    "duration": 6,
+    "resolution": "1080P"
+}
+{% endhighlight %}
 
 > 模式四：主体参考生成视频 (Subject Reference)
 
@@ -310,20 +310,20 @@ Kitty: We like each other. We're good friends. (吉蒂：我们喜欢彼此。�
     *   `prompt`：详细的场景、动作、镜头描述。
     *   `model`：如 `"S2V-01"`。
 *   **代码示例** (关键Payload):
-    ```python
-    payload = {
-        "prompt": "On an overcast day, in an ancient cobbled alleyway, the model is dressed in a brown corduroy jacket...", # 详细描述
-        "subject_reference": [
-            {
-                "type": "character",
-                "image": ["https://.../face.PNG"], # 人物照片URL
-            }
-        ],
-        "model": "S2V-01",
-        "duration": 6,
-        "resolution": "1080P",
-    }
-    ```
+{% highlight python %}
+payload = {
+    "prompt": "On an overcast day, in an ancient cobbled alleyway, the model is dressed in a brown corduroy jacket...", # 详细描述
+    "subject_reference": [
+        {
+            "type": "character",
+            "image": ["https://.../face.PNG"], # 人物照片URL
+        }
+    ],
+    "model": "S2V-01",
+    "duration": 6,
+    "resolution": "1080P",
+}
+{% endhighlight %}
 
 
 > 高级功能：使用模板生成视频 (Video Template)
@@ -336,15 +336,15 @@ Kitty: We like each other. We're good friends. (吉蒂：我们喜欢彼此。�
     *   `media_inputs`：填充模板的图片或视频素材URL列表。
     *   `text_inputs`：填充模板的文本列表。
 *   **代码示例** (关键Payload):
-    ```python
-    url = "https://api.minimaxi.com/v1/video_template_generation"
-    payload = {
-        "template_id": "393769180141805569",  # 绝地求生模板ID
-        "media_inputs": [{"value": "https://.../pet_image.jpeg"}],
-        "text_inputs": [{"value": "狮子"}],
-    }
-    # 后续轮询状态，成功后从 response_json["video_url"] 获取视频
-    ```
+{% highlight python %}
+url = "https://api.minimaxi.com/v1/video_template_generation"
+payload = {
+    "template_id": "393769180141805569",  # 绝地求生模板ID
+    "media_inputs": [{"value": "https://.../pet_image.jpeg"}],
+    "text_inputs": [{"value": "狮子"}],
+}
+# 后续轮询状态，成功后从 response_json["video_url"] 获取视频
+{% endhighlight %}
 *   **常用模板示例** (来自官方列表)：
 
 | 模板 ID | 名称 | 说明 | 素材需求 |
