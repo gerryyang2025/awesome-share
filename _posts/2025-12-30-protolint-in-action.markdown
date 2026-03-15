@@ -534,7 +534,7 @@ Refer to [_example/config/.protolint.yaml](https://github.com/yoheimuta/protolin
 `protolint` will automatically search a current working directory for the config file by default and successive parent directories all the way up to the root directory of the filesystem. And it can search the specified directory with `-config_dir_path` flag. It can also search the specified file with `--config_path` flag.
 
 ```yaml
-# .protolint.yaml (optional document start "---" omitted to avoid Jekyll parsing)
+# .protolint.yaml
 # Lint directives.
 lint:
   # Linter files to ignore.
