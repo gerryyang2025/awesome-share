@@ -28,15 +28,15 @@ TCP关闭连接如上图下半部分的四次握手实现。发起终止的一�
 
 1. `TIME_WAIT` 状态可以重用，这样即使 `TIME_WAIT` 占满了所有端口，也不会拒绝新的请求
 
-```
+{% highlight text %}
 echo 1 > /proc/sys/net/ipv4/tcp_tw_reuse
-```
+{% endhighlight %}
 
 2. `TIME_WAIT` 尽快回收
 
-```
+{% highlight text %}
 echo 1 > /proc/sys/net/ipv4/tcp_tw_recycle
-```
+{% endhighlight %}
 
 > tcp_tw_recycle 打开后能在很短的时间能将 `TIME_WAIT` 的端口回收（但是具体时间并未找到相应的资料，测试观察在1秒左右）。同时，打开加速回收或者允许重用，存在一定的问题，例如，发起方(client) 在发出最后一个 **ACK** 后立即被回收，而 **ACK** 丢失，接受方超时重发 **FIN**，恰好此时发起方使用刚才的端口建立起新的连接，那它将收到一个 **FIN**，从而可能引发异常被动关闭。
 
@@ -104,7 +104,7 @@ Network addresses can be flat addresses which contain no information about the n
 
 ## sockaddr_in
 
-```cpp
+{% highlight cpp %}
 struct sockaddr_in {
     sa_family_t    sin_family; /* address family: AF_INET */
     in_port_t      sin_port;   /* port in network byte order */
@@ -115,7 +115,7 @@ struct sockaddr_in {
 struct in_addr {
     uint32_t       s_addr;     /* address in network byte order */
 };
-```
+{% endhighlight %}
 
 * https://man7.org/linux/man-pages/man7/ip.7.html
 
@@ -123,7 +123,7 @@ struct in_addr {
 
 The `hostent` structure is defined in `<netdb.h>` as follows:
 
-```cpp
+{% highlight cpp %}
 struct hostent {
     char  *h_name;            /* official name of host */
     char **h_aliases;         /* alias list */
@@ -132,7 +132,7 @@ struct hostent {
     char **h_addr_list;       /* list of addresses */
 }
 #define h_addr h_addr_list[0] /* for backward compatibility */
-```
+{% endhighlight %}
 
 The members of the hostent structure are:
 
@@ -150,7 +150,7 @@ The members of the hostent structure are:
 
 The `addrinfo` structure used by `getaddrinfo()` contains the following fields:
 
-```cpp
+{% highlight cpp %}
 struct addrinfo {
     int              ai_flags;
     int              ai_family;
@@ -161,7 +161,7 @@ struct addrinfo {
     char            *ai_canonname;
     struct addrinfo *ai_next;
 };
-```
+{% endhighlight %}
 
 * https://man7.org/linux/man-pages/man3/getaddrinfo.3.html
 
@@ -268,13 +268,13 @@ An application can use `select(2)`, `poll(2)`, or `epoll(7)` to determine when m
 
 select, pselect, FD_CLR, FD_ISSET, FD_SET, FD_ZERO - synchronous I/O multiplexing
 
-```cpp
+{% highlight cpp %}
 int select(int nfds,
             fd_set *restrict readfds,
             fd_set *restrict writefds,
             fd_set *restrict exceptfds,
             struct timeval *restrict timeout);
-```
+{% endhighlight %}
 
 > DESCRIPTION
 
@@ -282,35 +282,35 @@ WARNING: `select()` can monitor only file descriptors numbers that are less than
 
 `select()` allows a program to monitor multiple file descriptors, waiting until one or more of the file descriptors become "ready" for some class of I/O operation (e.g., input possible).  A file descriptor is considered ready if it is possible to perform a corresponding I/O operation (e.g., `read(2)`, or a sufficiently small `write(2)`) without blocking.
 
-```nfds
+{% highlight nfds %}
 This argument should be set to the highest-numbered file descriptor in any of the three sets, plus 1.  The indicated file descriptors in each set are checked, up to this limit (but see BUGS).
 
 BUGS
 
 POSIX allows an implementation to define an upper limit, advertised via the constant FD_SETSIZE, on the range of file descriptors that can be specified in a file descriptor set.  The Linux kernel imposes no fixed limit, but the glibc implementation makes fd_set a fixed-size type, with FD_SETSIZE defined as 1024, and the FD_*() macros operating according to that limit.  To monitor file descriptors greater than 1023, use poll(2) or epoll(7) instead.
-```
+{% endhighlight %}
 
 * https://man7.org/linux/man-pages/man2/select.2.html
 
 ## poll
 
-```cpp
+{% highlight cpp %}
 #include <poll.h>
 
 int poll(struct pollfd *fds, nfds_t nfds, int timeout);
-```
+{% endhighlight %}
 
 `poll()` performs a similar task to `select(2)`: it waits for one of a set of file descriptors to become ready to perform I/O.  The Linux-specific `epoll(7)` API performs a similar task, but offers features beyond those found in `poll()`.
 
 The set of file descriptors to be monitored is specified in the `fds` argument, which is **an array of structures** of the following form:
 
-```cpp
+{% highlight cpp %}
 struct pollfd {
     int   fd;         /* file descriptor */
     short events;     /* requested events */
     short revents;    /* returned events */
 };
-```
+{% endhighlight %}
 
 The caller should specify the number of items in the `fds` array in `nfds`.
 
@@ -329,12 +329,12 @@ getsockopt() and setsockopt() manipulate options for the socket referred to by t
 
 ## getaddrinfo
 
-```cpp
+{% highlight cpp %}
 int getaddrinfo(const char *restrict node,
                 const char *restrict service,
                 const struct addrinfo *restrict hints,
                 struct addrinfo **restrict res);
-```
+{% endhighlight %}
 
 Given `node` and `service`, which identify an Internet host and a service, `getaddrinfo()` returns one or more `addrinfo` structures, each of which contains an Internet address that can be specified in a call to `bind(2)` or `connect(2)`.  The `getaddrinfo()` function combines the functionality provided by the `gethostbyname(3)` and `getservbyname(3)` functions into a single interface, but unlike the latter functions, `getaddrinfo()` is **reentrant and allows programs to eliminate IPv4-versus-IPv6 dependencies**.
 
@@ -348,7 +348,7 @@ TL;DR it runs through `/etc/nsswitch.conf`, and uses whatever modules are listed
 
 https://wandbox.org/permlink/lLxsF1NqXamWodoF
 
-```cpp
+{% highlight cpp %}
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -368,12 +368,12 @@ int main(void)
   freeaddrinfo(addr);
   return 0;
 }
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $./a.out
 google.com is at: 172.217.163.46
-```
+{% endhighlight %}
 
 
 * https://man7.org/linux/man-pages/man3/getaddrinfo.3.html
@@ -382,7 +382,7 @@ google.com is at: 172.217.163.46
 
 ## gethostbyname
 
-```cpp
+{% highlight cpp %}
 #include <stdio.h>
 #include <netdb.h>
 
@@ -403,18 +403,18 @@ int main()
 localhost
 127.0.0.1
 */
-```
+{% endhighlight %}
 
 * https://man7.org/linux/man-pages/man3/gethostbyname.3.html
 
 ## getpeername
 
-```cpp
+{% highlight cpp %}
 #include <sys/socket.h>
 
 int getpeername(int sockfd, struct sockaddr *restrict addr,
                 socklen_t *restrict addrlen);
-```
+{% endhighlight %}
 
 `getpeername()` returns the address of the peer connected to the socket `sockfd`, in the buffer pointed to by `addr`.  The `addrlen` argument should be initialized to indicate the amount of space pointed to by `addr`.  On return it contains the actual size of the name returned (in bytes).  The name is truncated if the buffer provided is too small.
 
@@ -441,13 +441,13 @@ Now `EPOLLET` indicates **edge-triggered wait**, meaning your desired event woul
 
 ## epoll_ctl
 
-```cpp
+{% highlight cpp %}
 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
-```
+{% endhighlight %}
 
 The `event` argument describes the object linked to the file descriptor `fd`.  The struct `epoll_event` is defined as:
 
-```cpp
+{% highlight cpp %}
 typedef union epoll_data {
     void        *ptr;
     int          fd;
@@ -459,7 +459,7 @@ struct epoll_event {
     uint32_t     events;      /* Epoll events */
     epoll_data_t data;        /* User data variable */
 };
-```
+{% endhighlight %}
 
 The data member of the `epoll_event` structure specifies data that the kernel should save and then return (via `epoll_wait(2)`) when this file descriptor becomes ready.
 
@@ -511,7 +511,7 @@ Nagle 算法主要用来预防小分组的产生。在广域网上，大量 TCP 
 
 Use `inet_ntop()` and `inet_pton()` if you need it other way around. Do not use `inet_ntoa()`, `inet_aton()` and similar as they are deprecated and don't support ipv6.
 
-```cpp
+{% highlight cpp %}
 // IPv4 demo of inet_ntop() and inet_pton()
 
 struct sockaddr_in sa;
@@ -524,7 +524,7 @@ inet_pton(AF_INET, "192.0.2.33", &(sa.sin_addr));
 inet_ntop(AF_INET, &(sa.sin_addr), str, INET_ADDRSTRLEN);
 
 printf("%s\n", str); // prints "192.0.2.33"
-```
+{% endhighlight %}
 
 ## [When is TCP option SO_LINGER (0) required?](https://stackoverflow.com/questions/3757289/when-is-tcp-option-so-linger-0-required?newreg=6f6d760f75ec40cfa3b813ee7731b14e)
 

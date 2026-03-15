@@ -80,7 +80,7 @@ To configure debug configuration, Two files are required `launch.json` and `task
 
 ### launch.json
 
-```
+{% highlight text %}
 {
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
@@ -109,13 +109,13 @@ To configure debug configuration, Two files are required `launch.json` and `task
         }
     ]
 }
-```
+{% endhighlight %}
 
 More: https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
 
 ### tasks.json
 
-```
+{% highlight text %}
 {
 	"version": "2.0.0",
 	"tasks": [
@@ -140,12 +140,12 @@ More: https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
 		}
 	]
 }
-```
+{% endhighlight %}
 
 
 ### follow-fork-mode
 
-```cpp
+{% highlight cpp %}
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -160,14 +160,14 @@ int main()
     }
     wait(NULL);
 }
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 // launch.json
 "setupCommands": [
     {"text": "-gdb-set follow-fork-mode child"}
 ]
-```
+{% endhighlight %}
 
 * https://github.com/microsoft/vscode-cpptools/issues/511
 * https://github.com/microsoft/vscode-cpptools/issues/1211
@@ -187,25 +187,25 @@ int main()
 * 将`公钥`复制到Remote机器的`~/.ssh/authorized_keys`文件中。
 * VS Code和VS Code Server的通信走SSH通道，需要开启SSH端口转发。打开Remote机器上的`/etc/ssh/sshd_config`文件 ，将`AllowTcpForwarding`选项改成`yes`，然后重启sshd服务`service sshd restart`。
 * 在本地`~/.ssh/`目录下添加或修改`config`配置。
-```
+{% highlight text %}
 # VS Code Remote Development
 Host $ip_ssh_config
   User $user_name
   HostName $remote_ip
   Port $ssh_port
   IdentityFile ~/.ssh/vscode_id_rsa
-```
+{% endhighlight %}
 
 * 执行`Remote-SSH`->`Remote-SSH: Connect to Host…`->`配置的Remote Host`，第一次连接默认会在Remote机器`~/.vscode-server`目录下安装`VS Code Server`。
 
-```
+{% highlight text %}
 # Remote Server
 ~/.vscode-server$du -csh *
 109M    bin
 56K     data
 4.0K    extensions
 109M    总用量
-```
+{% endhighlight %}
 
 * 链接成功后，可以执行`Open folder...`打开Remote机器的Project查看和编辑代码，同时，可以打开`Remote-SSH`集成的`Terminal`查看和执行Remote服务器的相关操作。
 
@@ -241,23 +241,23 @@ More: https://code.visualstudio.com/docs/editor/codebasics
 
 ## 标题显示完整的文件路径名
 
-```json
+{% highlight json %}
 "window.title": "${dirty}${activeEditorLong}${separator}${rootName}${separator}${appName}"
-```
+{% endhighlight %}
 
 ## 自动删除文件行尾空格
 
-```json
+{% highlight json %}
 "files.trimTrailingWhitespace": true
-```
+{% endhighlight %}
 
 ## 在explorer中设置不关心的文件
 
-```json
+{% highlight json %}
 "files.exclude": {
     "*.log": true,
 }
-```
+{% endhighlight %}
 
 ## 显示空格和tab符号
 
@@ -272,7 +272,7 @@ More: https://code.visualstudio.com/docs/editor/codebasics
 
 vscode 上使用 clangd 的配置 (项目根目录 `.vscode/settings.json` )
 
-```json
+{% highlight json %}
 {
     // clangd configuration for jmesh project (C++20, CMake)
     "clangd.arguments": [
@@ -304,7 +304,7 @@ vscode 上使用 clangd 的配置 (项目根目录 `.vscode/settings.json` )
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd" // C 语言文件支持
     }
 }
-```
+{% endhighlight %}
 
 
 * https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd

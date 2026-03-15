@@ -360,7 +360,7 @@ DeepSeek-R1-Distill-14B: `ollama run deepseek-r1:14b`
 
 系列模型清单：
 
-```deepseek-v3
+{% highlight text %}
 DeepSeek-R1
 DeepSeek-R1-Distill-Qwen-1.5B
 DeepSeek-R1-Distill-Qwen-7B
@@ -368,7 +368,7 @@ DeepSeek-R1-Distill-Llama-8B
 DeepSeek-R1-Distill-Qwen-14B
 DeepSeek-R1-Distill-Qwen-32B
 DeepSeek-R1-Distill-Llama-70B
-```
+{% highlight text %}
 
 # Tools
 
@@ -378,12 +378,12 @@ Get up and running with large language models. Ollama 是一个开源工具，�
 
 以下选择 macOS 版本，本地机器配置 Apple M1 Pro 32G 内存，下载 https://ollama.com/download/Ollama-darwin.zip 安装完成后：
 
-```bash
+{% highlight bash %}
 ~ ollama --version
 ollama version is 0.5.7
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 ~ ollama --help
 Large language model runner
 
@@ -410,14 +410,14 @@ Flags:
   -v, --version   Show version information
 
 Use "ollama [command] --help" for more information about a command.
-```
+{% endhighlight %}
 
 下载安装第一个模型：
 
-```bash
+{% highlight bash %}
 # Run your first model
 ollama run llama3.2
-```
+{% endhighlight %}
 
 Ollama 支持的模型：Ollama supports a list of models available on [ollama.com/library](https://ollama.com/library)
 
@@ -456,9 +456,9 @@ Ollama 支持的模型：Ollama supports a list of models available on [ollama.c
 
 为了提高下载模型的速度，可以在 https://modelscope.cn/home 国内的代理服务下载所需的模型，这里测试下载 [DeepSeek-R1-Distill-Qwen-7B-GGUF 模型](https://modelscope.cn/models/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF)。
 
-```
+{% highlight text %}
 ollama run modelscope.cn/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF
-```
+{% endhighlight %}
 
 ![ds_local1](/assets/images/202502/ds_local1.png)
 
@@ -613,3 +613,4 @@ ima.copilot (简称 ima) 是一款由腾讯混元大模型提供技术支持的�
 
 
 
+{% endhighlight %}

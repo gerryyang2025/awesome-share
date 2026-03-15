@@ -33,10 +33,10 @@ MySQL online DDL(Data Definition Language)主要解决的问题是，满足在�
 
 ## MySQL 5.7 online DDL
 
-```sql
+{% highlight sql %}
 ALTER TABLE testdb.testtable ADD COLUMN _new_column
 ALGORITHM = inplace,LOCK = default;
-```
+{% endhighlight %}
 
 `ALGORITHM`子句用来指定执行DDL所采用的方式，取值为`{DEFAULT|INPLACE|COPY}`
 

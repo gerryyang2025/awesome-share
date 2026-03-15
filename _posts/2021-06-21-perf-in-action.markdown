@@ -75,7 +75,7 @@ The `perf` tool offers a rich set of commands to collect and analyze performance
 
 The list of supported commands:
 
-```perf
+{% highlight perf %}
  usage: perf [--version] [--help] COMMAND [ARGS]
 
  The most commonly used perf commands are:
@@ -101,11 +101,11 @@ The list of supported commands:
   top             System profiling tool.
 
  See 'perf help COMMAND' for more information on a specific command.
-```
+{% endhighlight %}
 
 Certain commands require special support in the kernel and may not be available. To obtain the list of options for each command, simply type the command name followed by `-h`:
 
-```
+{% highlight text %}
 perf stat -h
 
  usage: perf stat [<options>] [<command>]
@@ -120,7 +120,7 @@ perf stat -h
     -r, --repeat <n>      repeat command and print average + stddev (max: 100)
     -n, --null            null run - dont start any counters
     -B, --big-num         print large numbers with thousands' separators
-```
+{% endhighlight %}
 
 ## Events
 
@@ -134,7 +134,7 @@ Finally, there are also **tracepoint events** which are implemented by the kerne
 
 To obtain a list of supported events:
 
-```
+{% highlight text %}
 perf list
 
 List of pre-defined events (to be used in -e):
@@ -198,13 +198,13 @@ List of pre-defined events (to be used in -e):
  syscalls:sys_exit_socket                   [Tracepoint event]
 
  [...]
-```
+{% endhighlight %}
 
 # Counting with perf stat
 
 For any of the supported events, perf can keep a running count during process execution. In counting modes, the occurrences of events are simply aggregated and presented on standard output at the end of an application run. To generate these statistics, use the stat command of perf. For instance:
 
-```
+{% highlight text %}
 # perf stat ./perf_stat_example
 pid: 24298
 
@@ -220,7 +220,7 @@ pid: 24298
    <not supported>      branch-misses
 
        1.276480272 seconds time elapsed
-```
+{% endhighlight %}
 
 With no events specified, `perf stat` collects the common events listed above. Some are software events, such as context-switches, others are generic hardware events such as cycles. After the hash sign, derived metrics may be presented, such as 'IPC' (instructions per cycle).
 
@@ -230,7 +230,7 @@ It is possible to measure **one or more events** per run of the perf tool. Event
 
 By default, events are measured at both user and kernel levels:
 
-```
+{% highlight text %}
 # perf stat -e context-switches,page-faults ./perf_stat_example
 pid: 26956
 
@@ -240,19 +240,19 @@ pid: 26956
             48,880      page-faults
 
        1.260494406 seconds time elapsed
-```
+{% endhighlight %}
 
 To measure more than one event, simply provide a comma-separated list with no space:
 
-```
+{% highlight text %}
 perf stat -e cycles,instructions,cache-misses [...]
-```
+{% endhighlight %}
 
 ## Attaching to a running process
 
 It is possible to use perf to attach to an already running thread or process. This requires the permission to attach along with the thread or process ID. To attach to a process, the `-p` option must be the process ID. To attach to the sshd service that is commonly running on many Linux machines, issue:
 
-```
+{% highlight text %}
 # ps ax | grep "sshd -D"
   917 ?        Ss     4:30 /usr/sbin/sshd -D
 27561 pts/0    S+     0:00 grep --color=auto sshd -D
@@ -270,13 +270,13 @@ It is possible to use perf to attach to an already running thread or process. Th
    <not supported>      branch-misses
 
        5.384885419 seconds time elapsed
-```
+{% endhighlight %}
 
 Even though we are attaching to a process, we can still pass the name of a command. It is used to time the measurement. Without it, perf monitors until it is killed.
 
 Also note that when attaching to a process, all threads of the process are monitored. Furthermore, given that inheritance is on by default, child processes or threads will also be monitored. To turn this off, you must use the `-i` option. It is possible to attach a specific thread within a process. By thread, we mean kernel visible thread. In other words, a thread visible by the ps or top commands. To attach to a thread, the `-t` option must be used.
 
-```
+{% highlight text %}
 $perf stat -p 39911 sleep 3
 
  Performance counter stats for process id '39911':
@@ -293,11 +293,11 @@ $perf stat -p 39911 sleep 3
                  0      branch-misses             #    0.000 K/sec
 
        3.001477374 seconds time elapsed
-```
+{% endhighlight %}
 
 We look at `rsyslogd`, because it always runs on Ubuntu, with multiple threads. (使用 `-t` 采样指定的线程)
 
-```
+{% highlight text %}
 # ps -L ax | fgrep rsyslogd
   914   914 ?        Ssl    0:00 /usr/sbin/rsyslogd -n
   914   942 ?        Ssl    1:44 /usr/sbin/rsyslogd -n
@@ -318,7 +318,7 @@ We look at `rsyslogd`, because it always runs on Ubuntu, with multiple threads. 
    <not supported>      branch-misses
 
        2.000827441 seconds time elapsed
-```
+{% endhighlight %}
 
 In this example, the thread 942 did not run during the 2s of the measurement. Otherwise, we would see a count value. Attaching to kernel threads is possible, though not really recommended. Given that kernel threads tend to be pinned to a specific CPU, it is best to use the cpu-wide mode.
 
@@ -334,7 +334,7 @@ For most people, it is hard to read large numbers. With perf stat, it is possibl
 
 perf stat can also print counts in a format that can easily be imported into a spreadsheet or parsed by scripts. The `-x` option alters the format of the output and allows users to pass a field delimiter. This makes is easy to produce CSV-style output. Note that the `-x` option is not compatible with `-B`.
 
-```
+{% highlight text %}
 # perf stat -x, date
 Mon Jun 21 16:37:07 CST 2021
 0.524149,,task-clock,524149,100.00,0.046,CPUs utilized
@@ -345,7 +345,7 @@ Mon Jun 21 16:37:07 CST 2021
 <not supported>,,instructions,0,100.00,,
 <not supported>,,branches,0,100.00,,
 <not supported>,,branch-misses,0,100.00,,
-```
+{% endhighlight %}
 
 # Sampling with perf record
 
@@ -366,12 +366,12 @@ The perf tool defaults to the average rate. It is set to `1000Hz`, or `1000 samp
 
 By default, perf record operates in per-thread mode, with inherit mode enabled. The simplest mode looks as follows, when executing a simple program that busy loops:
 
-```
+{% highlight text %}
 perf record ./noploop 1
 
 [ perf record: Woken up 1 times to write data ]
 [ perf record: Captured and wrote 0.002 MB perf.data (~89 samples) ]
-```
+{% endhighlight %}
 
 The example above collects samples for event cycles at an average target rate of `1000Hz`. The resulting samples are saved into the perf.data file. If the file already existed, you may be prompted to pass `-f` to overwrite it. To put the results in a specific file, use the `-o` option.
 
@@ -379,7 +379,7 @@ The example above collects samples for event cycles at an average target rate of
 
 To get an accurate number of samples for the `perf.data` file, it is possible to use the `perf report` command:
 
-```
+{% highlight text %}
 perf record ./noploop 1
 
 [ perf record: Woken up 1 times to write data ]
@@ -387,31 +387,31 @@ perf record ./noploop 1
 perf report -D -i perf.data | fgrep RECORD_SAMPLE | wc -l
 
 1280
-```
+{% endhighlight %}
 
 To specify a custom rate, it is necessary to use the `-F` option. For instance, to sample on event instructions only at the user level and at an average rate of `250 samples/sec`:
 
-```
+{% highlight text %}
 perf record -e instructions:u -F 250 ./noploop 4
 
 [ perf record: Woken up 1 times to write data ]
 [ perf record: Captured and wrote 0.049 MB perf.data (~2160 samples) ]
-```
+{% endhighlight %}
 
 To specify a sampling period, instead, the `-c` option must be used. For instance, to collect a sample every 2000 occurrences of event instructions only at the user level only:
 
-```
+{% highlight text %}
 perf record -e retired_instructions:u -c 2000 ./noploop 4
 
 [ perf record: Woken up 55 times to write data ]
 [ perf record: Captured and wrote 13.514 MB perf.data (~590431 samples) ]
-```
+{% endhighlight %}
 
 # Sample analysis with perf report
 
 Samples collected by perf record are saved into a binary file called, by default, `perf.data`. The perf report command reads this file and generates a concise execution profile. By default, samples are sorted by functions with the most samples first. It is possible to customize the sorting order and therefore to view the data differently.
 
-```
+{% highlight text %}
 perf report
 
 # Events: 1K cycles
@@ -425,20 +425,20 @@ perf report
      2.13%      firefox-bin  firefox-bin                     [.] 0x1e3d
      1.40%  unity-panel-ser  libglib-2.0.so.0.2800.6         [.] 0x886f1
      [...]
-```
+{% endhighlight %}
 
 * The column 'Overhead' indicates the percentage of the overall samples collected in the corresponding function.
 * The second column reports the process from which the samples were collected. In per-thread/per-process mode, this is always the name of the monitored command. But in cpu-wide mode, the command can vary.
 * The third column shows the name of the ELF image where the samples came from. If a program is dynamically linked, then this may show the name of a shared library. When the samples come from the kernel, then the pseudo ELF image name `kernel.kallsyms` is used.
 * The fourth column indicates the privilege level at which the sample was taken, i.e. when the program was running when it was interrupted:
 
-```
+{% highlight text %}
 [.] user level
 [k] kernel level
 [g] guest kernel level (virtualization)
 [u] guest os user space
 [H] hypervisor
-```
+{% endhighlight %}
 
 * The final column shows the symbol name.
 
@@ -446,23 +446,23 @@ perf report
 
 To make the output easier to parse, it is possible to change the column separator to a single character:
 
-```
+{% highlight text %}
 # perf report -t ","
 
 Samples: 302K of event 'cpu-clock', Event count (approx.): 302077
   4.48%,gamesvr,[vdso]                      ,[.] 0x0000000000000e6c
   4.37%,gamesvr,libc-2.17.so                ,[.] _dl_addr
   3.78%,gamesvr,gamesvr                     ,[.] JLib::my_gettimeofday(timeval*)
-```
+{% endhighlight %}
 
 # Source level analysis with perf annotate
 
 It is possible to drill down to the instruction level with `perf annotate`. For that, you need to invoke perf annotate with the name of the command to annotate. All the functions with samples will be **disassembled** and each instruction will have its relative percentage of samples reported:
 
-```
+{% highlight text %}
 # perf record -c 1000 ./perf_top_example
 # perf annotate
-```
+{% endhighlight %}
 
 `perf annotate` can generate sourcecode level information if the application is compiled with `-ggdb`.
 
@@ -476,7 +476,7 @@ It is possible to drill down to the instruction level with `perf annotate`. For 
 
 The perf tool can operate in a mode similar to the Linux `top` tool, printing sampled functions in real time. The default sampling event is cycles and default order is descending number of samples per symbol, thus `perf top` shows the functions where most of the time is spent. By default, `perf top` operates in processor-wide mode, monitoring all online CPUs at both user and kernel levels. It is possible to monitor only a subset of the CPUS using the `-C` option.
 
-```
+{% highlight text %}
 perf top
 -------------------------------------------------------------------------------------------------------------------------------------------------------
   PerfTop:     260 irqs/sec  kernel:61.5%  exact:  0.0% [1000Hz
@@ -499,7 +499,7 @@ cycles],  (all, 2 CPUs)
                6.00  1.8% __pthread_mutex_unlock_usercnt /lib/i386-linux-gnu/libpthread-2.13.so
                5.00  1.5% native_sched_clock             [kernel.kallsyms]
                5.00  1.5% drm_addbufs_sg                 /lib/modules/2.6.38-8-generic/kernel/drivers/gpu/drm/drm.ko
-```
+{% endhighlight %}
 
 ![perf_top_help](/assets/images/202106/perf_top_help.png)
 
@@ -508,7 +508,7 @@ cycles],  (all, 2 CPUs)
 
 系统环境：
 
-```
+{% highlight text %}
 $ cat /etc/issue
 Ubuntu 18.04.1 LTS \n \l
 $ uname -r
@@ -522,17 +522,17 @@ CONFIG_PERF_EVENTS_INTEL_RAPL=m
 CONFIG_PERF_EVENTS_INTEL_CSTATE=m
 # CONFIG_PERF_EVENTS_AMD_POWER is not set
 CONFIG_SECURITY_PERF_EVENTS_RESTRICT=y
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 perf --help
 perf record --help
 perf report --help
-```
+{% endhighlight %}
 
 ## Counting Events
 
-```bash
+{% highlight bash %}
 # CPU counter statistics for the specified PID, until Ctrl-C
 perf stat -p $pid
 
@@ -550,11 +550,11 @@ perf stat -e 'syscalls:sys_enter_*' -p PID
 
 # Count block device I/O events for the entire system, for 10 seconds:
 perf stat -e 'block:*' -a sleep 10
-```
+{% endhighlight %}
 
 ## Profiling
 
-```bash
+{% highlight bash %}
 # Sample on-CPU functions for the specified command, at 99 Hertz:
 perf record -F 99 command
 
@@ -581,11 +581,11 @@ perf top -F 49
 
 # Sample CPUs at 49 Hertz, and show top process names and segments, live:
 perf top -F 49 -ns comm,dso
-```
+{% endhighlight %}
 
 ## Static Tracing
 
-```bash
+{% highlight bash %}
 # Trace new processes, until Ctrl-C:
 perf record -e sched:sched_process_exec -a
 
@@ -603,21 +603,21 @@ perf record -e minor-faults -ag
 
 # Sample page faults with stack traces, until Ctrl-C:
 perf record -e page-faults -ag
-```
+{% endhighlight %}
 
 ## Dynamic Tracing
 
-```bash
+{% highlight bash %}
 # Add a tracepoint for the kernel tcp_sendmsg() function entry ("--add" is optional):
 perf probe --add tcp_sendmsg
 
 # Remove the tcp_sendmsg() tracepoint (or use "--del"):
 perf probe -d tcp_sendmsg
-```
+{% endhighlight %}
 
 ## Reporting
 
-```bash
+{% highlight bash %}
 # Show perf.data in an ncurses browser (TUI) if possible:
 perf report
 
@@ -629,13 +629,13 @@ perf report --stdio
 
 # Disassemble and annotate instructions with percentages (needs some debuginfo):
 perf annotate --stdio
-```
+{% endhighlight %}
 
 ## 测试代码
 
 [perf demo](https://github.com/gerryyang/mac-utils/tree/master/programing/cpp/performance/perf/demo)
 
-```
+{% highlight text %}
 # perf record -c 1000 ./perf_top_example
 pid: 13985
 [ perf record: Woken up 16 times to write data ]
@@ -661,7 +661,7 @@ pid: 13985
      0.00%  perf_top_exampl  [kernel.kallsyms]  [k] __do_page_fault
      0.00%  perf_top_exampl  [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
      0.00%  perf_top_exampl  [kernel.kallsyms]  [k] iowrite16
-```
+{% endhighlight %}
 
 * Options included `-a` to trace all CPUs, and `-g` to capture call graphs (stack traces).
 
@@ -681,12 +681,12 @@ refer:
 
 [Flame Graphs](http://www.brendangregg.com/flamegraphs.html) can be produced from perf_events profiling data using the [FlameGraph tools](https://github.com/brendangregg/FlameGraph) software. This visualizes the same data you see in `perf report`, and works with any `perf.data` file that was captured with stack traces (`-g`).
 
-```
+{% highlight text %}
 -a, --all-cpus
   System-wide collection from all CPUs (default if no target is specified).
 -g
   Enables call-graph (stack chain/backtrace) recording.
-```
+{% endhighlight %}
 
 Flame graphs are a visualization of profiled software, allowing the most frequent code-paths to be identified quickly and accurately. They can be generated using open source programs on [github.com/brendangregg/FlameGraph](https://github.com/brendangregg/FlameGraph), which create interactive `SVGs`.
 
@@ -758,46 +758,46 @@ Challenges with flame graphs mostly involve system profilers and not flame graph
 
 快速用法：
 
-```
+{% highlight text %}
 perf record -F 99 -a -g -- sleep 60
 perf script | stackcollapse-perf.pl | flamegraph.pl > out.svg
-```
+{% endhighlight %}
 
 具体用法介绍：
 
 Using Linux perf_events (aka "perf") to capture 60 seconds of 99 Hertz stack samples, both user- and kernel-level stacks, all processes:
 
-```
+{% highlight text %}
 # perf record -F 99 -a -g -- sleep 60
 # perf script > out.perf
-```
+{% endhighlight %}
 
 Now only capturing PID 181:
 
-```
+{% highlight text %}
 # perf record -F 99 -p 181 -g -- sleep 60
 # perf script > out.perf
-```
+{% endhighlight %}
 
 Use the stackcollapse programs to fold stack samples into single lines. The programs provided are:
 
 * stackcollapse-perf.pl: for Linux perf_events "perf script" output
 * stackcollapse-go.pl: for Golang pprof stacks
 
-```
+{% highlight text %}
 For perf_events:
 $ ./stackcollapse-perf.pl out.perf > out.folded
-```
+{% endhighlight %}
 
 Use `flamegraph.pl` to render a `SVG`.'
 
-```
+{% highlight text %}
 ./flamegraph.pl out.kern_folded > kernel.svg
-```
+{% endhighlight %}
 
 关于`flamegraph.pl`的更多用法：
 
-```
+{% highlight text %}
 USAGE: ./flamegraph.pl [options] infile > outfile.svg
 
 --title TEXT     # change title text
@@ -825,7 +825,7 @@ USAGE: ./flamegraph.pl [options] infile > outfile.svg
 
 eg,
 ./flamegraph.pl --title="Flame Graph: malloc()" trace.txt > graph.svg
-```
+{% endhighlight %}
 
 可以把生成的`SVG`图片拖拽到浏览器中查看：
 
@@ -833,9 +833,9 @@ eg,
 
 An advantage of having the folded input file (and why this is separate to `flamegraph.pl`) is that you can use grep for functions of interest. Eg:
 
-```
+{% highlight text %}
 grep cpuid out.kern_folded | ./flamegraph.pl > cpuid.svg
-```
+{% endhighlight %}
 
 ## Heat Maps
 
@@ -849,15 +849,15 @@ Since perf_events can record high resolution timestamps (microseconds) for event
 
 * [Linux Performance Monitoring, any way to monitor per-thread?](https://stackoverflow.com/questions/28058710/linux-performance-monitoring-any-way-to-monitor-per-thread?rq=1)
 
-```
+{% highlight text %}
 perf top -t $tid
-```
+{% endhighlight %}
 
 * [What do the perf record choices of LBR vs DWARF vs fp do?](https://stackoverflow.com/questions/57430338/what-do-the-perf-record-choices-of-lbr-vs-dwarf-vs-fp-do)
 
 When I use the perf record on my code, I find three choices for the `--call-graph` option: `lbr` (last branch record), `dwarf` and `fp`. What is difference between these?
 
-```
+{% highlight text %}
 perf record -h
 
 --call-graph <record_mode[,record_size]>
@@ -868,7 +868,7 @@ perf record -h
                                                 default: 8192 (bytes)
 
                                 Default: fp
-```
+{% endhighlight %}
 
 
 The option `--call-graph` refers to the collection of call graphs / call chains, i.e. the function stack for a sample.

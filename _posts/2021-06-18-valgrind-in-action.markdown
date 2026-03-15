@@ -15,7 +15,7 @@ tags:
 
 # Finding Memory Leaks With Valgrind
 
-```
+{% highlight text %}
 # Memcheck is the default tool. The --leak-check option turns on the detailed memory leak detector.
 # Your program will run much slower (eg. 20 to 30 times) than normal, and use a lot more memory. Memcheck will issue messages about memory errors and leaks that it detects.
 
@@ -23,7 +23,7 @@ valgrind --leak-check=yes myprog arg1 arg2
 
 --tool=<toolname> [default: memcheck]
 Run the Valgrind tool called toolname, e.g. memcheck, cachegrind, callgrind, helgrind, drd, massif, dhat, lackey, none, exp-bbv, etc.
-```
+{% endhighlight %}
 
 The Valgrind tool suite provides a number of debugging and profiling tools that help you make your programs faster and more correct. The most popular of these tools is called `Memcheck`. It can detect many memory-related errors that are common in C and C++ programs and that can lead to crashes and unpredictable behaviour.
 
@@ -31,7 +31,7 @@ Compile your program with `-g` to include debugging information so that Memcheck
 
 If you're running Linux and you don't have a copy already, you can get Valgrind from the [Valgrind download page](https://www.valgrind.org/downloads/current.html).
 
-```cpp
+{% highlight cpp %}
 #include <stdlib.h>
 void f(void)
 {
@@ -43,18 +43,18 @@ int main(void)
     f();
     return 0;
 }
-```
+{% endhighlight %}
 
 编译和内存泄漏检查：
 
-```
+{% highlight text %}
 gcc -g demo.c
 valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --log-file=valgrind.out ./a.out
-```
+{% endhighlight %}
 
 输出：
 
-```
+{% highlight text %}
 ==2726743== Memcheck, a memory error detector
 ==2726743== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
 ==2726743== Using Valgrind-3.17.0 and LibVEX; rerun with -h for copyright info
@@ -87,7 +87,7 @@ valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --log-file=valgri
 ==2726743==
 ==2726743== For lists of detected and suppressed errors, rerun with: -s
 ==2726743== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
-```
+{% endhighlight %}
 
 There are several kinds of leaks; the two most important categories are:
 
@@ -102,15 +102,15 @@ There are several kinds of leaks; the two most important categories are:
 
 安装方法：
 
-```
+{% highlight text %}
 sudo yum install valgrind
-```
+{% endhighlight %}
 
 Valgrind 是一个用于内存调试、内存泄漏检测和性能分析的工具。Helgrind 是 Valgrind 的一个工具，用于检测多线程程序中的同步错误。要使用 Helgrind，首先安装 Valgrind，然后使用以下命令运行程序：
 
-```
+{% highlight text %}
 valgrind --tool=helgrind ./my_program
-```
+{% endhighlight %}
 
 Helgrind 会报告潜在的线程安全问题，如数据竞争、死锁等。
 

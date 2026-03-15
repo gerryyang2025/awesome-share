@@ -18,7 +18,7 @@ tags:
 
 rapha 发的关于骑行的一段描述 [#NeverJustARide](https://www.instagram.com/p/CcP1gapFbfx/):
 
-```
+{% highlight text %}
 It's never just a ride.
 It's much more than that.
 
@@ -39,7 +39,7 @@ It's friendships, discovery, and community, too.
 
 It's a place, it's a race, and it's somewhere to hide.
 It's your team, your routine, and it's never just a ride.
-```
+{% endhighlight %}
 
 
 ![shimano0](/assets/images/202204/shimano0.jpeg)
@@ -385,28 +385,28 @@ Brompton 折叠自行车专为在城市生活、工作或享受娱乐的人而�
 
 Brompton 折叠自行车具有通用规格。 坚固的全钢车架在伦敦手工制作完成。专为城市骑行而设计的3速变速。更省时、更省钱、也更省事。
 
-```
+{% highlight text %}
 变速: 3速
 把型: 中型
 颜色: 白色主车架，黑色末端
 挡泥板: 无
 照明: 无
-```
+{% endhighlight %}
 
 > C Line
 
 继承我们自 1975 年创立以来的折叠和延展设计，并全程由伦敦工厂手工制作完成。 更紧凑，更坚固，精心的设计，让您的骑行之旅增添更多乐趣。
 
-```
+{% highlight text %}
 最广泛的涂装色选项：无论您的骑行风格如何，总有一款 C Line 适合您。
 2速 / 3速 / 6速的变速选择。
 3 种类型的车把及座杆选项。
 以及更多个性化配置方案：使用随车附送的前车架将车前包卡入到位；添加货车架以装载更多行李；将鞍座换成手工制作的 Brooks坐垫；升级电动型照明等。
-```
+{% endhighlight %}
 
 * Brompton C Line 城市系列：都市穿行者
 
-```
+{% highlight text %}
 2速，C Line 城市系列比所有其他 C Line 型号更易于骑行和携带。单速的设置，使用起来更易上手，这款折叠自行车的轻巧性，在上下楼梯、手拎着行走以及进出电梯时，您将有清晰的体会。
 
 变速: 2速
@@ -420,11 +420,11 @@ Brompton 折叠自行车具有通用规格。 坚固的全钢车架在伦敦手�
 机架: 可选
 
 类比型号包括：Brompton M2L、Brompton S2L
-```
+{% endhighlight %}
 
 * Brompton C Line 实用系列：可靠的都市骑士
 
-```
+{% highlight text %}
 3速钢制自行车是 Brompton 制造的第一辆自行车—专为伦敦街头的都市骑士打造。 密封齿轮让轮胎免受沙砾、和雨水的影响，让自行车拥有更长使用寿命，以及更少维护。易行轮的轮毂齿轮让您在静止时换档，使C Line实用系列成为启动 / 短暂停靠的优先通勤选择，尤其是在潮湿的城市。
 
 变速: 3速
@@ -438,11 +438,11 @@ Brompton 折叠自行车具有通用规格。 坚固的全钢车架在伦敦手�
 机架: 可选
 
 类比型号包括：Brompton M3L、Brompton M3R、Brompton S3L
-```
+{% endhighlight %}
 
 * Brompton C Line 探索系列：长途骑行者的选择
 
-```
+{% highlight text %}
 您可以在这辆 6 速全钢自行车装上前车架和货车架，以便全天候的通勤 / 旅行 / 探索。 C Line探索系列适合几乎所有地形，是长途旅行者环游世界的选择，当然大多数人还是用于日常生活需求。
 
 变速: 6速
@@ -456,7 +456,7 @@ Brompton 折叠自行车具有通用规格。 坚固的全钢车架在伦敦手�
 机架: 可选
 
 类比型号包括：Brompton M6L、Brompton M6R、Brompton S6L、Brompton S6R、Brompton H6L、Brompton H6R。
-```
+{% endhighlight %}
 
 > P Line
 
@@ -518,12 +518,12 @@ You can also try as one more attempt, press and hold the Lap button on your Edge
 
 [從 Garmin Connect 下載路線](https://www8.garmin.com/manuals-apac/webhelp/edge530/ZH-TW/GUID-414F5A9F-3B61-4A30-8E1B-58C3870B71CE-2740.html)，提示上传出错请重试，之后参考 [骑行 - 行者 gpx 导入 Garmin 出错](https://zhuanlan.zhihu.com/p/368952941) 的方法后可以实现上传，具体方法是：
 
-```
+{% highlight text %}
 将
 xmlns="http://www.topografix.com/GPX/1/0"
 替换为
 xmlns="http://www.topografix.com/GPX/1/1"
-```
+{% endhighlight %}
 
 可以导入成功。
 

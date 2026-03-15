@@ -39,11 +39,11 @@ C++ 标准规定：
 
 > 注意：C++ 标准明确规定：**`delete nullptr` 是安全的空操作**，不会产生任何副作用。
 
-```cpp
+{% highlight cpp %}
 int* p = nullptr;
 delete p;  // ✅ 完全安全，什么都不做
 delete p;  // ✅ 再次删除也是安全的
-```
+{% endhighlight %}
 
 
 ## 重复删除会导致什么问题？
@@ -54,14 +54,14 @@ delete p;  // ✅ 再次删除也是安全的
 
 **表现**：
 
-```
+{% highlight text %}
 *** Error in `./program': double free or corruption (fasttop): 0x0000000001234567 ***
 Aborted (core dumped)
-```
+{% endhighlight %}
 
 **示例**：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 int main() {
@@ -70,14 +70,14 @@ int main() {
     delete p;   // 第二次删除 ❌ - 程序崩溃！
     return 0;
 }
-```
+{% endhighlight %}
 
 **运行结果**：
 
-```
+{% highlight text %}
 double free or corruption (fasttop): 0x00007f8b8c000010
 Aborted (core dumped)
-```
+{% endhighlight %}
 
 
 ### 问题2: **堆损坏（Heap Corruption）**
@@ -95,14 +95,14 @@ Aborted (core dumped)
 
 **示例**：
 
-```cpp
+{% highlight cpp %}
 int* p1 = new int(100);
 int* p2 = new int(200);
 delete p1;
 delete p1;  // 重复删除 p1，可能破坏 p2 的内存
 // 此时 p2 指向的内存可能已经被破坏
 std::cout << *p2;  // 可能输出错误的值，或崩溃
-```
+{% endhighlight %}
 
 ### 问题3: **安全漏洞**
 
@@ -124,7 +124,7 @@ std::cout << *p2;  // 可能输出错误的值，或崩溃
 
 ## 实际测试示例
 
-```cpp
+{% highlight cpp %}
 // test_double_delete.cpp
 //
 // 编译: g++ -o test_double_delete test_double_delete.cpp
@@ -208,11 +208,11 @@ int main()
 
     return 0;
 }
-```
+{% endhighlight %}
 
 输出：
 
-```
+{% highlight text %}
 $ ./test_double_delete
 === 测试1: 正常的单次删除 ===
 CTracingInfo created at 0xc832c0
@@ -231,20 +231,20 @@ CTransportContext destructor called, deleting m_pTracingInfo = 0xc832c0
 CTracingInfo destroyed at 0xc832c0
 free(): double free detected in tcache 2
 Aborted (core dumped)
-```
+{% endhighlight %}
 
 ![double_free](/assets/images/202512/double_free.png)
 
 **问题路径**：
 
-```
+{% highlight text %}
 用户代码 (main)
   → C++ 析构函数 (delete)
   → C 标准库 (free)
   → glibc 内部实现 (_int_free) ⭐ 在这里检测到 double free
   → 错误处理 (malloc_printerr)
   → 程序终止 (abort → raise → kill)
-```
+{% endhighlight %}
 
 **关键点**：
 
@@ -295,7 +295,7 @@ Aborted (core dumped)
 
 ### 检测点 1: Fastbin/Tcache 检查
 
-```c
+{% highlight c %}
 // 伪代码
 if (size < FASTBIN_MAX_SIZE) {
     // 小内存块使用 fastbin
@@ -312,7 +312,7 @@ if (size < FASTBIN_MAX_SIZE) {
     p->fd = fastbin->fd;
     fastbin->fd = p;
 }
-```
+{% endhighlight %}
 
 **检测原理**：
 - Fastbin 是单链表结构
@@ -321,7 +321,7 @@ if (size < FASTBIN_MAX_SIZE) {
 
 ### 检测点 2: Chunk 状态检查
 
-```c
+{% highlight c %}
 // 伪代码
 chunk = mem2chunk(p);  // 将用户指针转换为 chunk 指针
 size = chunksize(chunk);
@@ -335,11 +335,11 @@ if (chunk_prev_size_mismatch(chunk)) {
 if (chunk_is_marked_as_freed(chunk)) {
     malloc_printerr("double free or corruption");
 }
-```
+{% endhighlight %}
 
 ### 检测点 3: Tcache 检查（glibc 2.26+）
 
-```c
+{% highlight c %}
 // 伪代码（tcache 版本）
 if (use_tcache && size <= tcache_max_bytes) {
     tcache_index = csize2tidx(size);
@@ -354,13 +354,13 @@ if (use_tcache && size <= tcache_max_bytes) {
     // 检查是否已经在 tcache 中（某些版本会检查）
     // ...
 }
-```
+{% endhighlight %}
 
 ## 如何避免重复删除？
 
 ### 方法1：禁止拷贝
 
-```cpp
+{% highlight cpp %}
 class CTransportContext {
 public:
     // 禁止拷贝
@@ -371,16 +371,16 @@ public:
     CTransportContext(CTransportContext&&) = default;
     CTransportContext& operator=(CTransportContext&&) = default;
 };
-```
+{% endhighlight %}
 
 ### 方法2：使用智能指针
 
-```cpp
+{% highlight cpp %}
 class CTransportContext {
 private:
     std::unique_ptr<CTracingInfo> m_pTracingInfo;  // 自动管理内存
 };
-```
+{% endhighlight %}
 
 好处：**符合 RAII 原则和现代 C++ 最佳实践**
 
@@ -404,18 +404,18 @@ private:
 
 ### 方法3：实现深拷贝
 
-```cpp
+{% highlight cpp %}
 CTransportContext::CTransportContext(const CTransportContext& other)
     : m_pTracingInfo(other.m_pTracingInfo ? new CTracingInfo(*other.m_pTracingInfo) : nullptr)
 {
     // 深拷贝其他成员...
 }
-```
+{% endhighlight %}
 
 ### 方案4：使用引用计数（类似 shared_ptr）
 
-```cpp
+{% highlight cpp %}
 // 使用 std::shared_ptr 管理 TracingInfo
 std::shared_ptr<CTracingInfo> m_pTracingInfo;
-```
+{% endhighlight %}
 

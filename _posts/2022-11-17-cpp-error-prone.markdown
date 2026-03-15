@@ -18,10 +18,10 @@ tags:
 
 有符号类型与无符号类型比较，导致隐式提升为无符号类型，计算结果与正常期望不符。
 
-```cpp
+{% highlight cpp %}
 auto a = (uint32_t(0) < -1);
 std::cout << std::boolalpha << a << std::endl;  // true
-```
+{% endhighlight %}
 
 ## 优化方法
 
@@ -57,7 +57,7 @@ The GNU C preprocessor recognizes several `pragmas` in addition to the compiler 
 
 示例代码：https://wandbox.org/permlink/U4CUnRy09abxOSHy
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <stdint.h>
 
@@ -92,7 +92,7 @@ int main()
   std::cout << std::boolalpha <<  b << std::endl;
 
 }
-```
+{% endhighlight %}
 
 # 类型隐式转换 wraparound 问题
 
@@ -100,25 +100,25 @@ int main()
 
 在循环比较判断中，出现 unsigned 类型隐士转换，无符号变量出现 wraparound，导致死循环。
 
-```cpp
+{% highlight cpp %}
 uint32 uFieldNumFromCfg = 256;
 
 for (uint8 i = 0; i < uFieldNumFromCfg; ++i)
 {
   // Oops! Dead loop ...
 }
-```
+{% endhighlight %}
 
 类似的问题：https://stackoverflow.com/questions/48272745/how-to-generate-a-warning-on-type-conversion-like-int32-int64
 
 
-```cpp
+{% highlight cpp %}
 auto x = uint8_t(0);
 auto y = uint32_t(1);
 //x = y;               // gcc -Werror=conversion
 auto c = (x < y);      // no warning
 std::cout << std::boolalpha <<  c << std::endl;
-```
+{% endhighlight %}
 
 ## 问题分析
 
@@ -147,9 +147,9 @@ Because this behavior is well defined, it doesn't make sense for the compiler to
 
 In the case of the example:
 
-```cpp
+{% highlight cpp %}
 long x = 2147483647U * 3U;
-```
+{% endhighlight %}
 
 The multiplication is done on unsigned types, so the mathematical result 6442450941 wraps around to 2147483645, which is within the range of a long. There's no overflow (just wraparound) and no out-of-range conversion, so no warning.
 
@@ -161,12 +161,12 @@ The multiplication is done on unsigned types, so the mathematical result 64424
 
 Noncompliant Code Example:
 
-```cpp
+{% highlight cpp %}
 void func(unsigned int ui_a, unsigned int ui_b) {
   unsigned int usum = ui_a + ui_b;
   /* ... */
 }
-```
+{% endhighlight %}
 
 This noncompliant code example can result in an unsigned integer wrap during the addition of the unsigned operands ui_a and ui_b. If this behavior is unexpected, the resulting value may be used to allocate insufficient memory for a subsequent operation or in some other manner that can lead to an exploitable vulnerability.
 
@@ -175,7 +175,7 @@ Compliant Solution (Precondition Test):
 This compliant solution performs a precondition test of the operands of the addition to guarantee there is no possibility of unsigned wrap.
 
 
-```cpp
+{% highlight cpp %}
 #include <limits.h>
 
 void func(unsigned int ui_a, unsigned int ui_b) {
@@ -187,14 +187,14 @@ usum = ui_a + ui_b;
 }
 /* ... */
 }
-```
+{% endhighlight %}
 
 
 Compliant Solution (Postcondition Test):
 
 This compliant solution performs a postcondition test to ensure that the result of the unsigned addition operation usum is not less than the first operand.
 
-```cpp
+{% highlight cpp %}
 void func(unsigned int ui_a, unsigned int ui_b) {
   unsigned int usum = ui_a + ui_b;
   if (usum < ui_a) {
@@ -202,7 +202,7 @@ void func(unsigned int ui_a, unsigned int ui_b) {
   }
   /* ... */
 }
-```
+{% endhighlight %}
 
 
 # [Order of evaluation](https://en.cppreference.com/w/cpp/language/eval_order) (未定义行为)
@@ -212,7 +212,7 @@ Order of evaluation of any part of any expression, including order of evaluation
 
 > There is no concept of left-to-right or right-to-left evaluation in C++.
 
-```cpp
+{% highlight cpp %}
 #include <cstdio>
 
 int a() { return std::puts("a"); }
@@ -226,42 +226,42 @@ int main()
     z(a(), b(), c());       // all 6 permutations of output are allowed
     return a() + b() + c(); // all 6 permutations of output are allowed
 }
-```
+{% endhighlight %}
 
 Possible output:
 
-```b
+{% highlight b %}
 c
 a
 c
 a
 b
-```
+{% endhighlight %}
 
 ## Undefined behavior
 
 * If a side effect on a memory location is unsequenced relative to another side effect on the same memory location, [the behavior is undefined](https://en.cppreference.com/w/cpp/language/ub).
 
-```cpp
+{% highlight cpp %}
 i = ++i + 2;       // well-defined
 i = i++ + 2;       // undefined behavior until C++17
 f(i = -2, i = -2); // undefined behavior until C++17
 f(++i, ++i);       // undefined behavior until C++17, unspecified after C++17
 i = ++i + i++;     // undefined behavior
-```
+{% endhighlight %}
 
 * If a side effect on a memory location is unsequenced relative to a value computation using the value of any object in the same memory location, [the behavior is undefined](https://en.cppreference.com/w/cpp/language/ub).
 
-```cpp
+{% highlight cpp %}
 cout << i << i++; // undefined behavior until C++17
 a[i] = i++;       // undefined behavior until C++17
 n = ++i + i;      // undefined behavior
-```
+{% endhighlight %}
 
 ## 业务代码中遇到的错误场景
 
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 const char* f(const char* s)
@@ -293,11 +293,11 @@ int main()
     print(f("a"), f("b"));
     print(g("a"), g("b"));
 }
-```
+{% endhighlight %}
 
 输出结果对比：(未定义行为)
 
-```
+{% highlight text %}
   // -std=c++11
 
   // f()
@@ -326,11 +326,11 @@ int main()
   // gcc 5.1.0:  a a
   // clang 3.5.2: b b
   // clang 11.0.0:  b b
-```
+{% endhighlight %}
 
 修改为：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <string>
 
@@ -348,7 +348,7 @@ int main()
 {
     print(f("a"), f("b"));
 }
-```
+{% endhighlight %}
 
 # Other
 

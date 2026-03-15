@@ -133,13 +133,13 @@ FLP 原理实际上说明对于允许节点失效情况下，纯粹异步系统�
 1. Leader选举：每个candidate随机经过一定时间都会提出选举方案，最近阶段中得票最多者被选为leader
 2. 同步log：leader会找到系统中log最新的记录，并强制所有的follower来刷新到这个记录
 
-```
+{% highlight text %}
 1. 都使用`timeout`来重新选择`leader`。
 2. 采用`quorum`(法定人数)来确定整个系统的一致性，一般是集群中半数以上的服务器。zk里还提供了带权重的`quorum`实现。
 3. 都由`leader`来发起写操作。
 4. 都采用心跳检测存活性。
 5. leader election都采用先到先得的投票方式。
-```
+{% endhighlight %}
 
 算法特点：
 

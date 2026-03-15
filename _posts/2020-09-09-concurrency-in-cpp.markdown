@@ -85,7 +85,7 @@ Wait-freedom means that each thread moves forward regardless of external factors
 
 Below is an example of a wait-free algorithm:
 
-```cpp
+{% highlight cpp %}
 void increment_reference_counter(rc_base* obj)
 {
     atomic_increment(obj->rc);
@@ -95,7 +95,7 @@ void decrement_reference_counter(rc_base* obj)
 {
     if (0 == atomic_decrement(obj->rc)) delete obj;
 }
-```
+{% endhighlight %}
 
 Each thread is able to execute the function in a bounded number of steps regardless of any external factors.
 
@@ -105,7 +105,7 @@ Lock-freedom means that a system as a whole moves forward regardless of anything
 
 An example of a lockfree algorithm is:
 
-```cpp
+{% highlight cpp %}
 void stack_push(stack* s, node* n)
 {
     node* head;
@@ -116,7 +116,7 @@ void stack_push(stack* s, node* n)
     }
     while ( ! atomic_compare_exchange(s->head, head, n));
 }
-```
+{% endhighlight %}
 
 As can be seen, a thread can "whirl" in the cycle theoretically infinitely. But every repeat of the cycle means that some other thread had made forward progress (that is, successfully pushed a node to the stack). A blocked/interrupted/terminated thread can not prevent forward progress of other threads. Consequently, the system as a whole undoubtedly makes forward progress.
 
@@ -133,9 +133,9 @@ Lock-free 编程指利用一组特定的**原子操作**来控制多个线程对
 
 典型实现：
 
-```cpp
+{% highlight cpp %}
 std::atomic_**
-```
+{% endhighlight %}
 
 
 ### CAS2 （128bit compare-and-swap）
@@ -144,10 +144,10 @@ std::atomic_**
 
 典型实现：
 
-```cpp
+{% highlight cpp %}
 std::atomic<T>::compare_exchange_weak
 std::atomic<T>::compare_exchange_strong
-```
+{% endhighlight %}
 
 ## 无锁队列
 
@@ -242,7 +242,7 @@ A single producer single consumer wait-free and lock-free fixed size queue writt
 
 ### Example
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <rigtorp/SPSCQueue.h>
 #include <thread>
@@ -264,7 +264,7 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-```
+{% endhighlight %}
 
 ### Benchmarks
 
@@ -285,7 +285,7 @@ Benchmark results for a AMD Ryzen 9 3900X 12-Core Processor, the 2 threads are r
 
 A bounded multi-producer multi-consumer concurrent queue written in C++11.
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <rigtorp/MPMCQueue.h>
 #include <thread>
@@ -313,7 +313,7 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-```
+{% endhighlight %}
 
 ## MPSCQueue (多生产者单消费者)
 
@@ -331,12 +331,12 @@ BoundedMPSCQueue 是一个固定容量的多生产者单消费者 MPSC 无锁队
 
 #### 环形缓冲区和序列号机制
 
-```cpp
+{% highlight cpp %}
 struct Element {
     T data;                          // 实际数据
     std::atomic<size_t> sequence;    // 状态序列号
 };
-```
+{% endhighlight %}
 
 * 环形缓冲区：**使用固定大小数组，通过位运算实现环形访问，避免使用求模运算使用除法指令带来的性能开销**
 * 序列号状态机：每个元素的 sequence 标记其状态
@@ -346,10 +346,10 @@ struct Element {
 
 #### 双指针管理
 
-```cpp
+{% highlight cpp %}
 std::atomic<size_t> enqueue_pos_;    // 入队位置计数器
 std::atomic<size_t> dequeue_pos_;    // 出队位置计数器
-```
+{% endhighlight %}
 
 * 全局位置计数：不直接映射到数组索引，避免 **ABA** 问题
 * 环形映射：`pos & (capacity_ - 1)` 计算实际数组位置
@@ -357,13 +357,13 @@ std::atomic<size_t> dequeue_pos_;    // 出队位置计数器
 
 #### 无锁并发控制
 
-```cpp
+{% highlight cpp %}
 // CAS 操作保证原子性
 if (enqueue_pos_.compare_exchange_weak(pos, pos + 1, std::memory_order_relaxed))
 {
     break;  // 成功获取位置
 }
-```
+{% endhighlight %}
 
 * `Compare-And-Swap`：多线程竞争时只有一个成功
 * 内存序控制：精确控制内存可见性和重排序
@@ -419,25 +419,25 @@ if (enqueue_pos_.compare_exchange_weak(pos, pos + 1, std::memory_order_relaxed))
 
 初始状态（capacity = 4）
 
-```
+{% highlight text %}
 Index:    0  1  2  3
 Sequence: 0  1  2  3
 Data:     -  -  -  -
 enqueue_pos = 0, dequeue_pos = 0
-```
+{% endhighlight %}
 
 连续入队 4 个元素后
 
-```
+{% highlight text %}
 Index:    0  1  2  3
 Sequence: 1  2  3  4  (入队后 sequence = pos + 1)
 Data:     A  B  C  D
 enqueue_pos = 4, dequeue_pos = 0
-```
+{% endhighlight %}
 
 此时再尝试入队元素 E
 
-```
+{% highlight text %}
 pos = 4, index = 4 & 3 = 0
 检查 elements[0].sequence = 1
 dif = 1 - 4 = -3 < 0
@@ -445,32 +445,32 @@ dif = 1 - 4 = -3 < 0
 说明：索引 0 位置还被元素 A 占用，未被消费
 检查：pos - dequeue_pos = 4 - 0 = 4 == capacity
 结果：队列满，返回 false
-```
+{% endhighlight %}
 
 消费一个元素后
 
-```
+{% highlight text %}
 Index:    0  1  2  3
 Sequence: 4  2  3  4  (出队后 sequence = pos + capacity = 0 + 4)
 Data:     -  B  C  D
 enqueue_pos = 4, dequeue_pos = 1
-```
+{% endhighlight %}
 
 再次尝试入队元素 E
 
-```
+{% highlight text %}
 pos = 4, index = 4 & 3 = 0
 检查 elements[0].sequence = 4
 dif = 4 - 4 = 0
 
 说明：索引 0 位置现在可用，可以写入
-```
+{% endhighlight %}
 
 
 ### 代码实现
 
 
-```cpp
+{% highlight cpp %}
 // MPSCQueue.h
 #pragma once
 
@@ -628,7 +628,7 @@ private:
     std::atomic<size_t> dequeue_pos_;
 };
 }
-```
+{% endhighlight %}
 
 
 
@@ -639,7 +639,7 @@ private:
   + an object of scalar type (arithmetic type, pointer type, enumeration type, or std::nullptr_t)
   + or the largest contiguous sequence of bit fields of non-zero length
 
-```cpp
+{% highlight cpp %}
 struct S {
     char a;     // memory location #1
     int b : 5;  // memory location #2
@@ -650,7 +650,7 @@ struct S {
         int ee : 8; // memory location #4
     } e;
 } obj; // The object 'obj' consists of 4 separate memory locations
-```
+{% endhighlight %}
 
 * Different threads of execution are always allowed to access (read and modify) different memory locations concurrently, with no interference and no synchronization requirements. When an evaluation of an expression writes to a memory location and another evaluation reads or modifies the same memory location, the expressions are said to conflict. A program that has two conflicting evaluations has a data race unless:
   + both evaluations execute on the same thread or in the same signal handler, or
@@ -676,7 +676,7 @@ refer: https://github.com/apache/incubator-brpc/blob/master/docs/cn/contention_p
 
 ## 非线程安全（race condition）
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -706,11 +706,11 @@ $ for i in {1..10}; do ./a.out; done | sort | uniq -c
       7 cnt: 10000
       3 cnt: 9999
 */
-```
+{% endhighlight %}
 
 ## std::map 非线程安全
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -754,7 +754,7 @@ int main(int argc, char**argv)
 
     std::cout << "done\n";
 }
-```
+{% endhighlight %}
 
 # Mutex
 
@@ -773,7 +773,7 @@ The mutex class is a synchronization primitive that can be used to protect share
 The class [lock_guard](https://en.cppreference.com/w/cpp/thread/lock_guard) is a mutex wrapper that provides **a convenient RAII-style mechanism** for owning a mutex for the duration of a scoped block. When a lock_guard object is created, it attempts to take ownership of the mutex it is given. When control leaves the scope in which the lock_guard object was created, the lock_guard is destructed and the mutex is released.
 
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -809,11 +809,11 @@ int main()
 $ for i in {1..1000}; do ./a.out; done | sort | uniq -c
    1000 cnt: 100
 */
-```
+{% endhighlight %}
 
 This example shows how a mutex can be used to protect an std::map shared between two threads.
 
-```cpp
+{% highlight cpp %}
 #include <chrono>
 #include <iostream>
 #include <map>
@@ -845,20 +845,20 @@ int main()
     for (const auto& pair : g_pages)
         std::cout << pair.first << " => " << pair.second << '\n';
 }
-```
+{% endhighlight %}
 
 Output:
 
-```
+{% highlight text %}
 http://bar => fake content
 http://foo => fake content
-```
+{% endhighlight %}
 
 # [std::shared_mutex](https://en.cppreference.com/w/cpp/thread/shared_mutex.html)
 
-```cpp
+{% highlight cpp %}
 class shared_mutex; // (since C++17)
-```
+{% endhighlight %}
 
 The `shared_mutex` class is a synchronization primitive that can be used to protect shared data from being simultaneously accessed by multiple threads. In contrast to other mutex types which facilitate exclusive access, a `shared_mutex` has two levels of access:
 
@@ -879,7 +879,7 @@ The shared_mutex class satisfies all requirements of [SharedMutex](https://en.cp
 
 
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <mutex>
 #include <shared_mutex>
@@ -937,7 +937,7 @@ int main()
     thread1.join();
     thread2.join();
 }
-```
+{% endhighlight %}
 
 
 
@@ -945,7 +945,7 @@ int main()
 
 The `futex()` system call provides a method for waiting until a certain condition becomes true. It is typically used as a blocking construct in the context of shared-memory synchronization. When using futexes, the majority of the synchronization operations are performed in user space. A user-space program employs the `futex()` system call only when it is likely that the program has to block for a longer time until the condition becomes true. Other `futex()` operations can be used to wake any processes or threads waiting for a particular condition.
 
-```cpp
+{% highlight cpp %}
        #include <linux/futex.h>      /* Definition of FUTEX_* constants */
        #include <sys/syscall.h>      /* Definition of SYS_* constants */
        #include <unistd.h>
@@ -953,7 +953,7 @@ The `futex()` system call provides a method for waiting until a certain conditio
        long syscall(SYS_futex, uint32_t *uaddr, int futex_op, uint32_t val,
                     const struct timespec *timeout,   /* or: uint32_t val2 */
                     uint32_t *uaddr2, uint32_t val3);
-```
+{% endhighlight %}
 
 > Note: glibc provides no wrapper for futex(), necessitating the use of syscall(2).
 
@@ -963,7 +963,7 @@ The `futex()` system call provides a method for waiting until a certain conditio
 
 C++11 提供了一种更好的抽象方式解决这个问题，通过[std::atomic](https://en.cppreference.com/w/cpp/atomic/atomic)模版定义定义操作数为原子类型，从而保证在多线程情况下为原子操作。
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -987,7 +987,7 @@ int main()
 
         return 0;
 }
-```
+{% endhighlight %}
 
 # Async
 
@@ -998,7 +998,7 @@ The `async` construct uses **an object pair** called a `promise` and a `future`.
 
 非线程安全：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <vector>
 #include <future>
@@ -1025,11 +1025,11 @@ int main()
         return 0;
 }
 
-```
+{% endhighlight %}
 
 线程安全：若async另起的异步线程没有执行完，`get()`操作会阻塞，因此不会出现并发操作的问题。
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <vector>
 #include <future>
@@ -1051,7 +1051,7 @@ int main()
 
         return 0;
 }
-```
+{% endhighlight %}
 
 # Condition variables
 
@@ -1061,7 +1061,7 @@ First of all, we're using some new syntax from C++11, that enables us to define 
 
 多线程没有同步，输出 100：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <thread>
 #include <condition_variable>
@@ -1100,13 +1100,13 @@ int main() {
 
     return 0;
 }
-```
+{% endhighlight %}
 
 However, we want the reporter thread to wait for the assigner thread to give it the value 20, before outputting it. In the assigner thread, it will set notified to true and send a signal through the condition variable `cond_var`. In the reporter thread, we're looping as long as notified is false, and in each iteration we wait for a signal.
 
 多线程同步，输出20:
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <thread>
 #include <condition_variable>
@@ -1144,7 +1144,7 @@ int main() {
 
     return 0;
 }
-```
+{% endhighlight %}
 
 But wait, if `cond_var` can send a signal that will make the call `cond_var.wait(lock)` blocking until it receives it, why are we still using notified and a for loop? Well, **that's because the condition variable can be spuriously awaken even if we didn't call `notify_one`, and in those cases we need to fall back to checking notified. This for loop will iterate that many times.**
 
@@ -1154,7 +1154,7 @@ This is a simplified description since we are also giving wait the object lock, 
 
 错误的例子：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <thread>
 #include <condition_variable>
@@ -1190,7 +1190,7 @@ int main() {
     consumer.join();
     cout << "Net: " << c << endl;
 }
-```
+{% endhighlight %}
 
 # 线程安全检查工具
 
@@ -1200,15 +1200,15 @@ C++ 中有多种工具可以帮助检查线程安全问题。以下是一些常�
 
 安装方法：
 
-```
+{% highlight text %}
 sudo yum install libtsan
-```
+{% endhighlight %}
 
 ThreadSanitizer 是一个用于检测多线程数据竞争的动态分析工具。它是 Clang 和 GCC 编译器的一部分，可以在编译时启用。要使用 ThreadSanitizer，只需在编译命令中添加 `-fsanitize=thread` 标志。例如：
 
-```
+{% highlight text %}
 g++ -fsanitize=thread -g -O1 -o my_program my_program.cpp
-```
+{% endhighlight %}
 
 然后运行程序，ThreadSanitizer 会报告潜在的线程安全问题。
 
@@ -1228,7 +1228,7 @@ ThreadSanitizer (TSan) 是一个用于检测多线程数据竞争的动态分析
 
 Here is an example of a data race that can lead to crashes and memory corruptions:
 
-```cpp
+{% highlight cpp %}
 #include <pthread.h>
 #include <stdio.h>
 #include <string>
@@ -1249,7 +1249,7 @@ int main() {
   printf("foo=%s\n", m["foo"].c_str());
   pthread_join(t, 0);
 }
-```
+{% endhighlight %}
 
 There are a lot of various ways to trigger a data race in C++, see [ThreadSanitizerPopularDataRaces](https://github.com/google/sanitizers/wiki/ThreadSanitizerPopularDataRaces), TSan detects all of them and more -- [ThreadSanitizerDetectableBugs](https://github.com/google/sanitizers/wiki/ThreadSanitizerDetectableBugs).
 
@@ -1262,7 +1262,7 @@ Simply compile your program with `-fsanitize=thread` and link it with `-fsanitiz
 
 When you run the program, `TSan` will print a report if it finds a data race. Here is an example:
 
-```cpp
+{% highlight cpp %}
 $ cat simple_race.cc
 #include <pthread.h>
 #include <stdio.h>
@@ -1286,9 +1286,9 @@ int main() {
   pthread_join(t[0], NULL);
   pthread_join(t[1], NULL);
 }
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ clang++ simple_race.cc -fsanitize=thread -fPIE -pie -g
 $ ./a.out
 ==================
@@ -1308,7 +1308,7 @@ WARNING: ThreadSanitizer: data race (pid=26327)
     #1 main simple_race.cc:20 (exe+0x000000006f63)
 ==================
 ThreadSanitizer: reported 1 warnings
-```
+{% endhighlight %}
 
 Refer to [ThreadSanitizerReportFormat](https://github.com/google/sanitizers/wiki/ThreadSanitizerReportFormat) for explanation of reports format.
 
@@ -1323,15 +1323,15 @@ refer: https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual
 
 安装方法：
 
-```
+{% highlight text %}
 sudo yum install valgrind
-```
+{% endhighlight %}
 
 Valgrind 是一个用于内存调试、内存泄漏检测和性能分析的工具。Helgrind 是 Valgrind 的一个工具，用于检测多线程程序中的同步错误。要使用 Helgrind，首先安装 Valgrind，然后使用以下命令运行程序：
 
-```
+{% highlight text %}
 valgrind --tool=helgrind ./my_program
-```
+{% endhighlight %}
 
 Helgrind 会报告潜在的线程安全问题，如数据竞争、死锁等。
 
@@ -1340,7 +1340,7 @@ Helgrind 会报告潜在的线程安全问题，如数据竞争、死锁等。
 
 测试代码：
 
-```cpp
+{% highlight cpp %}
 #include <thread>
 #include <unordered_map>
 #include <atomic>
@@ -1445,22 +1445,22 @@ int main(int argc, char* argv[]) {
     auto end_time = std::chrono::steady_clock::now();
     printf("%s %.6lfs %d\n", pmu->name(), (end_time - start_time).count() / 1000000000.0, s.load());
 }
-```
+{% endhighlight %}
 
 编译：
 
-```
+{% highlight text %}
 clang++ -o a a.cpp -O2 -std=c++17 -pthread
-```
+{% endhighlight %}
 
 测试：在线程数为 4 时，mutex 互斥锁的性能比 shared_mutex 读写锁的性能更好。
 
-```
+{% highlight text %}
 ➜  ./a smu 2 3 10000000
 shared_mutex 0.801834s 59999994
 ➜  ./a mu 2 3 10000000
 mutex 0.607236s 59999994
-```
+{% endhighlight %}
 
 
 # Refer

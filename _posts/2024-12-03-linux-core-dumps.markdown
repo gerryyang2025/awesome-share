@@ -63,21 +63,21 @@ It's just a file that contains **virtual memory contents, register values, and o
 
 Use `ps` or similar tools to query user process virtual memory usage (in `KB`):
 
-```bash
+{% highlight bash %}
 $ ps -o pid,vsz,rss -p `pidof unittestsvr`
     PID    VSZ   RSS
 1647815 2022532 564596
-```
+{% endhighlight %}
 
 Virtual memory is broken up into virtual memory areas (VMAs), the sum of which equal `VSZ` and may be printed with:
 
-```bash
+{% highlight bash %}
 $ cat /proc/${PID}/smaps
 00400000-0040b000 r-xp 00000000 fd:02 22151273 /bin/cat
 Size: 44 kB
 Rss: 20 kB
 Pss: 12 kB...
-```
+{% endhighlight %}
 
 * The first column is the address range of the `VMA`.
 * The second column is the set of **permissions** (read, write, execute, private copy on write).
@@ -110,10 +110,10 @@ Pss: 12 kB...
 * `128TB` for the **kernel**
   + 0xFFFF8000'00000000 through 0xFFFFFFFF'FFFFFFFF
 
-```bash
+{% highlight bash %}
 $ ls -lh /proc/kcore
 -r-------- 1 root root 128T Dec  3 07:06 /proc/kcore
-```
+{% endhighlight %}
 
 ![core_dumps4](/assets/images/202412/core_dumps4.png)
 
@@ -123,17 +123,17 @@ $ ls -lh /proc/kcore
 * Before going through the boring details of how to produce coredumps, let's assume we have one.
 * Since it's an ELF-formatted file, let's see the details:
 
-```bash
+{% highlight bash %}
 $ readelf -h core.14391.dmp
 Class: ELF64
 Type: CORE (Core file)...
-```
+{% endhighlight %}
 
 * This confirms we've got a coredump from a 64-bit process.
 
 一个完整的示例输出：
 
-```bash
+{% highlight bash %}
 $ readelf -h core.1615592
 ELF Header:
   Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00
@@ -155,20 +155,20 @@ ELF Header:
   Size of section headers:           0 (bytes)
   Number of section headers:         0
   Section header string table index: 0
-```
+{% endhighlight %}
 
 ## User Coredumps
 
 Next, we'll need to know which program crashed. This may be in logs, but let's just read the notes:
 
-```bash
+{% highlight bash %}
 # -n --notes             Display the core notes (if present)
 
 $ readelf -n core.14391.dmp
 CORE 0x000001de NT_FILE (mapped files)
 Start End Page Offset
 0x400000 0x401000 0x00000000 /work/toorcon/a.out …
-```
+{% endhighlight %}
 
 In this case, the program is /work/toorcon/a.out
 
@@ -176,20 +176,20 @@ In this case, the program is /work/toorcon/a.out
 
 Now that we know the program that produced the coredump, simply load `gdb` with the program and the coredump. For example:
 
-```bash
+{% highlight bash %}
 $ gdb /work/toorcon/a.out core.14391.dmp
 Program terminated with signal SIGSEGV,
 Segmentation fault.
 #0 0x00007f6526f1ec8a in strlen () from /lib64/libc.so.6
 Missing separate debuginfos, use: debuginfo-install
 glibc-2.20-8.fc21.x86_64
-```
+{% endhighlight %}
 
 The (gdb) prompt awaits instructions. Type `help` for a list of commands. Type `quit` to exit.
 
 If you're not a developer of the program, you'll just need to send them the coredump, libraries, and a stacktrace
 
-```bash
+{% highlight bash %}
 (gdb) bt
 – #0 0x00007f6526f1ec8a in strlen
 () from /lib64/libc.so.6
@@ -197,13 +197,13 @@ If you're not a developer of the program, you'll just need to send them the core
 () from /lib64/libc.so.6
 #2 0x0000000000400563 in
 main (argc=1, argv=0x7ffebc36a128) at test.c:6
-```
+{% endhighlight %}
 
 Even better: all stacks (打印所有线程栈信息)
 
-```bash
+{% highlight bash %}
 (gdb) thread apply all bt
-```
+{% endhighlight %}
 
 https://www.reddit.com/r/programming/comments/de3wo/stacktrace_or_gtfo/
 
@@ -220,20 +220,20 @@ https://www.reddit.com/r/programming/comments/de3wo/stacktrace_or_gtfo/
 * **It's best to load the coredump on the same machine** where it was produced since gdb will find the loaded shared libraries and any installed debuginfo symbols.
 * **If copying the coredump for processing on another machine**, also copy the program, all shared libraries in the NOTE section and expand those files into a similar folder structure and point to that:
 
-```bash
+{% highlight bash %}
 $ gdb # no parameters
 (gdb) set solib-absolute-prefix ./
 (gdb) set solib-search-path .
 # (gdb) set debug-file-directory ./path_to_debug
 (gdb) file ./path_to_program
 (gdb) core-file ./path_to_coredump
-```
+{% endhighlight %}
 
 ## GDB: Querying virtual memory
 
 gdb can query a core file and produce output about the virtual address space which is similar to `/proc/${PID}/smaps`, although it is normally a subset of all of the VMAs:
 
-```bash
+{% highlight bash %}
 (gdb) info files
 Local core dump file:
 `core.16721.dmp', file type elf64-x86-64.
@@ -243,35 +243,35 @@ Local core dump file:
 0x00007fe288ca5000 - 0x00007fe288ca6000 is load4a
 0x00007fe288ca6000 - 0x00007fe288ca6000 is load4b
 0x00007fe288e58000 - 0x00007fe288e58000 is load5...
-```
+{% endhighlight %}
 
 ## GDB Details
 
 Switch to a frame (list threads with `info thread` and switch threads with `thread N`):
 
-```bash
+{% highlight bash %}
 (gdb) frame 2
 #2 0x0000000000400563 in main (argc=3, argv=0x7ffd47508d18) at test.c:6
 6 printf("%s\n", p);
-```
+{% endhighlight %}
 
 Check why the printf crashed:
 
-```bash
+{% highlight bash %}
 (gdb) print p
 $10 = 0x0
-```
+{% endhighlight %}
 
 Understand the type of argv and then print string contents:
 
-```bash
+{% highlight bash %}
 (gdb) ptype argv
 type = char **
 (gdb) print argv[0]
 $7 = 0x7ffd4750a17c "./a.out"
 (gdb) print argv[1]
 $8 = 0x7ffd4750a184 "arg1"
-```
+{% endhighlight %}
 
 ## User coredump ulimits
 
@@ -285,13 +285,13 @@ $8 = 0x7ffd4750a184 "arg1"
 
 * Ulimits for the current shell may be queried
 
-```bash
+{% highlight bash %}
 $ ulimit -c -f
 core file size          (blocks, -c) unlimited
 file size               (blocks, -f) unlimited
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 $ ulimit -a
 core file size          (blocks, -c) unlimited
 data seg size           (kbytes, -d) unlimited
@@ -309,18 +309,18 @@ cpu time               (seconds, -t) unlimited
 max user processes              (-u) 513489
 virtual memory          (kbytes, -v) unlimited
 file locks                      (-x) unlimited
-```
+{% endhighlight %}
 
 * Or by process:
 
-```bash
+{% highlight bash %}
 $ cat /proc/`pidof unittestsvr`/limits | grep -e Limit -e core -e "Max file size"
 Limit                     Soft Limit           Hard Limit           Units
 Max file size             unlimited            unlimited            bytes
 Max core file size        unlimited            unlimited            bytes
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 $ cat /proc/`pidof unittestsvr`/limits
 Limit                     Soft Limit           Hard Limit           Units
 Max cpu time              unlimited            unlimited            seconds
@@ -339,7 +339,7 @@ Max msgqueue size         819200               819200               bytes
 Max nice priority         0                    0
 Max realtime priority     0                    0
 Max realtime timeout      unlimited            unlimited            us
-```
+{% endhighlight %}
 
 * Ulimits may be set in `limits.conf` on a user or group basis.
 
@@ -365,7 +365,7 @@ When the kernel handles certain signals (`man 7 signal`):
     + This is one of the most common causes of a crash when a program references invalid memory (e.g. NULL)
 - Others: SIGBUS, SIGSYS, SIGTRAP, SIGXCPU, SIGXFSZ, SIGUNUSED
 
-```bash
+{% highlight bash %}
 $ kill -l
  1) SIGHUP       2) SIGINT       3) SIGQUIT      4) SIGILL       5) SIGTRAP
  2) SIGABRT      7) SIGBUS       8) SIGFPE       9) SIGKILL     10) SIGUSR1
@@ -380,7 +380,7 @@ $ kill -l
 9)  SIGRTMAX-11 54) SIGRTMAX-10 55) SIGRTMAX-9  56) SIGRTMAX-8  57) SIGRTMAX-7
 10) SIGRTMAX-6  59) SIGRTMAX-5  60) SIGRTMAX-4  61) SIGRTMAX-3  62) SIGRTMAX-2
 11) SIGRTMAX-1  64) SIGRTMAX
-```
+{% endhighlight %}
 
 Outside the kernel: use `gcore $PID` (part of gdb)
 
@@ -391,18 +391,18 @@ Outside the kernel: use `gcore $PID` (part of gdb)
 
 The coredump goes to `core_pattern` (see `man 5 core`):
 
-```bash
+{% highlight bash %}
 $ sysctl kernel.core_pattern
 kernel.core_pattern = |/usr/lib/systemd/systemd-coredump %p %u %g %s %t %e
-```
+{% endhighlight %}
 
 The default is `core` (sometimes with %p) which writes a file named `core` to the current directory of the PID. May include a path to use a dedicated coredump directory
 
-```bash
+{% highlight bash %}
 # 在当前可执行目录生成 corefile
 $ sysctl kernel.core_pattern
 kernel.core_pattern = core
-```
+{% endhighlight %}
 
 If the value starts with a `|`, then the coredump bytes are piped to that program.
 
@@ -414,12 +414,12 @@ The memory dumped is controlled with a bit mask in `/proc/$PID/coredump_filter` 
 
 Inherited from parent process, so you may set in the script/shell that starts the process. Example: `$ echo 0x7F > /proc/self/coredump_filter`
 
-```bash
+{% highlight bash %}
 $ cat /proc/`pidof unittestsvr`/coredump_filter
 00000033
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
  bit 0  Dump anonymous private mappings.
  bit 1  Dump anonymous shared mappings.
  bit 2  Dump file-backed private mappings.
@@ -434,7 +434,7 @@ $ cat /proc/`pidof unittestsvr`/coredump_filter
         Dump private DAX pages.
  bit 8 (since Linux 4.4)
         Dump shared DAX pages.
-```
+{% endhighlight %}
 
 * https://stackoverflow.com/questions/36523279/coredump-filter-for-all-processes
 * https://man7.org/linux/man-pages/man5/core.5.html
@@ -455,7 +455,7 @@ Never dumped:
   + Ensures cores don't cause that disk's free space to go below `15%`
 * `systemd-tmpfiles` may remove old cores
 
-```bash
+{% highlight bash %}
 $ cat /etc/systemd/coredump.conf
 #  This file is part of systemd.
 #
@@ -478,7 +478,7 @@ $ cat /etc/systemd/coredump.conf
 #JournalSizeMax=767M
 #MaxUse=
 #KeepFree=
-```
+{% endhighlight %}
 
 ## abrtd
 
@@ -494,15 +494,15 @@ $ cat /etc/systemd/coredump.conf
 
 Virtual memory may be printed with the `x` command:
 
-```bash
+{% highlight bash %}
 (gdb) x/32xc 0x00007f3498000000
 0x7f3498000000: 32 ' ' 0 '\000' 0 '\000' 28 '\034' 54 '6' 127 '\177' 0 '\000' 0 '\000'
 0x7f3498000008: 0 '\000' 0 '\000' 0 '\000' -92 '\244' 52 '4' 127 '\177' 0 '\000' 0 '\000'...
-```
+{% endhighlight %}
 
 Another option is to dump memory to a file and then spawn an `xxd` process from within gdb to dump that file which is easier to read (install package vim-common):
 
-```bash
+{% highlight bash %}
 (gdb) bt
 #0  0x00007f1654182e7f in ?? ()
 #1  0x0000000000000000 in ?? ()
@@ -516,15 +516,15 @@ End with a line saying just "end".
 (gdb) xxd 0x00007f1654182e7f 32
 00000000: 488b 8c24 0801 0000 6448 330c 2528 0000  H..$....dH3.%(..
 00000010: 0044 89c0 7519 4881 c410 0100 005b c366  .D..u.H......[.f
-```
+{% endhighlight %}
 
 For large chunks, these may be dumped to a file directly:
 
-```bash
+{% highlight bash %}
 (gdb) dump binary memory dump.bin 0x00007f1654182e7f 0x00007f1654182f7f
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ xxd dump.bin
 00000000: 488b 8c24 0801 0000 6448 330c 2528 0000  H..$....dH3.%(..
 00000010: 0044 89c0 7519 4881 c410 0100 005b c366  .D..u.H......[.f
@@ -542,19 +542,19 @@ $ xxd dump.bin
 000000d0: 6f4e 18f3 0f6f 5628 f30f 6f5e 38f3 0f6f  oN...oV(..o^8..o
 000000e0: 6648 4889 0424 8b86 8800 0000 f30f 6f6e  fHH..$........on
 000000f0: 580f 1144 2418 f30f 6f76 68f3 0f6f 7e78  X..D$...ovh..o~x
-```
+{% endhighlight %}
 
 Large VMAs often have a lot of zero'd memory. A simple trick to filter those out is to remove all zero lines:
 
-```bash
+{% highlight bash %}
 $ xxd dump.bin | grep -v "0000 0000 0000 0000 0000 0000 0000 0000" > dump.bin.txt
-```
+{% endhighlight %}
 
 ## Eye catchers
 
 Well written programs put eye catchers at the start of structures to make finding problems easiers
 
-```
+{% highlight text %}
 (gdb) xxd 0xF2E010 128
 00000000: 4445 4144 4641 4444 0000 0000 0000 0000 DEADFADD........
 00000010: 0000 0000 0000 0000 2100 0000 0000 0000 ........!.......
@@ -564,7 +564,7 @@ Well written programs put eye catchers at the start of structures to make findin
 00000050: 0000 0000 0000 0000 2100 0000 0000 0000 ........!.......
 00000060: 4445 4144 4641 4444 0000 0000 7101 0000 DEADFADD....q...
 00000070: 0000 0000 0000 0000 2100 0000 0000 0000 ........!.......
-```
+{% endhighlight %}
 
 ## Debugging glibc malloc
 
@@ -601,9 +601,9 @@ If proper symbols are installed, simply run the `crash` command without argument
 
 Watch your system logs for messages such as:
 
-```
+{% highlight text %}
 kernel: Out of Memory: Killed process 123 (someprocess).
-```
+{% endhighlight %}
 
 Or set `/proc/sys/vm/panic_on_oom=1` to cause a kernel panic instead. Then use the `bt` command to see who requested memory and how much and the `ps` command to see what is using memory
 
@@ -611,12 +611,12 @@ Or set `/proc/sys/vm/panic_on_oom=1` to cause a kernel panic instead. Then use t
 
 Linux aggressively uses physical memory for transient data such as file cache. (Linux 系统之所以积极使用物理内存作为文件缓存，是因为它可以显著提高系统性能、有效利用有限的资源，并确保系统在高负载情况下仍能正常运行)
 
-```bash
+{% highlight bash %}
 $ free -m
 total used free shared buffers cached
 Mem: 15699 4573 11126 0 86 1963
 -/+ buffers/cache: 2523 13176
-```
+{% endhighlight %}
 
 However, `/proc/sys/vm/swappiness` (default 60) controls how much the kernel will prefer to page programs out rather than filecache
 
@@ -644,16 +644,16 @@ http://www.ibm.com/developerworks/library/j-nativememory-linux/
 
 `/proc/sys/kernel/core_pattern` 文件用于定义 Linux 操作系统在程序崩溃时生成 core 文件的名称和位置。它还可以用于定义一个处理程序，该处理程序在程序崩溃时被调用，用于收集和处理 core 文件。
 
-```bash
+{% highlight bash %}
 cat /proc/sys/kernel/core_pattern
 |/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h %e
-```
+{% endhighlight %}
 
 `|` 符号表示这是一个外部处理程序，而不是一个普通的文件名模板。在这种情况下，操作系统将调用 `/usr/lib/systemd/systemd-coredump` 处理程序，而不是直接将 core 文件写入磁盘。
 
 `systemd-coredump` 是一个由 systemd 提供的处理程序，用于收集和处理 core 文件。当一个程序崩溃时，操作系统将调用此处理程序，并传递一些参数。这些参数包括：
 
-```
+{% highlight text %}
 %P：崩溃进程的进程 ID。
 %u：崩溃进程的用户 ID。
 %g：崩溃进程的组 ID。
@@ -662,33 +662,33 @@ cat /proc/sys/kernel/core_pattern
 %c：核心文件的大小限制（ulimit）。
 %h：主机名。
 %e：崩溃进程的可执行文件名。
-```
+{% endhighlight %}
 
 `systemd-coredump` 可以将 core 文件存储在文件系统中，也可以将它们存储在 systemd journal 中。此外，`systemd-coredump` 还可以自动压缩 core 文件，以减少存储空间占用。
 
 要查看由 `systemd-coredump` 收集的 core 文件，可以使用 `coredumpctl` 工具。例如，要列出所有收集到的 core 文件，可以运行：
 
-```bash
+{% highlight bash %}
 coredumpctl list
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ coredumpctl list
 TIME                            PID   UID   GID SIG COREFILE  EXE
 Tue 2024-01-16 15:04:27 CST  2453004 67527   100  11 missing   /usr/local/bin/clangd
 Tue 2024-01-16 15:04:49 CST  3679801 67527   100  11 truncated /usr/local/bin/clangd
 Tue 2024-01-16 15:49:27 CST  3739324 67527   100   6 present   /data/home/gerryyang/JLib_Run/bin/unittestsvr/unittestsvr
-```
+{% endhighlight %}
 
 要获取特定 core 文件的详细信息，可以使用：
 
-```bash
+{% highlight bash %}
 coredumpctl info <PID>
-```
+{% endhighlight %}
 
 其中 `<PID>` 是崩溃进程的进程 ID。
 
-```
+{% highlight text %}
 $ coredumpctl info 3739324
            PID: 3739324 (unittestsvr)
            UID: 67527 (gerryyang)
@@ -716,22 +716,22 @@ $ coredumpctl info 3739324
                 #6  0x00000000019fa20f AsanInitInternal (unittestsvr)
                 #7  0x00007f27b6743b0e _dl_init (ld-linux-x86-64.so.2)
                 #8  0x00007f27b67350ca _dl_start_user (ld-linux-x86-64.so.2)
-```
+{% endhighlight %}
 
 请注意，要使用 `systemd-coredump` 和 `coredumpctl`，需要在使用 systemd 的 Linux 发行版上运行。不同的发行版可能有不同的默认配置和工具。请根据您的发行版查找适当的文档以获取更多详细信息。
 
 `systemd-coredump` 处理的 coredump 文件默认存储在 `/var/lib/systemd/coredump` 目录中。
 
-```
+{% highlight text %}
 [root /var/lib/systemd/coredump 09:12:16]$ ls -rtlh
 total 3.3G
 -rw-r-----+ 1 root root 788M Jan 16 15:04 'core.clangd\x2emain.67527.494e5800c825458abbffdb97b481e3e0.3679801.1705388677000000.lz4'
 -rw-r-----+ 1 root root 1.4M Jan 16 15:49  core.unittestsvr.67527.494e5800c825458abbffdb97b481e3e0.3739324.1705391366000000.lz4
-```
+{% endhighlight %}
 
 如果想更改 coredump 文件的存储位置，可以编辑 `/etc/systemd/coredump.conf` 文件。
 
-```
+{% highlight text %}
 $ cat /etc/systemd/coredump.conf
 #  This file is part of systemd.
 #
@@ -754,21 +754,21 @@ $ cat /etc/systemd/coredump.conf
 #JournalSizeMax=767M
 #MaxUse=
 #KeepFree=
-```
+{% endhighlight %}
 
 在这个文件中，可以设置 Storage 选项为 external，并通过 ExternalLocation 选项指定一个新的存储目录。例如：
 
-```
+{% highlight text %}
 [Coredump]
 Storage=external
 ExternalLocation=/path/to/your/directory
-```
+{% endhighlight %}
 
 更改配置后，需要重启 systemd 服务以使更改生效：
 
-```
+{% highlight text %}
 sudo systemctl daemon-reload
-```
+{% endhighlight %}
 
 请注意，需要确保新的存储目录存在并具有适当的权限，以便 systemd-coredump 可以在其中创建和写入文件。
 
@@ -777,7 +777,7 @@ sudo systemctl daemon-reload
 # 自定义 coredump 生成格式
 
 
-```bash
+{% highlight bash %}
 ulimit -c unlimited
 
 # 自定义路径格式
@@ -786,7 +786,7 @@ echo "1" > /proc/sys/kernel/core_uses_pid
 
 # 默认当前执行目录
 echo "core" > /proc/sys/kernel/core_pattern
-```
+{% endhighlight %}
 
 # 磁盘 IO 性能优化 dd 方案
 
@@ -794,9 +794,9 @@ echo "core" > /proc/sys/kernel/core_pattern
 
 当时的规避方案：通过将 coredump 落盘转为通过 pipe 交给其它程序处理，例如：通过 dd 来将 core 直接通过 direct_io 写，这样 dd 直接操作磁盘被母机限制，但是虚拟机系统的 pagecache 不会触发 flush 导致整个虚拟机受到影响。
 
-```bash
+{% highlight bash %}
 echo "|/usr/bin/dd bs=1M of=/data/corefile/core_%e_%t.%p oflag=direct,noatime" > /proc/sys/kernel/core_pattern
-```
+{% endhighlight %}
 
 
 # Breakpad 方案 (Google)

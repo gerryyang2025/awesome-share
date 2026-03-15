@@ -35,7 +35,7 @@ Here is a trivial example that prints "17 items are made of wool".
 
 
 {% raw %}
-```golang
+{% highlight golang %}
 type Inventory struct {
 	Material string
 	Count    uint
@@ -45,13 +45,13 @@ tmpl, err := template.New("test").Parse("{{.Count}} items are made of {{.Materia
 if err != nil { panic(err) }
 err = tmpl.Execute(os.Stdout, sweaters)
 if err != nil { panic(err) }
-```
+{% endhighlight %}
 {% endraw %}
 
 另一个示例：
 
 {% raw %}
-```golang
+{% highlight golang %}
 package main
 
 import (
@@ -80,13 +80,13 @@ func main() {
         panic(err)
     }
 }
-```
+{% endhighlight %}
 {% endraw %}
 
 
-```
+{% highlight text %}
 Name: Alice, Age: 30
-```
+{% endhighlight %}
 
 {% raw %}
 模板内容可以是 UTF-8 编码的任何内容。其中用`{{`和`}}`包围的部分称为动作，`{{}}`外的其它文本在输出保持不变。模板需要应用到数据，模板中的动作会根据数据生成相应的内容来替换。
@@ -109,15 +109,15 @@ However, to aid in formatting template source code, if an action's left delimite
 
 For instance, when executing the template whose source is
 
-```
+{% highlight text %}
 "{{23 -}} < {{- 45}}"
-```
+{% endhighlight %}
 
 the generated output would be
 
-```
+{% highlight text %}
 "23<45"
-```
+{% endhighlight %}
 
 For this trimming, the definition of white space characters is the same as in Go: space, horizontal tab, carriage return, and newline.
 
@@ -144,11 +144,11 @@ Go 模板中的动作就是一些嵌入在模板里面的**命令**。动作大�
 
 {% raw %}
 
-```
+{% highlight text %}
 {{ if pipeline }} T1 {{ end }}
 {{ if pipeline }} T1 {{ else }} T2 {{ end }}
 {{ if pipeline1 }} T1 {{ else if pipeline2 }} T2 {{ else }} T3 {{ end }}
-```
+{% endhighlight %}
 
 pipeline 表示管道，可以将它理解为一个值。 T1/T2 等形式表示语句块，里面可以嵌套其它类型的动作。最简单的语句块就是不包含任何动作的字符串。
 
@@ -157,9 +157,9 @@ pipeline 表示管道，可以将它理解为一个值。 T1/T2 等形式表示�
 
 例如：
 
-```
+{% highlight text %}
 {{ if .CmdService.Port -}} CMDSVR_PORT = {{ .CmdService.Port -}} {{ end }}
-```
+{% endhighlight %}
 
 `-` 是 Go 语言提供的针对空白符的处理，方便规范文本输出格式。如果一个动作以 `{{- ` （注意有一个空格），那么该动作与它前面相邻的非空文本或动作间的空白符将会被全部删除。类似地，如果一个动作以 ` -}}` 结尾，那么该动作与它后面相邻的非空文本或动作间的空白符将会被全部删除。
 
@@ -169,19 +169,19 @@ pipeline 表示管道，可以将它理解为一个值。 T1/T2 等形式表示�
 
 {% raw %}
 
-```
+{% highlight text %}
 {{ range pipeline }} T1 {{ end }}
 {{ range pipeline }} T1 {{ else }} T2 {{ end }}
-```
+{% endhighlight %}
 
 例如：
 
-```
+{% highlight text %}
 <ApsSvrCount> {{- len .Apollo.UrlList -}} </ApsSvrCount>
 {{- range .Apollo.UrlList }}
 <ApsSvrUrls>{{ . }}</ApsSvrUrls>
 {{- end }}
-```
+{% endhighlight %}
 
 如果`.Apollo.UrlList`长度不为 0，遍历列表，输出列表值到`<ApsSvrUrls>{{ . }}</ApsSvrUrls>`。range 语句循环体内，`.` 被设置为当前遍历的元素，即 Url 的值。
 
@@ -191,10 +191,10 @@ pipeline 表示管道，可以将它理解为一个值。 T1/T2 等形式表示�
 
 {% raw %}
 
-```
+{% highlight text %}
 {{ with pipeline }} T1 {{ end }}
 {{ with pipeline }} T1 {{ else }} T2 {{ end }}
-```
+{% endhighlight %}
 
 设置动作使用 `with` 关键字重定义 `.` 。在 `with` 语句内，`.` 会被定义为指定的值。一般用在结构嵌套很深时，能起到简化代码的作用。
 
@@ -202,17 +202,17 @@ pipeline 表示管道，可以将它理解为一个值。 T1/T2 等形式表示�
 
 模版为：
 
-```
+{% highlight text %}
 {{ with .gamesvr }} {{- .tconnd_lwip.vIP -}} {{ end }}
-```
+{% endhighlight %}
 
 配置为：
 
-```
+{% highlight text %}
 gamesvr:
   tconnd_lwip:
     vIP: 127.0.0.1
-```
+{% endhighlight %}
 
 在 `with` 语句内，`.` 被替换成了 gamesvr 的值，这样就可以通过 `.tconnd_lwip.vIP` 访问配置。
 
@@ -224,7 +224,7 @@ Here is the list of actions. "Arguments" and "pipelines" are evaluations of data
 
 {% raw %}
 
-```
+{% highlight text %}
 {{/* a comment */}}
 {{- /* a comment with white space trimmed from preceding and following text */ -}}
 	A comment; discarded. May contain newlines.
@@ -300,7 +300,7 @@ Here is the list of actions. "Arguments" and "pipelines" are evaluations of data
 	is executed; otherwise, dot is set to the value of the pipeline
 	and T1 is executed.
 
-```
+{% endhighlight %}
 
 {% endraw %}
 
@@ -315,7 +315,7 @@ Arguments may evaluate to any type; if they are pointers the implementation auto
 
 A pipeline is a possibly chained sequence of "commands". A command is a simple value (argument) or a function or method call, possibly with multiple arguments.
 
-```argument
+{% highlight argument %}
 	The result is the value of evaluating the argument.
 .Method [Argument...]
 	The method can be alone or the last element of a chain but,
@@ -328,7 +328,7 @@ functionName [Argument...]
 	with the name:
 		function(Argument1, etc.)
 	Functions and function names are described below.
-```
+{% endhighlight %}
 
 A pipeline may be "chained" by separating a sequence of commands with pipeline characters `|`. In a chained pipeline, the result of each command is passed as the last argument of the following command. The output of the final command in the pipeline is the value of the pipeline.
 
@@ -338,9 +338,9 @@ The output of a command will be either one value or two values, the second of wh
 
 例如：
 
-```
+{% highlight text %}
 {{ with .Required.GroupName | index $ }} {{- coalesce .tconnd_gcp.ApsAuthInfo.BusinessID $.Apollo.BusinessID -}} {{ end }}
-```
+{% endhighlight %}
 
 因为作用域发生变化，要访问顶级作用域需要加上`$`，如`$.Apollo.BusinessID`。假设 `.Required.GroupName` 得到的结果是 gamesvr，这个 `index $ gamesvr` 就是取 `.gamesvr`
 
@@ -351,9 +351,9 @@ The output of a command will be either one value or two values, the second of wh
 
 A pipeline inside an action may initialize a variable to capture the result. The initialization has syntax
 
-```
+{% highlight text %}
 $variable := pipeline
-```
+{% endhighlight %}
 
 where `$variable` is the name of the variable. An action that declares a variable produces no output.
 
@@ -368,7 +368,7 @@ Go 模板提供了大量的预定义函数，如果有特殊需求也可以实�
 
 Predefined global functions are named as follows.
 
-```and
+{% highlight and %}
 	Returns the boolean AND of its arguments by returning the
 	first empty argument or the last argument. That is,
 	"and x y" behaves as "if x then y else x."
@@ -422,13 +422,13 @@ urlquery
 	its arguments in a form suitable for embedding in a URL query.
 	This function is unavailable in html/template, with a few
 	exceptions.
-```
+{% endhighlight %}
 
 The boolean functions take any zero value to be false and a non-zero value to be true.
 
 There is also a set of binary comparison operators defined as functions:
 
-```eq
+{% highlight eq %}
 	Returns the boolean truth of arg1 == arg2
 ne
 	Returns the boolean truth of arg1 != arg2
@@ -440,19 +440,19 @@ gt
 	Returns the boolean truth of arg1 > arg2
 ge
 	Returns the boolean truth of arg1 >= arg2
-```
+{% endhighlight %}
 
 ### 自定义函数
 
 默认情况下，模板中无自定义函数，可以使用模板的`Funcs`方法添加。`sprig` 模板函数库，就是通过这种方式使用的。
 
-```golang
+{% highlight golang %}
 t, err := template.New("test").Funcs(sprig.TxtFuncMap()).Parse(string(tmpStr))
 err = t.Execute(os.Stdout, meta)
 if err != nil {
 	return
 }
-```
+{% endhighlight %}
 
 `Parse()` 解析模板字符串之前，先调用 `Funcs(sprig.TxtFuncMap())`，指定使用 `sprig` 的模板函数。
 
@@ -465,7 +465,7 @@ Here are some example one-line templates demonstrating pipelines and variables. 
 
 {% raw %}
 
-```
+{% highlight text %}
 {{"\"output\""}}
 	A string constant.
 {{`"output"`}}
@@ -490,7 +490,7 @@ Here are some example one-line templates demonstrating pipelines and variables. 
 {{with $x := "output"}}{{$x | printf "%q"}}{{end}}
 	The same, but pipelined.
 
-```
+{% endhighlight %}
 
 {% endraw %}
 
@@ -514,9 +514,9 @@ Sprig provides tools for setting default values for templates.
 
 To set a simple default value, use `default`:
 
-```
+{% highlight text %}
 default "foo" .Bar
-```
+{% endhighlight %}
 
 In the above, if `.Bar` evaluates to a non-empty value, it will be used. But if it is empty, `foo` will be returned instead.
 
@@ -535,17 +535,17 @@ For structs, there is no definition of empty, so a struct will never return the 
 
 The `coalesce` function takes a list of values and returns the first non-empty one.
 
-```
+{% highlight text %}
 coalesce 0 1 2
-```
+{% endhighlight %}
 
 The above returns 1.
 
 This function is useful for scanning through multiple variables or values:
 
-```
+{% highlight text %}
 coalesce .name .parent.name "Matt"
-```
+{% endhighlight %}
 
 The above will first check to see if `.name` is empty. If it is not, it will return that value. If it is empty, coalesce will evaluate `.parent.name` for emptiness. Finally, if both `.name` and `.parent.name` are empty, it will return `Matt`.
 
@@ -555,36 +555,36 @@ The above will first check to see if `.name` is empty. If it is not, it will ret
 
 yaml 配置：
 
-```yaml
+{% highlight yaml %}
 UpdateMgr:
   EpollMgr: {Type: "BY_MICROSECOND", Interval: "1000"}
   LibEventMgr: {Type: "BY_MICROSECOND", Interval: "1000"}
-```
+{% endhighlight %}
 
 go template 配置：
 
 {% raw %}
 
-```xml
+{% highlight xml %}
 <?xml version="1.0" encoding="UTF-8" ?>
 <UpdateMgr>
 {{- range $name,$attr := $.UpdateMgr }}
     <Update Name="{{ $name }}" {{ range $key,$val := $attr }} {{ $key }}="{{ $val }}" {{- end }} />
 {{- end }}
 </UpdateMgr>
-```
+{% endhighlight %}
 
 {% endraw %}
 
 生成的格式：
 
-```xml
+{% highlight xml %}
 <?xml version="1.0" encoding="UTF-8" ?>
 <UpdateMgr>
     <Update Name="EpollMgr" Type="BY_MICROSECOND" Interval="1000" />
     <Update Name="LibEventMgr" Type="BY_MICROSECOND" Interval="1000" />
 </UpdateMgr>
-```
+{% endhighlight %}
 
 
 # Refer

@@ -43,12 +43,12 @@ Specifically, TCMalloc provides the following benefits:
 * 全局锁争用：多线程并发分配时，glibc malloc 的锁竞争导致性能塌陷
 * 缓存局部性差：内存分配跨线程跳跃，CPU 缓存命中率骤降
 
-```
+{% highlight text %}
 graph LR
     A[线程1分配内存] -->|竞争全局锁| B[中央堆]
     C[线程2分配内存] -->|阻塞等待| B
     D[线程N分配内存] -->|高并发时严重争抢| B
-```
+{% endhighlight %}
 
 
 > TCMalloc 的并行化架构
@@ -65,14 +65,14 @@ graph LR
 | 中央缓存 | 批量转移内存到 Per-CPU 缓存 | 分桶锁 (Sharded)
 | PageHeap | 管理大块内存 (≥256KiB) | 粒度锁
 
-```
+{% highlight text %}
 graph LR
     A[线程1] -->|无锁访问| B[Per-CPU 缓存]
     C[线程2] -->|无锁访问| D[Per-CPU 缓存]
     E[线程N] -->|无锁访问| F[Per-CPU 缓存]
     B & D & F -->|异步填充| G[中央缓存]
     G --> H[PageHeap]
-```
+{% endhighlight %}
 
 > 对 C++14/17 标准的极致优化
 
@@ -87,13 +87,13 @@ refer: [深入探索C++17：资源管理新机制与 std::pmr 命名空间, 详�
 
 突破标准的性能取舍，示例：尺寸无关删除 (`Sized Delete`)
 
-```cpp
+{% highlight cpp %}
 // 标准行为：需查询对象尺寸
 delete ptr;
 
 // TCMalloc 扩展：直接传递尺寸（编译器支持）
 operator delete(ptr, size); // 非标准但高效
-```
+{% endhighlight %}
 
 * 收益：释放操作减少 1 次中央缓存查询
 * 代价：违反标准但实测加速 15% 释放路径
@@ -110,7 +110,7 @@ operator delete(ptr, size); // 非标准但高效
 
 可观测性增强：
 
-```cpp
+{% highlight cpp %}
 // 通过 MallocExtension 获取内部指标
 auto metrics = tcmalloc::MallocExtension::GetProperties();
 cout << "堆内存: "
@@ -118,7 +118,7 @@ cout << "堆内存: "
 
 // 实时采样内存分配来源
 MallocExtension::SnapshotCurrent(AllocationProfilingToken);
-```
+{% endhighlight %}
 
 关键指标：
 
@@ -395,9 +395,9 @@ We’ve published several papers relating to TCMalloc optimizations:
 
 方式一：安装包
 
-```
+{% highlight text %}
 yum install bazel4
-```
+{% endhighlight %}
 
 方式二：[源码编译](https://bazel.build/install/compile-source)
 
@@ -405,15 +405,15 @@ yum install bazel4
 
 ## Install python3
 
-```
+{% highlight text %}
 yum install -y python36
-```
+{% endhighlight %}
 
 ## Install java
 
-```
+{% highlight text %}
 yum install -y java-1.8.0-openjdk-devel.x86_64
-```
+{% endhighlight %}
 
 > 如果需要运行java程序，只需安装JRE (Java Runtime Environment)。如果需要编写java程序，需要安装JDK (Java Development Kit)。
 >
@@ -489,16 +489,16 @@ Over time, we have found that configurability carries a maintenance burden. Whil
 
 # 单独构建 tcmalloc
 
-```
+{% highlight text %}
 cd ~/github
 git clone https://github.com/google/tcmalloc.git
 cd tcmalloc
 CC=clang bazel test //tcmalloc/...
-```
+{% endhighlight %}
 
 编译构建输出：
 
-```
+{% highlight text %}
 WARNING: Ignoring JAVA_HOME, because it must point to a JDK, not a JRE.
 WARNING: Running Bazel server needs to be killed, because the startup options are different.
 Starting local Bazel server and connecting to it...
@@ -519,7 +519,7 @@ INFO: Build completed successfully, 4009 total actions
 
 Executed 251 out of 251 tests: 251 tests pass.
 INFO: Build completed successfully, 4009 total actions
-```
+{% endhighlight %}
 
 Congratulations! You've installed TCMalloc
 
@@ -530,15 +530,15 @@ Congratulations! You've installed TCMalloc
 
 禁用 libunwind:
 
-```
+{% highlight text %}
 ./configure --prefix=/data/home/gerryyang/tools/gperf/gperftools-2.10-install-gcc485  --enable-frame-pointers
-```
+{% endhighlight %}
 
 使用 libunwind:
 
-```
+{% highlight text %}
 LDFLAGS="-L/data/home/gerryyang/tools/libunwind/libunwind-1.5.0-install-gcc485/lib" CPPFLAGS="-I/data/home/gerryyang/tools/libunwind/libunwind-1.5.0-install-gcc485/include" ./configure --prefix=/data/home/gerryyang/tools/gperf/gperftools-2.10-install-gcc485 --enable-libunwind
-```
+{% endhighlight %}
 
 ## 构建方法优化
 
@@ -546,9 +546,9 @@ LDFLAGS="-L/data/home/gerryyang/tools/libunwind/libunwind-1.5.0-install-gcc485/l
 
 * 优化编译选项：为了在生产环境中获得最佳性能，可以使用高优化级别编译 tcmalloc。例如，可以使用 -O3 优化级别。要设置编译选项，可以在构建命令中添加 CFLAGS 和 CXXFLAGS：
 
-```
+{% highlight text %}
 CFLAGS="-O3" CXXFLAGS="-O3" ./configure --prefix=/data/home/gerryyang/tools/gperf/gperftools-2.10-install-gcc485 --enable-frame-pointers
-```
+{% endhighlight %}
 
 * 禁用不必要的功能：在生产环境中，你可能不需要 tcmalloc 的一些诊断功能，如内存泄漏检测、CPU 分析器和堆分析器。确保在构建命令中不包含这些功能的启用选项。在 gperftools 的构建过程中，默认情况下是不启用 CPU 分析器、堆分析器、堆检查器和 debugalloc 的。因此，通常情况下，不需要显式地添加这些禁用选项。
 
@@ -558,9 +558,9 @@ CFLAGS="-O3" CXXFLAGS="-O3" ./configure --prefix=/data/home/gerryyang/tools/gper
 
 综上所述，可以使用以下命令进行构建：
 
-```
+{% highlight text %}
 CFLAGS="-O3" CXXFLAGS="-O3" ./configure --prefix=/data/home/gerryyang/tools/gperf/gperftools-2.10-install-gcc485 --enable-frame-pointers --disable-cpu-profiler --disable-heap-profiler --disable-heap-checker --disable-debugalloc
-```
+{% endhighlight %}
 
 在构建 gperftools 以用于生产环境时，除了前面提到的选项外，还可以考虑以下选项：
 
@@ -577,28 +577,28 @@ CFLAGS="-O3" CXXFLAGS="-O3" ./configure --prefix=/data/home/gerryyang/tools/gper
 
 动态库：
 
-```
+{% highlight text %}
 CFLAGS="-O3" CXXFLAGS="-O3" ./configure --prefix=/data/home/gerryyang/tools/gperf/gperftools-2.10-install-gcc485 --enable-frame-pointers --disable-cpu-profiler --disable-heap-profiler --disable-heap-checker --disable-debugalloc --enable-minimal --enable-shared --disable-static --with-pic
-```
+{% endhighlight %}
 
 静态库：
 
-```
+{% highlight text %}
 CFLAGS="-O3" CXXFLAGS="-O3" ./configure --prefix=/data/home/gerryyang/tools/gperf/gperftools-2.10-install-gcc485 --enable-frame-pointers --disable-cpu-profiler --disable-heap-profiler --disable-heap-checker --disable-debugalloc --enable-minimal --with-pic
-```
+{% endhighlight %}
 
 完整的功能：
 
-```
+{% highlight text %}
 CFLAGS="-O3" CXXFLAGS="-O3" ./configure --prefix=/data/home/gerryyang/tools/gperf/gperftools-2.10-install-gcc485 --enable-frame-pointers --with-pic
-```
+{% endhighlight %}
 
 
 
 
 ## 64-BIT LINUX Issue (死锁问题)
 
-```
+{% highlight text %}
 NOTE FOR 64-BIT LINUX SYSTEMS
 
 The glibc built-in stack-unwinder on 64-bit systems has some problems
@@ -607,16 +607,16 @@ may be in the middle of malloc, holding some malloc-related locks when
 they invoke the stack unwinder.  The built-in stack unwinder may call
 malloc recursively, which may require the thread to acquire a lock it
 already holds: deadlock.)
-```
+{% endhighlight %}
 
 可能的解决方法：
 
-```
+{% highlight text %}
 If you encounter problems, try compiling perftools with './configure
 --enable-frame-pointers'.  Note you will need to compile your
 application with frame pointers (via 'gcc -fno-omit-frame-pointer
 ...') in this case.
-```
+{% endhighlight %}
 
 参考：https://github.com/gperftools/gperftools/blob/gperftools-2.10/INSTALL 其中 NOTE FOR 64-BIT LINUX SYSTEMS 部署说明。
 
@@ -624,7 +624,7 @@ application with frame pointers (via 'gcc -fno-omit-frame-pointer
 
 Once you've verified you have TCMalloc installed correctly, you can compile and run the [tcmalloc-hello](https://github.com/google/tcmalloc/blob/master/tcmalloc/testing/hello_main.cc) sample binary to see how TCMalloc is linked into a sample binary. This tiny project features proper configuration and a simple `hello_main` to demonstrate how TCMalloc works.
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <memory>
 #include <string>
@@ -670,11 +670,11 @@ int main(int argc, char** argv) {
 
   free(ptr2);
 }
-```
+{% endhighlight %}
 
 First, build the `tcmalloc/testing:hello_main` target:
 
-```
+{% highlight text %}
 ~/github/tcmalloc$CC=clang bazel build tcmalloc/testing:hello_main
 WARNING: Ignoring JAVA_HOME, because it must point to a JDK, not a JRE.
 INFO: Analyzed target //tcmalloc/testing:hello_main (1 packages loaded, 114 targets configured).
@@ -684,11 +684,11 @@ Target //tcmalloc/testing:hello_main up-to-date:
 INFO: Elapsed time: 10.843s, Critical Path: 6.07s
 INFO: 87 processes: 2 internal, 85 processwrapper-sandbox.
 INFO: Build completed successfully, 87 total actions
-```
+{% endhighlight %}
 
 Now, run the compiled program:
 
-```
+{% highlight text %}
 ~/github/tcmalloc$CC=clang bazel run tcmalloc/testing:hello_main
 WARNING: Ignoring JAVA_HOME, because it must point to a JDK, not a JRE.
 INFO: Analyzed target //tcmalloc/testing:hello_main (1 packages loaded, 114 targets configured).
@@ -705,7 +705,7 @@ new'd 1073741824 bytes at 0x463880000000
 Current heap size = 1073816576 bytes
 malloc'd 1073741824 bytes at 0x4638c0000000
 Current heap size = 2147558400 bytes
-```
+{% endhighlight %}
 
 You can inspect this code within [tcmalloc/testing/hello_main.cc](https://github.com/google/tcmalloc/blob/master/tcmalloc/testing/hello_main.cc)
 
@@ -810,7 +810,7 @@ The output contains a lot of information. Much of it can be considered debug inf
 
 The most generally useful section is the first few lines:
 
-```
+{% highlight text %}
 See https://github.com/google/tcmalloc/tree/master/docs/stats.md for an explanation of this page
 ------------------------------------------------
 MALLOC:    10858234672 (10355.2 MiB) Bytes in use by application
@@ -827,7 +827,7 @@ MALLOC: =  12238113346 (11671.2 MiB) Actual memory used (physical + swap)
 MALLOC: +    704643072 (  672.0 MiB) Bytes released to OS (aka unmapped)
 MALLOC:   ------------
 MALLOC: =  12942756418 (12343.2 MiB) Virtual address space used
-```
+{% endhighlight %}
 
 * **Bytes in use by application**: Number of bytes that the application is actively using to hold data. This is computed by the bytes requested from the OS minus any bytes that are held in caches and other internal data structures.
 * **Bytes in page heap freelist**: The pageheap is a structure that holds memory ready for TCMalloc to use. This memory is not actively being used, and could be returned to the OS. See [TCMalloc tuning](https://github.com/google/tcmalloc/blob/master/docs/tuning.md)
@@ -850,7 +850,7 @@ There's a couple of summary lines:
 
 The next section gives some insight into the amount of metadata that TCMalloc is using. This is really debug information, and not very actionable.
 
-```
+{% highlight text %}
 MALLOC:         236176               Spans in use
 MALLOC:         238709 (   10.9 MiB) Spans created
 MALLOC:              8               Thread heaps in use
@@ -861,7 +861,7 @@ MALLOC:              0               Table buckets in use
 MALLOC:           2808 (    0.0 MiB) Table buckets created
 MALLOC:       11665416 (   11.1 MiB) Pagemap bytes used
 MALLOC:        4067336 (    3.9 MiB) Pagemap root resident bytes
-```
+{% endhighlight %}
 
 * **Spans**: structures that hold multiple pages of allocatable objects.
 * **Thread heaps**: These are the per-thread structures used in per-thread mode.
@@ -875,7 +875,7 @@ See more: https://github.com/google/tcmalloc/blob/master/docs/stats.md
 
 # 测试代码
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <chrono>
 #include <cstdlib>
@@ -922,11 +922,11 @@ int main() {
 
     return 0;
 }
-```
+{% endhighlight %}
 
 输出结果：
 
-```
+{% highlight text %}
 Allocation size: 16 bytes, Total allocations: 1000000, Duration: 20 ms
 Allocation size: 64 bytes, Total allocations: 1000000, Duration: 32 ms
 Allocation size: 256 bytes, Total allocations: 1000000, Duration: 80 ms
@@ -934,7 +934,7 @@ Allocation size: 1024 bytes, Total allocations: 1000000, Duration: 251 ms
 Allocation size: 4096 bytes, Total allocations: 1000000, Duration: 847 ms
 Allocation size: 1572864 bytes, Total allocations: 1000000, Duration: 4757 ms
 Allocation size: 2044723 bytes, Total allocations: 1000000, Duration: 2199 ms
-```
+{% endhighlight %}
 
 
 
@@ -950,25 +950,25 @@ The primary goal of this project is to define a portable and efficient C program
 
 使用 `LD_PRELOAD` 运行程序：在运行程序时，设置 `LD_PRELOAD` 环境变量以加载 `libtcmalloc.so`
 
-```bash
+{% highlight bash %}
 LD_PRELOAD=/path/to/libtcmalloc.so your_program
-```
+{% endhighlight %}
 
 检查进程映射：在程序运行时，可以使用 `/proc `文件系统检查已加载的共享库。首先，找到程序的进程ID（PID），然后查看 `/proc/PID/maps` 文件。例如，如果程序的 PID 为 12345，则运行以下命令：
 
-```
+{% highlight text %}
 cat /proc/12345/maps
-```
+{% endhighlight %}
 
 在输出的结果中，检查 `libtcmalloc.so` 的路径。如果找到了该路径，说明 `libtcmalloc.so` 已成功加载。
 
 或者：
 
-```
+{% highlight text %}
 lsof -p 12345 | grep libtcmalloc.so
 
 pmap 12345 | grep libtcmalloc.so
-```
+{% endhighlight %}
 
 # [Performance Tuning TCMalloc](https://google.github.io/tcmalloc/tuning.html)
 
@@ -1065,13 +1065,13 @@ The size of the **per-cpu caches** is controlled by `tcmalloc::MallocExtension::
 
 缓存大小控制 API:
 
-```cpp
+{% highlight cpp %}
 // 设置单个 CPU 核的缓存上限（单位：字节）
 tcmalloc::MallocExtension::SetMaxPerCpuCacheSize(size_t size);
 
 // 释放闲置 CPU 核占用的缓存（如容器调度后残留内存）
 tcmalloc::MallocExtension::ReleaseCpuMemory(int cpu);
-```
+{% endhighlight %}
 
 The heterogeneous per-cpu cache optimization in TCMalloc dynamically sizes per-cpu caches so as to balance the miss rate across all the active and populated caches. It shuffles and reassigns the capacity from lightly used caches to the heavily used caches, using miss rate as the proxy for their usage. The heavily used per-cpu caches may steal capacity from lightly used caches and grow beyond the limit set by `tcmalloc_max_per_cpu_cache_size` flag.
 
@@ -1079,17 +1079,17 @@ Releasing memory held by unuable CPU caches is handled by `tcmalloc::MallocExten
 
 后台自动回收：
 
-```cpp
+{% highlight cpp %}
 // 触发后台回收（定期自动调用，无需手动执行）
 tcmalloc::MallocExtension::ProcessBackgroundActions();
-```
+{% endhighlight %}
 
 In contrast `tcmalloc::MallocExtension::SetMaxTotalThreadCacheBytes` controls the total size of all thread caches in the application.
 
-```cpp
+{% highlight cpp %}
 // 设置所有线程缓存的总大小上限（单位：字节）
 tcmalloc::MallocExtension::SetMaxTotalThreadCacheBytes(size_t size);
-```
+{% endhighlight %}
 
 * 与 Per-CPU 区别：此 API 仅影响旧版 Per-Thread 模式，对 Per-CPU 无效。
 * 设计逻辑：线程间无法共享缓存，需限制全局总量防内存膨胀。
@@ -1115,17 +1115,17 @@ tcmalloc::MallocExtension::SetMaxTotalThreadCacheBytes(size_t size);
 
 3. 扩容缓存的条件
 
-```python
+{% highlight python %}
 if (应用内存 > 1GiB and TCMalloc CPU耗时占比高) or (突发高频分配场景):
     适当增加 MaxPerCpuCacheSize  # 建议每次增加 25%
-```
+{% endhighlight %}
 
 4. 缩容缓存的条件
 
-```python
+{% highlight python %}
 if (内存敏感型应用) and (监控显示缓存利用率 < 60%):
     逐步减小 MaxPerCpuCacheSize  # 优先尝试降低 15-20%
-```
+{% endhighlight %}
 
 **动态调节的底层逻辑：缓存命中 vs 内存开销的博弈**，TCMalloc 在以下两者间动态平衡：
 
@@ -1145,10 +1145,10 @@ if (内存敏感型应用) and (监控显示缓存利用率 < 60%):
 
 主动释放内存 API：
 
-```cpp
+{% highlight cpp %}
 // 请求 TCMalloc 向操作系统释放指定字节数的内存
 tcmalloc::MallocExtension::ReleaseMemoryToSystem(size_t n);
-```
+{% endhighlight %}
 
 * 核心作用：强制降低应用的当前内存占用
 * 关键限制：
@@ -1163,10 +1163,10 @@ Using a background thread running `tcmalloc::MallocExtension::ProcessBackgroundA
 
 后台自动释放机制：
 
-```cpp
+{% highlight cpp %}
 // 后台线程定期执行内存回收（默认启用）
 tcmalloc::MallocExtension::ProcessBackgroundActions();
-```
+{% endhighlight %}
 
 | 内存池 | 是否可释放 | 说明
 | -- | -- | --
@@ -1201,7 +1201,7 @@ tcmalloc::MallocExtension::ProcessBackgroundActions();
 
 * TCMalloc heavily relies on **Transparent Huge Pages** (`THP`). As of February 2020, we build and test with
 
-```
+{% highlight text %}
 /sys/kernel/mm/transparent_hugepage/enabled:
     [always] madvise never
 
@@ -1210,14 +1210,14 @@ tcmalloc::MallocExtension::ProcessBackgroundActions();
 
 /sys/kernel/mm/transparent_hugepage/khugepaged/max_ptes_none:
     0
-```
+{% endhighlight %}
 
 * TCMalloc makes assumptions about the availability of virtual address space, so that we can layout allocations in cetain ways. We build and test with
 
-```
+{% highlight text %}
 /proc/sys/vm/overcommit_memory:
     1
-```
+{% endhighlight %}
 
 ## [Build-Time Optimizations](https://google.github.io/tcmalloc/tuning.html#build-time-optimizations)
 
@@ -1253,7 +1253,7 @@ Within Abseil code, these direct allocation failures are enabled with the Abseil
 
 参考 gperftools 2.7，src/tcmalloc.cc 中 do_allocate_full 接口注释：
 
-```
+{% highlight text %}
 // tcmalloc::allocate_full_XXX is called by fast-path malloc when some
 // complex handling is needed (such as fetching object from central
 // freelist or malloc sampling). It contains all 'operator new' logic,
@@ -1277,7 +1277,7 @@ Within Abseil code, these direct allocation failures are enabled with the Abseil
 // code's stack frames. So GetCallerStackTrace will find 2
 // subsequent stack frames in google_malloc section and correctly
 // 'cut' stack trace just before tc_new.
-```
+{% endhighlight %}
 
 这段注释解释了tcmalloc库中`allocate_full_XXX`函数的用途和实现细节。这些函数在内存分配的快速路径（`fast-path`）无法处理的复杂情况下被调用。以下是对这段注释的逐句解释：
 
@@ -1300,7 +1300,7 @@ Within Abseil code, these direct allocation failures are enabled with the Abseil
 
 ## 使用 tcmalloc 分配 2044723 大内存的调用堆栈
 
-```
+{% highlight text %}
 #0  0x00007f368db70d04 in ?? () from /lib64/libgcc_s.so.1
 #1  0x00007f368db71ff9 in _Unwind_Backtrace () from /lib64/libgcc_s.so.1
 #2  0x000000000040bb3a in GetStackTrace_libgcc (result=<optimized out>, max_depth=<optimized out>, skip_count=<optimized out>) at src/stacktrace_libgcc-inl.h:100
@@ -1314,7 +1314,7 @@ Within Abseil code, these direct allocation failures are enabled with the Abseil
 #10 tcmalloc::allocate_full_malloc_oom (size=2044723) at src/tcmalloc.cc:1707
 #11 0x00000000004049ce in test_memory_allocation (allocation_size=2044723) at test.cc:16
 #12 0x0000000000404bf3 in main () at test.cc:43
-```
+{% endhighlight %}
 
 ## tcmalloc::allocate_full_cpp_throw_oom
 
@@ -1343,7 +1343,7 @@ cpp_throw_oom异常表示内存分配失败，但这并不一定意味着物理�
 
 在tcmalloc的源代码中，`allocate_full_cpp_throw_oom`函数的实现如下：
 
-```cpp
+{% highlight cpp %}
 void TCMallocImplementation::allocate_full_cpp_throw_oom(size_t size) {
   if (IsCppThrowHandlerRegistered()) {
     GetCppThrowHandler()(size);
@@ -1352,7 +1352,7 @@ void TCMallocImplementation::allocate_full_cpp_throw_oom(size_t size) {
     DefaultCppThrowHandler(size);
   }
 }
-```
+{% endhighlight %}
 
 这个函数的工作方式如下：
 
@@ -1361,7 +1361,7 @@ void TCMallocImplementation::allocate_full_cpp_throw_oom(size_t size) {
 
 `DefaultCppThrowHandler`函数的实现如下：
 
-```cpp
+{% highlight cpp %}
 ABSL_ATTRIBUTE_NORETURN void DefaultCppThrowHandler(size_t size) {
   // Check if we should call the new_handler first.
   std::new_handler nh = std::get_new_handler();
@@ -1378,7 +1378,7 @@ ABSL_ATTRIBUTE_NORETURN void DefaultCppThrowHandler(size_t size) {
   ABSL_RAW_LOG(ERROR, "TCMalloc C++ Out of Memory: Throwing bad_alloc.");
   throw std::bad_alloc();
 }
-```
+{% endhighlight %}
 
 `DefaultCppThrowHandler`函数首先检查是否已经设置了C++的new_handler。如果设置了new_handler，函数会调用它。new_handler通常会尝试释放一些内存，以便分配可以成功。如果new_handler返回，说明它没有成功释放内存，函数会抛出一个std::bad_alloc异常。
 
@@ -1390,7 +1390,7 @@ ABSL_ATTRIBUTE_NORETURN void DefaultCppThrowHandler(size_t size) {
 
 在tcmalloc的源代码中，`allocate_full_malloc_oom`函数的实现如下：
 
-```cpp
+{% highlight cpp %}
 void* TCMallocImplementation::allocate_full_malloc_oom(size_t size) {
   // If TCMalloc is not allowed to release memory to the system, we
   // can't really do anything here.
@@ -1404,7 +1404,7 @@ void* TCMallocImplementation::allocate_full_malloc_oom(size_t size) {
   // Give up and return nullptr.
   return nullptr;
 }
-```
+{% endhighlight %}
 
 这个函数的工作方式如下：
 
@@ -1423,7 +1423,7 @@ Use `TCMALLOC_STACKTRACE_METHOD` environment variable to select backtracing impl
 
 The simplest way to see the list of available backtracing options on your system is by running "TCMALLOC_STACKTRACE_METHOD_VERBOSE=t ./stacktrace_unittest."
 
-```bash
+{% highlight bash %}
 $ TCMALLOC_STACKTRACE_METHOD_VERBOSE=t ./a.out
 Chosen stacktrace method is generic_fp
 Supported methods:
@@ -1434,7 +1434,7 @@ Supported methods:
 
 backtrace() returned 4 addresses
 ...
-```
+{% endhighlight %}
 
 ### Frame pointers
 
@@ -1468,7 +1468,7 @@ However, most recent versions of this library (starting from gcc 12), running on
 
 类似问题：[jemalloc integration cause crashes when libraries or plugins dlopen with RTLD_DEEPBIND](https://bugzilla.mozilla.org/show_bug.cgi?id=493541)
 
-```
+{% highlight text %}
 Excepts from what Ulrich Drepper says about the RTLD_DEEPBIND flag he added:
 ("How To Write Shared Libraries", August 20, 2006,
 http://people.redhat.com/drepper/dsohowto.pdf)
@@ -1499,11 +1499,11 @@ http://sourceware.org/ml/libc-alpha/2009-06/msg00168.html
 
 But it looks like we can make libc's free (and malloc, etc) use jemalloc:
 http://www.gnu.org/s/libc/manual/html_node/Hooks-for-Malloc.html
-```
+{% endhighlight %}
 
 参考：[Inconsistencies with RTLD_DEEPBIND and dependency libraries in global scope](https://sourceware.org/legacy-ml/libc-alpha/2009-06/msg00168.html)
 
-```
+{% highlight text %}
 % cat libdep.c
 int duplicate = 'u';
 
@@ -1549,7 +1549,7 @@ int main() {
 % ./a.out
 dynamic sees duplicate from libdep as:  d
 but libdep sees duplicate from main as: m
-```
+{% endhighlight %}
 
 
 

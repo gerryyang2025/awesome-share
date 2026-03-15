@@ -210,7 +210,7 @@ If key values will always increase [monotonically](https://en.wikipedia.org/wiki
 
 参考 `libstdc++-v3/libsupc++/hash_bytes.h` 实现。
 
-```cpp
+{% highlight cpp %}
 /** @file bits/hash_bytes.h
  *  This is an internal header file, included by other library headers.
  *  Do not attempt to use it directly. @headername{functional}
@@ -244,11 +244,11 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
 
 _GLIBCXX_END_NAMESPACE_VERSION
 } // namespace
-```
+{% endhighlight %}
 
 `_Hash_bytes` 使用 Murmur hash for 64-bit size_t 的实现，`_Fnv_hash_bytes` 使用 FNV hash for 64-bit size_t 的实现。
 
-```cpp
+{% highlight cpp %}
 #elif __SIZEOF_SIZE_T__ == 8
 
   // Implementation of Murmur hash for 64-bit size_t.
@@ -293,14 +293,14 @@ _GLIBCXX_END_NAMESPACE_VERSION
       }
     return hash;
   }
-```
+{% endhighlight %}
 
 # std::hash
 
-```cpp
+{% highlight cpp %}
 template< class Key >  // (since C++11)
 struct hash;
-```
+{% endhighlight %}
 
 The unordered associative containers `std::unordered_set`, `std::unordered_multiset`, `std::unordered_map`, `std::unordered_multimap` use specializations of the template `std::hash` as the default hash function.
 
@@ -321,7 +321,7 @@ The unordered associative containers `std::unordered_set`, `std::unordered_multi
 
 Jump consistent hash 是 Google 于 2014 年发表的[论文](https://arxiv.org/ftp/arxiv/papers/1406/1406.2294.pdf)中提出的一种一致性哈希算法，它占用内存小且速度很快，并且只有大概 5 行代码，比较适合用在分 shard 的分布式存储系统中。其完整的代码如下，其输入是一个 64 位的 Key 及桶的数量，输出是返回这个 Key 被分配到的桶的编号。
 
-```cpp
+{% highlight cpp %}
 int32_t JumpConsistentHash(uint64_t key, int32_t num_buckets) {
     int64_t b = ­-1, j = 0;
     while (j < num_buckets) {
@@ -331,7 +331,7 @@ int32_t JumpConsistentHash(uint64_t key, int32_t num_buckets) {
     }
     return b;
 }
-```
+{% endhighlight %}
 
 > Jump consistent hash 有一个比较明显的缺点，它只能在尾部增删节点，而不太好在中间增删。
 

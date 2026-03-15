@@ -46,47 +46,47 @@ Protocol Buffers 官方没有提供对 Lua 的支持，故参考其他第三方�
 
 最简单的安装方法是使用 Lua 生态的包管理器 luarocks 进行安装。
 
-```
+{% highlight text %}
 pip install hererocks
 hererocks -j 2.0 -rlatest .
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 git clone https://github.com/starwing/lua-protobuf
 luarocks make rockspecs/lua-protobuf-scm-1.rockspec
-```
+{% endhighlight %}
 
 生成静态库：
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 gcc -g -O2 -c pb.c -I ../lua
 ar -scurv libpblua.a pb.o
 rm pb.o
-```
+{% endhighlight %}
 
 生成动态库：
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 gcc -O2 -shared -fPIC pb.c -o pb.so
-```
+{% endhighlight %}
 
 ## 单测
 
-```
+{% highlight text %}
 $lua test.lua
 pb predefined types: 33
 ....................
 Ran 20 tests in 0.006 seconds, 20 successes, 0 failures
 OK
-```
+{% endhighlight %}
 
 ## 示例代码
 
-```lua
+{% highlight lua %}
 local pb = require "pb"
 local protoc = require "protoc"
 
@@ -120,11 +120,11 @@ print(pb.tohex(bytes))
 -- 再解码回Lua表
 local data2 = assert(pb.decode("Person", bytes))
 print(require "serpent".block(data2))
-```
+{% endhighlight %}
 
 lua demo.lua 输出：
 
-```
+{% highlight text %}
 22 0D 10 F2 D5 FD EE 2D 0A 05 61 6C 69 63 65 22 0C 10 C7 F0 C6 85 AA 01 0A 03 62 6F 62 10 12 0A 04 69 6C 73 65
 {
   age = 18,
@@ -140,7 +140,7 @@ lua demo.lua 输出：
   } --[[table: 0x1d9d3f0]],
   name = "ilse"
 } --[[table: 0x1d9d290]]
-```
+{% endhighlight %}
 
 
 ## 方案: https://github.com/cloudwu/sproto

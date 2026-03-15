@@ -45,7 +45,7 @@ When this flag is set, the macros `__pic__` and `__PIC__` are defined to 2.
 
 代码示例：
 
-```cpp
+{% highlight cpp %}
 // calculate.c
 int add(int a, int b)
 {
@@ -66,17 +66,17 @@ int div(int a, int b)
 {
     return (a / b);
 }
-```
+{% endhighlight %}
 
 编译为动态库：
 
-```
+{% highlight text %}
 gcc -fPIC -shared calculate.c -o libcalculate.so
-```
+{% endhighlight %}
 
 `-fPIC`表示`Position Independent Code`，作用于编译阶段，告诉编译器产生与位置无关的代码，即全部使用相对地址没有绝对地址，因此代码可以被加载到内存的任意位置都可以被正确执行。
 
-```
+{% highlight text %}
 nm libcalculate.so | grep -w T
 0000000000000628 T _fini
 00000000000004c0 T _init
@@ -84,11 +84,11 @@ nm libcalculate.so | grep -w T
 0000000000000613 T div
 0000000000000600 T mul
 00000000000005ee T sub
-```
+{% endhighlight %}
 
 可以看到函数方法使用的都是相对地址，且顺序与在`calculate.c`中的定义顺序相同。
 
-```cpp
+{% highlight cpp %}
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
@@ -160,17 +160,17 @@ int main()
     dlclose(handle);
     exit(EXIT_SUCCESS);
 }
-```
+{% endhighlight %}
 
 生成可执行文件：
 
-```
+{% highlight text %}
 gcc -rdynamic -o main main.c -ldl
-```
+{% endhighlight %}
 
 输出：
 
-```
+{% highlight text %}
 ./main
 func add() address: 0x7fa1d37e05da
 add(24, 7): 31
@@ -180,7 +180,7 @@ func mul() address: 0x7fa1d37e0600
 mul(24, 7): 168
 func div() address: 0x7fa1d37e0613
 div(24, 7): 3
-```
+{% endhighlight %}
 
 可以看到`libcalculate.so`中的函数已经被动态加载到`main`当前的地址空间，且偏移量与`libcalculate.so`中的相对偏移量保持一致。
 
@@ -207,17 +207,17 @@ Once you've created a shared library, you'll want to install it. The simple appr
 
 First, you'll need to create the shared libraries somewhere. Then, you'll need to set up the necessary symbolic links, in particular a link from a `soname` to the real name (as well as from a versionless soname, that is, a soname that ends in `.so` for users who don't specify a version at all). The simplest approach is to run:
 
-```
+{% highlight text %}
 ldconfig -n directory_with_shared_libraries
-```
+{% endhighlight %}
 
 Finally, when you compile your programs, you'll need to tell the linker about any static and shared libraries that you're using. Use the `-l` and `-L` options for this.
 
 If you can't or don't want to install a library in a standard place (e.g., you don't have the right to modify `/usr/lib`), then you'll need to change your approach. In that case, you'll need to install it somewhere, and then give your program enough information so the program can find the library and there are several ways to do that. You can use gcc's `-L` flag in simple cases. You can use the `rpath` approach, particularly if you only have a specific program to use the library being placed in a `non-standard` place. You can also use environment variables to control things. In particular, you can set `LD_LIBRARY_PATH`, which is a colon-separated list of directories in which to search for shared libraries before the usual places. If you're using bash, you could invoke my_program this way using:
 
-```
+{% highlight text %}
 LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH  ./my_program
-```
+{% endhighlight %}
 
 ## 动态加载共享库（插件场景）
 
@@ -245,10 +245,10 @@ Do not add flags to export symbols from executables without the `ENABLE_EXPORTS`
 
 [CMake: How do I remove rdynamic from link options?](https://answers.ros.org/question/231381/how-do-i-remove-rdynamic-from-link-options/)
 
-```
+{% highlight text %}
 # 显示关闭 --rdynamic 链接选项
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-export-dynamic")
-```
+{% endhighlight %}
 
 From The Linux Programming Interface:
 
@@ -259,18 +259,18 @@ From The Linux Programming Interface:
 
 bar.c
 
-```cpp
+{% highlight cpp %}
 extern void foo();
 
 void bar()
 {
     foo();
 }
-```
+{% endhighlight %}
 
 main.c
 
-```cpp
+{% highlight cpp %}
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -296,8 +296,8 @@ int main()
 
         bar();
 }
-```makefile
-```
+{% highlight makefile %}
+{% endhighlight %}
 .PHONY: all clean test
 
 LDEXTRAFLAGS ?=
@@ -322,13 +322,13 @@ clean:
 
 test: prog
         ./$<
-```
+{% highlight text %}
 
 Here, `bar.c` becomes a shared library `libbar.so` and `main.c` becomes a program that dlopens `libbar` and calls `bar()` from that library. `bar()` calls `foo()`, which is external in `bar.c` and defined in `main.c`.
 
 So, without `-rdynamic`:
 
-```
+{% endhighlight %}
 $ make test
 gcc -c -Wall -o main.o main.c
 gcc -c -Wall -fpic -o bar.o bar.c
@@ -338,11 +338,11 @@ gcc  -o prog main.o -L. -lbar -ldl
 ./libbar.so: undefined symbol: foo
 Makefile:23: recipe for target 'test' failed
 make: *** [test] Error 1
-```
+{% highlight text %}
 
 And with `-rdynamic`:
 
-```
+{% endhighlight %}
 $ make clean
 rm -f *.o *.so prog
 $ make test LDEXTRAFLAGS=-rdynamic
@@ -352,7 +352,7 @@ gcc -shared -o libbar.so bar.o
 gcc -rdynamic -o prog main.o -L. -lbar -ldl
 ./prog
 Hello world
-```
+{% highlight text %}
 
 #### 示例2: libgcc backtrace 调用
 
@@ -361,7 +361,7 @@ refer:
 * https://www.gnu.org/software/libc/manual/html_node/Backtraces.html
 * [C++ 的 backtrace](https://owent.net/2018/1801.html)
 
-```cpp
+{% highlight cpp %}
 #include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -400,11 +400,11 @@ main (void)
   dummy_function ();
   return 0;
 }
-```
+{% endhighlight %}
 
 编译输出，没有使用`-rdynamic`：
 
-```
+{% highlight text %}
 $ gcc backtrace.c
 $ ./a.out
 Obtained 5 stack frames.
@@ -413,11 +413,11 @@ Obtained 5 stack frames.
 ./a.out(+0x885) [0x557ae8da7885]
 /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xe7) [0x7fd6a8405bf7]
 ./a.out(+0x6fa) [0x557ae8da76fa]
-```
+{% endhighlight %}
 
 without -rdynamic:
 
-```
+{% highlight text %}
 $ readelf --dyn-syms a.out
 
 Symbol table '.dynsym' contains 12 entries:
@@ -434,11 +434,11 @@ Symbol table '.dynsym' contains 12 entries:
      9: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND __gmon_start__
     10: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND _ITM_registerTMCloneTable
     11: 0000000000000000     0 FUNC    WEAK   DEFAULT  UND __cxa_finalize@GLIBC_2.2.5 (2)
-```
+{% endhighlight %}
 
 对比使用`-rdynamic`以后，可以看到符号了。
 
-```
+{% highlight text %}
 $ gcc -rdynamic backtrace.c
 $ ./a.out
 Obtained 5 stack frames.
@@ -447,11 +447,11 @@ Obtained 5 stack frames.
 ./a.out(main+0x9) [0x556f3eb0faa5]
 /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xe7) [0x7f70cd629bf7]
 ./a.out(_start+0x2a) [0x556f3eb0f91a]
-```
+{% endhighlight %}
 
 with `-rdynamic`, we have more symbols, including the executable's:
 
-```
+{% highlight text %}
 $ readelf --dyn-syms a.out
 
 Symbol table '.dynsym' contains 26 entries:
@@ -482,7 +482,7 @@ Symbol table '.dynsym' contains 26 entries:
     23: 0000000000000b20     2 FUNC    GLOBAL DEFAULT   14 __libc_csu_fini
     24: 0000000000000b24     0 FUNC    GLOBAL DEFAULT   15 _fini
     25: 00000000000009d5   187 FUNC    GLOBAL DEFAULT   14 print_trace
-```
+{% endhighlight %}
 
 ### Using `ld' linker version script (控制符号导出)
 
@@ -493,15 +493,15 @@ For more information and other uses of version scripts, see [Ulrich Drepper’s 
 
 用法说明：
 
-```
+{% highlight text %}
 if HAVE_LD_VERSION_SCRIPT
 libfoo_la_LDFLAGS += -Wl,--version-script=$(srcdir)/libfoo.map
 endif
-```
+{% endhighlight %}
 
 The version script file format is documented in the GNU LD manual, but a small example would be:
 
-```
+{% highlight text %}
 LIBFOO_1.0 {
   global:
     libfoo_init; libfoo_doit; libfoo_done;
@@ -509,7 +509,7 @@ LIBFOO_1.0 {
   local:
     *;
 };
-```
+{% endhighlight %}
 
 This version file tells the linker, that all symbols `(*)` should be considered as `local symbols` (that is: `hidden`), and all symbols that match the wildcard `foo*` should be considered as `global` (so, `visible`).
 
@@ -519,16 +519,16 @@ Please do some reading about the linker's version scripts, because it allows you
 
 symbol.version
 
-```
+{% highlight text %}
 {
     global: foo*;
     local: *;
 };
-```
+{% endhighlight %}
 
 `C++`的导出函数：通过`extern "C++" { };`声明：
 
-```
+{% highlight text %}
 {
 global:
     extern "C++" {
@@ -537,8 +537,8 @@ global:
 local:
     *;
 };
-```makefile
-```
+{% highlight makefile %}
+{% endhighlight %}
 .PHONY: all clean test
 
 LDEXTRAFLAGS ?= -rdynamic -Wl,--version-script=symbol.txt
@@ -562,24 +562,24 @@ clean:
 
 test: prog
         ./$<
-```
+{% highlight text %}
 
 可能遇到的问题：
 
 问题1: 使用 version script 配置后，找不到`typeinfo symbols`，例如下面的错误：
 
-```
+{% endhighlight %}
 dlopen(./liballocatesvr_plugin.so) failed(./liballocatesvr_plugin.so: undefined symbol: _ZTIN6google8protobuf7MessageE)
-```
+{% highlight text %}
 
 使用`c++filt`对符号进行 demangle 得到可读的符号名：
 
-```
+{% endhighlight %}
 c++filt - Demangle C++ and Java symbols.
 
 $c++filt _ZTIN6google8protobuf7MessageE
 typeinfo for google::protobuf::Message
-```
+{% highlight text %}
 
 解决方法，可参考 [In GCC, how can I export all typeinfo symbols for a shared library without exporting all symbols?](https://stackoverflow.com/questions/8792587/in-gcc-how-can-i-export-all-typeinfo-symbols-for-a-shared-library-without-expor)
 
@@ -590,7 +590,7 @@ typeinfo for google::protobuf::Message
 > Provide the builtin dynamic list for C++ runtime type identification.
 
 
-```
+{% endhighlight %}
 {
 global:
     extern "C++" {
@@ -602,7 +602,7 @@ global:
 local:
     *;
 };
-```
+{% highlight text %}
 
 问题2:
 
@@ -619,9 +619,9 @@ refer:
 
 ### the GNU linker's --dynamic-list
 
-```
+{% endhighlight %}
 gcc -Wl,--dynamic-list -Wl,<your-dynamic-list> -o my-program my-program.c
-```
+{% highlight text %}
 
 refer:
 
@@ -631,14 +631,14 @@ refer:
 
 除了通过`version-script`显式控制可执行文件的符号导出，也可以通过`dlopen`的`RTLD_DEEPBIND`选项，设置动态库so优先使用自己的符号。可参考 https://man7.org/linux/man-pages/man3/dlopen.3.html
 
-```
+{% endhighlight %}
    RTLD_DEEPBIND (since glibc 2.3.4)
               Place the lookup scope of the symbols in this shared
               object ahead of the global scope.  This means that a self-
               contained object will use its own symbols in preference to
               global symbols with the same name contained in objects
               that have already been loaded.
-```
+{% highlight text %}
 
 [1.5.4 Lookup Scope](https://www.akkadia.org/drepper/dsohowto.pdf) 的使用建议：
 
@@ -655,15 +655,15 @@ https://github.com/gerryyang/mac-utils/tree/master/programing/cpp/library/rdynam
 
 编译构建：
 
-```
+{% endhighlight %}
 $ make
 g++ -O0 -g -c -Wall -o main.o main.cc
 g++ -O0 -g -c -Wall -fpic -o bar.o bar.cc
 g++ -shared -o libbar.so bar.o
 g++ -rdynamic  -o prog main.o -ldl
-```
+{% highlight text %}
 
-```
+{% endhighlight %}
 $ ldd libbar.so
         linux-vdso.so.1 (0x00007ffe6f5ba000)
         libstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007faaeb59f000)
@@ -671,17 +671,17 @@ $ ldd libbar.so
         libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007faaeae10000)
         /lib64/ld-linux-x86-64.so.2 (0x00007faaebbae000)
         libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007faaeabf8000)
-```
+{% highlight text %}
 
 执行：
 
-```
+{% endhighlight %}
 $ ./prog
 printf bar.c foo()
 Segmentation fault (core dumped)
-```
+{% highlight text %}
 
-```
+{% endhighlight %}
 Core was generated by `./prog'.
 Program terminated with signal SIGSEGV, Segmentation fault.
 #0  0x00007f0e3c6b1306 in std::ostream::sentry::sentry(std::ostream&) () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
@@ -693,11 +693,11 @@ Program terminated with signal SIGSEGV, Segmentation fault.
 #3  0x00007f0e3b9da851 in foo () at bar.cc:13
 #4  0x00007f0e3b9da85d in bar () at bar.cc:18
 #5  0x0000562539d63e49 in main () at main.cc:32
-```
+{% highlight text %}
 
 链接符号的过程：发现so链接的`libstdc++`是so自己的，而非可执行程序的`libstdc++`
 
-```
+{% endhighlight %}
 $ LD_DEBUG=all ./prog 2>&1 | grep _ZSt4cout
       9112:     symbol=_ZSt4cout;  lookup in file=./prog [0]
       9112:     binding file /usr/lib/x86_64-linux-gnu/libstdc++.so.6 [0] to ./prog [0]: normal symbol `_ZSt4cout' [GLIBCXX_3.4]
@@ -707,7 +707,7 @@ $ LD_DEBUG=all ./prog 2>&1 | grep _ZSt4cout
       9112:     symbol=_ZSt4cout;  lookup in file=./libbar.so [0]
       9112:     symbol=_ZSt4cout;  lookup in file=/usr/lib/x86_64-linux-gnu/libstdc++.so.6 [0]
       9112:     binding file ./libbar.so [0] to /usr/lib/x86_64-linux-gnu/libstdc++.so.6 [0]: normal symbol `_ZSt4cout' [GLIBCXX_3.4]
-```
+{% highlight text %}
 
 crash原因分析：
 
@@ -722,7 +722,7 @@ The theoretical example is `libstdc++` defining some object where things misbeha
 
 I guess `LD_DEBUG=all` could shed some light into what exactly is going on, it could be the empty string, or something similar.
 
-```
+{% endhighlight %}
 LD_DEBUG=all ./main 2>&1 | grep _ZSt4cerr
      12758:	symbol=_ZSt4cerr;  lookup in file=./main [0]
      12758:	binding file /usr/lib64/libstdc++.so.6 [0] to ./main [0]: normal symbol `_ZSt4cerr' [GLIBCXX_3.4]
@@ -732,7 +732,7 @@ LD_DEBUG=all ./main 2>&1 | grep _ZSt4cerr
      12758:	symbol=_ZSt4cerr;  lookup in file=./library.so [0]
      12758:	symbol=_ZSt4cerr;  lookup in file=/usr/lib64/libstdc++.so.6 [0]
      12758:	binding file ./library.so [0] to /usr/lib64/libstdc++.so.6 [0]: normal symbol `_ZSt4cerr' [GLIBCXX_3.4]
-```
+{% highlight text %}
 
 The first lookup is for `std::cerr` relocations in `libstdc++`, the second one is just to find out what should be the `std::cerr` COPY relocation in main be initialized for. Thus, the executable uses `std::cerr` inside of main's `.bss`. (前两次是固定都有的)
 
@@ -742,7 +742,7 @@ But during `RTLD_DEEPBIND` first `library.so` and its dependencies are searched,
 
 This is the `LD_DEBUG` output for Icc 11.1, thus no crash.
 
-```
+{% endhighlight %}
      17439:     symbol=_ZSt4cerr;  lookup in file=./a.out [0]
      17439:     binding file /usr/lib64/libstdc++.so.6 [0] to ./a.out [0]: normal symbol `_ZSt4cerr' [GLIBCXX_3.4]
      17439:     symbol=_ZSt4cerr;  lookup in file=/lib64/libdl.so.2 [0]
@@ -760,7 +760,7 @@ This is the `LD_DEBUG` output for Icc 11.1, thus no crash.
      17439:     symbol=_ZSt4cerr;  lookup in file=/lib64/ld-linux-x86-64.so.2 [0]
      17439:     symbol=_ZSt4cerr;  lookup in file=./a.out [0]
      17439:     binding file ./library.so [0] to ./a.out [0]: normal symbol `_ZSt4cerr'
-```
+{% highlight text %}
 
 Clearly this works with icc, because `library.so` isn't linked against `libstdc++.so`.  I guess if you link the library with `gcc` instead of `g++`, it will work too. (使用`gcc`编译由于不会链接`libstdc++.so`所以不会有问题)
 
@@ -804,17 +804,17 @@ C++编译器，使用`STB_GNU_UNIQUE`的绑定方式，保证`template static da
 
 注意，若将`g++`改为`gcc`且显式链接`lstdc++`则不会有问题。因为此方式时，so在编译时不会链接`libstdc++.so`，因此不会进行拷贝，最终so在寻找符号时链接的是可执行程序中的符号。
 
-```
+{% endhighlight %}
 $ make -f Makefile2
 gcc -O0 -g -c -Wall -o main.o main.cc
 gcc -O0 -g -c -Wall -fpic -o bar.o bar.cc
 gcc -shared -o libbar.so bar.o
 gcc -rdynamic  -o prog main.o -ldl -lstdc++
-```
+{% highlight text %}
 
 执行过程，可以看到so使用的符号是可执行程序中的符号定义。
 
-```
+{% endhighlight %}
 $ LD_DEBUG=all ./prog 2>&1 | grep _ZSt4cout
        919:     symbol=_ZSt4cout;  lookup in file=./prog [0]
        919:     binding file /usr/lib/x86_64-linux-gnu/libstdc++.so.6 [0] to ./prog [0]: normal symbol `_ZSt4cout' [GLIBCXX_3.4]
@@ -826,7 +826,7 @@ $ LD_DEBUG=all ./prog 2>&1 | grep _ZSt4cout
        919:     symbol=_ZSt4cout;  lookup in file=/lib64/ld-linux-x86-64.so.2 [0]
        919:     symbol=_ZSt4cout;  lookup in file=./prog [0]
        919:     binding file ./libbar.so [0] to ./prog [0]: normal symbol `_ZSt4cout'
-```
+{% highlight text %}
 
 另外，通过`std::cout`也不是`u`符号，即，不是`STB_GNU_UNIQUE`，所以会crash：
 
@@ -834,19 +834,19 @@ $ LD_DEBUG=all ./prog 2>&1 | grep _ZSt4cout
 >
 > "u" The symbol is a unique global symbol.  This is a GNU extension to the standard set of ELF symbol bindings.  For such a symbol the dynamic linker will make sure that in the entire process there is just one symbol with this name and type in use.
 
-```
+{% endhighlight %}
 $ nm -CD /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep " u " | grep std | tail -n 10
 000000000040c788 u std::numpunct<char>::id
 000000000040c848 u std::numpunct<wchar_t>::id
 000000000040c770 u std::time_get<char, std::istreambuf_iterator<char, std::char_traits<char> > >::id
-```
+{% highlight text %}
 
 refer: [Why nm libc.so reports no symbols?](https://stackoverflow.com/questions/54052534/why-nm-libc-so-reports-no-symbols)
 
 
 ## 使用`LD_DEBUG`环境变量查看某程序加载so的过程
 
-```
+{% endhighlight %}
 # 查看帮助
 LD_DEBUG=help ./bin
 
@@ -855,15 +855,15 @@ LD_DEBUG=libs ./bin
 
 # 将信息输出到log中
 LD_DEBUG=libs LD_DEBUG_OUTPUT=log ./bin
-```
+{% highlight text %}
 
 ## 使用`rpath`编译时指定动态库搜索路径
 
 During development, there's the potential problem of modifying a library that's also used by many other programs -- and **you don't want the other programs to use the developmental library**, only a particular application that you're testing against it. One link option you might use is ld's `rpath` option, which specifies the runtime library search path of that particular program being compiled. **From gcc, you can invoke the rpath option by specifying it this way**:
 
-```
+{% endhighlight %}
 -Wl,-rpath,$(DEFAULT_LIB_INSTALL_PATH)
-```
+{% highlight text %}
 
 If you use this option when building the library client program, you don't need to bother with `LD_LIBRARY_PATH` other than to ensure it's not conflicting, or using other techniques to hide the library.
 
@@ -884,7 +884,7 @@ If you want to **override just a few selected functions, you can do this by crea
 
 例子：
 
-```
+{% endhighlight %}
 $ hostname
 VM-0-16-ubuntu
 
@@ -901,9 +901,9 @@ memchr("VM-0-16-ubuntu", '\0', 128)                                             
 puts("VM-0-16-ubuntu"VM-0-16-ubuntu
 )                                                                              = 15
 +++ exited (status 0) +++
-```
+{% highlight text %}
 
-```
+{% endhighlight %}
 $ nm -D /bin/hostname |grep gethostname
                  U gethostname
 
@@ -915,11 +915,11 @@ $ ldd /bin/hostname
 $ nm -D /lib/x86_64-linux-gnu/libc.so.6 | grep hostname
 0000000000116e30 W gethostname
 ...
-```
+{% highlight text %}
 
 测试代码：
 
-```c
+{% highlight c %}
 // gethostname.c
 
 #include <stdlib.h>
@@ -936,11 +936,11 @@ int gethostname(char *name, size_t len)
 
         return 0;
 }
-```
+{% endhighlight %}
 
 输出：
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # origin
@@ -948,13 +948,13 @@ hostname
 
 # hook
 FAKE_HOSTNAME=gerryyang.com LD_PRELOAD=./gethostname.so hostname
-```
+{% endhighlight %}
 
 ### 用`LD_PRELOAD`来 Lap 既存的函数
 
 使用handle `RTLD_NEXT`，用dlsym调出原始的调用函数。handle是`RTLD_NEXT`扩展的特殊代名，在共享对象的下一个共享对象以后取得寻找符号值。`RTLD_NEXT`是GNU的扩展，在包含`dlfcn.h`之前有必要先定义`GNU_SOURCE`。
 
-```c
+{% highlight c %}
 #define _GNU_SOURCE
 #include <dlfcn.h>
 
@@ -963,13 +963,13 @@ static int (*bind0)(int sockfd, const struct sockaddr *myaddr, socklen_t addrlen
 ...
 
 bind0 = dlsym(RTLD_NEXT, "bind");
-```
+{% endhighlight %}
 
 使用方法：
 
-```sh
+{% highlight sh %}
 $ LD_PRELOAD=./bindwrap.so BIND_ADDR=127.0.0.1 daemon-program
-```
+{% endhighlight %}
 
 
 ## 使用`ldd`查看共享库依赖
@@ -977,16 +977,16 @@ $ LD_PRELOAD=./bindwrap.so BIND_ADDR=127.0.0.1 daemon-program
 * 使用`objdump -p`和`readelf -d`可以查询共享库的依赖关系（通过动态节的NEEDED），但是要查看和动态库相关的全部依赖关系，就比较麻烦。
 * 在GUN/Linux里，`ldd`实际上仅是shell脚本，若将环境变量`LD_TRACE_LOADED_OBJECTS`设置为1后执行程序，解释器（ld-linux-x86-64.so.2）将在执行实际的程序之前查看程序必要的共享库，将其载入内存并把它的信息显示出来。因此，不用ldd，只用环境变量`LD_TRACE_LOADED_OBJECTS`也可以得到同样的结果。
 
-```
+{% highlight text %}
 # /usr/bin/ldd
 
 # This is the `ldd' command, which lists what shared libraries are
 # used by given dynamically-linked executables.  It works by invoking the
 # run-time dynamic linker as a command and setting the environment
 # variable LD_TRACE_LOADED_OBJECTS to a non-empty value.
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ ldd demo1
         linux-vdso.so.1 (0x00007fff6e92c000)
         libtesta.so => ./libtesta.so (0x00007ff426f1e000)
@@ -1005,22 +1005,22 @@ $ LD_TRACE_LOADED_OBJECTS=1 demo1
         libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f419d408000)
         libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f419d017000)
         /lib64/ld-linux-x86-64.so.2 (0x00007f419e21b000)
-```
+{% endhighlight %}
 
 
 You can see the list of the shared libraries used by a program using `ldd`. So, for example, you can see the shared libraries used by ls by typing:
 
-```
+{% highlight text %}
 ldd /bin/ls
-```
+{% endhighlight %}
 
 Generally you'll see a list of the sonames being depended on, along with the directory that those names resolve to. In practically all cases you'll have at least two dependencies:
 
-```
+{% highlight text %}
 /lib/ld-linux.so.N (where N is 1 or more, usually at least 2). This is the library that loads all other libraries.
 
 libc.so.N (where N is 6 or more). This is the C library. Even other languages tend to use the C library (at least to implement their own libraries), so most programs at least include this one.
-```
+{% endhighlight %}
 
 Beware: do not run `ldd` on a program you don't trust. As is clearly stated in the `ldd` manual, ldd works by (in certain cases) by setting a special environment variable (for ELF objects, LD_TRACE_LOADED_OBJECTS) and then executing the program. It may be possible for an untrusted program to force the ldd user to run arbitrary code (instead of simply showing the ldd information). So, for safety's sake, don't use ldd on programs you don't trust to execute.
 
@@ -1058,20 +1058,20 @@ The symbol type requires a little more explanation. The type is displayed as a l
 
 If you know the name of a function, but you truly can't remember what library it was defined in, you can use nm's `-o` option (which prefixes the filename in each line) along with grep to find the library name. From a Bourne shell, you can search all the libraries in /lib, /usr/lib, direct subdirectories of /usr/lib, and /usr/local/lib for `cos` as follows:
 
-```
+{% highlight text %}
 nm -o /lib/* /usr/lib/* /usr/lib/*/* \
       /usr/local/lib/* 2> /dev/null | grep 'cos$'
-```
+{% endhighlight %}
 
 查看导出的符号：
 
-```
+{% highlight text %}
 nm --dynamic  objfile | grep xxx
-```
+{% endhighlight %}
 
 问题：I want to display local (non-external) symbols in a C-program using `nm`. However, for the main.c program below, I'd expect nm -a to also output foo, since it's defined as a local symbol (internal linkage) by using the static keyword. But, foo is not listed among the symbols. How can I make nm list all symbols (including local ones)?
 
-```c
+{% highlight c %}
 // main.c
 #include <stdio.h>
 
@@ -1086,7 +1086,7 @@ static void foo() {
 extern void bar() {
     printf("baz");
 }
-```
+{% endhighlight %}
 
 回答：
 
@@ -1094,7 +1094,7 @@ You're not finding it because it isn't there -- look at the disassembly (objdump
 
 Compilers routinely eliminate unused static functions even at `-O0`. To keep the foo function you can try making it both used and nontrivial (so it doesn't get inlined).
 
-```c
+{% highlight c %}
 // main.c
 #include <stdio.h>
 
@@ -1110,11 +1110,11 @@ extern void bar() {
     printf("baz");
     foo();
 }
-```
+{% endhighlight %}
 
 查看符号：可以看到`a.out:0000000000400582 t foo()`
 
-```
+{% highlight text %}
 $nm -C -o a.out
 a.out:0000000000601034 B __bss_start
 a.out:0000000000601034 b completed.6355
@@ -1150,7 +1150,7 @@ a.out:0000000000400470 T _start
 a.out:0000000000601038 D __TMC_END__
 a.out:00000000004005ae T bar()
 a.out:0000000000400582 t foo()
-```
+{% endhighlight %}
 
 refer: [How to display local (non-external) symbols in a C-program using nm](https://stackoverflow.com/questions/57943206/how-to-display-local-non-external-symbols-in-a-c-program-using-nm-on-macos)
 
@@ -1161,31 +1161,31 @@ What if you want to first create smaller libraries, then later merge them into l
 
 Here's an example of how to use `--whole-archive`:
 
-```
+{% highlight text %}
 gcc -shared -Wl,-soname,libmylib.$(VER) -o libmylib.so $(OBJECTS) \
             -Wl,--whole-archive $(LIBS_TO_LINK) -Wl,--no-whole-archive $(REGULAR_LIBS)
-```
+{% endhighlight %}
 
 As the `ld` documentation notes, be sure to use `--no-whole-archive` option at the end, or gcc will try to merge in the standard libraries as well.
 
 
 ## 共享库为什么要用PIC编译
 
-```
+{% highlight text %}
 # 不使用PIC
 gcc -o fpic-no-pic.s -S fpic.c
 
 # 使用PIC
 gcc -fPIC -o fpic-pic.s -S fpic.c
-```
+{% endhighlight %}
 
 建立共享库：
 
-```
+{% highlight text %}
 gcc -shared -o fpic-no-pic.so fpic.c
 
 gcc -shared -fPIC -o fpic-pic.so fpic.c
-```
+{% endhighlight %}
 
 * 用PIC编译必须把`-fpic`或`-fPIC`传递给gcc。`-fpic`可以生成小而高效的代码，但是不同的处理器中`-fpic`生成的GOT（Global Offset Table，全局偏移表）的大小有限制。
 * 通过生成的汇编代码，可知道PIC版通过`PLT（Procedure Linkage Table）`调用`printf`。
@@ -1202,7 +1202,7 @@ gcc -shared -fPIC -o fpic-pic.so fpic.c
 
 检查目标文件在编译时是否使用了`–fPIC`选项，即检查目标文件符号表中是否存在名称`_GLOBAL_OFFSET_TABLE_`。
 
-```
+{% highlight text %}
 # 没有使用
 $nm -s foo.o |grep "_GLOBAL"
                  U _GLOBAL_OFFSET_TABLE_
@@ -1216,7 +1216,7 @@ $ nm -s libhello.so | grep GLOBAL
 
 $ readelf -s libhello.so | grep GLOBAL_
     46: 0000000000201000     0 OBJECT  LOCAL  DEFAULT   21 _GLOBAL_OFFSET_TABLE_
-```
+{% endhighlight %}
 
 
 
@@ -1234,7 +1234,7 @@ $ readelf -s libhello.so | grep GLOBAL_
 
 静态链接库的编写如下：
 
-```
+{% highlight text %}
 # 生成静态库
 cc -c -o foo.o foo.c
 cc -c -o bar.o bar.c
@@ -1243,12 +1243,12 @@ ar ruv libfoo.a foo.o bar.o
 # 查看静态库
 $ ar tv libfoo.a
 rw-r--r-- 0/0  12504 Jan  1 08:00 1970 foo.o
-```
+{% endhighlight %}
 
 选项解释：
 
 
-```
+{% highlight text %}
 r   Insert the files member... into archive (with replacement).
 
 c   Create the archive.
@@ -1260,7 +1260,7 @@ u   Normally, ar r... inserts all files listed into the archive.  If you would l
 v   This modifier requests the verbose version of an operation.  Many operations display additional information, such as filenames processed, when the modifier v is appended.
 
 x   Extract members (named member) from the archive.
-```
+{% endhighlight %}
 
 
 # 动态链接
@@ -1270,7 +1270,7 @@ x   Extract members (named member) from the archive.
 
 静态链接库的编写如下：
 
-```
+{% highlight text %}
 cc -fPIC -c -o foo.o foo.c
 cc -fPIC -c -o bar.o bar.c
 cc -shared -Wl,-soname,libfoo.so.0 -o libfoo.so.0.0 foo.o bar.o
@@ -1278,7 +1278,7 @@ cc -shared -Wl,-soname,libfoo.so.0 -o libfoo.so.0.0 foo.o bar.o
 # equal to `ln -sf libhello.so.0.0 libhello.so.0` but let's let ldconfig figure it out
 /sbin/ldconfig -n .
 ln -sf libhello.so.0 libhello.so
-```
+{% endhighlight %}
 
 * 加入`-shared`选项，生成共享目标。
 * 通过`-Wl,-soname`选项，指定该共享目标的`SONAME`
@@ -1383,7 +1383,7 @@ ELF文件参与程序的**链接**和程序的**执行**，因此通常可以分
 
 The `.dynamic` section contains a series of structures that hold relevant dynamic linking information. The `d_tag` member controls the interpretation of `d_un`.
 
-```c
+{% highlight c %}
 typedef struct {
    Elf32_Sword    d_tag;
    union {
@@ -1401,9 +1401,9 @@ typedef struct {
    } d_un;
 } Elf64_Dyn;
 extern Elf64_Dyn _DYNAMIC[];
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 DT_NEEDED
 
 This element holds the string table offset of a null-terminated string, giving the name of
@@ -1422,13 +1422,13 @@ this entry is present, the related entries of types DT_PLTRELSZ and DT_PLTREL mu
 also be present.
 
 ...
-```
+{% endhighlight %}
 
 例如：
 
 `DT_NEEDED`表示一个列表，列表里面以（NEEDED）为标志的项，就是当前库加载时要依赖的其它库，可以使用`ldd`或`readelf`查看。
 
-```
+{% highlight text %}
 $ ldd demo1
         linux-vdso.so.1 (0x00007ffdab7fa000)
         libtesta.so => ./libtesta.so (0x00007f5a2fd44000)
@@ -1471,7 +1471,7 @@ Dynamic section at offset 0x1d58 contains 30 entries:
  0x000000006ffffff0 (VERSYM)             0x604
  0x000000006ffffff9 (RELACOUNT)          3
  0x0000000000000000 (NULL)               0x0
-```
+{% endhighlight %}
 
 Refer:
 
@@ -1496,7 +1496,7 @@ Refer:
 
 测试代码：
 
-```c
+{% highlight c %}
 // testa.h
 #include <cstdio>
 
@@ -1525,11 +1525,11 @@ int main()
   say_hello();
   return 0;
 }
-```
+{% endhighlight %}
 
 编译链接：
 
-```
+{% highlight text %}
 #!/bin/bash
 
 # create testa.so
@@ -1537,19 +1537,19 @@ g++ -O2 testa.c -fPIC -shared -o libtesta.so
 
 # create main
 g++ main.c -L. -ltesta -o main
-```
+{% endhighlight %}
 
 执行和反编译：
 
-```
+{% highlight text %}
 export LD_LIBRARY_PATH=./:$PATH
 objdump -M intel -S main
-```
+{% endhighlight %}
 
 objdump用法说明：
 
 
-```objdump
+{% highlight objdump %}
 -d
 --disassemble
    Display the assembler mnemonics for the machine instructions from objfile. This option only disassembles those sections which are expected to contain instructions.
@@ -1561,11 +1561,11 @@ objdump用法说明：
 -S
 --source
 Display source code intermixed with disassembly, if possible. Implies -d.
-```
+{% endhighlight %}
 
 反编译结果：
 
-```
+{% highlight text %}
 $ objdump -M intel -S main
 
 main:     file format elf64-x86-64
@@ -1646,11 +1646,11 @@ Disassembly of section .text:
  78c:   0f 1f 40 00             nop    DWORD PTR [rax+0x0]
 
 ...
-```
+{% endhighlight %}
 
 可以看到，在`000000000000076d <main>`中，调用了`call 630 <_Z9say_hellov@plt>`函数，而`630`的地址是PLT表的一个代码段 (PLT表存储的是代码段)
 
-```
+{% highlight text %}
 Disassembly of section .plt:
 
 0000000000000610 <.plt>:
@@ -1667,16 +1667,16 @@ Disassembly of section .plt:
  630:   ff 25 9a 09 20 00       jmp    QWORD PTR [rip+0x20099a]        # 200fd0 <_Z9say_hellov>
  636:   68 01 00 00 00          push   0x1
  63b:   e9 d0 ff ff ff          jmp    610 <.plt>
-```
+{% endhighlight %}
 
 在`630`的代码段可以看到，`jmp QWORD PTR [rip+0x20099a]`汇编指令的注释，该地址为GOT表中的地址，这里又进行了一次跳转。原因是，对于外部共享库，虽然共享库的代码部分的物理内存是共享的，但是数据部分是各个动态链接它的应用程序里各加载一份。因此，所有需要引用共享库外部地址的指令，都会查询GOT表，来找到该函数在当前运行程序的虚拟内存的对应位置。（GOT表存储的是数据段）
 
 GOT表位于数据段，当外部函数第一次被调用时，GOT表保存的并不是该函数实际被加载的内存地址，由于Linux系统使用了延迟绑定技术，因此在首次调用时，该地址需要由动态链接库的`dl_runtime_resolve`函数解析后才能得到。
 
-```
+{% highlight text %}
  636:   68 01 00 00 00          push   0x1
  63b:   e9 d0 ff ff ff          jmp    610 <.plt>
-```
+{% endhighlight %}
 
 `610`对应是PLT表的第一项，PLT[0]是一条特殊的记录，其内容为跳转到GOT表中保存了`dl_runtime_resolve`地址的位置。当执行`dl_runtime_resolve`解析出动态库函数的地址后，会将真实的地址写回到GOT表中。
 
@@ -1770,7 +1770,7 @@ How to call original functions from hook functions.
 * l_ld: Dynamic section of the shared object
 
 
-```cpp
+{% highlight cpp %}
 /* Rendezvous structure used by the run-time dynamic linker to communicate
    details of shared object loading to the debugger.  If the executable's
    dynamic section has a DT_DEBUG element, the run-time linker sets that
@@ -1816,11 +1816,11 @@ struct link_map
     ElfW(Dyn) *l_ld;     /* Dynamic section of the shared object.  */
     struct link_map *l_next, *l_prev; /* Chain of loaded objects.  */
   };
-```
+{% endhighlight %}
 
 ## PLT Replace
 
-```cpp
+{% highlight cpp %}
 int plthook_replace(plthook_t *plthook, const char *funcname, void *funcaddr, void **oldfunc)
 {
     size_t funcnamelen = strlen(funcname);
@@ -1864,7 +1864,7 @@ int plthook_replace(plthook_t *plthook, const char *funcname, void *funcaddr, vo
     }
     return rv;
 }
-```
+{% endhighlight %}
 
 # DLL Hell
 
@@ -1884,3 +1884,4 @@ https://en.wikipedia.org/wiki/DLL_Hell
 * [Weak dynamic symbols](https://www.humprog.org/~stephen//blog/2011/12/01/)
 * [Get all the thread_id created with pthread_created within an process (using LD_PRELOAD)](https://stackoverflow.com/questions/3707358/get-all-the-thread-id-created-with-pthread-created-within-an-process/3709027#3709027)
 * https://en.wikipedia.org/wiki/Hooking#Virtual_method_table_hooking
+{% endhighlight %}

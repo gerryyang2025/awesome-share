@@ -338,7 +338,7 @@ AI 模型不止于生成文本，它们实际上可以通过工具调用动态�
 
 下面是一个工具定义可能的示例：
 
-```json
+{% highlight json %}
 {
   "name": "read_file",
   "description": "从代码库中读取文件内容",
@@ -346,18 +346,18 @@ AI 模型不止于生成文本，它们实际上可以通过工具调用动态�
     "filepath": "要读取的文件路径"
   }
 }
-```
+{% endhighlight %}
 
 当 AI 模型需要使用该工具时，会生成如下响应：
 
-```json
+{% highlight json %}
 {
   "tool": "read_file",
   "parameters": {
     "filepath": "src/components/Button.tsx"
   }
 }
-```
+{% endhighlight %}
 
 应用随后会读取该文件，并将其内容添加到对话上下文中，使模型理解你的 Button 组件并给出相关修改建议。
 

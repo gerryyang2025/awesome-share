@@ -141,17 +141,17 @@ Major uses of `jemalloc` include:
 
 Building and installing a packaged release of `jemalloc` can be as simple as typing the following while in the root directory of the source tree:
 
-```bash
+{% highlight bash %}
 ./configure
 make
 make install
-```
+{% endhighlight %}
 
 You can uninstall the installed build artifacts like this:
 
-```bash
+{% highlight bash %}
 make uninstall
-```
+{% endhighlight %}
 
 ## Advanced configuration
 
@@ -166,9 +166,9 @@ Print a definitive list of options.
 
 Set the base directory in which to install. For example:
 
-```bash
+{% highlight bash %}
   ./configure --prefix=/usr/local
-```
+{% endhighlight %}
 
 will cause files to be installed into `/usr/local/include`, `/usr/local/lib`, and `/usr/local/man`.
 
@@ -192,9 +192,9 @@ Mangle public symbols specified in which is a comma-separated list of `name:mang
 
 For example, to use ld's `--wrap` option as an alternative method for overriding libc's malloc implementation, specify something like:
 
-```
+{% highlight text %}
 --with-mangling=malloc:__wrap_malloc,free:__wrap_free[...]
-```
+{% endhighlight %}
 
 Note that mangling happens prior to application of the prefix specified by `--with-jemalloc-prefix`, and mangled symbols are then ignored when applying the prefix.
 
@@ -202,12 +202,12 @@ Note that mangling happens prior to application of the prefix specified by `--wi
 
 Prefix all public APIs with . For example, if is `"prefix_"`, API changes like the following occur:
 
-```cpp
+{% highlight cpp %}
 malloc()         --> prefix_malloc()
 malloc_conf      --> prefix_malloc_conf
 /etc/malloc.conf --> /etc/prefix_malloc.conf
 MALLOC_CONF      --> PREFIX_MALLOC_CONF
-```
+{% endhighlight %}
 
 This makes it possible to use `jemalloc` at the same time as the system allocator, or even to **use multiple copies of `jemalloc` simultaneously**.
 
@@ -230,9 +230,9 @@ Append to the base name of all installed files, such that multiple versions of j
 
 Embed `<malloc_conf>` as a run-time options string that is processed prior to the malloc_conf global variable, the `/etc/malloc.conf` symlink, and the `MALLOC_CONF` environment variable. For example, to change the default decay time to 30 seconds:
 
-```bash
+{% highlight bash %}
 --with-malloc-conf=decay_ms:30000
-```
+{% endhighlight %}
 
 * `--enable-debug`
 
@@ -346,18 +346,18 @@ Pass these flags when linking.
 
 To build only parts of jemalloc, use the following targets:
 
-```
+{% highlight text %}
 build_lib_shared
 build_lib_static
 build_lib
 build_doc_html
 build_doc_man
 build_doc
-```
+{% endhighlight %}
 
 To install only parts of jemalloc, use the following targets:
 
-```
+{% highlight text %}
 install_bin
 install_include
 install_lib_shared
@@ -367,14 +367,14 @@ install_lib
 install_doc_html
 install_doc_man
 install_doc
-```
+{% endhighlight %}
 
 To clean up build results to varying degrees, use the following make targets:
 
-```clean
+{% highlight clean %}
 distclean
 relclean
-```
+{% endhighlight %}
 
 
 
@@ -384,9 +384,9 @@ relclean
 
 在运行应用程序之前，在 shell 中设置 `MALLOC_CONF` 环境变量。
 
-```bash
+{% highlight bash %}
 export MALLOC_CONF="retain:true,dirty_decay_ms:25000,muzzy_decay_ms:30000" && ./demo
-```
+{% endhighlight %}
 
 * 参数之间使用`逗号`分隔。
 * 参数格式通常是 `选项名称:值`。

@@ -188,39 +188,39 @@ MCP has these main types of messages:
 
 * **Requests** expect a response from the other side:
 
-```typescript
+{% highlight typescript %}
 interface Request {
   method: string;
   params?: { ... };
 }
-```
+{% endhighlight %}
 
 * **Results** are successful responses to requests:
 
-```typescript
+{% highlight typescript %}
 interface Result {
   [key: string]: unknown;
 }
-```
+{% endhighlight %}
 
 * **Errors** indicate that a request failed:
 
-```typescript
+{% highlight typescript %}
 interface Error {
   code: number;
   message: string;
   data?: unknown;
 }
-```
+{% endhighlight %}
 
 * **Notifications** are one-way messages that don’t expect a response:
 
-```typescript
+{% highlight typescript %}
 interface Notification {
   method: string;
   params?: { ... };
 }
-```
+{% endhighlight %}
 
 ## Connection lifecycle
 
@@ -258,7 +258,7 @@ Either party can terminate the connection:
 
 MCP defines these standard error codes:
 
-```go
+{% highlight go %}
 enum ErrorCode {
   // Standard JSON-RPC error codes
   ParseError = -32700,
@@ -267,7 +267,7 @@ enum ErrorCode {
   InvalidParams = -32602,
   InternalError = -32603
 }
-```
+{% endhighlight %}
 
 SDKs and applications can define their own error codes above `-32000`.
 
@@ -298,17 +298,17 @@ Each resource is identified by a unique URI and can contain either text or binar
 
 Resources are identified using URIs that follow this format:
 
-```
+{% highlight text %}
 [protocol]://[host]/[path]
-```
+{% endhighlight %}
 
 For example:
 
-```
+{% highlight text %}
 1. file:///home/user/documents/report.pdf
 2. postgres://database/customers/schema
 3. screen://localhost/display1
-```
+{% endhighlight %}
 
 The protocol and path structure is defined by the MCP server implementation. Servers can define their own custom URI schemes.
 
@@ -364,7 +364,7 @@ MCP 中的 `Prompts` 本质是标准化、可定制的对话蓝图。它们像�
 
 Each prompt is defined with:
 
-```typescript
+{% highlight typescript %}
 {
   name: string;              // Unique identifier for the prompt
   description?: string;      // Human-readable description
@@ -376,13 +376,13 @@ Each prompt is defined with:
     }
   ]
 }
-```
+{% endhighlight %}
 
 ## Discovering prompts
 
 Clients can discover available prompts through the `prompts/list` endpoint:
 
-```typescript
+{% highlight typescript %}
 // Request
 {
   method: "prompts/list"
@@ -404,13 +404,13 @@ Clients can discover available prompts through the `prompts/list` endpoint:
     }
   ]
 }
-```
+{% endhighlight %}
 
 ## Using prompts
 
 To use a prompt, clients make a `prompts/get` request:
 
-```typescript
+{% highlight typescript %}
 // Request
 {
   method: "prompts/get",
@@ -435,13 +435,13 @@ To use a prompt, clients make a `prompts/get` request:
     }
   ]
 }
-```
+{% endhighlight %}
 
 ## Example implementation
 
 Here’s a complete example of implementing prompts in an MCP server:
 
-```typescript
+{% highlight typescript %}
 import { Server } from "@modelcontextprotocol/sdk/server";
 import {
   ListPromptsRequestSchema,
@@ -532,7 +532,7 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
 
   throw new Error("Prompt implementation not found");
 });
-```
+{% endhighlight %}
 
 ## Best practices
 
@@ -565,7 +565,7 @@ Like **resources**, tools are identified by unique names and can include descrip
 
 Each tool is defined with the following structure:
 
-```typescript
+{% highlight typescript %}
 {
   name: string;          // Unique identifier for the tool
   description?: string;  // Human-readable description
@@ -581,13 +581,13 @@ Each tool is defined with the following structure:
     openWorldHint?: boolean;   // If true, tool interacts with external entities
   }
 }
-```
+{% endhighlight %}
 
 ## Implementing tools
 
 Here’s an example of implementing a basic tool in an MCP server:
 
-```typescript
+{% highlight typescript %}
 const server = new Server({
   name: "example-server",
   version: "1.0.0"
@@ -630,7 +630,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
   throw new Error("Tool not found");
 });
-```
+{% endhighlight %}
 
 ## Example tool patterns
 
@@ -640,7 +640,7 @@ Here are some examples of types of tools that a server could provide:
 
 Tools that interact with the local system:
 
-```typescript
+{% highlight typescript %}
 {
   name: "execute_command",
   description: "Run a shell command",
@@ -652,13 +652,13 @@ Tools that interact with the local system:
     }
   }
 }
-```
+{% endhighlight %}
 
 ### API integrations
 
 Tools that wrap external APIs:
 
-```typescript
+{% highlight typescript %}
 {
   name: "github_create_issue",
   description: "Create a GitHub issue",
@@ -671,13 +671,13 @@ Tools that wrap external APIs:
     }
   }
 }
-```
+{% endhighlight %}
 
 ### Data processing
 
 Tools that transform or analyze data:
 
-```typescript
+{% highlight typescript %}
 {
   name: "analyze_csv",
   description: "Analyze a CSV file",
@@ -694,7 +694,7 @@ Tools that transform or analyze data:
     }
   }
 }
-```
+{% endhighlight %}
 
 ## Best practices
 
@@ -720,7 +720,7 @@ When implementing tools:
 
 Here’s a basic example of implementing an **MCP server**:
 
-```typescript
+{% highlight typescript %}
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
@@ -748,7 +748,7 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
 // Connect transport
 const transport = new StdioServerTransport();
 await server.connect(transport);
-```
+{% endhighlight %}
 
 # Best practices
 
@@ -831,7 +831,7 @@ await server.connect(transport);
 
 A Go implementation of the Model Context Protocol (MCP), enabling seamless integration between LLM applications and external data sources and tools.
 
-```go
+{% highlight go %}
 package main
 
 import (
@@ -876,7 +876,7 @@ func helloHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallTo
 
     return mcp.NewToolResultText(fmt.Sprintf("Hello, %s!", name)), nil
 }
-```
+{% endhighlight %}
 
 That's it!
 
@@ -909,19 +909,19 @@ MCP Go handles all the complex protocol details and server management, so you ca
 
 Example Configurations:
 
-```bash
+{% highlight bash %}
 # For stdio Server (Weather Server Example):
 Command: node ~/mcp-quickstart/weather-server-typescript/build/index.js
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 # For SSE Server:
 URL: http://example.com:8000/sse
-```
+{% endhighlight %}
 
 stdio 完整的配置示例：
 
-```json
+{% highlight json %}
 {
   "mcpServers": {
     "weather": {
@@ -930,11 +930,11 @@ stdio 完整的配置示例：
     }
   }
 }
-```
+{% endhighlight %}
 
 sse 完整的配置示例：
 
-```json
+{% highlight json %}
 {
     "mcpServers": {
       "calculate": {
@@ -951,7 +951,7 @@ sse 完整的配置示例：
       }
     }
 }
-```
+{% endhighlight %}
 
 ## Using MCP Tools
 
@@ -989,7 +989,7 @@ sse 完整的配置示例：
 
 完整配置：
 
-```json
+{% highlight json %}
 {
     "mcpServers": {
       "calculate": {
@@ -1006,7 +1006,7 @@ sse 完整的配置示例：
       }
     }
 }
-```
+{% endhighlight %}
 
 ### mcp-go Calculator (stdio / sse)
 
@@ -1021,7 +1021,7 @@ https://github.com/mark3labs/mcp-go
 ![mcp12](/assets/images/202503/mcp12.png)
 
 
-```go
+{% highlight go %}
 package main
 
 import (
@@ -1129,12 +1129,12 @@ func main() {
 		)
 	}
 }
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 go mod init mcp-go-demo
 go mod tidy
-```
+{% endhighlight %}
 
 ### mcp-go custom_context (stdio / sse)
 
@@ -1142,10 +1142,10 @@ https://github.com/mark3labs/mcp-go/tree/main/examples/custom_context
 
 The web `https://httpbin.org/` is a simple HTTP Request & Response Service.
 
-```bash
+{% highlight bash %}
 # /anything Returns anything passed in request data.
 curl -X GET "https://httpbin.org/anything" -H "accept: application/json"
-```
+{% endhighlight %}
 
 ![mcp8](/assets/images/202503/mcp8.png)
 
@@ -1159,7 +1159,7 @@ curl -X GET "https://httpbin.org/anything" -H "accept: application/json"
 
 ![mcp5](/assets/images/202503/mcp5.png)
 
-```go
+{% highlight go %}
 package main
 
 import (
@@ -1322,7 +1322,7 @@ func main() {
 		)
 	}
 }
-```
+{% endhighlight %}
 
 
 ### mcp-go weather_forecast (sse)
@@ -1331,7 +1331,7 @@ func main() {
 
 ![mcp10](/assets/images/202503/mcp10.png)
 
-```go
+{% highlight go %}
 package main
 
 import (
@@ -1537,7 +1537,7 @@ func main() {
 		log.Fatalf("Invalid transport type: %s. Must be 'stdio' or 'sse'", transport)
 	}
 }
-```
+{% endhighlight %}
 
 ### Filesystem MCP Server
 
@@ -1582,10 +1582,10 @@ For `TypeScript`, make sure you have the latest version of `Node` installed.
 
 First, let’s install `Node.js` and npm if you haven’t already. You can download them from nodejs.org. Verify your `Node.js` installation:
 
-```bash
+{% highlight bash %}
 node --version
 npm --version
-```
+{% endhighlight %}
 
 For this tutorial, you’ll need `Node.js` version 16 or higher.
 
@@ -1593,7 +1593,7 @@ For this tutorial, you’ll need `Node.js` version 16 or higher.
 
 https://nodejs.org/zh-cn/download
 
-```bash
+{% highlight bash %}
 # Download and install nvm:
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash
 
@@ -1609,11 +1609,11 @@ nvm current # Should print "v22.14.0".
 
 # Verify npm version:
 npm -v # Should print "10.9.2".
-```
+{% endhighlight %}
 
 ## Create and Set up Our Project
 
-```bash
+{% highlight bash %}
 # Create a new directory for our project
 mkdir weather
 cd weather
@@ -1628,11 +1628,11 @@ npm install -D @types/node typescript
 # Create our files
 mkdir src
 touch src/index.ts
-```
+{% endhighlight %}
 
 Update your `package.json` to add type: “module” and a build script:
 
-```json
+{% highlight json %}
 {
   "type": "module",
   "bin": {
@@ -1645,11 +1645,11 @@ Update your `package.json` to add type: “module” and a build script:
     "build"
   ],
 }
-```
+{% endhighlight %}
 
 Create a `tsconfig.json` in the root of your project:
 
-```json
+{% highlight json %}
 {
   "compilerOptions": {
     "target": "ES2022",
@@ -1665,7 +1665,7 @@ Create a `tsconfig.json` in the root of your project:
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }
-```
+{% endhighlight %}
 
 Now let’s dive into building your server.
 
@@ -1675,7 +1675,7 @@ Importing packages and setting up the instance
 
 Add these to the top of your `src/index.ts`:
 
-```typescript
+{% highlight typescript %}
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
@@ -1692,14 +1692,14 @@ const server = new McpServer({
     tools: {},
   },
 });
-```
+{% endhighlight %}
 
 
 > Helper functions
 
 Next, let’s add our helper functions for querying and formatting the data from the National Weather Service API:
 
-```typescript
+{% highlight typescript %}
 // Helper function for making NWS API requests
 async function makeNWSRequest<T>(url: string): Promise<T | null> {
   const headers = {
@@ -1766,14 +1766,14 @@ interface ForecastResponse {
     periods: ForecastPeriod[];
   };
 }
-```
+{% endhighlight %}
 
 
 > Implementing tool execution
 
 The tool execution handler is responsible for actually executing the logic of each tool. Let’s add it:
 
-```typescript
+{% highlight typescript %}
 // Register weather tools
 server.tool(
   "get-alerts",
@@ -1906,13 +1906,13 @@ server.tool(
     };
   },
 );
-```
+{% endhighlight %}
 
 > Running the server
 
 Finally, implement the main function to run the server:
 
-```typescript
+{% highlight typescript %}
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
@@ -1923,7 +1923,7 @@ main().catch((error) => {
   console.error("Fatal error in main():", error);
   process.exit(1);
 });
-```
+{% endhighlight %}
 
 Make sure to run `npm run build` to build your server! This is a very important step in getting your server to connect.
 
@@ -1933,7 +1933,7 @@ Let’s now test your server from an existing MCP host, Claude for Desktop.
 
 通过 Cursor 测试 MCP 服务是否正常：
 
-```json
+{% highlight json %}
 {
     "mcpServers": {
       "typescript-weather1": {
@@ -1947,7 +1947,7 @@ Let’s now test your server from an existing MCP host, Claude for Desktop.
       }
     }
 }
-```
+{% endhighlight %}
 
 > Note: Since this is the US National Weather service, the queries will only work for US locations.
 
@@ -2024,7 +2024,7 @@ The MCP Inspector is an interactive developer tool for testing and debugging MCP
 
 ![mcp21](/assets/images/202503/mcp21.png)
 
-```json
+{% highlight json %}
 {
     "mcpServers": {
       "calculate1": {
@@ -2038,7 +2038,7 @@ The MCP Inspector is an interactive developer tool for testing and debugging MCP
       }
     }
 }
-```
+{% endhighlight %}
 
 # TODO
 

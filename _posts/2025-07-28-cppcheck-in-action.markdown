@@ -30,7 +30,7 @@ When building the command line tool, [PCRE](http://www.pcre.org/) is optional. I
 
 The minimum required Python version is 3.6.
 
-```bash
+{% highlight bash %}
 # 安装 PCRE 开发库
 # RHEL/CentOS
 $ sudo yum install pcre-devel
@@ -43,21 +43,21 @@ pcre-devel-8.42-6.tl3.x86_64
 # 定位 pcre-config
 $ which pcre-config || find /usr -name pcre-config 2>/dev/null
 /usr/bin/pcre-config
-```
+{% endhighlight %}
 
 > GNU make
 
 Simple, unoptimized build (no dependencies):
 
-```bash
+{% highlight bash %}
 make
-```
+{% endhighlight %}
 
 The recommended `release` build is:
 
-```bash
+{% highlight bash %}
 make -j36 MATCHCOMPILER=yes DESTDIR=$HOME/tools/cppcheck/cppcheck-2.18.0 FILESDIR=-install HAVE_RULES=yes CXXFLAGS="-O2 -DNDEBUG -Wall -Wno-sign-compare -Wno-unused-function" install
-```
+{% endhighlight %}
 
 Flags:
 
@@ -67,7 +67,7 @@ Flags:
 * `CXXFLAGS="-O2 -DNDEBUG -Wall -Wno-sign-compare -Wno-unused-function"` Enables most compiler optimizations, disables cppcheck-internal debugging code and enables basic compiler warnings.
 
 
-```
+{% highlight text %}
 $ ldd cppcheck
         linux-vdso.so.1 (0x00007ffffdfb9000)
         /$LIB/libonion_block.so => /lib64/libonion_block.so (0x00007fcf022ad000)
@@ -80,7 +80,7 @@ $ ldd cppcheck
         libc.so.6 => /lib64/libc.so.6 (0x00007fcf01d07000)
         libdl.so.2 => /lib64/libdl.so.2 (0x00007fcf01d00000)
         /lib64/ld-linux-x86-64.so.2 (0x00007fcf024b3000)
-```
+{% endhighlight %}
 
 # About static analysis
 
@@ -124,27 +124,27 @@ So what is unique in `Cppcheck`.
 
 In `Cppcheck` the data flow analysis is not only "forward" but "bi-directional". Most analyzers will diagnose this:
 
-```c
+{% highlight c %}
 void foo(int x)
 {
     int buf[10];
     if (x == 1000)
         buf[x] = 0; // <- ERROR
 }
-```
+{% endhighlight %}
 
 Most tools can determine that the array index will be `1000` and there will be overflow.
 
 `Cppcheck` will also diagnose this:
 
-```c
+{% highlight c %}
 void foo(int x)
 {
     int buf[10];
     buf[x] = 0; // <- ERROR
     if (x == 1000) {}
 }
-```
+{% endhighlight %}
 
 ## Undefined behaviour
 
@@ -241,7 +241,7 @@ Even tools that have the same design goals as `Cppcheck` will probably be good a
 
 Here is some simple code:
 
-```c
+{% highlight c %}
 #include <cstdio>
 
 int main()
@@ -250,16 +250,16 @@ int main()
     a[10] = 0;
     return 0;
 }
-```
+{% endhighlight %}
 
 If you save that into `file1.c` and execute: `cppcheck file1.c`
 
 The output from `Cppcheck` will then be:
 
-```
+{% highlight text %}
 Checking file1.c...
 [file1.c:4]: (error) Array'a[10]' index 10 out of bounds
-```
+{% endhighlight %}
 
 ## Checking all files in a folder
 
@@ -267,12 +267,12 @@ Normally a program has many source files. `Cppcheck` can check all source files 
 
 If “path” is a folder, then `Cppcheck` will recursively check all source files in this folder:
 
-```
+{% highlight text %}
 Checking path/file1.cpp...
 1/2 files checked 50% done
 Checking path/file2.cpp...
 2/2 files checked 100% done
-```
+{% endhighlight %}
 
 ## Check files manually or use project file
 
@@ -287,9 +287,9 @@ With `--file-filter=<str>` you can set a file filter and only those files matchi
 
 For example: if you want to check only those files and folders starting from a subfolder `src/` that start with “test” you have to type:
 
-```bash
+{% highlight bash %}
 cppcheck src/ --file-filter=src/test*
-```
+{% endhighlight %}
 
 `Cppcheck` first collects all files in `src/` and will apply the filter after that. So the filter must start with the given start folder.
 
@@ -298,23 +298,23 @@ cppcheck src/ --file-filter=src/test*
 
 To **exclude a file or folder**, there are two options. The first option is to only provide the paths and files you want to check:
 
-```bash
+{% highlight bash %}
 cppcheck src/a src/b
-```
+{% endhighlight %}
 
 All files under `src/a` and `src/b` are then checked.
 
 The second option is to use `-i`, which specifies the files/paths to ignore. With this command no files in `src/c` are checked:
 
-```bash
+{% highlight bash %}
 cppcheck -isrc/c src
-```
+{% endhighlight %}
 
 This option is only valid when supplying an input directory. To ignore multiple directories supply the `-i` flag for each directory individually. The following command ignores both the `src/b` and `src/c` directories:
 
-```bash
+{% highlight bash %}
 cppcheck -isrc/b -isrc/c
-```
+{% endhighlight %}
 
 
 ## Clang parser (experimental)
@@ -365,7 +365,7 @@ If your templates are **recursive** this can lead to slow analysis that uses a l
 
 Example code:
 
-```cpp
+{% highlight cpp %}
 template <int i>
 void a()
 {
@@ -376,15 +376,15 @@ void foo()
 {
     a<0>();
 }
-```
+{% endhighlight %}
 
 `Cppcheck` output:
 
-```
+{% highlight text %}
 test.cpp:4:5: information: TemplateSimplifier: max template recursion (100) reached for template'a<101>'. You might want to limit Cppcheck recursion. [templateRecursion]
     a<i+1>();
     ^
-```
+{% endhighlight %}
 
 As you can see `Cppcheck` has instantiated `a<i+1>` until `a<101>` was reached and then it bails out.
 
@@ -395,7 +395,7 @@ To limit template recursion you can:
 
 Example code with template specialisation:
 
-```cpp
+{% highlight cpp %}
 template <int i>
 void a()
 {
@@ -410,7 +410,7 @@ void foo()
 #ifdef __cppcheck__
 template<> void a<3>() {}
 #endif
-```
+{% endhighlight %}
 
 You can pass `-D__cppcheck__` when checking this code.
 
@@ -433,7 +433,7 @@ On the command line you configure that through `--cppcheck-build-dir=path`.
 
 Example:
 
-```bash
+{% highlight bash %}
 mkdir b
 
 # All files are analyzed
@@ -441,7 +441,7 @@ cppcheck --cppcheck-build-dir=b src
 
 # Faster! Results of unchanged files are reused
 cppcheck --cppcheck-build-dir=b src
-```
+{% endhighlight %}
 
 
 ## Importing a project
@@ -452,21 +452,21 @@ You can import some project files and build configurations into `Cppcheck`.
 
 Generate a compile database:
 
-```bash
+{% highlight bash %}
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
-```
+{% endhighlight %}
 
 The file `compile_commands.json` is created in the current folder. Now run `Cppcheck` like this:
 
-```bash
+{% highlight bash %}
 cppcheck --project=compile_commands.json
-```
+{% endhighlight %}
 
 To ignore certain folders you can use `-i`. This will skip analysis of source files in the `foo` folder.
 
-```bash
+{% highlight bash %}
 cppcheck --project=compile_commands.json -ifoo
-```
+{% endhighlight %}
 
 > Other
 
@@ -474,9 +474,9 @@ If you can generate a compile database, then it is possible to import that in `C
 
 In **Linux** you can use for instance the `bear` (**build ear**) utility to generate a compile database from arbitrary build tools:
 
-```bash
+{% highlight bash %}
 bear -- make
-```
+{% endhighlight %}
 
 ## Preprocessor Settings
 
@@ -491,7 +491,7 @@ Cppcheck automatically test different combinations of preprocessor defines to ac
 
 Here is a file that has 3 bugs (when x,y,z are assigned).
 
-```cpp
+{% highlight cpp %}
 #ifdef A
   x=100/0;
   #ifdef B
@@ -504,7 +504,7 @@ Here is a file that has 3 bugs (when x,y,z are assigned).
 #ifndef C
 #error C must be defined
 #endif
-```
+{% endhighlight %}
 
 The flag `-D` tells `Cppcheck` that **a name is defined**. There will be no `Cppcheck` analysis without this define. The flag `-U` tells `Cppcheck` that **a name is not defined**. There will be no `Cppcheck` analysis with this define.
 
@@ -514,7 +514,7 @@ When `-D` is used, `Cppcheck` will only check 1 configuration unless these are u
 
 Example:
 
-```bash
+{% highlight bash %}
 # test all configurations
 # all bugs are found
 cppcheck test.c
@@ -534,7 +534,7 @@ cppcheck -UA test.c
 # All configurations with "-DA" are tested
 # The two first bugs are found
 cppcheck --force -DA test.c
-```
+{% endhighlight %}
 
 ### Include paths
 
@@ -555,7 +555,7 @@ By default `Cppcheck` uses native platform configuration that works well if your
 
 You can also create your own custom platform configuration in a `XML` file. Here is an example:
 
-```xml
+{% highlight xml %}
 <?xml version="1"?>
 <platform>
   <char_bit>8</char_bit>
@@ -573,7 +573,7 @@ You can also create your own custom platform configuration in a `XML` file. Here
     <wchar_t>2</wchar_t>
   </sizeof>
 </platform>
-```
+{% endhighlight %}
 
 
 ## C/C++ Standard
@@ -608,11 +608,11 @@ If you encounter a **false positive**, then please report it to the `Cppcheck` t
 
 The format for an error **suppression** is one of:
 
-```
+{% highlight text %}
 [error id]:[filename]:[line]
 [error id]:[filename2]
 [error id]
-```
+{% endhighlight %}
 
 The `error id` is the id that you want to **suppress**. The id of a warning is shown in brackets in the normal `cppcheck` text output. The suppression `error id` may contain `*` to match any sequence of tokens.
 
@@ -622,29 +622,29 @@ The filename may include the wildcard characters `*` or `?`, which matches any s
 
 The `--suppress=` command line option is used to specify suppressions on the command line. Example:
 
-```bash
+{% highlight bash %}
 cppcheck --suppress=memleak:src/file1.cpp src/
-```
+{% endhighlight %}
 
 ### Suppressions in a file
 
 You can create a suppressions file for example as follows:
 
-```
+{% highlight text %}
 // suppress memleak and exceptNew errors in the file src/file1.cpp
 memleak:src/file1.cpp
 exceptNew:src/file1.cpp
 
 uninitvar // suppress all uninitvar errors in all files
-```
+{% endhighlight %}
 
 Note that **you may add empty lines and comments** in the **suppressions file**. Comments must start with `#` or `//` and be at the start of the line, or after the suppression line.
 
 The usage of the suppressions file is as follows:
 
-```bash
+{% highlight bash %}
 cppcheck --suppressions-list=suppressions.txt src/
-```
+{% endhighlight %}
 
 
 ### XML suppressions
@@ -652,7 +652,7 @@ cppcheck --suppressions-list=suppressions.txt src/
 You can specify suppressions in a `XML` file, for example as follows:
 
 
-```xml
+{% highlight xml %}
 <?xml version="1.0"?>
 <suppressions>
   <suppress>
@@ -662,15 +662,15 @@ You can specify suppressions in a `XML` file, for example as follows:
     <symbolName>var</symbolName>
   </suppress>
 </suppressions>
-```
+{% endhighlight %}
 
 The `XML` format is extensible and may be extended with further attributes in the future.
 
 The usage of the suppressions file is as follows:
 
-```bash
+{% highlight bash %}
 cppcheck --suppress-xml=suppressions.xml src/
-```
+{% endhighlight %}
 
 ### Inline suppressions
 
@@ -678,93 +678,93 @@ cppcheck --suppress-xml=suppressions.xml src/
 
 This code will normally generate an error message:
 
-```cpp
+{% highlight cpp %}
 void f() {
     char arr[5];
     arr[10] = 0;
 }
-```
+{% endhighlight %}
 
 The output is:
 
-```
+{% highlight text %}
 cppcheck test.c
 [test.c:3]: (error) Array'arr[5]' index 10 out of bounds
-```
+{% endhighlight %}
 
 To activate inline suppressions:
 
-```bash
+{% highlight bash %}
 cppcheck --inline-suppr test.c
-```
+{% endhighlight %}
 
 > Format
 
 You can suppress a warning `aaaa` with:
 
-```cpp
+{% highlight cpp %}
 // cppcheck-suppress aaaa
-```
+{% endhighlight %}
 
 Suppressing multiple ids in one comment by using `[]`:
 
-```cpp
+{% highlight cpp %}
 // cppcheck-suppress [aaaa, bbbb]
-```
+{% endhighlight %}
 
 Suppressing warnings aaaa on a block of code:
 
-```cpp
+{% highlight cpp %}
 // cppcheck-suppress-begin aaaa
 
 // ...
 
 // cppcheck-suppress-end aaaa
-```
+{% endhighlight %}
 
 Suppressing multiple ids on a block of code:
 
-```cpp
+{% highlight cpp %}
 // cppcheck-suppress-begin [aaaa, bbbb]
 
 // ...
 
 // cppcheck-suppress-end [aaaa, bbbb]
-```
+{% endhighlight %}
 
 Suppressing warnings aaaa for a whole file:
 
-```cpp
+{% highlight cpp %}
 // cppcheck-suppress-file aaaa
-```
+{% endhighlight %}
 
 Suppressing multiple ids for a whole file:
 
-```cpp
+{% highlight cpp %}
 // cppcheck-suppress-file [aaaa, bbbb]
-```
+{% endhighlight %}
 
 Suppressing warnings aaaa where macro is used:
 
-```cpp
+{% highlight cpp %}
 // cppcheck-suppress-macro aaaa
 #define MACRO ...
 
 // ...
 
 x = MACRO; // <- aaaa warnings are suppressed here
-```
+{% endhighlight %}
 
 Suppressing multiple ids where macro is used:
 
-```cpp
+{% highlight cpp %}
 // cppcheck-suppress-macro [aaaa, bbbb]
 #define MACRO ...
 
 // ...
 
 x = MACRO; // <- aaaa and bbbb warnings are suppressed here
-```
+{% endhighlight %}
 
 ### Comment before code or on same line
 
@@ -772,31 +772,31 @@ The comment can be put before the code or at the same line as the code.
 
 **Before the code**:
 
-```cpp
+{% highlight cpp %}
 void f() {
   char arr[5];
   // cppcheck-suppress arrayIndexOutOfBounds
   arr[10] = 0;
 }
-```
+{% endhighlight %}
 
 Or **at the same line as the code**:
 
-```cpp
+{% highlight cpp %}
 void f() {
   char arr[5];
   arr[10] = 0; // cppcheck-suppress arrayIndexOutOfBounds
 }
-```
+{% endhighlight %}
 
 In this example there are 2 lines with code and 1 suppression comment. The suppression comment only applies to 1 line: `a = b + c;`.
 
-```cpp
+{% highlight cpp %}
 void f() {
   a = b + c; // cppcheck-suppress abc
   d = e + f;
 }
-```
+{% endhighlight %}
 
 ### Multiple suppressions
 
@@ -807,7 +807,7 @@ There are several options;
 Using 2 suppression comments before code:
 
 
-```cpp
+{% highlight cpp %}
 void f() {
   char arr[5];
 
@@ -815,27 +815,27 @@ void f() {
   // cppcheck-suppress zerodiv
   arr[10] = arr[10] / 0;
 }
-```
+{% endhighlight %}
 
 Using 1 suppression comment before the code:
 
-```cpp
+{% highlight cpp %}
 void f() {
   char arr[5];
   // cppcheck-suppress[arrayIndexOutOfBounds,zerodiv]
   arr[10] = arr[10] / 0;
 }
-```
+{% endhighlight %}
 
 ### Comment about suppression
 
 You can write comments about a suppression as follows:
 
-```cpp
+{% highlight cpp %}
 // cppcheck-suppress[warningid] some comment
 // cppcheck-suppress warningid ; some comment
 // cppcheck-suppress warningid // some comment
-```
+{% endhighlight %}
 
 
 ## XML output
@@ -844,13 +844,13 @@ You can write comments about a suppression as follows:
 
 A sample command to check a file and output errors in the `XML` format:
 
-```bash
+{% highlight bash %}
 cppcheck --xml file1.cpp
-```
+{% endhighlight %}
 
 Here is a sample report:
 
-```xml
+{% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
 <results version="2">
     <cppcheck version="1.66"/>
@@ -860,7 +860,7 @@ Here is a sample report:
         </error>
     </errors>
 </results>
-```
+{% endhighlight %}
 
 Each error is reported in a `<error>` element. Attributes:
 
@@ -922,43 +922,43 @@ If you want to **reformat** the output so that it looks different, then you can 
 
 To get `gcc` compatible output you can use `–template=gcc`:
 
-```bash
+{% highlight bash %}
 cppcheck --template=gcc samples/arrayIndexOutOfBounds/bad.c
-```
+{% endhighlight %}
 
 ### User defined output format (single line)
 
 You can write your own pattern. For instance:
 
-```bash
+{% highlight bash %}
 cppcheck --template="{file}:{line}:{column}: {severity}:{message}" samples/arrayIndexOutOfBounds/bad.c
-```
+{% endhighlight %}
 
 The output will then look like this:
 
-```
+{% highlight text %}
 Checking samples/arrayIndexOutOfBounds/bad.c ...
 samples/arrayIndexOutOfBounds/bad.c:6:6: error: Array 'a[2]' accessed at index 2, which is out of bounds.
-```
+{% endhighlight %}
 
 A comma separated format:
 
-```bash
+{% highlight bash %}
 cppcheck --template="{file},{line},{severity},{id},{message}" samples/arrayIndexOutOfBounds/bad.c
-```
+{% endhighlight %}
 
 The output will look like this:
 
-```
+{% highlight text %}
 Checking samples/arrayIndexOutOfBounds/bad.c ...
 samples/arrayIndexOutOfBounds/bad.c,6,error,arrayIndexOutOfBounds, Array'a[2]' accessed at index 2, which is out of bounds.
-```
+{% endhighlight %}
 
 ### User defined output format (multi line)
 
 Many warnings have multiple locations. Example code:
 
-```cpp
+{% highlight cpp %}
 void f(int *p)
 {
     *p = 3; // line 3
@@ -970,13 +970,13 @@ int main()
     f(p); // line 9
     return 0;
 }
-```
+{% endhighlight %}
 
 There is a possible null pointer dereference at line 3. Cppcheck can show how it came to that conclusion by showing extra location information. You need to use both `–template` and `–template-location` at the command line, for example:
 
-```bash
+{% highlight bash %}
 cppcheck --template="{file}:{line}: {severity}: {message}\n{code}" --template-location="{file}:{line}: note: {info}\n{code}" multiline.c
-```
+{% endhighlight %}
 
 The output from `Cppcheck` is:
 
@@ -1089,18 +1089,18 @@ Such a remark comment shall:
 
 Example code:
 
-```c
+{% highlight c %}
 void foo() {
     // REMARK Initialize x with 0
     int x = 0;
 }
-```
+{% endhighlight %}
 
 In `Cppcheck` text output the remarks are not shown by default, you can use `--template` option `{remark}` to show remarks:
 
-```bash
+{% highlight bash %}
 cppcheck --enable=style --template="{file}:{line}: {message} [{id}]\\n{remark}" test1.c
-```
+{% endhighlight %}
 
 ![cppcheck3](/assets/images/202507/cppcheck3.png)
 
@@ -1128,34 +1128,34 @@ cppcheck --enable=style --template="{file}:{line}: {message} [{id}]\\n{remark}" 
 
 **Addons** could be run through `Cppcheck` command line utility as follows:
 
-```bash
+{% highlight bash %}
 cppcheck --addon=misra.py somefile.c
-```
+{% endhighlight %}
 
 This will launch all `Cppcheck` checks and additionally calls specific checks provided by selected addon.
 
 Some **addons** need extra arguments. You can configure how you want to execute an addon in a json file. For example put this in `misra.json`:
 
-```json
+{% highlight json %}
 {
   "script": "misra.py",
   "args": [
       "--rule-texts=misra.txt"
   ]
 }
-```
+{% endhighlight %}
 
 And then the configuration can be executed on the `Cppcheck` command line:
 
-```bash
+{% highlight bash %}
 cppcheck --addon=misra.json somefile.c
-```
+{% endhighlight %}
 
 **By default** `Cppcheck` would search **addon** at the standard path which was specified during the installation process. You also can set this path directly, for example:
 
-```bash
+{% highlight bash %}
 cppcheck --addon=/opt/cppcheck/configurations/my_misra.json somefile.c
-```
+{% endhighlight %}
 
 This allows you to create and manage multiple configuration files for different projects.
 
@@ -1188,9 +1188,9 @@ In the `Cppcheck` source tree there is a folder `htmlreport` that contains a scr
 
 This command generates the help screen:
 
-```bash
+{% highlight bash %}
 htmlreport/cppcheck-htmlreport -h
-```
+{% endhighlight %}
 
 The output screen says:
 
@@ -1198,10 +1198,10 @@ The output screen says:
 
 Example usage:
 
-```bash
+{% highlight bash %}
 cppcheck gui/test.cpp --xml 2> err.xml
 cppcheck-htmlreport --file=err.xml --report-dir=test1 --source-dir=.
-```
+{% endhighlight %}
 
 ## Check Level
 
@@ -1249,7 +1249,7 @@ The command line option `--performance-valueflow-max-if-count` adjusts the max c
 
 # cppcheck --doc
 
-```
+{% highlight text %}
 $ cppcheck --doc
 ## 64-bit portability ##
 Check if there is 64-bit portability issues:
@@ -1510,16 +1510,16 @@ Check for misusage of variable argument lists:
 - Missing va_end()
 - Using va_list before it is opened
 - Subsequent calls to va_start/va_copy()
-```
+{% endhighlight %}
 
 # Usage
 
-```bash
+{% highlight bash %}
 cppcheck $DIR --check-level=normal --checkers-report=cppcheck-report.txt --clang=/usr/local/bin/clang --enable=all --platform=unix64 --report-progress --showtime=file --std=c++17 --inconclusive --verbose -j8
 
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ ./cppcheck --help
 Cppcheck - A tool for static C/C++ code analysis
 
@@ -1865,23 +1865,23 @@ Many thanks to the 3rd party libraries we use:
  * picojson -- loading compile database.
  * pcre -- rules.
  * qt -- used in GUI
-```
+{% endhighlight %}
 
 # Tips
 
-```bash
+{% highlight bash %}
 # get list of checks
 cppcheck --doc
 
 # get list of error messages
 cppcheck --errorlist
-```
+{% endhighlight %}
 
 # 参考脚本
 
 ## run_cppcheck_by_dir.sh
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 # Cppcheck 2.18.0
 # https://github.com/danmar/cppcheck/releases/tag/2.18.0
@@ -1933,11 +1933,11 @@ cppcheck "$DIR" \
 
 echo "Check completed. Output saved to: $OUTPUT_FILE"
 echo "Detailed error log: $ERROR_FILE"
-```
+{% endhighlight %}
 
 ## run_cppcheck_by_compile_database.sh
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 # Cppcheck 2.18.0
 # https://github.com/danmar/cppcheck/releases/tag/2.18.0
@@ -1988,7 +1988,7 @@ cppcheck -i$HOME/jlib_proj/JLib/third_party \
 
 echo "Check completed. Output saved to: $OUTPUT_FILE"
 echo "Detailed error log: $ERROR_FILE"
-```
+{% endhighlight %}
 
 
 

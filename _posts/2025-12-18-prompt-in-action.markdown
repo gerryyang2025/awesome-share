@@ -56,7 +56,7 @@ https://clocks.brianmoore.com/
 
 请从英语五年级下册 pdf 中最后的单词列表中解析出 unit1 单元的单词，补充例句和记忆方法，并按照下面的格式输出。
 
-```md
+{% highlight md %}
 # 英语五年级上册
 
 ## Unit 1
@@ -75,7 +75,7 @@ Title:What subjects do you like? Category:学科类
 * subject /ˈsʌbdʒekt/ 学科；主题
   - 例句：What subject do you like? (你喜欢什么学科？)
   - 记忆：sub + ject
-```
+{% endhighlight %}
 
 
 
@@ -84,7 +84,7 @@ Title:What subjects do you like? Category:学科类
 
 请从 pdf 中解析 unit1 课文内容并生成对话文本，同时对每个对话添加中文翻译，并总结这个单元的重要句型和知识点。最后按照下面格式输出 ``` markdown xxx ``` 包裹的文本格式。
 
-```markdown
+{% highlight markdown %}
 ## Unit 1
 
 * 题目：Friends (好朋友的共同点)
@@ -104,7 +104,7 @@ Kitty: We both like sport. I like playing table tennis and Alice likes playing v
 Kitty: We both love animals. I have a cat and Alice has a dog. (吉蒂：我们两个都喜爱动物。我有一只猫，艾丽丝有一只狗。)
 Kitty: We both like helping people. We sometimes help old people cross the street. We also help them carry heavy bags. (吉蒂：我们两个都喜欢帮助别人。我们有时帮助老人穿过马路。我们还帮他们提重袋子。)
 Kitty: We like each other. We're good friends. (吉蒂：我们喜欢彼此。我们是好朋友。)
-```
+{% endhighlight %}
 
 
 

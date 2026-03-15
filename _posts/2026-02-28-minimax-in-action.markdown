@@ -24,11 +24,11 @@ https://platform.minimaxi.com/subscribe/coding-plan
 
 **邀请码：**
 
-```
+{% highlight text %}
 🎁 MiniMax 跨年福利来袭！邀好友享 Coding Plan 双重好礼，助力开发体验！
 好友立享 9折 专属优惠 + Builder 权益，你赢返利 + 社区特权！
 👉 立即参与：https://platform.minimaxi.com/subscribe/coding-plan?code=5XvxeGS5Uv&source=link
-```
+{% endhighlight %}
 
 ![cc46](/assets/images/202601/cc46.png)
 
@@ -47,10 +47,10 @@ MiniMax-M2.1 & MiniMax-M2.1-lightning 兼容 OpenAI 和 Anthropic 接口协议�
 
 在 `.bashrc` 添加下面命令：
 
-```bash
+{% highlight bash %}
 unset ANTHROPIC_AUTH_TOKEN
 unset ANTHROPIC_BASE_URL
-```
+{% endhighlight %}
 
 
 ## 安装 Claude Code
@@ -84,11 +84,11 @@ unset ANTHROPIC_BASE_URL
 
 macOS:
 
-```bash
+{% highlight bash %}
 brew tap farion1231/ccswitch
 brew install --cask cc-switch
 brew upgrade --cask cc-switch
-```
+{% endhighlight %}
 
 Windows:
 
@@ -170,7 +170,7 @@ https://platform.minimaxi.com/user-center/payment/balance
 
 新建一个 `claude-minimax` 脚本，将从 MiniMax M2 官网获取的[接口参数](https://platform.minimaxi.com/docs/api-reference/text-anthropic-api)填入。
 
-```bash
+{% highlight bash %}
 #!/usr/bin/env bash
 # Claude Code CLI wrapper for MiniMax API
 # Usage: ./claude-minimax [claude arguments]
@@ -188,7 +188,7 @@ export CLAUDE_CONFIG_DIR="$HOME/Tools/llm/claude/claude-minimax"
 
 # Execute Claude CLI with all passed arguments
 exec "$CLAUDE_BIN" "$@"
-```
+{% endhighlight %}
 
 功能说明：
 
@@ -200,9 +200,9 @@ exec "$CLAUDE_BIN" "$@"
 
 完成后，可以测试一下，看看能否正常运行。
 
-```bash
+{% highlight bash %}
 $ claude-minimax --version
-```
+{% endhighlight %}
 
 ![cc22](/assets/images/202601/cc22.png)
 
@@ -316,9 +316,9 @@ OpenClaw（原 Clawdbot） 是一个开源的 AI 助手，完全本地化，可�
 
 如果 openclaw 的初始配置引导没有出现模型配置，则可以通过以下命令再次进行 openclaw 配置：
 
-```bash
+{% highlight bash %}
 openclaw configure
-```
+{% endhighlight %}
 
 ## 选择配置选项
 

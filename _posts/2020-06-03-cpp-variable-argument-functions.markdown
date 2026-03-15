@@ -16,9 +16,9 @@ tags:
 * 函数参数是一个指向数组的指针
 * 实现一个类似[printf](http://www.cplusplus.com/reference/cstdio/printf/)
 
-```cpp
+{% highlight cpp %}
 int printf ( const char * format, ... );
-```
+{% endhighlight %}
 
 * C++11的变参模版(variadic templates)
 
@@ -32,19 +32,19 @@ We'll need to use some `macros` (which work much like functions, and you can tre
 
 To use these functions, we need a variable capable of storing a variable-length argument list--this variable will be of **type** `va_list`. `va_list` is like any other type. For example, the following code declares a list that can be used to store a variable number of arguments.
 
-```cpp
+{% highlight cpp %}
 va_list a_list;
-```
+{% endhighlight %}
 
 `va_start` is a macro which **accepts two arguments**, a va_list and the name of the variable that directly precedes the ellipsis ("..."). So in the function a_function, to initialize a_list with va_start, you would write `va_start ( a_list, x )`;
 
-```cpp
+{% highlight cpp %}
 int a_function ( int x, ... )
 {
     va_list a_list;
     va_start( a_list, x );
 }
-```
+{% endhighlight %}
 
 `va_arg` takes a va_list and a variable type, and returns the next argument in the list in the form of whatever variable type it is told. It then moves down the list to the next argument. For example, `va_arg ( a_list, double )` will return the next argument, assuming it exists, in the form of a double. The next time it is called, it will return the argument following the last returned number, if one exists. Note that you need to know the type of each argument--that's part of why printf requires a format string! Once you're done, use `va_end` to clean up the list: `va_end( a_list )`;
 
@@ -52,7 +52,7 @@ int a_function ( int x, ... )
 
 To show how each of the parts works, take an example function:
 
-```cpp
+{% highlight cpp %}
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -88,11 +88,11 @@ int main()
 
     return 0;
 }
-```
+{% endhighlight %}
 
 It isn't necessarily a good idea to use a variable argument list at all times; the potential exists for assuming a value is of one type, while it is in fact another, such as a null pointer being assumed to be an integer. Consequently, variable argument lists should be used sparingly.
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <stdarg.h>
 
@@ -114,13 +114,13 @@ int main()
     int a = 1;
     MyPrintf("hello %d\n", a); // hello 1
 }
-```
+{% endhighlight %}
 
 # Example 2
 
 The following example shows the use of va_start, va_arg, and va_end to implement a function that returns the biggest of its integer arguments.
 
-```cpp
+{% highlight cpp %}
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -157,13 +157,13 @@ void f(void) {
         j[42] = 24;
         printf("%d\n", maxof(3, i, j[42], 0));
 }
-```
+{% endhighlight %}
 
 # Example 3
 
 The function foo takes a string of format characters and prints out the argument associated with each format character based on the type.
 
-```cpp
+{% highlight cpp %}
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -194,11 +194,11 @@ foo(char *fmt, ...)
         }
     va_end(ap);
 }
-```
+{% endhighlight %}
 
 # Example 4
 
-```cpp
+{% highlight cpp %}
 #include<stdio.h>
 #include<stdarg.h>
 
@@ -281,14 +281,14 @@ char *convert(unsigned int num, int base)
 
     return(ptr);
 }
-```
+{% endhighlight %}
 
 
 # stdarg 用法总结
 
 In order to access the arguments within the called function, the functions declared in the `<stdarg.h>` header file must be included. This introduces a new type, called a `va_list`, and three functions that operate on objects of this type, called `va_start`, `va_arg`, and `va_end`.
 
-```cpp
+{% highlight cpp %}
 #include <stdarg.h>
 
 void va_start(va_list ap, parmN);
@@ -296,13 +296,13 @@ void va_start(va_list ap, parmN);
 type va_arg(va_list ap, type);
 
 void va_end(va list ap);
-```
+{% endhighlight %}
 
 # 问题示例
 
 If there is no next argument, or if type is not compatible with the type of the actual next argument (as promoted according to the default argument promotions), random errors will occur.
 
-```cpp
+{% highlight cpp %}
 #include <cstdio>
 
 int main()
@@ -310,7 +310,7 @@ int main()
         char str[] = "aaaaaaaaaaaaaaaaaaaa";
         printf("%s %s\n", str);
 }
-```
+{% endhighlight %}
 
 可以验证异常情况，出现乱码或者core dumped。
 
@@ -322,7 +322,7 @@ int main()
 
 # C++11 Variadic Templates
 
-```cpp
+{% highlight cpp %}
 template <typename ... Ts>
 void format_string(char *fmt, Ts ... ts) {}
 
@@ -331,11 +331,11 @@ void debug_print(int dbg_lvl, char *fmt, Ts ... ts)
 {
   format_string(fmt, ts...);
 }
-```
+{% endhighlight %}
 
 # 在变参函数中传递变参参数
 
-```cpp
+{% highlight cpp %}
 void func2(const char *fmt, ...)
 {
         va_list argptr;
@@ -359,13 +359,13 @@ int main()
         char b = '2';
         func1("a=%d&b=%c", a, &b);
 }
-```
+{% endhighlight %}
 
 ## Variadic Macros (可变参宏)
 
 https://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
 
-```cpp
+{% highlight cpp %}
 #ifdef DEBUG_THRU_UART0
 #   define DEBUG(...)  printString (__VA_ARGS__)
 #else
@@ -374,23 +374,23 @@ void dummyFunc(void);
 #endif
 DEBUG(1,2,3); //calls printString(1,2,3) or dummyFunc() depending on
               //-DDEBUG_THRU_UART0 compiler define was given or not, when compiling.
-```
+{% endhighlight %}
 
 `##__VA_ARGS__`的作用？
 
-```cpp
+{% highlight cpp %}
 #define FOO(...)       printf(__VA_ARGS__)
 #define BAR(fmt, ...)  printf(fmt, __VA_ARGS__)
 
 FOO("this works fine");
 BAR("this breaks!");
-```
+{% endhighlight %}
 
 * https://stackoverflow.com/questions/5588855/standard-alternative-to-gccs-va-args-trick
 
 
 
-```cpp
+{% highlight cpp %}
 #include <cstdio>
 #include <string.h>
 
@@ -415,7 +415,7 @@ int main()
     //LOG_INNER("hi %s\n", "gerry");
     LOG("hi %s\n", "gerry");
 }
-```
+{% endhighlight %}
 
 
 # Refer

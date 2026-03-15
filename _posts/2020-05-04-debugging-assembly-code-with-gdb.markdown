@@ -58,7 +58,7 @@ Options for Debugging Your Program: http://gcc.gnu.org/onlinedocs/gcc/Debugging-
 
 ## Invoking or Quitting GDB
 
-```
+{% highlight text %}
 # debug a program
 gdb program
 
@@ -74,11 +74,11 @@ gdb --args gcc -O2 -c foo.c
 
 # Quit
 quit / q / Ctrl-d
-```
+{% endhighlight %}
 
 Your Program’s Arguments：https://sourceware.org/gdb/current/onlinedocs/gdb/Arguments.html#Arguments
 
-```
+{% highlight text %}
 $ gdb --silent a.out
 Reading symbols from a.out...done.
 (gdb) l
@@ -91,7 +91,7 @@ Reading symbols from a.out...done.
 7               return 0;
 8       }
 (gdb)
-```
+{% endhighlight %}
 
 Starting your Program: https://sourceware.org/gdb/current/onlinedocs/gdb/Starting.html#Starting
 
@@ -108,10 +108,10 @@ https://sourceware.org/gdb/current/onlinedocs/gdb/Continuing-and-Stepping.html
 
 If you need to execute occasional shell commands during your debugging session, there is no need to leave or suspend GDB; you can just use the shell command.
 
-```
+{% highlight text %}
 shell command-string
 !command-string
-```
+{% endhighlight %}
 
 ## GDB Commands
 
@@ -122,25 +122,25 @@ You can **abbreviate** a GDB command to **the first few letters of the command n
 
 The environment consists of a set of environment variables and their values. Environment variables conventionally record such things as `your user name`, `your home directory`, `your terminal type`, and `your search path` for programs to run. Usually you set up environment variables with the shell and they are inherited by all the other programs you run. When debugging, it can be useful to try running your program with a modified environment without having to start GDB over again.
 
-```
+{% highlight text %}
 # Add directory to the front of the PATH environment variable (the search path for executables) that will be passed to your program
 path directory
 
 # Display the list of search paths for executables (the PATH environment variable).
 show paths
-```
+{% endhighlight %}
 
 https://sourceware.org/gdb/current/onlinedocs/gdb/Environment.html#Environment
 
 ## Program’s Working Directory
 
-```
+{% highlight text %}
 # Print the GDB working directory
 pwd
 
 # Set the GDB working directory to directory. If not given, directory uses '~'
 cd [directory]
-```
+{% endhighlight %}
 
 https://sourceware.org/gdb/current/onlinedocs/gdb/Working-Directory.html#Working-Directory
 
@@ -148,9 +148,9 @@ https://sourceware.org/gdb/current/onlinedocs/gdb/Working-Directory.html#Working
 
 You can redirect your program’s input and/or output using shell redirection with the run command. For example,
 
-```
+{% highlight text %}
 run > outfile
-```
+{% endhighlight %}
 
 https://sourceware.org/gdb/current/onlinedocs/gdb/Input_002fOutput.html#Input_002fOutput
 
@@ -180,10 +180,10 @@ Conversely, whenever you restart the program, all threads start executing. This 
 
 On some OSes, you can modify GDB’s default behavior by locking the OS scheduler to allow only a single thread to run.
 
-```bash
+{% highlight bash %}
 # Set the scheduler locking mode. It applies to normal execution, record mode, and replay mode. mode can be one of the following
 set scheduler-locking mode
-```
+{% endhighlight %}
 
 * `off`
   * There is no locking and any thread may run at any time.
@@ -193,13 +193,13 @@ set scheduler-locking mode
 * `replay`
   * Behaves like on in replay mode, and off in either record mode or during normal execution. This is the default mode.
 
-```bash
+{% highlight bash %}
 # Display the current scheduler locking mode.
 show scheduler-locking
 
 # 禁止线程调度切换，固定当前线程
 set scheduler-locking on
-```
+{% endhighlight %}
 
 refer:
 
@@ -213,7 +213,7 @@ refer:
 
 If you want to follow the child process instead of the parent process, use the command `set follow-fork-mode`.
 
-```
+{% highlight text %}
 # Set the debugger response to a program call of fork or vfork. A call to fork or vfork creates a new process.
 set follow-fork-mode child
 
@@ -225,7 +225,7 @@ set detach-on-fork mode
 
 # Show whether detach-on-fork mode is on/off.
 show detach-on-fork
-```
+{% endhighlight %}
 
 https://sourceware.org/gdb/current/onlinedocs/gdb/Forks.html#Forks
 
@@ -252,7 +252,7 @@ You can arrange to have values from your program displayed automatically wheneve
 
 A `catchpoint` is another special breakpoint that stops your program **when a certain kind of event occurs**, such as the throwing of a C++ exception or the loading of a library. As with watchpoints, you use a different command to set a catchpoint (see [Setting Catchpoints](https://sourceware.org/gdb/current/onlinedocs/gdb/Set-Catchpoints.html#Set-Catchpoints)), but aside from that, you can manage a catchpoint like any other breakpoint. (To stop when your program receives a signal, use the `handle` command; see [Signals](https://sourceware.org/gdb/current/onlinedocs/gdb/Signals.html#Signals).)
 
-```
+{% highlight text %}
 (gdb) catch syscall 1
 warning: Can not parse XML syscalls information; XML support was disabled at compile time.
 Catchpoint 1 (syscall 1)
@@ -267,13 +267,13 @@ Num     Type           Disp Enb Address            What
         catchpoint already hit 1 time
 (gdb) d 1
 (gdb) i b
-```
+{% endhighlight %}
 ## Disassemble
 
 
 Disassembles a specified function or a function fragment.
 
-```disassemble
+{% highlight disassemble %}
 disassemble [Function]
 disassemble [Address]
 disassemble [Start],[End]
@@ -281,7 +281,7 @@ disassemble [Function],+[Length]
 disassemble [Address],+[Length]
 disassemble /m [...]
 disassemble /r [...]
-```parameters
+{% highlight parameters %}
 * Function
 
 Specifies the function to disassemble. If specified, the disassemble command will produce the disassembly output of the entire function.
@@ -313,9 +313,9 @@ https://visualgdb.com/gdbreference/commands/disassemble
 
 对于比较大的二进制文件，为了缩短gdb的加载时间可以对程序文件事先创建符号索引。
 
-```
+{% endhighlight %}
 gdb-add-index filename
-```
+{% highlight text %}
 
 https://man7.org/linux/man-pages/man1/gdb-add-index.1.html
 
@@ -334,16 +334,16 @@ To use gdb with high-level language programs, you should compile with the `-g` o
 
 
 
-```
+{% endhighlight %}
 gcc -m64 -g -o foo fooDriver.c fooRoutine.s
-```
+{% highlight text %}
 
 
 To invoke the debugger on `foo`, type
 
-```
+{% endhighlight %}
 gdb foo
-```
+{% highlight text %}
 
 This loads program `foo` and brings up the gdb command line interpreter, which then waits for you to type commands. Program execution doesn’t begin until you say so.
 Here are some useful commands. Many can be **abbreviated**, as shown. Hitting return generally repeats the last command, sometimes advancing the current location.
@@ -472,32 +472,32 @@ TODO
 
 Executable programs sometimes do not record the directories of the source files from which they were compiled, just the names. Even when they do, the directories could be moved between the compilation and your debugging session. GDB has a list of directories to search for source files; this is called the **source path**. Each time GDB wants a source file, it tries all the directories in the list, in the order they are present in the list, until it finds a file with the desired name.
 
-```
+{% endhighlight %}
 (gdb) directory /search/code/some
-```
+{% highlight text %}
 
 使用 `directory` 或 `dir` 命令设置源文件的查找目录后，gdb 就可以正常地解析源代码了。如果希望在 gdb 启动时加载 code 的位置，避免每次在 gdb 中再次输入命令，可以使用 gdb 的 `-d` 参数。
 
-```
+{% endhighlight %}
 gdb -q a.out -d /search/code/some
-```
+{% highlight text %}
 
 refer: [Specifying Source Directories](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Source-Path.html)
 
 
 ## 替换源文件查找路径
 
-```
+{% endhighlight %}
 set substitute-path from to
-```
+{% highlight text %}
 
 Define a source path substitution rule, and add it at the end of the current list of existing substitution rules. If a rule with the same from was already defined, then the old rule is also deleted.
 
 For example, if the file `/foo/bar/baz.c` was moved to `/mnt/cross/baz.c`, then the command
 
-```
+{% endhighlight %}
 (gdb) set substitute-path /foo/bar /mnt/cross
-```
+{% highlight text %}
 
 will tell GDB to replace `/foo/bar` with `/mnt/cross`, which will allow GDB to find the file baz.c even though it was moved.
 
@@ -505,10 +505,10 @@ In the case when more than one substitution rule have been defined, the rules ar
 
 For instance, if we had entered the following commands:
 
-```
+{% endhighlight %}
 (gdb) set substitute-path /usr/src/include /mnt/include
 (gdb) set substitute-path /usr/src /mnt/src
-```
+{% highlight text %}
 
 GDB would then rewrite `/usr/src/include/defs.h` into `/mnt/include/defs.h` by using the first rule. However, it would use the second rule to rewrite `/usr/src/lib/foo.c` into `/mnt/src/lib/foo.c`.
 
@@ -521,7 +521,7 @@ GDB would then rewrite `/usr/src/include/defs.h` into `/mnt/include/defs.h` by u
 
 工具脚本示例：
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 CUR_DIR=$(dirname $(readlink -f $0))
@@ -541,11 +541,11 @@ gdb -q -ex "set args --id=$PROC_ID --bus-key=$BUS_KEY --svr-id-mask=$SVR_ID_MASK
     --args ./$SVR_NAME
 
 echo "done"
-```
+{% endhighlight %}
 
 ## 通过地址查找符号 info symbol $address
 
-```
+{% highlight text %}
 (gdb) bt
 #0  0x00007fb44dc8f820 in __nanosleep_nocancel () at ../sysdeps/unix/syscall-template.S:81
 #1  0x00007fb44dc8f6d4 in __sleep (seconds=0) at ../sysdeps/unix/sysv/linux/sleep.c:137
@@ -580,11 +580,11 @@ $2 = 1
 $3 = (int *) 0x402024 <g_a>
 (gdb) info symbol 0x402024
 g_a in section .data of /data/home/gerryyang/test/perf/a.out
-```
+{% endhighlight %}
 
 ## 打印内存的值
 
-```cpp
+{% highlight cpp %}
 #include <stdio.h>
 
 int main(void)
@@ -599,7 +599,7 @@ int main(void)
 
     return 0;
 }
-```
+{% endhighlight %}
 
 
 gdb 中使用 `x` 命令来打印内存的值，格式为 `x/nfu addr`。含义为以`f`格式打印从`addr`开始的`n`个长度单元为`u`的内存值。参数具体含义如下：
@@ -610,7 +610,7 @@ gdb 中使用 `x` 命令来打印内存的值，格式为 `x/nfu addr`。含义�
 
 使用示例：
 
-```
+{% highlight text %}
 // 打印某个地址开始的 8 字节内容
 (gdb) x/1xg 0x7fd3e1ed30b8
 0x7fd3e1ed30b8: 0x00007fd3d00019fd
@@ -620,7 +620,7 @@ gdb 中使用 `x` 命令来打印内存的值，格式为 `x/nfu addr`。含义�
 (gdb) x/16xb a
 0x7fffffffe4a0: 0x00    0x01    0x02    0x03    0x04    0x05    0x06    0x07
 0x7fffffffe4a8: 0x08    0x09    0x0a    0x0b    0x0c    0x0d    0x0e    0x0f
-```
+{% endhighlight %}
 
 
 
@@ -628,25 +628,25 @@ gdb 中使用 `x` 命令来打印内存的值，格式为 `x/nfu addr`。含义�
 
 You need to enable logging:
 
-```
+{% highlight text %}
 (gdb) set logging on
-```
+{% endhighlight %}
 
 Now GDB will log to `./gdb.txt`. You can tell it which file to use:
 
-```
+{% highlight text %}
 (gdb) set logging file my_god_object.log
-```
+{% endhighlight %}
 
 And you can examine the current logging configuration:
 
-```
+{% highlight text %}
 (gdb) show logging
-```
+{% endhighlight %}
 
 ## 打印 STL 容器中的内容
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <vector>
 
@@ -666,16 +666,16 @@ int main ()
 
   return 0;
 }
-```
+{% endhighlight %}
 
 https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-STL-container.md
 
 
 ## 命令行执行 gdb
 
-```
+{% highlight text %}
 gdb -q -ex "show envir" -ex "quit" your_bin your_corefile | grep your_env
-```
+{% endhighlight %}
 
 * https://unix.stackexchange.com/questions/456294/gdb-in-one-command
 * [How to get environment of a program while debugging it in GDB](https://stackoverflow.com/questions/32917033/how-to-get-environment-of-a-program-while-debugging-it-in-gdb)
@@ -685,16 +685,16 @@ gdb -q -ex "show envir" -ex "quit" your_bin your_corefile | grep your_env
 
 [How to get environment variable from a core dump](https://stackoverflow.com/questions/44686478/how-to-get-environment-variable-from-a-core-dump)
 
-```bash
+{% highlight bash %}
 gdb -q -ex "p *__environ" -ex "quit" your_bin your_corefile
-```
+{% endhighlight %}
 
 ![gdb_env1](/assets/images/202506/gdb_env1.png)
 
-```bash
+{% highlight bash %}
 # 环境变量基本都是在core文件的末尾，所以只需要搜索后面的内容即可
 tail -c 1048576  your_corefile | grep -a -o -P 'gerry=\K[^[:cntrl:]]*'
-```
+{% endhighlight %}
 
 ![gdb_env2](/assets/images/202506/gdb_env2.png)
 
@@ -703,17 +703,17 @@ tail -c 1048576  your_corefile | grep -a -o -P 'gerry=\K[^[:cntrl:]]*'
 
 ## 条件断点
 
-```
+{% highlight text %}
 set scheduler-locking on
 b CMemoryPool::StatOnFree if uSize==112
 c
-```
+{% endhighlight %}
 
 https://wizardforcel.gitbooks.io/100-gdb-tips/content/set-condition-break.html
 
 ## 查找符号
 
-```
+{% highlight text %}
 (gdb) i var CCoroutineMgr
 All variables matching regular expression "CCoroutineMgr":
 
@@ -722,18 +722,18 @@ Non-debugging symbols:
 0x00000000000fe9b0  JLib::CCoroutineMgr::GetLogFeature() const::pInfo
 0x00000000000fe9b8  guard variable for JLib::CCoroutineMgr::GetLogFeature() const::pInfo
 ...
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 (gdb) p 'JLib::IThreadSingleton<JLib::CCoroutineMgr>::GetSingletonPtr()::g_pPtr'
 $1 = 74619576
-```
+{% endhighlight %}
 
 ## 调试 static 全局静态变量
 
-```
+{% highlight text %}
 info var _instance
-```
+{% endhighlight %}
 
 [print static variable from member function of template class in gdb](https://stackoverflow.com/questions/39724087/print-static-variable-from-member-function-of-template-class-in-gdb)
 
@@ -745,9 +745,9 @@ info var _instance
 
 ## 在 gdb 中执行 shell 命令
 
-```
+{% highlight text %}
 (gdb) !date
-```
+{% endhighlight %}
 
 ## 调用函数 (call)
 
@@ -766,32 +766,32 @@ info var _instance
 
 在 GDB 中，启用日志记录并将输出重定向到一个文件，例如 gdb_output.txt：
 
-```
+{% highlight text %}
 set logging file gdb_output.txt
 set logging on
-```
+{% endhighlight %}
 
 如果想停止将 GDB 输出重定向到文件，可以使用以下命令：
 
-```
+{% highlight text %}
 set logging off
-```
+{% endhighlight %}
 
 ## 对 gdb 的输出内容自动翻页
 
-```
+{% highlight text %}
 (gdb) set pagination off
-```
+{% endhighlight %}
 
 ## 打印完整的字符串
 
 Specifies the maximum amount of array elements (or string characters) displayed by the print comand.
 
-```
+{% highlight text %}
 set print elements [Elements]
 set print elements 0
 show print elements
-```
+{% endhighlight %}
 
 * Parameters
 
@@ -821,38 +821,38 @@ https://visualgdb.com/gdbreference/commands/set_print_elements
 
 先执行 `mkdir ~/.history` 把下面几行添加到 `~/.gdbinit` 中，gdb 启动时会自动读取里面的命令并执行：
 
-```
+{% highlight text %}
 set history save on
 set history size 10000
 set history filename ~/.history/gdb
-```
+{% endhighlight %}
 
 在 `~/.history` 堆放各个历史文件。有了历史，使用 `readline` 的 `reverse-search-history` (`C-r`) 就能轻松唤起之前输入过的命令。
 
 ## 修改任意内存地址的值
 
-```
+{% highlight text %}
 set {int}0x83040 = 4
-```
+{% endhighlight %}
 
 ## 显示 intel 风格的汇编指令
 
-```
+{% highlight text %}
 set disassembly-flavor intel
-```
+{% endhighlight %}
 
 示例：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 int main()
 {
     int a = 1;
     std::cout << a << std::endl;
 }
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 (gdb) disass
 Dump of assembler code for function main():
    0x0000000000401156 <+0>:     push   %rbp
@@ -882,7 +882,7 @@ Dump of assembler code for function main():
    0x0000000000401179 <+35>:    leave
    0x000000000040117a <+36>:    ret
 End of assembler dump.
-```
+{% endhighlight %}
 
 ## 断点在 function prologue (开场白，序言) 前
 
@@ -890,19 +890,19 @@ End of assembler dump.
 
 在`x86-64`环境下典型的`funcition prologue`长成这样：
 
-```
+{% highlight text %}
 push rbp
 mov rbp, rsp
 sub rsp, 0x10
-```
+{% endhighlight %}
 
 可能还会有`and`指令用于对齐`rsp`。如果编译时加上`-fomit-frame-pointer` (Visual Studio 中文版似乎译作 “省略框架指针”)，那么生成的指令就会避免使用`rbp`，function prologue 就会简化成下面一行：
 
-```
+{% highlight text %}
 sub rsp, 0x10
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 -fomit-frame-pointer 是一个编译器选项，用于告诉编译器在生成代码时省略帧指针。帧指针（通常是 ebp 寄存器，在 x86 架构上，或 rbp 寄存器，在 x86-64 架构上）用于在函数调用期间保存调用者的堆栈帧的基址。这在调试和分析函数调用栈时非常有用。
 
 然而，在许多情况下，帧指针并不是严格必需的，因为编译器可以使用其他方法来跟踪堆栈帧。通过省略帧指针，编译器可以将帧指针寄存器用于其他目的，从而提高代码的性能。这在寄存器有限的体系结构（如 x86）上尤其有益，因为它可以减少寄存器溢出并提高代码的性能。
@@ -914,14 +914,14 @@ sub rsp, 0x10
 2. 分析困难：像 gprof 这样的性能分析工具可能无法正确分析没有帧指针的代码，从而导致不准确的分析结果。
 
 总之，-fomit-frame-pointer 编译选项的作用是告诉编译器在生成代码时省略帧指针，从而提高代码性能。然而，这可能会导致调试和分析过程变得更加困难。在权衡性能和调试需求时，您可以根据实际情况决定是否使用此选项。
-```
+{% endhighlight %}
 
 
 例如，上面的代码示例：
 
 g++ -g test.cc -fomit-frame-pointer
 
-```
+{% highlight text %}
 (gdb) disass
 Dump of assembler code for function main():
 => 0x0000000000401156 <+0>:     sub    $0x18,%rsp
@@ -934,7 +934,7 @@ Dump of assembler code for function main():
    0x0000000000401177 <+33>:    add    $0x18,%rsp
    0x000000000040117b <+37>:    retq
 End of assembler dump.
-```
+{% endhighlight %}
 
 设置断点时如果使用了`b *func`的格式，也就是说在函数名前加上`*`，gdb 就会在执行 function prologue **前**停下，而`b func`则是在执行 function prologue **后**停下。
 
@@ -955,10 +955,10 @@ gdb 可以为被调试的程序创建一个**快照**，即**保存程序运行�
 
 打印指定进程的系统栈。本质是一段脚本，核心是下面这句话：
 
-```bash
+{% highlight bash %}
 #!/bin/zsh
 gdb -q -nx -p $1 <<< 't a a bt' 2>&- | sed -ne '/^#/p'
-```
+{% endhighlight %}
 
 这是一个使用gdb调试器获取指定进程堆栈跟踪（stack trace）的shell命令。逐步分析这个命令：
 
@@ -972,7 +972,7 @@ gdb -q -nx -p $1 <<< 't a a bt' 2>&- | sed -ne '/^#/p'
 
 综上所述，这个命令的作用是获取指定进程 ID（由 `$1` 给出）的所有线程的堆栈跟踪，并仅显示堆栈帧。
 
-```
+{% highlight text %}
 $ pstack $$
 #0  0x00007f2cc5dac44c in __libc_waitpid (pid=-1, stat_loc=0x7ffddd9f59c0, options=10) at ../sysdeps/unix/sysv/linux/waitpid.c:31
 #1  0x0000000000442a64 in waitchld.isra.10 ()
@@ -981,17 +981,17 @@ $ pstack $$
 #4  0x0000000000434a1e in execute_command ()
 #5  0x000000000041ece5 in reader_loop ()
 #6  0x000000000041d2ae in main ()
-```
+{% endhighlight %}
 
 在 gdb 中输入如下命令，可实现 pstack 相同的功能，并将所有线程的堆栈信息输出到文件中：
 
-```
+{% highlight text %}
 (gdb) set logging file threadinfo.txt   # 设置输出的文件名
 (gdb) set logging on                    # 输入这个命令后，此后的调试信息将输出到文件
 (gdb) thread apply all bt               # 打印所有线程栈信息
 (gdb) set logging off                   # 关闭到指定文件的输出
 (gdb) quit                              # 退出 gdb 调试
-```
+{% endhighlight %}
 
 # Tools
 
@@ -1001,14 +1001,14 @@ A gdb command to inspect the size of objects on the stack.
 
 Use `gdb` to navigate to a certain stack frame (run until your stack overflows or set a breakpoint somewhere). Then, simply run:
 
-```bash
+{% highlight bash %}
 source stack-inspector.py
 stack-inspector
-```
+{% endhighlight %}
 
 用法示例：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <array>
 
@@ -1038,9 +1038,9 @@ int main()
     func3();
     return 0;
 }
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 $ ./gdb.sh
 Reading symbols from ./test...
 Breakpoint 1 at 0x401181: file test.cc, line 6.
@@ -1074,7 +1074,7 @@ Breakpoint 1, func1 () at test.cc:6
 Total size: 2,400
 Missing separate debuginfos, use: dnf debuginfo-install bash-4.4.20-1.tl3.2.x86_64 glibc-2.28-164.tl3.x86_64 libgcc-8.4.1-1.tl3.x86_64 libstdc++-8.4.1-1.tl3.x86_64
 (gdb)
-```
+{% endhighlight %}
 
 
 # Refer
@@ -1089,3 +1089,4 @@ Missing separate debuginfos, use: dnf debuginfo-install bash-4.4.20-1.tl3.2.x86_
 * [Introduction to GDB - Posted by adrian.ancona on February 9, 2018](https://ncona.com/2018/02/introduction-to-gdb/)
 * [Debugging assembly with GDB - Posted by adrian.ancona on December 11, 2019](https://ncona.com/2019/12/debugging-assembly-with-gdb/)
 * 以色列的 Haifa Linux club 有一次讲座讲 gdb，讲稿值得一看：http://haifux.org/lectures/210/gdb_-_customize_it.html
+{% endhighlight %}

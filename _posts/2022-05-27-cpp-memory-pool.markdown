@@ -31,13 +31,13 @@ Linux 系统在装载 `elf` 格式的程序文件时，会调用 loader 把可�
 在 64 位模式下各个区域的起始位置是什么呢？对于 AMD64 系统，内存布局采用经典内存布局，`text` 的起始地址为 `0x0000000000400000`，堆紧接着 `BSS` 段向上增长，mmap 映射
 区域开始位置一般设为 `TASK_SIZE/3`。
 
-```c
+{% highlight c %}
 #define TASK_SIZE_MAX ((1UL << 47) - PAGE_SIZE)
 #define TASK_SIZE (test_thread_flag(TIF_IA32) ? \
  IA32_PAGE_OFFSET : TASK_SIZE_MAX)
 #define STACK_TOP TASK_SIZE
 #define TASK_UNMAPPED_BASE (PAGE_ALIGN(TASK_SIZE / 3))
-```
+{% endhighlight %}
 
 计算一下可知，mmap 的开始区域地址为 `0x00002AAAAAAAA000`，栈顶地址为 `0x00007FFFFFFFF000`
 
@@ -45,9 +45,9 @@ Linux 系统在装载 `elf` 格式的程序文件时，会调用 loader 把可�
 
 上图是 X86_64 下 Linux 进程的默认内存布局形式，这只是一个示意图，当前内核默认配置下，进程的栈和 mmap 映射区域并不是从一个固定地址开始，并且每次启动时的值都不一样，这是程序在启动时随机改变这些值的设置，使得使用缓冲区溢出进行攻击更加困难。当然也可以让进程的栈和 mmap 映射区域从一个固定位置开始，只需要设置全局变量 `randomize_va_space` 值为 0 ， 这个变量默认值为 1 。 用户可以通过设置 `/proc/sys/kernel/randomize_va_space` 来停用该特性，也可以用如下命令：
 
-```
+{% highlight text %}
 sudo sysctl -w kernel.randomize_va_space=0
-```
+{% endhighlight %}
 
 
 # 操作系统内存分配的相关函数
@@ -74,11 +74,11 @@ Heap 操作函数主要有两个，`brk()` 为系统调用，`sbrk()` 为 C 库�
 
 `mmap()` 函数将一个文件或者其它对象映射进内存。文件被映射到多个页上，如果文件的大小不是所有页的大小之和，最后一个页不被使用的空间将会清零。`munmap` 执行相反的操作，删除特定地址区域的对象映射。
 
-```c
+{% highlight c %}
 #include <sys/mman.h>
 void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
 int munmap(void *addr, size_t length);
-```
+{% endhighlight %}
 
 * addr：映射区的开始地址。
 * length：映射区的长度。
@@ -279,9 +279,9 @@ ptmalloc 在设计时折中了高效率，高空间利用率，高可用性等�
 
 **mimalloc** is a drop-in replacement for `malloc` and can be used in other programs without code changes, for example, on dynamically linked ELF-based systems (Linux, BSD, etc.) you can use it as:
 
-```
+{% highlight text %}
 > LD_PRELOAD=/usr/lib/libmimalloc.so  myprogram
-```
+{% endhighlight %}
 
 It also includes a robust way to override the default allocator in [Windows](https://github.com/microsoft/mimalloc?tab=readme-ov-file#override_on_windows). Notable aspects of the design include:
 
@@ -325,7 +325,7 @@ MiniMalloc 算法，主要关注于解决静态内存分配过程中的内存布
 
 # [malloc / free / calloc / realloc / reallocarray](https://man7.org/linux/man-pages/man3/malloc.3.html) -  allocate and free dynamic memory
 
-```c
+{% highlight c %}
 #include <stdlib.h>
 
 void *malloc(size_t size);
@@ -333,7 +333,7 @@ void free(void *ptr);
 void *calloc(size_t nmemb, size_t size);
 void *realloc(void *ptr, size_t size);
 void *reallocarray(void *ptr, size_t nmemb, size_t size);
-```
+{% endhighlight %}
 
 > **Note**
 >
@@ -392,9 +392,9 @@ be successfully passed to `free()`.
 If the multiplication of **nmemb** and **size** would result in integer overflow, then `calloc()` returns an error. By contrast, an
 integer overflow would not be detected in the following call to `malloc()`, with the result that an incorrectly sized block of memory would be allocated:
 
-```c
+{% highlight c %}
 malloc(nmemb * size);
-```
+{% endhighlight %}
 
 
 ## realloc()
@@ -413,13 +413,13 @@ Unless **ptr** is NULL, it must have been returned by an earlier call to malloc 
 
 The `reallocarray()` function changes the size of (and possibly moves) the memory block pointed to by ptr to be large enough for an array of nmemb elements, each of which is size bytes. It is equivalent to the call
 
-```c
+{% highlight c %}
 realloc(ptr, nmemb * size);
-```
+{% endhighlight %}
 
 However, unlike that `realloc()` call, `reallocarray()` fails safely in the case where the multiplication would overflow. If such an overflow occurs, `reallocarray()` returns an error.
 
-```c
+{% highlight c %}
 #include <err.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -449,7 +449,7 @@ my_mallocarray(size_t nmemb, size_t size)
 {
     return reallocarray(NULL, nmemb, size);
 }
-```
+{% endhighlight %}
 
 
 
@@ -458,7 +458,7 @@ my_mallocarray(size_t nmemb, size_t size)
 
 `mallopt()` 函数用于设置 glibc 内存分配器（ptmalloc）的参数。以下是一个简单的使用示例，展示了如何使用 `mallopt()` 设置内存分配器的参数。
 
-```c
+{% highlight c %}
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -485,7 +485,7 @@ int main() {
 
     return 0;
 }
-```
+{% endhighlight %}
 
 这个示例程序使用 mallopt() 函数设置了两个内存分配器参数：
 
@@ -501,12 +501,12 @@ int main() {
 
 # [brk, sbrk](https://man7.org/linux/man-pages/man2/brk.2.html) - change data segment size
 
-```c
+{% highlight c %}
 #include <unistd.h>
 
 int brk(void *addr);
 void *sbrk(intptr_t increment);
-```
+{% endhighlight %}
 
 `brk()` and `sbrk()` change the location of the **program break**, which defines the end of the process's data segment (i.e., the program break is the first location after the end of the uninitialized data segment). Increasing the program break has the effect of allocating memory to the process; decreasing the break deallocates memory.
 
@@ -523,7 +523,7 @@ void *sbrk(intptr_t increment);
 
 ## 代码示例
 
-```c
+{% highlight c %}
 #include <stdio.h>
 #include <unistd.h>
 
@@ -551,26 +551,26 @@ int main()
 
     return 0;
 }
-```
+{% endhighlight %}
 
 输出：
 
-```
+{% highlight text %}
 Current program break: 0x1125000
 Allocated memory: 0x1125000
 New program break: 0x1126000
 Final program break: 0x1125000
-```
+{% endhighlight %}
 
 
 # [mmap](https://man7.org/linux/man-pages/man2/mmap.2.html) - map or unmap files or devices into memory
 
-```c
+{% highlight c %}
 #include <sys/mman.h>
 
 void *mmap(void addr[.length], size_t length, int prot, int flags, int fd, off_t offset);
 int munmap(void addr[.length], size_t length);
-```
+{% endhighlight %}
 
 `mmap()` creates a new mapping in the virtual address space of the calling process. The starting address for the new mapping is specified in addr. The length argument specifies the length of the mapping (which must be greater than 0).
 
@@ -581,7 +581,7 @@ int munmap(void addr[.length], size_t length);
 
 The following program prints part of the file specified in its first command-line argument to standard output. The range of bytes to be printed is specified via offset and length values in the second and third command-line arguments. The program creates a memory mapping of the required pages of the file and then uses [write(2)](https://man7.org/linux/man-pages/man2/write.2.html) to output the desired bytes.
 
-```c
+{% highlight c %}
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -652,18 +652,18 @@ main(int argc, char *argv[])
 
     exit(EXIT_SUCCESS);
 }
-```
+{% endhighlight %}
 
 
 # [madvise](https://man7.org/linux/man-pages/man2/madvise.2.html) - give advice about use of memory
 
 `madvise()` 函数用于向内核提供关于程序如何使用内存映射区域的建议。
 
-```c
+{% highlight c %}
 #include <sys/mman.h>
 
 int madvise(void addr[.length], size_t length, int advice);
-```
+{% endhighlight %}
 
 The `madvise()` system call is used to give advice or directions to the kernel about the address range beginning at address addr and
 with size length. `madvise()` only operates on whole pages, therefore addr must be page-aligned.
@@ -701,7 +701,7 @@ The advice is indicated in the **advice** argument, which is one of the followin
 ## 代码示例
 
 
-```c
+{% highlight c %}
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -768,27 +768,27 @@ int main(int argc, char *argv[]) {
 
         return 0;
 }
-```
+{% endhighlight %}
 
 输出：
 
-```
+{% highlight text %}
 $cat data.txt
 hello
 $./a.out data.txt
 hello
-```
+{% endhighlight %}
 
 
 
 
 # [malloc_info](https://man7.org/linux/man-pages/man3/malloc_info.3.html) - export malloc state to a stream
 
-```c
+{% highlight c %}
 #include <malloc.h>
 
 int malloc_info(int options, FILE *stream);
-```
+{% endhighlight %}
 
 The `malloc_info()` function exports an `XML` string that describes the current state of the memory-allocation implementation in the caller. The string is printed on the file stream `stream`. The exported string includes information about all arenas (see [malloc(3)](https://man7.org/linux/man-pages/man3/malloc.3.html)).
 
@@ -813,7 +813,7 @@ On success, `malloc_info()` returns 0.  On failure, it returns -1, and `errno` i
 
 这个程序的目的是展示多线程环境下内存分配的状态，以及如何使用 `malloc_info()` 函数来查看内存分配情况。通过观察 `malloc_info()` 的输出，可以了解程序中不同线程的内存使用情况，并分析内存分配器的工作原理。这对于优化内存使用和排查内存相关问题非常有帮助。
 
-```cpp
+{% highlight cpp %}
 #include <err.h>
 #include <errno.h>
 #include <malloc.h>
@@ -897,11 +897,11 @@ int main(int argc, char *argv[])
 
     exit(EXIT_SUCCESS);
 }
-```
+{% endhighlight %}
 
 输出：
 
-```
+{% highlight text %}
 $getconf GNU_LIBC_VERSION
 glibc 2.18
 $./a.out 1 10000 100
@@ -954,7 +954,7 @@ $./a.out 1 10000 100
 <aspace type="total" size="3301376"/>
 <aspace type="mprotect" size="3301376"/>
 </malloc>
-```
+{% endhighlight %}
 
 
 # [malloc_stats](https://man7.org/linux/man-pages/man3/malloc_stats.3.html) - print memory allocation statistics
@@ -966,7 +966,7 @@ simultaneously allocated using [mmap(2)](https://man7.org/linux/man-pages/man2/m
 
 ## 代码示例
 
-```c
+{% highlight c %}
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -997,11 +997,11 @@ int main() {
 
     return 0;
 }
-```
+{% endhighlight %}
 
 输出：
 
-```
+{% highlight text %}
 Initial malloc_stats:
 Arena 0:
 system bytes     =          0
@@ -1031,17 +1031,17 @@ system bytes     =     135168
 in use bytes     =          0
 max mmap regions =          0
 max mmap bytes   =          0
-```
+{% endhighlight %}
 
 将分配内存大小改为 1 MB，内存将改为 mmap 分配而不是 brk 分配，如下输出信息所示。
 
-```
+{% highlight text %}
 const int num_allocs = 10;
 const int block_size = 1024 * 1024; // 1 MB
-```
+{% endhighlight %}
 
 
-```
+{% highlight text %}
 Initial malloc_stats:
 Arena 0:
 system bytes     =          0
@@ -1071,11 +1071,11 @@ system bytes     =          0
 in use bytes     =          0
 max mmap regions =         10
 max mmap bytes   =   10526720
-```
+{% endhighlight %}
 
 添加 malloc_trim 测试回收 glibc 缓存：
 
-```c
+{% highlight c %}
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -1111,11 +1111,11 @@ int main() {
 
         return 0;
 }
-```
+{% endhighlight %}
 
 输出：
 
-```
+{% highlight text %}
 $getconf -a | grep GNU_LIBC
 GNU_LIBC_VERSION                   glibc 2.18
 $./a.out
@@ -1158,17 +1158,17 @@ system bytes     =       4096
 in use bytes     =          0
 max mmap regions =          0
 max mmap bytes   =          0
-```
+{% endhighlight %}
 
 
 
 # [malloc_trim](https://man7.org/linux/man-pages/man3/malloc_trim.3.html) - release free memory from the heap
 
-```c
+{% highlight c %}
 #include <malloc.h>
 
 int malloc_trim(size_t pad);
-```
+{% endhighlight %}
 
 The `malloc_trim()` function attempts to release free memory from the heap (by calling [sbrk(2)](https://man7.org/linux/man-pages/man2/sbrk.2.html) or [madvise(2)](https://man7.org/linux/man-pages/man2/madvise.2.html) with suitable arguments).
 
@@ -1202,7 +1202,7 @@ malloc_trim() 函数的释放原理如下：
 
 ## 代码示例
 
-```c
+{% highlight c %}
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -1263,13 +1263,13 @@ int main()
 
     return 0;
 }
-```
+{% endhighlight %}
 
 当 block_size 大小为 1MB 时， malloc_info 输出的信息为 0，将 block_size 大小改为 16B 后，malloc_info 输出的内存信息不为 0，说明内存分配器实际分配了这些较小的内存块，并将其纳入内存管理。这种情况下，malloc_trim() 可能会在释放这些较小内存块时表现出不同的行为。
 
 block_size 大小改为 16B 后的输出信息：
 
-```
+{% highlight text %}
 Initial malloc_info:
 <malloc version="1">
 <heap nr="0">
@@ -1352,7 +1352,7 @@ malloc_info after malloc_trim():
 <aspace type="total" size="4096"/>
 <aspace type="mprotect" size="4096"/>
 </malloc>
-```
+{% endhighlight %}
 
 在 malloc_info 输出中，malloc_trim() 调用后 fast 类型的内存计数变为 0，而 rest 类型的内存计数增加了相应的数量。这是因为 malloc_trim() 在合并空闲内存块时可能会将一些 fast 类型的内存块合并为较大的内存块，从而将它们归类为 rest 类型的内存。
 
@@ -1378,7 +1378,7 @@ malloc_info after malloc_trim():
 
 代码示例：
 
-```cpp
+{% highlight cpp %}
 #include <cstdlib>
 #include <new>
 #include <limits>
@@ -1434,20 +1434,20 @@ int main()
     std::vector<int, Mallocator<int>> v(8);
     v.push_back(42);
 }
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 Alloc: 32 bytes at 0x2020c20
 Alloc: 64 bytes at 0x2023c60
 Dealloc: 32 bytes at 0x2020c20
 Dealloc: 64 bytes at 0x2023c60
-```
+{% endhighlight %}
 
 
 
 # 问题描述
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 class A
@@ -1498,14 +1498,14 @@ pB: 0x8fbed0
 ~B()
 ~A()
 */
-```
+{% endhighlight %}
 
 
 # 通过基类指针释放对象
 
 ## 问题描述
 
-```cpp
+{% highlight cpp %}
 class Base;
 class Derived;
 
@@ -1513,13 +1513,13 @@ Base *b = MY_NEW(Derived);
 
 MY_DELETE(b); // error, 释放的是基类的长度
 MY_DELETE(Derived(b)); // ok，需要显式转换为子类类型
-```
+{% endhighlight %}
 
 如何不需要指定类型转换，且保证底层回收的内存长度是正确的？
 
 例子：显示调用子类 MY_DELETE_IGNORE_VIRTUAL(obj2)，即，Derived(b)的形式，可以不依赖虚函数
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <type_traits>
 
@@ -1683,7 +1683,7 @@ obj2: 0x1d72a80
 ~A()
 Recycle ptr: 0x1d72a80, size: 32
 */
-```
+{% endhighlight %}
 
 ## 方案：通过分配额外的内存空间记录分配的内存大小
 
@@ -1691,7 +1691,7 @@ Recycle ptr: 0x1d72a80, size: 32
 
 此方案不可行。因为在多继承场景下，基类指针会发生偏移，无法根据子类的指针计算得到 pBase。例如：动态申请 C 的地址为 c，即 pBase == c。将 c 赋值给 b 后，b 的指针会发生偏移。若通过 MY_DELETE(b) 的方式，只能获取基类的大小，导致释放的内存空间不正确（即，传入的释放地址不正确）。
 
-```cpp
+{% highlight cpp %}
     // struct C : public A, public B
     C* c = new C;
     A* a = c;
@@ -1700,7 +1700,7 @@ Recycle ptr: 0x1d72a80, size: 32
     std::cout << "a: " << a << std::endl;
     std::cout << "b: " << b << std::endl;
     std::cout << "c: " << c << std::endl;
-```
+{% endhighlight %}
 
 参考 C++ 对象的内存布局：
 
@@ -1712,7 +1712,7 @@ Recycle ptr: 0x1d72a80, size: 32
 
 通过基类指针调用子类的`Get`函数获取子类的大小和地址。
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <type_traits>
 
@@ -1836,11 +1836,11 @@ B::VirtualDeleteInfo
 1 Recycle ptr: 0x11468f0, size: 16
 2 Recycle ptr: 0x11468f0, size: 24
 */
-```
+{% endhighlight %}
 
 多继承场景：C -> A, B
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <type_traits>
 
@@ -1994,13 +1994,13 @@ C::VirtualDeleteInfo
 1 Recycle ptr: 0x8eda90, size: 16
 2 Recycle ptr: 0x8eda80, size: 32
 */
-```
+{% endhighlight %}
 
 此方案需要考虑一个问题，如何兼容成员函数`VirtualDeleteInfo`没有定义的情况？
 
 解决方法：编译器检查。通过`SFINAE`模版推导的方式，检查类中是否定义了某个成员函数，若存在函数定义，则可以支持业务直接传父类指针进行销毁；若不存在函数定义，则忽略函数调用，由分配器底层进行校验检查。
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <type_traits>
 
@@ -2059,7 +2059,7 @@ int main()
     std::cout << has_member_f<B>::value << std::endl;
     std::cout << has_member_f<C>::value << std::endl;
 }
-```
+{% endhighlight %}
 
 
 

@@ -14,16 +14,16 @@ tags:
 
 # Mac OS X 环境安装 Python 3
 
-```bash
+{% highlight bash %}
 brew install python
-```
+{% endhighlight %}
 
 https://pythonguidecn.readthedocs.io/zh/latest/starting/install3/osx.html
 
 
 # Linux 环境安装 Python 3.8
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # Download Python
@@ -76,32 +76,32 @@ fi
 
 # Print the installed Python version
 python --version
-```
+{% endhighlight %}
 
 
-```
+{% highlight text %}
 $ python --version
 Python 3.8.12
 $ which python
 /usr/bin/python
-```
+{% endhighlight %}
 
 安装 pip
 
-```bash
+{% highlight bash %}
 python -m pip install --upgrade pip
-```
+{% endhighlight %}
 
 # module 依赖
 
 ## xxhash
 
-```bash
+{% highlight bash %}
 /usr/local/bin/pip install xxhash
 
 # or
 python3 -m pip install xxhash
-```
+{% endhighlight %}
 
 
 
@@ -114,17 +114,17 @@ python3 -m pip install xxhash
 
 例如，如果我们想要在 Python 3 中运行脚本，可以在脚本文件的开头添加以下 shebang 行：
 
-```python
+{% highlight python %}
 #!/usr/bin/env python3
-```
+{% endhighlight %}
 
 这行代码告诉操作系统，使用 `/usr/bin/env` 命令来查找 Python 3 的解释器，并将该解释器用于执行脚本文件。如果系统中安装了多个 Python 版本，这种方式可以自动选择最新的 Python 3 版本。
 
 如果我们想要在 Python 2 中运行脚本，可以使用以下 shebang 行：
 
-```python
+{% highlight python %}
 #!/usr/bin/env python2
-```
+{% endhighlight %}
 
 需要注意的是，不同的操作系统可能支持的 shebang 行格式不同。在 Linux 和 macOS 等类 Unix 系统中，shebang 行的格式为 `#!interpreter [optional-arg]`，其中 `interpreter` 是解释器的路径，`optional-arg` 是传递给解释器的可选参数。在 Windows 系统中，shebang 行的格式为 `#!python`，其中 `python` 是解释器的名称。因此，在编写跨平台的 Python 脚本时，需要注意 shebang 行的格式。
 
@@ -146,7 +146,7 @@ python3 -m pip install xxhash
 2. 编译为字节码：将 `.py` 编译为 `.pyc`（如果语法正确）
 3. 快速验证：不执行代码，只检查语法
 
-```bash
+{% highlight bash %}
 # 语法正确的文件 - 无输出，静默成功
 $ python3 -m py_compile succ_file.py
 $ echo $?
@@ -158,7 +158,7 @@ $ python3 -m py_compile bad_file.py
     print("hello"
                 ^
 SyntaxError: unexpected EOF while parsing
-```
+{% endhighlight %}
 
 ## How to catch and print the full exception traceback
 
@@ -167,7 +167,7 @@ SyntaxError: unexpected EOF while parsing
 `traceback.format_exc()` or `sys.exc_info()` will yield more info if that's what you want.
 
 
-```python
+{% highlight python %}
 import traceback
 import sys
 
@@ -177,7 +177,7 @@ except Exception:
     print(traceback.format_exc())
     # or
     print(sys.exc_info()[2])
-```
+{% endhighlight %}
 
 # Q&A
 
@@ -185,15 +185,15 @@ except Exception:
 
 Test for `str`:
 
-```python
+{% highlight python %}
 isinstance(unicode_or_bytestring, str)
-```
+{% endhighlight %}
 
 or, if you must handle bytestrings, test for `bytes` separately:
 
-```python
+{% highlight python %}
 isinstance(unicode_or_bytestring, bytes)
-```
+{% endhighlight %}
 
 ## [Error: 'dict' object has no attribute 'iteritems'](https://stackoverflow.com/questions/30418481/error-dict-object-has-no-attribute-iteritems)
 

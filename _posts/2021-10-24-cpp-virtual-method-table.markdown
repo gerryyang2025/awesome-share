@@ -14,7 +14,7 @@ tags:
 
 # 问题
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 class IBaseA
@@ -54,12 +54,12 @@ int main()
 
     return 0;
 }
-```
+{% endhighlight %}
 
 
 # Example
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 class A
@@ -87,9 +87,9 @@ int main()
     B b;
     f2(b);  // B::f
 }
-```
+{% endhighlight %}
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <stdint.h>
 
@@ -131,7 +131,7 @@ C::f()
 pa2(0x21f6f70)
 ptr(0x21f5f40)
 */
-```
+{% endhighlight %}
 
 # Virtual Tables
 
@@ -148,12 +148,12 @@ https://pabloariasal.github.io/2017/06/10/understanding-virtual-tables/
 
 Dynamic cast of `shared_ptr`. Returns a copy of `sp` of the proper type with its stored pointer casted dynamically from `U*` to `T*`.
 
-```cpp
+{% highlight cpp %}
 template <class T, class U>
 shared_ptr<T> dynamic_pointer_cast (const shared_ptr<U>& sp) noexcept;
-```
+{% endhighlight %}
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <memory>
 
@@ -190,7 +190,7 @@ foo's dynamic type: class B
 bar's static  type: class B
 bar's dynamic type: class B
 */
-```
+{% endhighlight %}
 
 `std::dynamic_pointer_cast` 是 C++ 标准库中的一个函数模板，用于在运行时执行类型安全的指针转换。它主要用于将 std::shared_ptr 指向的基类对象转换为派生类对象的指针。
 
@@ -201,7 +201,7 @@ std::dynamic_pointer_cast 的作用如下：
 1. 进行类型安全的指针转换：std::dynamic_pointer_cast 在运行时检查转换是否有效。如果转换失败（即指向的对象不是目标类型的实例），它将返回一个空的 std::shared_ptr。这有助于避免潜在的错误，并确保类型安全。
 2. 管理引用计数：与 std::static_pointer_cast 和 std::const_pointer_cast 类似，std::dynamic_pointer_cast 也会正确地处理 std::shared_ptr 的引用计数。这意味着在转换过程中，原始智能指针和转换后的智能指针都将共享相同的引用计数，从而确保资源的正确管理。
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <memory>
 
@@ -234,13 +234,13 @@ int main() {
 /*
 Derived specific function called.
 */
-```
+{% endhighlight %}
 
 ## [dynamic_cast](https://en.cppreference.com/w/cpp/language/dynamic_cast)
 
 `dynamic_cast` 是面向对象语言中常被称为类似“**是某种**”的概念的 C++ 版本：
 
-```cpp
+{% highlight cpp %}
 void do_something(Shape* p)
 {
     if (Circle* pc = dynamic_cast<Circle*>(p)) { // p 是某种 Circle？
@@ -250,19 +250,19 @@ void do_something(Shape* p)
         // ... 不是 Circle，做其他事情 ...
     }
 }
-```
+{% endhighlight %}
 
 `dynamic_cast` 是一个运行期操作，依赖于存储在 `Shape` 的虚拟函数表中的数据。它通用、易用，并且与其他语言类似的功能一样高效。然而，`dynamic_cast` 变得非常不受欢迎，因为它的实现往往是复杂的，特殊情况下手动编码可能更高效（可以说这导致 `dynamic_cast` **违反了零开销原则**）。
 
 一种更简单的变种是使用引用而不是指针：
 
-```cpp
+{% highlight cpp %}
 void do_something2(Shape& r)
 {
     Circle& rc = dynamic_cast<Circle&>(r);  // r 是某种 Circle！
     // ... 使用 rc 引用的 Circle ...
 }
-```
+{% endhighlight %}
 
 这简单地断言 `r` 指代一个 `Circle`，如果不是则抛出一个异常。
 
@@ -271,7 +271,7 @@ void do_something2(Shape& r)
 
 Safely converts pointers and references to classes `up`, `down`, and sideways along the inheritance hierarchy.
 
-```
+{% highlight text %}
 A -> V
 B -> V
 D -> A, B
@@ -282,7 +282,7 @@ A& a = d;  // upcast, dynamic_cast may be used, but unnecessary  子类 -> 父�
 D& new_d = dynamic_cast<D&>(a); // downcast 父类 -> 子类
 
 B& new_b = dynamic_cast<B&>(a); // sidecast  父类 -> 子类（另一个）
-```
+{% endhighlight %}
 
 Syntax:
 
@@ -293,7 +293,7 @@ Notes:
 * A downcast can also be performed with `static_cast`, which avoids the cost of the runtime check, but it's only safe if the program can guarantee (through some other logic) that the object pointed to by expression is definitely Derived.
 * Some forms of `dynamic_cast` rely on [runtime type identification (RTTI)](https://en.wikipedia.org/wiki/Run-time_type_information), that is, information about each polymorphic class in the compiled program. Compilers typically have options to disable the inclusion of this information.
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 struct V {
@@ -349,9 +349,9 @@ int main()
 /*
 downcast from b2 to d successful
 */
-```
+{% endhighlight %}
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <memory>
 
@@ -425,9 +425,9 @@ xyz obj:0x1757018
 ~bar()
 ~foo()
 */
-```
+{% endhighlight %}
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <map>
 #include <memory>
@@ -543,7 +543,7 @@ int main()
     origobj->f();
 
 }
-```
+{% endhighlight %}
 
 
 # 虚继承
@@ -565,7 +565,7 @@ C++指出，当derived class对象经由一个base class指针被删除，而该
 
 继承和组合：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 class A1
@@ -612,9 +612,9 @@ B()
 ~A2()
 ~A1()
 */
-```
+{% endhighlight %}
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 class A1
@@ -660,11 +660,11 @@ B()
 ~A2()
 ~A1()
 */
-```
+{% endhighlight %}
 
 多重继承：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 class A1
@@ -710,7 +710,7 @@ B()
 ~A2()
 ~A1()
 */
-```
+{% endhighlight %}
 
 # virtual 函数的调用开销
 

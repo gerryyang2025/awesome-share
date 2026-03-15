@@ -52,11 +52,11 @@ tags:
 
 比较复杂的 JVM 场景和超大延迟的性能问题，参考论文：[Eliminating OS-Caused Large JVM Pauses for Latency-Sensitive Java-Based Cloud Platforms](https://ieeexplore.ieee.org/document/7820334)
 
-```
+{% highlight text %}
 Abstract:
 
 For PaaS-deployed (Platform as a Service) customer-facing applications (e.g., online gaming and online chatting), ensuring low latencies is not just a preferred feature, but a must-have feature. Given the popularity and powerfulness of Java platforms, a significant portion of today's PaaS platforms run Java. JVM (Java Virtual Machine) manages a heap space to hold application objects. The heap space can be frequently GC-ed (Garbage Collected), and applications can be occasionally stopped for long time during some GC and JVM activities. In this work, we investigated the JVM pause problem. We found out that there are some (and large) JVM STW pauses cannot be explained by application-level activities and JVM activities during GC, instead, they are caused by OS mechanisms. We successfully reproduced such problems and root-cause-ed the reasons. The findings can be used to enhance JVM implementation. We also proposed a set of solutions to mitigate and eliminate these large STW pauses. We share the knowledge and experiences in this writing.
-```
+{% endhighlight %}
 
 由于大多数互联网业务都是面向在线客户的（例如在线游戏和在线聊天），所以，确保客户相应的低延迟非常重要。各种研究也都表明，200 毫秒延迟，是多数在线用户可以忍受的最大延迟。因此，确保低于 200 毫秒（甚至更短）的延迟，已经成为定义的 `SLA`（**服务水平协议**）的一部分。
 
@@ -406,9 +406,9 @@ SUT 和性能指标都确定了，那么下一步就是决定我们期望从测�
 
 然而，这两者的发生概率却是有确定的关系的。就是 A 事件发生的概率，乘以 A 事件下 B 事件发生的概率，这个乘积等于 B 事件发生概率乘以 B 事件下 A 发生的概率。贝叶斯定理的一个用途在于通过已知的任意三个概率函数推出第四个。
 
-```
+{% highlight text %}
 P(A|B) = P(B|A) * P(A) / P(B)
-```
+{% endhighlight %}
 
 置信区间（Confidence interval，CI）是对产生样本的总体参数分布（Parametric Distribution）中的某一个未知参数值，以区间形式给出的估计。相对于点估计指标（比如均值，中位数等），置信区间蕴含了估计精确度的信息。
 
@@ -577,11 +577,11 @@ LinkedIn 为超过 5.9 亿用户提供服务，**在性能优化的过程中，�
 
 怎么解决这些问题呢，有一个大招就是在生产环境中进行真实的容量测试。关于这个实践的详细方案和技术细节，我们曾经发表过一篇研究论文：[RedLiner: Measuring Service Capacity with Live Production Traffic](https://ieeexplore.ieee.org/document/8029816)，并且很荣幸地获得了 IEEE 最佳论文奖。
 
-```
+{% highlight text %}
 Abstract:
 
 Accurate capacity measurement of Internet services is critical to ensure high-performing production computing environments. In this work, we present our solution of performing accurate capacity measurement. Referred to as "Redliner", it uses live traffic in production environments to drive the measurement, hence avoiding many pitfalls that prevent capacity measurement from obtaining accurate values in synthetic lab environment. Redliner works by intelligently redirecting a portion of production traffic to the SUT (Service Under Test) and realtime analyzing the performance. It has been adopted by hundreds of services inside LinkedIn and is executed for various types of capacity analysis on a daily basis.
-```
+{% endhighlight %}
 
 ### 为什么需要在生产环境中进行容量测试？
 
@@ -687,7 +687,7 @@ PerfCollector 组件负责收集各种性能指标，包括系统级和服务级
 
 ss -s：显示当前 Sockets 概要信息
 
-```
+{% highlight text %}
 $ ss -s
 Total: 554
 TCP:   33 (estab 22, closed 0, orphaned 0, timewait 0)
@@ -698,11 +698,11 @@ UDP       5         4         1
 TCP       33        29        4
 INET      40        34        6
 FRAG      0         0         0
-```
+{% endhighlight %}
 
 ss -altp：显示正在监听的 TCP 程序的 process
 
-```
+{% highlight text %}
 ss -atlp
 State               Recv-Q              Send-Q                                Local Address:Port                              Peer Address:Port              Process
 LISTEN              0                   100                                       127.0.0.1:42222                                  0.0.0.0:*
@@ -716,7 +716,7 @@ LISTEN              0                   4096                                    
 LISTEN              0                   4096                                          [::1]:34245                                     [::]:*                  users:(("java",pid=718680,fd=160))
 LISTEN              0                   4096                                          [::1]:43409                                     [::]:*                  users:(("java",pid=720687,fd=160))
 LISTEN              0                   128                                            [::]:36000                                     [::]:*
-```
+{% endhighlight %}
 
 ![network_issue1](/assets/images/202408/network_issue1.png)
 
@@ -841,7 +841,7 @@ LISTEN              0                   128                                     
 
 假设有一个处理大量数据的函数：
 
-```cpp
+{% highlight cpp %}
 #include <stdio.h>
 
 void process_data(int *data, size_t size) {
@@ -860,11 +860,11 @@ int main() {
     printf("result: %d\n", data[9999]);
     return 0;
 }
-```
+{% endhighlight %}
 
 可以使用 `__builtin_prefetch` 对 `process_data` 函数进行优化，以预先提取关键指令并降低缓存的缺失比例：
 
-```cpp
+{% highlight cpp %}
 #include <stdio.h>
 
 void process_data(int *data, size_t size) {
@@ -887,7 +887,7 @@ int main() {
     printf("result: %d\n", data[9999]);
     return 0;
 }
-```
+{% endhighlight %}
 
 在 `process_data` 函数中，添加了 `__builtin_prefetch` 指令来预先提取数组中的下一个元素。这样，当 CPU 处理当前元素时，下一个元素已经被预取到缓存中，从而减少了缓存缺失和等待指令获取的时间。请注意，这个优化可能在某些情况下对性能产生负面影响，因为预取操作可能会消耗内存带宽。在实际应用中，需要根据具体情况调整预取距离（在本例中为 16）并进行性能测试，以确保优化达到预期效果。
 

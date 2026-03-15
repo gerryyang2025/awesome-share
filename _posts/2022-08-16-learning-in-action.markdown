@@ -569,15 +569,15 @@ KISS (Keep It Simple, Stupid) 是一种归纳过的经验原则。KISS 原则是
 
 直方图输出示例说明：
 
-```
+{% highlight text %}
 msg_step1_ms:histogram #0:ZERO
 msg_step1_ms:histogram #1: 230/0.871 0/0.000 0/0.000 0/0.000 0/0.000 34/0.129
 msg_step1_ms:num=2 vals(avg,max,min)=(0,0,0) (8440,65535,0)
 msg_step1_ms:histogram border: (-INF,10,100,500,1000,5000,+INF)
 msg_step1_ms:histogram total(para_num=2): 230/0.871 0/0.000 0/0.000 0/0.000 0/0.000 34/0.129
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 这是一个监控信息的输出，使用了直方图（histogram）来表示数据的分布。直方图是一种统计工具，用于可视化数据的频率分布。
 
 msg_step1_ms:histogram #0:ZERO：这表示在第一个区间（负无穷到10毫秒）内，没有任何数据点。
@@ -591,7 +591,7 @@ msg_step1_ms:histogram border: (-INF,10,100,500,1000,5000,+INF)：这表示直�
 msg_step1_ms:histogram total(para_num=2): 230/0.871 0/0.000 0/0.000 0/0.000 0/0.000 34/0.129：这是对所有区间的总结。总共有2个参数，第一个区间有230个数据点，占总数据点的87.1%；后续的几个区间没有数据点；最后一个区间有34个数据点，占总数据点的12.9%。
 
 这个监控信息提供了 msg_step1_ms 这个指标的详细统计信息，包括数据的分布、平均值、最大值和最小值等。
-```
+{% endhighlight %}
 
 主调监控：指的是当前服务调用下游服务请求的 client 端的监控，从发起请求到收到下游回包的监控
 

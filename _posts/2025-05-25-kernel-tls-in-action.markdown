@@ -23,14 +23,14 @@ tags:
 
 First create a new TCP socket and set the TLS ULP.
 
-```c
+{% highlight c %}
 sock = socket(AF_INET, SOCK_STREAM, 0);
 setsockopt(sock, SOL_TCP, TCP_ULP, "tls", sizeof("tls"));
-```
+{% endhighlight %}
 
 Setting the TLS ULP allows us to set/get TLS socket options. Currently only the symmetric encryption is handled in the kernel. After the TLS handshake is complete, we have all the parameters required to move the data-path to the kernel. There is a separate socket option for moving the transmit and the receive into the kernel.
 
-```c
+{% highlight c %}
 /* From linux/tls.h */
 struct tls_crypto_info {
         unsigned short version;
@@ -57,7 +57,7 @@ memcpy(crypto_info.key, cipher_key_write, TLS_CIPHER_AES_GCM_128_KEY_SIZE);
 memcpy(crypto_info.salt, implicit_iv_write, TLS_CIPHER_AES_GCM_128_SALT_SIZE);
 
 setsockopt(sock, SOL_TLS, TLS_TX, &crypto_info, sizeof(crypto_info));
-```
+{% endhighlight %}
 
 Transmit and receive are set separately, but the setup is the same, using either `TLS_TX` or `TLS_RX`.
 
@@ -66,20 +66,20 @@ Transmit and receive are set separately, but the setup is the same, using either
 
 After setting the `TLS_TX` socket option all application data sent over this socket is encrypted using TLS and the parameters provided in the socket option. For example, we can send an encrypted `hello world` record as follows:
 
-```c
+{% highlight c %}
 const char *msg = "hello world\n";
 send(sock, msg, strlen(msg));
-```
+{% endhighlight %}
 
 `send()` data is directly encrypted from the userspace buffer provided to the encrypted kernel send buffer if possible.
 
 The `sendfile` system call will send the file’s data over TLS records of maximum length (`2^14`).
 
-```c
+{% highlight c %}
 file = open(filename, O_RDONLY);
 fstat(file, &stat);
 sendfile(sock, file, &offset, stat.st_size);
-```
+{% endhighlight %}
 
 TLS records are created and sent after each `send()` call, unless `MSG_MORE` is passed. `MSG_MORE` will delay creation of a record until `MSG_MORE` is not passed, or the maximum record size is reached.
 
@@ -90,10 +90,10 @@ The kernel will need to allocate a buffer for the encrypted data. This buffer is
 
 After setting the `TLS_RX` socket option, all recv family socket calls are decrypted using TLS parameters provided. A full TLS record must be received before decryption can happen.
 
-```c
+{% highlight c %}
 char buffer[16384];
 recv(sock, buffer, 16384);
-```
+{% endhighlight %}
 
 Received data is decrypted directly in to the user buffer if it is large enough, and no additional allocations occur. If the userspace buffer is too small, data is decrypted in the kernel and copied to userspace.
 
@@ -106,7 +106,7 @@ Received data is decrypted directly in to the user buffer if it is large enough,
 
 Other than application data, TLS has control messages such as **alert messages** (record type 21) and **handshake messages** (record type 22), etc. These messages can be sent over the socket by providing the TLS record type via a `CMSG`. For example the following function sends `@data` of `@length` bytes using a record of type `@record_type`.
 
-```c
+{% highlight c %}
 /* send TLS control message using record_type */
 static int klts_send_ctrl_message(int sock, unsigned char record_type,
                                   void *data, size_t length)
@@ -133,7 +133,7 @@ static int klts_send_ctrl_message(int sock, unsigned char record_type,
 
       return sendmsg(sock, &msg, 0);
 }
-```
+{% endhighlight %}
 
 Control message data should be provided unencrypted, and will be encrypted by the kernel.
 
@@ -141,7 +141,7 @@ Control message data should be provided unencrypted, and will be encrypted by th
 
 TLS control messages are passed in the userspace buffer, with `message type` passed via `cmsg`. If no `cmsg` buffer is provided, an error is returned if a control message is received. Data messages may be received without a `cmsg` buffer set.
 
-```c
+{% highlight c %}
 char buffer[16384];
 char cmsg[CMSG_SPACE(sizeof(unsigned char))];
 struct msghdr msg = {0};
@@ -168,7 +168,7 @@ if (cmsg->cmsg_level == SOL_TLS &&
 } else {
     // Buffer contains application data.
 }
-```
+{% endhighlight %}
 
 `recv` will never return data from mixed types of TLS records.
 
@@ -247,25 +247,25 @@ In modern FreeBSD and Linux distributions, **`kTLS` is usually built as a module
 
 * On FreeBSD, run these commands as the **root** user:
 
-```bash
+{% highlight bash %}
 # kldload ktls_ocf.ko
 # sysctl kern.ipc.tls.enable=1
-```
+{% endhighlight %}
 
 For details about the FreeBSD command options, see the man page for [ktls(4)](https://www.freebsd.org/cgi/man.cgi?query=ktls&apropos=0&sektion=0&manpath=FreeBSD+13.0-RELEASE+and+Ports&arch=default&format=html).
 
 
 * On Linux distributions, run this command as the **root** user:
 
-```bash
+{% highlight bash %}
 # modprobe tls
-```
+{% endhighlight %}
 
 ## Configuring NGINX
 
 To enable kTLS, include the [ssl_conf_command](https://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_conf_command) directive with the `Options KTLS` parameter in the `server{}` context, as in this sample configuration used for our [testing](https://www.f5.com/company/blog/nginx/improving-nginx-performance-with-kernel-tls#testing):
 
-```
+{% highlight text %}
 worker_processes auto;error_log /var/log/nginx/error.log debug;
 
 events {}
@@ -285,7 +285,7 @@ http {
     	}
     }
 }
-```
+{% endhighlight %}
 
 
 ## Verifying kTLS is Enabled
@@ -311,15 +311,15 @@ To perform the test:
 
 * Create a large file that fits completely in the disk cache:
 
-```bash
+{% highlight bash %}
 truncate -s 1g /data/1G
-```
+{% endhighlight %}
 
 * Run this command to check the throughput; the base command is repeated multiple times for more accurate results. Pipe the output to the `ministat` utility [FreeBSD](https://www.freebsd.org/cgi/man.cgi?query=ministat) [Ubuntu](https://manpages.ubuntu.com/manpages/impish/man1/ministat.1.html) for a basic statistical analysis.
 
-```bash
+{% highlight bash %}
 for i in 'seq 1 100'; do curl -k -s -o /dev/null -w '%{speed_download}\n' https://localhost/1G | ministat
-```
+{% endhighlight %}
 
 ### Results of Performance Testing
 

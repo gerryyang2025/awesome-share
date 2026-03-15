@@ -57,7 +57,7 @@ C++ 的挑战在于缺乏原生反射支持，需通过 `RTTI`、宏、模板或
 
 示例代码 (TODO: 有编译错误 )
 
-```cpp
+{% highlight cpp %}
 #include <print>
 #include <string>
 #include <experimental/meta>
@@ -81,7 +81,7 @@ int main() {
     test t{1, 3,14, "hello"};
     print(t);
 }
-```
+{% endhighlight %}
 
 
 
@@ -95,7 +95,7 @@ int main() {
 可以用 `typeid` 直接来获取对象的实际类型，例如：
 
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <typeinfo>
 #include <boost/core/demangle.hpp>
@@ -122,14 +122,14 @@ int main()
   cout << (type == typeid(circle) ? "is circle\n" : "");
   delete ptr;
 }
-```
+{% endhighlight %}
 
 在 GCC 下的输出：
 
-```6circle
+{% highlight 6circle %}
 circle
 is circle
-```
+{% endhighlight %}
 
 
 # Refer

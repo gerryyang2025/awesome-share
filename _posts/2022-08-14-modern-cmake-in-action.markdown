@@ -98,7 +98,7 @@ This book tries to solve the problem of the poor examples and best practices tha
 
 ## Modern CMake setting build-requirements VS setting usage-requirements
 
-```
+{% highlight text %}
 # Adding build-requirements
 
 target_include_directories( <target> PRIVATE <include-search-dir>... )
@@ -131,7 +131,7 @@ target_sources(             <target> PUBLIC <source-file>... )
 target_link_libraries(      <target> PUBLIC <dependency>... )
 target_link_options(        <target> PUBLIC <linker-option>... )
 target_link_directories(    <target> PUBLIC <linker-search-dir>... )
-```
+{% endhighlight %}
 
 > Warning: Although `target_link_directories` can be used without these keywords, you should **never forget to use these keywords** in Modern CMake!
 

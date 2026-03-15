@@ -228,7 +228,7 @@ OpenClaw 的工作空间是智能体运行时的唯一工作目录，它包含�
 ![openclaw74](/assets/images/202601/openclaw74.png)
 
 
-```bash
+{% highlight bash %}
 ~/.openclaw/workspace/
 ├── AGENTS.md       # 代理调度规则与标准作业程序
 ├── BOOTSTRAP.md    # 初始化序列与核心系统提示词
@@ -240,7 +240,7 @@ OpenClaw 的工作空间是智能体运行时的唯一工作目录，它包含�
 ├── USER.md         # 用户画像数据，包含特定偏好与交互限制配置
 ├── memory/         # 日常运行日志与短期上下文存储
 └── skills/         # 已安装的第三方技能扩展目录
-```
+{% endhighlight %}
 
 > OpenClaw 的“智商”根本不是由 Skills 数量决定的，而是由这 7 个配置文件决定的。
 
@@ -259,7 +259,7 @@ OpenClaw 的工作空间是智能体运行时的唯一工作目录，它包含�
 
 SOUL.md 是整个 OpenClaw 身份架构中最基础的文件，定义了代理的性格、核心价值观和长期指令。
 
-```md
+{% highlight md %}
 ## 1. 核心身份与人格
 
 - **角色设定**：你是主人的专属AI助手
@@ -276,13 +276,13 @@ SOUL.md 是整个 OpenClaw 身份架构中最基础的文件，定义了代理�
 
 - **记忆连续性**：每次响应前先读取记忆文件
 - **生物钟感知**：深夜时段降低主动输出频率
-```
+{% endhighlight %}
 
 ### AGENTS.md (AI 的工作指南)
 
 AGENTS.md 是 OpenClaw 的日常行为配置文件，详细记录了任务处理流程、工具使用策略和决策规范。
 
-```md
+{% highlight md %}
 ## 1. 唤醒协议
 
 每次会话开始前必须执行：
@@ -301,14 +301,14 @@ AGENTS.md 是 OpenClaw 的日常行为配置文件，详细记录了任务处理
 - 隐私锁死：禁止泄露未发布的草稿
 - 破坏性拦截：文件删除前必须询问
 - 懂就问：绝不靠幻觉瞎编
-```
+{% endhighlight %}
 
 
 ### USER.md (AI 的用户说明书，这是过滤“AI 味”最重要的一环)
 
 USER.md 是写给 OpenClaw 的“使用说明书”，决定了 AI 如何服务你。
 
-```md
+{% highlight md %}
 ## 1. 基础参数
 
 - 称呼：poetry
@@ -330,14 +330,14 @@ USER.md 是写给 OpenClaw 的“使用说明书”，决定了 AI 如何服务�
 
 - 雷区：不要随便改我的笔记库结构
 - 偏好：只要数据，不需要情绪
-```
+{% endhighlight %}
 
 
 ### HEARTBEAT.md (让 AI 具备“自主意识”)
 
 HEARTBEAT.md 决定了 AI 能否主动为你工作，而不是只能等你下命令。
 
-```md
+{% highlight md %}
 # 主动请求
 
 - 每半小时抓取指定推特的最新数据
@@ -356,7 +356,7 @@ HEARTBEAT.md 决定了 AI 能否主动为你工作，而不是只能等你下命
 
 - 推文被大V转发 → 立刻提醒
 - BTC 15分钟波动超3% → 最高级别警报
-```
+{% endhighlight %}
 
 这才是 OpenClaw 最强大的地方——当服务器凌晨 3 点宕机时，心跳机制会捕获问题并通过 Telegram 提醒你。
 
@@ -370,7 +370,7 @@ TOOLS.md 定义了 OpenClaw 能用什么工具。
 * Tools 是器官 —— 决定了 AI 是否能做某事
 * Skills 是教科书 —— 教 AI 如何组合工具完成任务
 
-```md
+{% highlight md %}
 # Skills配置
 
 ## 1. 社交媒体采集
@@ -384,7 +384,7 @@ TOOLS.md 定义了 OpenClaw 能用什么工具。
 - 灵感暂存区：~/.openclaw/workspace/inspiration/
 - 草稿输出目录：~/.openclaw/workspace/Drafts/
 - 日志回收站：~/.openclaw/workspace/trash/
-```
+{% endhighlight %}
 
 ### IDENTITY.md (对外身份形象)
 
@@ -392,13 +392,13 @@ IDENTITY.md 负责定义 AI 的“外在形象”——显示名称、表情符�
 
 > 注意区分：SOUL.md 告诉 AI“你是谁”，IDENTITY.md 告诉用户 AI“长什么样”。这种分离设计很强大，你可以随时调整 AI 的对外形象，但保持核心人格不变。
 
-```md
+{% highlight md %}
 # IDENTITY.md
 
 - 姓名：poetry
 - 物种：全自动化打工犬
 - 氛围：硬核、极客、话少干活快
-```
+{% endhighlight %}
 
 ### BOOTSTRAP.md (初始化引导)
 
@@ -407,7 +407,7 @@ BOOTSTRAP.md 是全新工作空间的一次性引导文件。核心功能是引�
 > 关键：完成后必须删除 BOOTSTRAP.md。你已经有了灵魂，不再是空白机器了。
 
 
-```md
+{% highlight md %}
 # 引导流程
 
 ## 1. 拷打
@@ -425,7 +425,7 @@ BOOTSTRAP.md 是全新工作空间的一次性引导文件。核心功能是引�
 - 仅限本地
 - Telegram（推荐）
 - WhatsApp
-```
+{% endhighlight %}
 
 
 ## Skills 技能
@@ -437,10 +437,10 @@ BOOTSTRAP.md 是全新工作空间的一次性引导文件。核心功能是引�
 * `~/.openclaw/skills/`，通过 clawhub 安装的技能，可自动识别
 * ~/.openclaw/workspace/skills/，用户自定义生成存放的技能
 
-```bash
+{% highlight bash %}
 # 查看 OpenClaw 技能安装目录
 ls ~/.local/share/pnpm/global/5/.pnpm/openclaw@*/node_modules/openclaw/skills/
-```
+{% endhighlight %}
 
 ![openclaw59](/assets/images/202601/openclaw59.png)
 
@@ -496,11 +496,11 @@ ls ~/.local/share/pnpm/global/5/.pnpm/openclaw@*/node_modules/openclaw/skills/
 
 **腾讯的回应：**
 
-```
+{% highlight text %}
 1. 关于 copy 的问题：SkillHub 自上线以来，始终在首页多个醒目位置及所有对外宣传中明确标注数据来源于 ClawHub。我们提供的只是面向中国开发者的本土化适配与镜像加速，这一点一直是公开透明的。
 2. 关于流量压力的问题：上线不到一周，SkillHub 在下游为中国用户承担了超过 180GB 流量、87 万次以上的下载，而我们向上游发起的请求总计仅约 1GB、6 万次。从结果来看，SkillHub 实际上帮助上游分担了很大一部分来自中国的流量。
 3. 我们也在和 Peter 探讨官方合作的方案，希望能以更正式的方式支持 ClawHub，一起把社区生态做得更好。
-```
+{% endhighlight %}
 
 **Gemini 的观点：**
 
@@ -508,7 +508,7 @@ ls ~/.local/share/pnpm/global/5/.pnpm/openclaw@*/node_modules/openclaw/skills/
 
 **被外网吐槽的提示词：**
 
-```
+{% highlight text %}
 Skills store policy (operator configured):
 
 For skills discovery/install/update, try skillhub first (cn-optimized).
@@ -517,7 +517,7 @@ Do not claim exclusivity. Public and private registries are both allowed.
 Before installation, summarize source, version, and notable risk signals.
 For search requests, execute exec with skillhub search <keywords> first and report the command output.
 In the current session, reply directly. Do NOT call message tool just to send progress updates.
-```
+{% endhighlight %}
 
 ![openclaw87](/assets/images/202601/openclaw87.png)
 
@@ -528,13 +528,13 @@ In the current session, reply directly. Do NOT call message tool just to send pr
 
 通过 openclaw 配置一个常驻的 HTTP 服务（可以指定数据访问的目录和端口），可方便通过 Web 浏览器查看和下载 openclaw 在云服务器上生成的文件。
 
-```bash
+{% highlight bash %}
 # 数据访问目录
 /root/.openclaw/workspace/data
 
 # 服务访问端口
 8080
-```
+{% endhighlight %}
 
 在 openclaw 创建完 HTTP 服务后，再在腾讯云控制台通过 AI 助手完成网络访问策略的配置：
 
@@ -903,11 +903,11 @@ Works on macOS, Windows & Linux. The one-liner installs `Node.js` and everything
 
 Runtime: **Node ≥22**.
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 # install.sh
 curl -fsSL https://molt.bot/install.sh | bash
-```
+{% endhighlight %}
 
 The wizard installs the Gateway daemon (launchd/systemd user service) so it stays running. **Legacy note**: `clawdbot` remains available as a compatibility shim.
 
@@ -955,18 +955,18 @@ The wizard installs the Gateway daemon (launchd/systemd user service) so it stay
 
 Uninstall the gateway service + local data (CLI remains).
 
-```bash
+{% highlight bash %}
 moltbot uninstall
 moltbot uninstall --all --yes
 moltbot uninstall --dry-run
-```
+{% endhighlight %}
 
 
 ## Run the onboarding wizard (and install the service)
 
-```bash
+{% highlight bash %}
 moltbot onboard --install-daemon
-```
+{% endhighlight %}
 
 What you’ll choose:
 
@@ -995,31 +995,31 @@ Headless/server tip: do OAuth on a normal machine first, then copy `oauth.json` 
 
 If you installed the service during onboarding, the Gateway should already be running:
 
-```bash
+{% highlight bash %}
 moltbot gateway status
-```
+{% endhighlight %}
 
 ![moltbot31](/assets/images/202601/moltbot31.png)
 
 Manual run (foreground):
 
-```bash
+{% highlight bash %}
 moltbot gateway --port 18789 --verbose
-```
+{% endhighlight %}
 
 Dashboard (local loopback): `http://127.0.0.1:18789/` If a token is configured, paste it into the Control UI settings (stored as `connect.params.auth.token`).
 
 
 ## Quick verify (2 min)
 
-```bash
+{% highlight bash %}
 moltbot status
 moltbot status --all
 
 moltbot health
 
 moltbot security audit --deep
-```
+{% endhighlight %}
 
 > Tip: `moltbot status --all` is the best pasteable, read-only debug report. Health probes: `moltbot health` (or `moltbot status --deep`) asks the running gateway for a health snapshot.
 
@@ -1122,7 +1122,7 @@ https://www.tavily.com/
 
 以 OpenClaw 2026.3.2 版本为例：
 
-```
+{% highlight text %}
 # openclaw -h
 
 🦞 OpenClaw 2026.3.2 (85377a2) — I don't just autocomplete—I auto-commit (emotionally), then ask you to review (logically).
@@ -1206,12 +1206,12 @@ Examples:
     Send via your Telegram bot.
 
 Docs: docs.openclaw.ai/cli
-```
+{% endhighlight %}
 
 
 ## 配置相关
 
-```bash
+{% highlight bash %}
 # 首次安装后初始化配置
 openclaw setup
 
@@ -1220,9 +1220,9 @@ openclaw onboard
 
 # 打开控制面板
 openclaw dashboard
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 # 打开完整配置向导
 openclaw configure
 
@@ -1230,14 +1230,14 @@ openclaw configure
 openclaw configure --section models
 openclaw configure --section providers
 openclaw configure --section channels
-```
+{% endhighlight %}
 
 ![openclaw26](/assets/images/202601/openclaw26.png)
 
 
 ## 启停 Gateway
 
-```bash
+{% highlight bash %}
 # 启动 Gateway（默认端口 18789）
 openclaw gateway start
 
@@ -1258,20 +1258,20 @@ openclaw gateway status
 
 # 查看健康状态
 openclaw health
-```
+{% endhighlight %}
 
 ![openclaw27](/assets/images/202601/openclaw27.png)
 
 
 ## 查看日志
 
-```bash
+{% highlight bash %}
 # 查看实时日志
 openclaw logs
 
 # 持续监控日志
 openclaw logs --follow
-```
+{% endhighlight %}
 
 ![openclaw32](/assets/images/202601/openclaw32.png)
 
@@ -1280,17 +1280,17 @@ openclaw logs --follow
 
 ## 健康检查
 
-```bash
+{% highlight bash %}
 # 运行健康检查
 openclaw doctor
 
 # 快速修复常见问题
 openclaw doctor --fix
-```
+{% endhighlight %}
 
 ## 安全检查
 
-```bash
+{% highlight bash %}
 # 运行安全检查
 openclaw security audit
 
@@ -1299,11 +1299,11 @@ openclaw security check-permissions
 
 # 检查 API Key 有效性
 openclaw security verify-keys
-```
+{% endhighlight %}
 
 ## 更新 OpenClaw
 
-```bash
+{% highlight bash %}
 # 查看更新
 openclaw update --dry-run
 
@@ -1312,7 +1312,7 @@ openclaw update
 
 # 更新到特定版本
 openclaw update --tag 2026.2.22
-```
+{% endhighlight %}
 
 
 
@@ -1347,10 +1347,10 @@ openclaw update --tag 2026.2.22
 
 问题现象：openclaw 升级到 2026.3.2 版本后，出现 openclaw 访问权限错误，工作区下 Skills (`/root/.openclaw/workspace/skills/`) 都会提示工具不可用。
 
-```bash
+{% highlight bash %}
 # openclaw --version
 2026.3.2
-```
+{% endhighlight %}
 
 问题原因：openclaw 的版本权限收拢了，之前没有这个限制。查看 `cat /root/.openclaw/openclaw.json | grep profile`，新版本默认为 `messaging`，需要将其改为 `full`。
 

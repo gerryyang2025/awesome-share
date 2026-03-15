@@ -54,10 +54,10 @@ Step 3: 打开下载的客户端软件，输入ss的`服务器信息`配置即�
 
 解决方法：
 
-```
+{% highlight text %}
 EVP_CIPHER_CTX was made opaque in OpenSSL 1.1.0. As a result, EVP_CIPHER_CTX_reset() appeared and EVP_CIPHER_CTX_cleanup() disappeared.
 EVP_CIPHER_CTX_init() remains as an alias for EVP_CIPHER_CTX_reset().
-```
+{% endhighlight %}
 
 修改`/usr/local/lib/python2.7/dist-packages/shadowsocks/crypto/openssl.py`，将`EVP_CIPHER_CTX_cleanup`替换为`EVP_CIPHER_CTX_reset`。
 

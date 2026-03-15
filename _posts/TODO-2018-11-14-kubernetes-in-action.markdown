@@ -64,7 +64,7 @@ Setting up a distributed Kubernetes cluster along with Istio service mesh locall
 
 安装后：
 
-```
+{% highlight text %}
 root@ubuntu-s-8vcpu-32gb-sfo2-01:~# kubectl get nodes
 NAME    STATUS   ROLES    AGE   VERSION
 node1   Ready    <none>   1h    v1.11.0
@@ -95,7 +95,8 @@ heapster-v1.5.0-76c9b966c-4dh9p                   4/4     Running   0          5
 kubernetes-dashboard-574589d477-vbs6s             1/1     Running   0          1h
 monitoring-influxdb-grafana-v4-5bbb9b766d-8x8bz   2/2     Running   0          52m
 traefik-ingress-controller-n2gt6                  1/1     Running   0          1h
-```---
+{% endhighlight %}
+
 [15 years of experience of running production workloads at Google]: https://queue.acm.org/detail.cfm?id=2898444
 
 [k8s官网]: https://kubernetes.io/

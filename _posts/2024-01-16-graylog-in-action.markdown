@@ -367,7 +367,7 @@ This is an example GELF message payload. Any Graylog-server node accepts and sto
 
 > **Hint**: New lines must be denoted with the \n escape sequence to ensure the payload is valid JSON as per [RFC 7159](https://tools.ietf.org/html/rfc7159#page-8).
 
-```json
+{% highlight json %}
 {
     "version": "1.1",
     "host": "example.org",
@@ -379,7 +379,7 @@ This is an example GELF message payload. Any Graylog-server node accepts and sto
     "_some_info": "foo",
     "_some_env_var": "bar"
 }
-```
+{% endhighlight %}
 
 > **Hint**: Currently, the server implementation of GELF in Graylog does not support boolean values. Boolean values will be dropped on ingest ([for reference](https://github.com/Graylog2/graylog2-server/issues/5504)).
 
@@ -387,25 +387,25 @@ This is an example GELF message payload. Any Graylog-server node accepts and sto
 
 Sending an example message to a GELF UDP input (running on host graylog.example.com on port 12201):
 
-```bash
+{% highlight bash %}
 echo -n '{ "version": "1.1", "host": "example.org", "short_message": "A short message", "level": 5, "_some_info": "foo" }' | nc -w0 -u graylog.example.com 12201
-```
+{% endhighlight %}
 
 ## Sending GELF Messages via TCP Using Netcat
 
 Sending an example message to a GELF TCP input (running on host graylog.example.com on port 12201):
 
-```bash
+{% highlight bash %}
 echo -n -e '{ "version": "1.1", "host": "example.org", "short_message": "A short message", "level": 5, "_some_info": "foo" }'"\0" | nc -w0 graylog.example.com 12201
-```
+{% endhighlight %}
 
 ## Sending GELF Messages Using Curl
 
 Sending an example message to a GELF input (running on https://graylog.example.com:12201/gelf):
 
-```bash
+{% highlight bash %}
 curl -X POST -H 'Content-Type: application/json' -d '{ "version": "1.1", "host": "example.org", "short_message": "A short message", "level": 5, "_some_info": "foo" }' 'http://graylog.example.com:12201/gelf'
-```
+{% endhighlight %}
 
 # [Graylog Sidecar](https://go2docs.graylog.org/5-2/getting_in_log_data/graylog_sidecar.html?tocpath=Getting%20in%20Logs%7CGraylog%20Sidecar%7C_____0)
 
@@ -431,109 +431,110 @@ The search syntax is very close to the Lucene syntax. By default all message fie
 
 * Messages that include the term `ssh` :
 
-```ssh
-```
+{% highlight ssh %}
+
+{% endhighlight %}
 
 * Messages that include the term `ssh` or `login` :
 
-```
+{% highlight text %}
 ssh login
-```
+{% endhighlight %}
 
 * Messages that include the exact phrase `ssh login` :
 
-```
+{% highlight text %}
 "ssh login"
-```
+{% endhighlight %}
 
 * Messages where the field `type` includes `ssh` :
 
-```
+{% highlight text %}
 type:ssh
-```
+{% endhighlight %}
 
 * Messages where the field `type` includes `ssh` or `login` :
 
-```
+{% highlight text %}
 type:(ssh OR login)
-```
+{% endhighlight %}
 
 > **Hint**: Elasticsearch 2.x and 5.x split queries on whitespace, so the query `type:(ssh login)` was equivalent to `type:(ssh OR login)`. This is no longer the case in Elasticsearch 6.0 and you must now include an `OR` operator between each term.
 
 * Messages where the field `type` includes the exact phrase `ssh login` :
 
-```
+{% highlight text %}
 type:"ssh login"
-```
+{% endhighlight %}
 
 * Messages that have the field `type` :
 
-```
+{% highlight text %}
 _exists_:type
-```
+{% endhighlight %}
 
 * Messages that do not have the field type :
 
-```
+{% highlight text %}
 NOT _exists_:type
-```
+{% endhighlight %}
 
 > **Hint**: Elasticsearch 2.x allows to use `_missing_:type` instead of `NOT _exists_:type`. This query syntax has been removed in Elasticsearch 5.0 .
 
 * Messages that match regular expression `ethernet[0-9]+`:
 
-```
+{% highlight text %}
 /ethernet[0-9]+/
-```
+{% endhighlight %}
 
 > **Hint**: Please refer to the Elasticsearch documentation about the [Regular expression syntax](https://www.elastic.co/guide/en/elasticsearch/reference/5.6/query-dsl-regexp-query.html#regexp-syntax) for details about the supported regular expression dialect.
 
 
 *  By default all terms or phrases are `OR` connected so all messages that have at least one hit are returned. You can use **Boolean operators and groups** for control over this:
 
-```
+{% highlight text %}
 "ssh login" AND source:example.org
 ("ssh login" AND (source:example.org OR source:another.example.org)) OR _exists_:always_find_me
-```
+{% endhighlight %}
 
 * You can also use the `NOT` operator:
 
-```
+{% highlight text %}
 "ssh login" AND NOT source:example.org
 NOT example.org
-```
+{% endhighlight %}
 
 > **Note that AND, OR, and NOT are case sensitive and must be typed in all upper-case.**
 
 * Wildcards: Use `?` to replace a single character or `*` to replace zero or more characters:
 
-```
+{% highlight text %}
 source:*.org
 source:exam?le.org
 source:exam?le.*
-```
+{% endhighlight %}
 
 * **Note that leading wildcards are disabled to avoid excessive memory consumption!** You can enable them in your Graylog configuration file:
 
-```
+{% highlight text %}
 allow_leading_wildcard_searches = true 
 
-```
+{% endhighlight %}
 
 
 ## Escaping
 
 The following characters must be escaped with a backslash:
 
-```
+{% highlight text %}
 & | : \ / + - ! ( ) { } [ ] ^ " ~ * ?
-```
+{% endhighlight %}
 
 Example:
 
-```
+{% highlight text %}
 resource:\/posts\/45326
-```
+{% endhighlight %}
 
 ## Error Types
 
@@ -564,15 +565,15 @@ All log data is stored in Elasticsearch/OpenSearch. [Elastic recommends](https:/
 
 You can find the log data for Graylog under the below directory with timestamps and levels and exception messages. This is useful for debugging or when the server won't start.
 
-```bash
+{% highlight bash %}
 /var/log/graylog-server/server.log
-```
+{% endhighlight %}
 
 If you use the pre-build appliances, take a look into
 
-```bash
+{% highlight bash %}
 /var/log/graylog/<servicename>/current
-```
+{% endhighlight %}
 
 
 ## How do I find out if a specific log source is supported?
@@ -617,13 +618,13 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html
 
 ## 检查 es 状态
 
-```
+{% highlight text %}
 curl domain-endpoint:9200/_cluster/health?pretty=true
-```
+{% endhighlight %}
 
 输出：
 
-```
+{% highlight text %}
 {
   "cluster_name" : "smges-sh",
   "status" : "green",
@@ -641,17 +642,17 @@ curl domain-endpoint:9200/_cluster/health?pretty=true
   "task_max_waiting_in_queue_millis" : 0,
   "active_shards_percent_as_number" : 100.0
 }
-```
+{% endhighlight %}
 
 ## 查询 es 的索引
 
-```
+{% highlight text %}
 curl domain-endpoint:9200/_cat/indices?v
-```
+{% endhighlight %}
 
 输出
 
-```
+{% highlight text %}
 health status index                            uuid                   pri rep docs.count docs.deleted store.size pri.store.size
 green  open   .apm-agent-configuration         Q5E3ideATBqXmvgW7DE4CA   1   1          0            0       416b           208b
 green  open   gl-events_0                      hYyhOftdQG6Bfy9Ijewcsw   4   0          0            0       832b           832b
@@ -667,60 +668,60 @@ green  open   graylog_deflector                x1i1_aMQR12wgjm_hd0CbQ   1   1  1
 green  open   .kibana-event-log-7.10.2-000001  ZnV__tPvQ_2CSDJcgyS18A   1   1          1            0     11.2kb          5.6kb
 green  open   .kibana-event-log-7.10.2-000002  SCp4U_CwQ0GeHjoIiUhDBg   1   1          0            0       416b           208b
 green  open   .kibana-event-log-7.10.2-000003  6_S_kUt1QOyAnNqEtANTKA   1   1          0            0       416b           208b
-```
+{% endhighlight %}
 
 ## 删除 es 的索引
 
-```
+{% highlight text %}
 curl -XDELETE domain-endpoint:9200/graylog_deflector
-```
+{% endhighlight %}
 
 ## 查询 es 的存储空间
 
-```
+{% highlight text %}
 curl domain-endpoint:9200/_cat/allocation?v
-```
+{% endhighlight %}
 
 输出
 
-```
+{% highlight text %}
 shards     disk.indices disk.used disk.avail disk.total       disk.percent   host         ip           node
     21       74.4mb     7.1gb     41.9gb       49gb           14             9.143.87.196 9.143.87.196 dn-9.143.87.196
     21       75.2mb     9.9gb     39.1gb       49gb           20             11.147.239.2 11.147.239.2 dn-11.147.239.2
-```
+{% endhighlight %}
 
 
 ## 列出 es 未分配的分片
 
-```
+{% highlight text %}
 $ curl -XGET 'domain-endpoint/_cat/shards?h=index,shard,prirep,state,unassigned.reason' | grep UNASSIGNED
-```
+{% endhighlight %}
 
 输出
 
-```
+{% highlight text %}
 % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100    12  100    12    0     0    531      0 --:--:-- --:--:-- --:--:--   545
-```
+{% endhighlight %}
 
 ## 修改 es 的配置
 
-```
+{% highlight text %}
 curl -X PUT "smges:smges_dAqlkS@smges-sh.physic-sh.es.svr.ehk.db:9200/_cluster/settings" -H 'Content-Type: application/json' -d'
 {
   "persistent": {
     "action.auto_create_index": "false"
   }
 }'
-```
+{% endhighlight %}
 
 ## 查询 es 的配置
 
 
-```
+{% highlight text %}
 curl -XGET "smges:smges_dAqlkS@smges-sh.physic-sh.es.svr.ehk.db:9200/_cluster/settings"
-```
+{% endhighlight %}
 
 
 # Graylog 问题定位
@@ -744,14 +745,14 @@ In some rare situations, there might be an Elasticsearch index with a name which
 Manually **rotate the active write index** of the index set on the System / Indices / Index Set page in the `Maintenance` drop down menu.
 6. (OPTIONAL ) Start all remaining Graylog follower nodes.
 
-```
+{% highlight text %}
 curl -X PUT "smges:smges_dAqlkS@smges-sh.physic-sh.es.svr.ehk.db:9200/_cluster/settings" -H 'Content-Type: application/json' -d'
 {
   "persistent": {
     "action.auto_create_index": "false"
   }
 }'
-```
+{% endhighlight %}
 
 
 其他参考：

@@ -95,7 +95,7 @@ In computer science, **false sharing** is a performance-degrading usage pattern 
 
 二叉搜索树一定程度上可以提高搜索效率，但是当原序列有序时，例如序列 A = {1，2，3，4，5，6}，构造二叉搜索树如下：
 
-```1
+{% highlight 1 %}
  \
   2
    \
@@ -106,16 +106,16 @@ In computer science, **false sharing** is a performance-degrading usage pattern 
         5
          \
           6
-```
+{% endhighlight %}
 
 依据此序列构造的二叉搜索树为右斜树，同时二叉树退化成单链表，搜索效率降低为`O(n)`。二叉搜索树的查找效率取决于树的高度，因此保持树的高度最小，即可保证树的查找效率。若改为如下存储方式，查询只需要比较3次（查询效率提升一倍）：
 
-```3
+{% highlight 3 %}
          /      \
         2        5
        /        / \
       1        4   6
-```
+{% endhighlight %}
 
 可以看出当节点数目一定，保持树的左右两端保持平衡，树的查找效率最高。**这种左右子树的高度相差不超过 1 的树为平衡二叉查找树（简称，平衡二叉树）。**
 
@@ -126,7 +126,7 @@ In computer science, **false sharing** is a performance-degrading usage pattern 
 
 ## 节点定义
 
-```cpp
+{% highlight cpp %}
 typedef struct AVLNode *Tree;
 
 typedef int ElementType;
@@ -150,7 +150,7 @@ struct AVLNode{
         this->val = val;
     }
 };
-```
+{% endhighlight %}
 
 
 refer:
@@ -256,14 +256,14 @@ Trie 树最基础的应用就是，**字符串的查找** —— **判断某个�
 
 例如：大顶堆，用数组arr表示为：10 9 8 7 6 4 5 1 3
 
-```10
+{% highlight 10 %}
          /      \
         9        8
        / \      / \
       7   6    4   5
      / \
     1   3
-```
+{% endhighlight %}
 
 ## 堆和普通树的区别
 
@@ -277,73 +277,73 @@ Trie 树最基础的应用就是，**字符串的查找** —— **判断某个�
 
 例如：
 
-```cpp
+{% highlight cpp %}
 int a[6] = {7, 3, 8, 5, 1, 2};
-```
+{% endhighlight %}
 
 对应的二叉树为：
 
 
-```7
+{% highlight 7 %}
        /      \
       3        8
      / \      /
     5   1    2
-```
+{% endhighlight %}
 
 通过构建**大顶堆**，实现**升序**排序。（同理，**小顶堆**对应**降序**排序）：
 
 step 1: 先找到最后一个非叶子节点 len(arr) / 2 - 1 = 6 / 2 - 1 = 2，即 a[2]，如果 a[2] 小于 其左右子节点的值则交换，8 > 2 不需要交换
 
-```7
+{% highlight 7 %}
        /      \
       3        **8（起始节点）**
      / \      /
     5   1    2
-```
+{% endhighlight %}
 
 step 2: 继续找到下一个非叶子节点（即当前坐标 - 1）a[1]，判断 a[1] < 左子节点的值，则交换值。交换后大于右子节点的值，则不交换
 
 
-```7
+{% highlight 7 %}
        /      \
       5        8
      / \      /
     3   1    2
-```
+{% endhighlight %}
 
 step 3: 继续找到下一个非叶子节点 （即当前坐标 - 1）a[0]，判断 a[0] > 左子节点的值，则不交换，a[0] < 右子节点的值，则交换值
 
-```8
+{% highlight 8 %}
        /      \
       5        7
      / \      /
     3   1    2
-```
+{% endhighlight %}
 
 step 4: 检查调整后的子树，是否满足大顶堆性质，如果不满足则继续调整
 
 step 5: 若大顶堆已构建完成，然后交换根节点与最后一个元素，此时最大的元素已经归位，然后对剩下的元素重复上面的操作
 
-```2
+{% highlight 2 %}
        /      \
       5        7
      / \      /
     3   1    **8（已归位）**
-```
+{% endhighlight %}
 
 step 6: 最终可以得到升序序列：1 2 3 5 7 8
 
-```1
+{% highlight 1 %}
        /      \
       2        3
      / \      /
     5   7    8
-```
+{% endhighlight %}
 
 ## 堆排序实现代码
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <vector>
 
@@ -411,35 +411,35 @@ int main()
 res:
 -1 0 2 3 5 6 7 8 8
 */
-```
+{% endhighlight %}
 
 注意，这里实现并非调整到严格意义上的大顶堆，只是保证根节点为最大值（但是，可以满足排序的需求）。
 
 例如，初始状态为：
 
-```7
+{% highlight 7 %}
        /      \
       3        2
      / \      / \
     5   6    0   -1
    / \
   8   8
-```
+{% endhighlight %}
 
 第一轮build_max_heap后，结果为：（并不满足大顶堆）
 
-```8
+{% highlight 8 %}
        /      \
       7        2
      / \      / \
     3   6    0   -1
    / \
   8   5
-```
+{% endhighlight %}
 
 若要构建完整的大顶堆，则需要在交换节点后递归调整子树，调整代码如下：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <vector>
 
@@ -517,18 +517,18 @@ int main()
 res:
 -1 0 2 3 5 6 7 8 8
 */
-```
+{% endhighlight %}
 
 第一轮build_max_heap后，结果为：（满足大顶堆）
 
-```8
+{% highlight 8 %}
        /      \
       8        2
      / \      / \
     7   6    0   -1
    / \
   3   5
-```
+{% endhighlight %}
 
 
 ## 堆的应用

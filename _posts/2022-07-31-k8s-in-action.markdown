@@ -77,7 +77,7 @@ Master 里有 4 个组件，分别是 `apiserver`、`etcd`、`scheduler`、`cont
 
 这 4 个组件也都被容器化了，运行在集群的 Pod 里，可以用 kubectl 来查看它们的状态：
 
-```
+{% highlight text %}
 $ kubectl get pod -n kube-system
 NAME                               READY   STATUS             RESTARTS          AGE
 coredns-64897985d-256jm            0/1     CrashLoopBackOff   320 (4m29s ago)   23h
@@ -87,7 +87,7 @@ kube-controller-manager-minikube   1/1     Running            0                 
 kube-proxy-hvmcp                   1/1     Running            0                 23h
 kube-scheduler-minikube            1/1     Running            0                 23h
 storage-provisioner                1/1     Running            1 (23h ago)       23h
-```
+{% endhighlight %}
 
 > 注意：命令行里要用 -n kube-system 参数，表示检查 kube-system 名字空间里的 Pod
 
@@ -159,7 +159,7 @@ https://jimmysong.io/kubernetes-handbook/concepts/service.html
 > kubectl [command] [TYPE] [NAME] [flags]
 
 {% raw %}
-```bash
+{% highlight bash %}
 kubectl help
 
 kubectl version
@@ -222,7 +222,7 @@ kubectl get pods --all-namespaces --field-selector status.podIP="$PodIP"
 kubectl get pods --namespace autoworlds | grep Evicted | awk '{print $1}' | xargs kubectl delete pod --namespace autoworlds
 kubectl get pods --namespace autoworlds | grep Evicted | awk '{print $1}' | xargs -I {} kubectl delete pod --namespace autoworlds {} --force --grace-period=0 # 强制删除
 
-```
+{% endhighlight %}
 {% endraw %}
 
 # Kubernetes 工具
@@ -251,45 +251,45 @@ minikube 支持 Mac，Windows，Linux 这三种主流平台，可以在 https://
 
 安装脚本：
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube /usr/local/bin/
 echo "done"
-```
+{% endhighlight %}
 
 安装完成：
 
-```
+{% highlight text %}
 $ ls -lh `which minikube`
 -rwxr-xr-x 1 root root 73M Aug 25 09:44 /usr/local/bin/minikube
 
 $ minikube version
 minikube version: v1.26.1
 commit: 62e108c3dfdec8029a890ad6d8ef96b6461426dc
-```
+{% endhighlight %}
 
 不过 minikube 只能够搭建 Kubernetes 环境，要操作 Kubernetes，还需要另一个专门的客户端工具 kubectl。所以，在 minikube 环境里，会用到两个客户端：minikube 管理 Kubernetes 集群环境，kubectl 操作实际的 Kubernetes 功能。kubectl 是一个与 Kubernetes、minikube 彼此独立的项目，所以不包含在 minikube 里，但 minikube 提供了安装它的简化方式，只需执行下面的这条命令，就会把与当前 Kubernetes 版本匹配的 kubectl 下载下来，存放在内部目录（例如 .minikube/cache/linux/arm64/v1.23.3），然后就可以使用它来对 Kubernetes“发号施令”了。
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 minikube kubectl
 echo "done"
-```
+{% endhighlight %}
 
 使用命令 minikube start 会从 Docker Hub 上拉取镜像，以当前最新版本的 Kubernetes 启动集群。不过为了保证实验环境的一致性，可以在后面再加上一个参数 --kubernetes-version，明确指定要使用 Kubernetes 版本。
 
-```
+{% highlight text %}
 #!/bin/bash
 # start_minikube.sh
 
 minikube start --kubernetes-version=v1.23.3
 echo "done"
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ ./start_minikube.sh
 * minikube v1.26.1 on Centos 7.2 (amd64)
 * Automatically selected the docker driver
@@ -313,19 +313,19 @@ $ ./start_minikube.sh
 * kubectl not found. If you need it, try: 'minikube kubectl -- get pods -A'
 * Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 done
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ docker image ls
 REPOSITORY                                     TAG                 IMAGE ID            CREATED             SIZE
 gcr.io/k8s-minikube/kicbase                    v0.0.33             b7ab23e98277        3 weeks ago         1.14GB
-```
+{% endhighlight %}
 
 > 注意：由于国内网络环境的原因，下载 gcr.io 的镜像比较困难，minikube 提供了特殊的启动参数 --image-mirror-country=cn --registry-mirror=xxx --image-repository=xxx 等，如果遇到问题可以尝试下。例如：minikube start --image-mirror-country='cn' --kubernetes-version=v1.23.3 --force
 
 现在 Kubernetes 集群就已经在本地运行了，可以使用下面命令来查看集群的状态：
 
-```bash
+{% highlight bash %}
 $ minikube status
 minikube
 type: Control Plane
@@ -333,51 +333,51 @@ host: Running
 kubelet: Running
 apiserver: Running
 kubeconfig: Configured
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 $ minikube node list
 minikube        192.168.49.2
-```
+{% endhighlight %}
 
 可以看到，Kubernetes 集群里现在只有一个节点，名字就叫 minikube，类型是 Control Plane，里面有 host、kubelet、apiserver 三个服务，IP 地址是 192.168.49.2。
 
 可以用命令 minikube ssh 登录到这个节点上，虽然它是虚拟的，但用起来和实机也没什么区别：
 
-```bash
+{% highlight bash %}
 $ minikube ssh
 Last login: Thu Aug 25 02:04:57 2022 from 192.168.49.1
 docker@minikube:~$ pwd
 /home/docker
-```
+{% endhighlight %}
 
 接下来就可以使用 kubectl 来操作一下，初步体会 Kubernetes 这个容器编排系统。
 
 > 注意：因为使用 minikube 自带的 kubectl 有一点形式上的限制，要在前面加上 minikube 的前缀
 
-```
+{% highlight text %}
 $ minikube kubectl -- version
 Client Version: version.Info{Major:"1", Minor:"23", GitVersion:"v1.23.3", GitCommit:"816c97ab8cff8a1c72eccca1026f7820e93e0d25", GitTreeState:"clean", BuildDate:"2022-01-25T21:25:17Z", GoVersion:"go1.17.6", Compiler:"gc", Platform:"linux/amd64"}
 Server Version: version.Info{Major:"1", Minor:"23", GitVersion:"v1.23.3", GitCommit:"816c97ab8cff8a1c72eccca1026f7820e93e0d25", GitTreeState:"clean", BuildDate:"2022-01-25T21:19:12Z", GoVersion:"go1.17.6", Compiler:"gc", Platform:"linux/amd64"}
-```
+{% endhighlight %}
 
 为了避免这个不大不小的麻烦，建议使用 Linux 的 alias 功能，为它创建一个别名，写到当前用户目录下的 .bashrc 里：
 
-```bash
+{% highlight bash %}
 alias kubectl="minikube kubectl --"
-```
+{% endhighlight %}
 
 之后就可以直接使用 kubectl 命令了。
 
-```
+{% highlight text %}
 $ kubectl version --short
 Client Version: v1.23.3
 Server Version: v1.23.3
-```
+{% endhighlight %}
 
 下面在 Kubernetes 里运行一个 Nginx 应用，命令与 Docker 一样，也是 run，不过形式上有点区别，需要用 --image 指定镜像，然后 Kubernetes 会自动拉取并运行：
 
-```
+{% highlight text %}
 $ kubectl run ngx --image=nginx:alpine
 pod/ngx created
 $ kubectl get node
@@ -390,7 +390,7 @@ $ kubectl delete pod ngx
 pod "ngx" deleted
 $ kubectl get pod
 No resources found in default namespace.
-```
+{% endhighlight %}
 
 > 注意：通过 kubectl get node 查看 Kubernetes 的节点状态，可以看到当前的 minikube 集群里只有一个 Master，那 Node 怎么不见了？这是因为 Master 和 Node 的划分不是绝对的。当集群的规模较小，工作负载较少的时候，Master 也可以承担 Node 的工作，搭建的 minikube 环境，它就只有一个节点，这个节点既是 Master 又是 Node。
 
@@ -402,9 +402,9 @@ No resources found in default namespace.
 
 参考`kubectl completion -h`
 
-```bash
+{% highlight bash %}
 source <(kubectl completion bash)
-```
+{% endhighlight %}
 
 
 ## container_memory_working_set_bytes 当前工作集使用量 (limit 限制时 OOM 判断依据)
@@ -423,7 +423,7 @@ source <(kubectl completion bash)
 
 **在容器内**，计算某个容器的内存使用情况：
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 memory_stat_file="/sys/fs/cgroup/memory/memory.stat"
@@ -438,12 +438,12 @@ container_memory_working_set_bytes=$((total_rss + total_cache + total_shmem - to
 container_memory_working_set_MB=$(echo "scale=2; ${container_memory_working_set_bytes}/1048576" | bc)
 
 echo "Container memory working set: ${container_memory_working_set_MB} MB"
-```
+{% endhighlight %}
 
 **在容器宿主机上**，通过 cgroup_id 计算所属的 cgroup（控制组）的内存使用情况：
 
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 if [ -z "$1" ]; then
@@ -473,7 +473,7 @@ container_memory_working_set_bytes=$((total_rss + total_cache + total_shmem - to
 container_memory_working_set_MB=$(echo "scale=2; ${container_memory_working_set_bytes}/1048576" | bc)
 
 echo "Container memory working set: ${container_memory_working_set_MB} MB"
-```
+{% endhighlight %}
 
 > 问题： [Memory usage discrepancy: cgroup memory.usage_in_bytes vs. RSS inside docker container](https://stackoverflow.com/questions/50865763/memory-usage-discrepancy-cgroup-memory-usage-in-bytes-vs-rss-inside-docker-con)
 
@@ -482,40 +482,40 @@ echo "Container memory working set: ${container_memory_working_set_MB} MB"
 
 kubectl top pods says 5GB:
 
-```bash
+{% highlight bash %}
 % kubectl top pods -l app=myapp
 NAME                             CPU(cores)   MEMORY(bytes)
 myapp-56b947bf6d-2lcr7           39m          5039Mi
-```
+{% endhighlight %}
 
 Cadvisor reports a similar number (might have been from a slightly different time, so please ignore small differences):
 
-```bash
+{% highlight bash %}
 container_memory_usage_bytes{pod_name=~".*myapp.*"}      5309456384
 
 5309456384 / 1024.0 / 1024 ~= 5063 ~= 5039
-```
+{% endhighlight %}
 
 Inside the container, this file appears to be where cadvisor is getting its data:
 
-```bash
+{% highlight bash %}
 % kubectl exec -it myapp-56b947bf6d-2lcr7 bash
 meme@myapp-56b947bf6d-2lcr7:/app# cat /sys/fs/cgroup/memory/memory.usage_in_bytes
 5309456384
-```
+{% endhighlight %}
 
 The resident set size (RSS) inside the container does NOT match up (less than 1GB):
 
-```bash
+{% highlight bash %}
 kb=$(ps aux | grep -v grep | grep -v 'ps aux' | grep -v bash | grep -v awk | grep -v RSS | awk '{print $6}' | awk '{s+=$1} END {printf "%.0f", s}'); mb=$(expr $kb / 1024); printf "Kb: $kb\nMb: $mb\n"
 
 Kb: 698076
 Mb: 681
-```
+{% endhighlight %}
 
 Full ps aux in case that is helpful:
 
-```bash
+{% highlight bash %}
 meme@myapp-56b947bf6d-2lcr7:/app# ps aux | grep -v grep | grep -v 'ps aux' | grep -v bash | grep -v awk
 USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
 meme         1  0.0  0.0 151840 10984 ?        Ss   Jun04   0:29 /usr/sbin/apache2 -D FOREGROUND
@@ -530,11 +530,11 @@ www-data   180  0.3  0.0 349828 95112 ?        Sl   Jun04  44:14 hotapp
 www-data   185  0.3  0.0 346644 91948 ?        Sl   Jun04  43:49 hotapp
 www-data   186  0.3  0.0 346208 91568 ?        Sl   Jun04  44:27 hotapp
 www-data   189  0.2  0.0 350208 95476 ?        Sl   Jun04  41:47 hotapp
-```
+{% endhighlight %}
 
 Memory section from docker's container stats API:
 
-```bash
+{% highlight bash %}
 curl --unix-socket /var/run/docker.sock 'http:/v1.24/containers/a45fc651e7b12f527b677e6a46e2902786bee6620484922016a135e317a42b4e/stats?stream=false' | jq . # yields:
 
 "memory_stats": {
@@ -577,7 +577,7 @@ curl --unix-socket /var/run/docker.sock 'http:/v1.24/containers/a45fc651e7b12f52
   },
   "limit": 5368709120
 },
-```
+{% endhighlight %}
 
 A comment on https://github.com/google/cadvisor/issues/638 asserts:
 
@@ -593,7 +593,7 @@ https://docs.docker.com/engine/reference/commandline/stats/#parent-command says:
 
 And indeed, most of the stuff in `/sys/fs/cgroup/memory/memory.stat` in the container shows up in the above docker stats api response (slight differences are from taking the samples at a different time, sorry):
 
-```bash
+{% highlight bash %}
 meme@myapp-56b947bf6d-2lcr7:/app# cat /sys/fs/cgroup/memory/memory.stat
 cache 119492608
 rss 607436800
@@ -628,27 +628,27 @@ total_active_anon 611213312
 total_inactive_file 32800768
 total_active_file 81166336
 total_unevictable 0
-```
+{% endhighlight %}
 
 Memory info from `kubectl describe pod <pod>`:
 
-```bash
+{% highlight bash %}
 Limits:
   memory:  5Gi
 Requests:
   memory:  4Gi
-```
+{% endhighlight %}
 
 Here's what pmap says inside the container. In this one-liner, I get all process ids, run pmap -x on them, and pull the Kbytes column from the pmap results. The total result is 256 Megabytes (much less than ps's RSS, partially, I think, because many of the processes return no output from pmap -x):
 
-```bash
+{% highlight bash %}
 ps aux | awk '{print $2}' | grep -v PID | xargs sudo pmap -x | grep total | grep -v grep | awk '{print $3}' | awk '{s+=$1} END {printf "%.0f", s}'; echo
 256820
-```
+{% endhighlight %}
 
 [ps_mem.py](https://raw.githubusercontent.com/pixelb/ps_mem/master/ps_mem.py) is mentioned at https://stackoverflow.com/a/133444/6090676. It inspects `/proc/$pid/statm` and `/proc/$pid/smaps`. No illumination here (again, it seems to be ignoring some processes):
 
-```bash
+{% highlight bash %}
 # python ps_mem.py
 Private  +   Shared  =  RAM used    Program
 
@@ -657,7 +657,7 @@ Private  +   Shared  =  RAM used    Program
 ---------------------------------
                           5.7 MiB
 =================================
-```
+{% endhighlight %}
 
 There is another question similar to this (but with less information) at [Incorrect reporting of container memory usage by cadvisor](https://stackoverflow.com/q/46677536/6090676). Thanks!
 
@@ -712,16 +712,16 @@ Answers:
 
 So, like others have pointed out, Kubernetes doesn't support stop/pause of current state of pod and resume when needed. However, you can still achieve it by having no working deployments which is setting number of replicas to 0.
 
-```
+{% highlight text %}
 kubectl scale --replicas=0 deployment/<your-deployment>
-```
+{% endhighlight %}
 
 see the help
 
-```bash
+{% highlight bash %}
 # Set a new size for a Deployment, ReplicaSet, Replication Controller, or StatefulSet.
 kubectl scale --help
-```
+{% endhighlight %}
 
 Scale also allows users to specify one or more preconditions for the scale action.
 
@@ -729,7 +729,7 @@ If --current-replicas or --resource-version is specified, it is validated before
 
 Examples:
 
-```bash
+{% highlight bash %}
 # Scale a replicaset named 'foo' to 3.
 kubectl scale --replicas=3 rs/foo
 
@@ -744,7 +744,7 @@ kubectl scale --replicas=5 rc/foo rc/bar rc/baz
 
 # Scale statefulset named 'web' to 3.
 kubectl scale --replicas=3 statefulset/web
-```
+{% endhighlight %}
 
 如果也可以使用删除操作：
 
@@ -752,9 +752,9 @@ With Kubernets, it's not possible to stop/pause a Pod. However, you can delete a
 
 If you want to delete a Pod, you can run the following kubectl command:
 
-```
+{% highlight text %}
 kubectl delete -n default pod <your-pod-name>
-```
+{% endhighlight %}
 
 # Refer
 

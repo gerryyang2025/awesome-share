@@ -17,7 +17,7 @@ tags:
 # Matching IPv4 Addresses
 
 
-```
+{% highlight text %}
 # Simple regex to check for an IP address
 ^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$
 
@@ -35,7 +35,7 @@ tags:
 
 # Accurate regex that captures the four parts of the IP address
 ^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$
-```
+{% endhighlight %}
 
 refer:
 

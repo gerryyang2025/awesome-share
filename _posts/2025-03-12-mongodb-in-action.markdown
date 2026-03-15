@@ -29,14 +29,14 @@ tags:
 
 > A simple MongoDB document Structure:
 
-```
+{% highlight text %}
 {
   title: 'Geeksforgeeks',
   by: 'Harshit Gupta',
   url: 'https://www.geeksforgeeks.org/',
   type: 'NoSQL'
 }
-```
+{% endhighlight %}
 
 
 ## Document Database
@@ -120,9 +120,9 @@ When you use the `.tgz` package to install the server, you need to follow the [m
 
 Use the following command to install the dependencies required for the MongoDB Community `.tgz` tarball:
 
-```bash
+{% highlight bash %}
 sudo yum install libcurl openssl xz-libs
-```
+{% endhighlight %}
 
 ## Procedure
 
@@ -141,9 +141,9 @@ After you have installed the required prerequisite packages, download the MongoD
 
 For example, from a system shell, you can extract using the `tar` command:
 
-```bash
+{% highlight bash %}
 tar -zxvf mongodb-linux-*-8.0.12.tgz
-```
+{% endhighlight %}
 
 > 3. Ensure the binaries are in a directory listed in your PATH environment variable.
 
@@ -151,16 +151,16 @@ The MongoDB binaries are in the `bin/` directory of the tarball. You can either:
 
 * Copy the binaries into a directory listed in your `PATH` variable, such as `/usr/local/bin` (Update `/path/to/the/mongodb-directory/` with your installation directory as appropriate)
 
-```bash
+{% highlight bash %}
 sudo cp /path/to/the/mongodb-directory/bin/* /usr/local/bin/
-```
+{% endhighlight %}
 
 * Create symbolic links to the binaries from a directory listed in your `PATH` variable, such as `/usr/local/bin` (Update `/path/to/the/mongodb-directory/` with your installation directory as appropriate):
 
-```bash
+{% highlight bash %}
 # ln [OPTION]... [-T] TARGET LINK_NAME
 sudo ln -s  /path/to/the/mongodb-directory/bin/* /usr/local/bin/
-```
+{% endhighlight %}
 
 > 4. nstall the MongoDB Shell (`mongosh`).
 
@@ -191,17 +191,17 @@ By default, MongoDB runs using the `mongod` user account and uses the following 
 
 Create the MongoDB data and log directories:
 
-```bash
+{% highlight bash %}
 sudo mkdir -p /var/lib/mongo
 sudo mkdir -p /var/log/mongodb
-```
+{% endhighlight %}
 
 By default, MongoDB runs using the `mongod` user account. Create a `mongod` and a `mongodb` group. Ensure that the `mongod` belongs to the group then set the owner and group of these directories to `mongod`:
 
-```bash
+{% highlight bash %}
 sudo chown -R mongod:mongod /var/lib/mongo
 sudo chown -R mongod:mongod /var/log/mongodb
-```
+{% endhighlight %}
 
 
 ### To Use Non-Default Directories
@@ -217,9 +217,9 @@ To use a data directory and/or log directory other than the default directories:
 
 3. Ensure that the user running MongoDB has access to the directory or directories:
 
-```bash
+{% highlight bash %}
 sudo chown -R mongod:mongod <directory>
-```
+{% endhighlight %}
 
 If you change the user that runs the MongoDB process, you **must** give the new user access to these directories.
 
@@ -264,47 +264,47 @@ MongoDB Shell (mongosh) 是一个 JavaScript 和 Node.js REPL 环境，用于与
 
 * 查看所有数据库
 
-```javascript
+{% highlight javascript %}
 show dbs
-```
+{% endhighlight %}
 
 * 切换/创建数据库
 
-```javascript
+{% highlight javascript %}
 use mydb  // 切换到 mydb（若不存在则创建）
-```
+{% endhighlight %}
 
 * 删除当前数据库
 
-```javascript
+{% highlight javascript %}
 db.dropDatabase()  // 谨慎操作
-```
+{% endhighlight %}
 
 ## 集合（表）操作
 
 * 创建集合 (表)
 
-```javascript
+{% highlight javascript %}
 db.createCollection("users")  // 显式创建集合
-```
+{% endhighlight %}
 
 * 查看所有集合
 
-```javascript
+{% highlight javascript %}
 show collections
-```
+{% endhighlight %}
 
 * 删除集合
 
-```javascript
+{% highlight javascript %}
 db.users.drop()  // 删除 users 集合
-```
+{% endhighlight %}
 
 ## 文档（数据）CRUD 操作
 
 * 插入文档
 
-```javascript
+{% highlight javascript %}
 // 插入单条文档
 db.users.insertOne({
   name: "Alice",
@@ -318,11 +318,11 @@ db.users.insertMany([
   { name: "Bob", age: 32 },
   { name: "Charlie", age: 25 }
 ])
-```
+{% endhighlight %}
 
 * 查询文档
 
-```javascript
+{% highlight javascript %}
 // 查询所有文档
 db.users.find()
 
@@ -337,11 +337,11 @@ db.users.find().sort({ age: -1 })
 
 // 分页查询（跳过前2条，限制返回5条）
 db.users.find().skip(2).limit(5)
-```
+{% endhighlight %}
 
 * 更新文档
 
-```javascript
+{% highlight javascript %}
 // 更新单条文档（将 Alice 的 age 改为 29）
 db.users.updateOne(
   { name: "Alice" },
@@ -353,50 +353,50 @@ db.users.updateMany(
   { age: { $lt: 30 } },
   { $set: { status: "junior" } }
 )
-```
+{% endhighlight %}
 
 * 删除文档
 
-```javascript
+{% highlight javascript %}
 // 删除单条文档（name 为 Bob）
 db.users.deleteOne({ name: "Bob" })
 
 // 删除多条文档（age < 25）
 db.users.deleteMany({ age: { $lt: 25 } })
-```
+{% endhighlight %}
 
 ## 用户与权限管理
 
 * 创建用户
 
-```javascript
+{% highlight javascript %}
 use admin
 db.createUser({
   user: "admin",
   pwd: "your_password",
   roles: [ { role: "root", db: "admin" } ]
 })
-```
+{% endhighlight %}
 
 * 查看用户
 
-```javascript
+{% highlight javascript %}
 db.getUsers()  // 查看当前数据库的用户
-```
+{% endhighlight %}
 
 * 修改用户权限
 
-```javascript
+{% highlight javascript %}
 db.updateUser("admin", {
   roles: [ { role: "readWriteAnyDatabase", db: "admin" } ]
 })
-```
+{% endhighlight %}
 
 ## 索引管理
 
 * 创建索引
 
-```javascript
+{% highlight javascript %}
 // 单字段索引（按 age 升序）
 db.users.createIndex({ age: 1 })
 
@@ -405,62 +405,62 @@ db.users.createIndex({ name: 1, email: -1 })
 
 // 唯一索引（确保 email 唯一）
 db.users.createIndex({ email: 1 }, { unique: true })
-```
+{% endhighlight %}
 
 * 查看索引
 
-```javascript
+{% highlight javascript %}
 db.users.getIndexes()
-```
+{% endhighlight %}
 
 * 删除索引
 
-```javascript
+{% highlight javascript %}
 db.users.dropIndex("age_1")  // 指定索引名称
-```
+{% endhighlight %}
 
 ## 聚合与统计
 
 * 统计文档数量
 
-```javascript
+{% highlight javascript %}
 db.users.countDocuments({ age: { $gt: 25 } })
-```
+{% endhighlight %}
 
 * 聚合操作（按年龄分组统计）
 
-```javascript
+{% highlight javascript %}
 db.users.aggregate([
   { $group: { _id: "$age", total: { $sum: 1 } } },
   { $sort: { _id: 1 } }
 ])
-```
+{% endhighlight %}
 
 
 ## 数据备份与恢复
 
 * 备份数据库
 
-```bash
+{% highlight bash %}
 mongodump --uri="mongodb://username:password@localhost:27017/mydb" --out=/backup/
-```
+{% endhighlight %}
 
 * 恢复数据库
 
-```bash
+{% highlight bash %}
 mongorestore --uri="mongodb://username:password@localhost:27017/mydb" /backup/mydb/
-```
+{% endhighlight %}
 
 
 ## 其他实用命令
 
 * 查看数据库状态
 
-```javascript
+{% highlight javascript %}
 db.stats()  // 显示当前数据库的存储状态
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 cmgo-otma0539_0 [primary] test_db> db.stats()
 {
   db: 'test_db',
@@ -485,15 +485,15 @@ cmgo-otma0539_0 [primary] test_db> db.stats()
     }
   }
 }
-```
+{% endhighlight %}
 
 * 查看集合状态
 
-```javascript
+{% highlight javascript %}
 db.users.stats()
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 cmgo-otma0539_0 [primary] test_db> db.ImageVersion.stats()
 {
   ok: 1,
@@ -670,13 +670,13 @@ cmgo-otma0539_0 [primary] test_db> db.ImageVersion.stats()
   ns: 'test_db.ImageVersion',
   nindexes: 1
 }
-```
+{% endhighlight %}
 
 * 清空集合（保留结构）
 
-```javascript
+{% highlight javascript %}
 db.users.deleteMany({})  // 删除所有文档
-```
+{% endhighlight %}
 
 
 

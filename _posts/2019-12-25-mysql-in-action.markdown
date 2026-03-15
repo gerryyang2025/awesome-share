@@ -17,10 +17,10 @@ tags:
 
 ## 设置MySQL的最大链接数
 
-```
+{% highlight text %}
 show processlist;                  # 查看当前连接数
 show variables like 'max%';        # 查看当前配置的最大连接数
-```
+{% endhighlight %}
 
 修改最大连接数的方法：
 
@@ -37,25 +37,25 @@ max_connections = 2000
 
 用root用户登录mysql
 
-```
+{% highlight text %}
 mysql> use mysql
 mysql> show tables;
 mysql> select * from user limit 1\G                                 # 查看用户的信息
 mysql> grant all on *.* to root@'$ip' identified by '';             # 授权开发机
 mysql> flush privileges;                                            # 刷新MySQL的系统权限表
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 mysql> show grants\G
-```
+{% endhighlight %}
 
 ## 查看和设置字符集
 
-```sql
+{% highlight sql %}
 SHOW CHARACTER SET;
 set names gb2312;
 set names utf8;
-```
+{% endhighlight %}
 
 # MySQL事务
 
@@ -70,7 +70,7 @@ set names utf8;
 
 ## 查看和设置隔离级别
 
-```sql
+{% highlight sql %}
 -- 查看当前会话隔离级别
 SELECT @@tx_isolation;
 
@@ -85,7 +85,7 @@ set global transaction isolation level repeatable read | serializable | ...;
 
 -- 开始事务
 set autocommit=off 或者 start transaction
-```
+{% endhighlight %}
 
 # MySQL索引
 
@@ -97,7 +97,7 @@ set autocommit=off 或者 start transaction
 
 ## 联合索引
 
-```sql
+{% highlight sql %}
 CREATE TABLE test (
     id         INT NOT NULL,
     last_name  CHAR(30) NOT NULL,
@@ -105,7 +105,7 @@ CREATE TABLE test (
     PRIMARY KEY (id),
     INDEX name (last_name, first_name)
 );
-```
+{% endhighlight %}
 
 * MySQL can create composite indexes (that is, indexes on multiple columns). An index may consist of up to 16 columns. 
 * MySQL can use multiple-column indexes for queries that test all the columns in the index, or queries that test just the first column, the first two columns, the first three columns, and so on. If you specify the columns in the right order in the index definition, a single composite index can speed up several kinds of queries on the same table.
@@ -121,7 +121,7 @@ refer:
 
 测试用例：
 
-```
+{% highlight text %}
 CREATE DATABASE test_conf;
 USE test_conf;
 CREATE TABLE `t_test` (
@@ -135,12 +135,12 @@ insert into t_test(FExtAttr) values('[{"Key":"Creator","Value":"gerry"}, {"Key":
 insert into t_test(FExtAttr) values('[{"Key":"Creator","Value":"bob"}, {"Key":"Remark","Value":"ok"}]');
 update t_test set FExtAttr = '[{"Key":"Creator","Value":"gerry"}, {"Key":"Creator","Value":"yang"}, {"Key":"Remark","Value":"ok"}]';
 
-```
+{% endhighlight %}
 
 常见用法：
 
 
-```
+{% highlight text %}
 mysql> select * from t_test;
 +-----+---------------------------------------------------------------------------------------------------------------+---------------------+
 | FId | FExtAttr                                                                                                      | FUpdateTime         |
@@ -308,7 +308,7 @@ mysql> select FId, FExtAttr from t_test where CAST('{"Key": "Creator", "Value": 
 |  10 | [{"Key": "Creator", "Value": "gerry"}, {"Key": "Creator", "Value": "yang"}, {"Key": "Remark", "Value": "ok"}] |
 +-----+---------------------------------------------------------------------------------------------------------------+
 1 row in set (0.00 sec)
-```
+{% endhighlight %}
 
 
 Refer:
@@ -321,14 +321,14 @@ Refer:
 ## 利用 force index 优化sql语句性能
 
 
-```sql
+{% highlight sql %}
 select customer,count(1) c  
 from upv_1  force index(idx_created)  
 where created between "2015-07-06" and "2015-07-07"  
 group by customer   
 having c > 15  
 order by c desc  
-```
+{% endhighlight %}
 
 https://www.jianshu.com/p/df2bb6ca178e
 
@@ -348,7 +348,7 @@ https://www.jianshu.com/p/df2bb6ca178e
 
 以下是数据库日志，可以看到非事务sql操作在提交后，没有显式commit，最后被其他事务sql操作的rollback执行后，之前非事务sql操作也rollback了：
 
-```
+{% highlight text %}
 [2020-03-28 10:04:00 114016] DEBUG tid:13583 con:0x7f8ae8c35400 user:midas_w C:100.99.70.99:49055 G:100.125.130.83:35352 S:100.125.130.84:4003 timecost:0.294(ms) inj_id:5 sql:3,24 "set session autocommit=0"
 [2020-03-28 10:04:00 114248] DEBUG tid:13583 con:0x7f8ae8c35400 user:midas_w C:100.99.70.99:49055 G:100.125.130.83:35352 S:100.125.130.84:4003 timecost:0.536(ms) inj_id:7 sql:3,41 "XA START '36c73128-ba-87787c-5e7eb090-39'"
 [2020-03-28 10:04:00 114700] ERROR tid:13583 con:0x7f8ae8c35400 user:midas_w C:100.99.70.99:49055 G:100.125.130.83:35352 S:100.125.130.84:4003 timecost:1.002(ms) inj_id:1 sql:3,314 "insert into `order_center`.t_midas_order_info (FOfferId, FOrderId, FOrderType, FLoginId, FLoginIdType, FProvideId, FProvideIdType, FPayId, FPayIdType, FCreateTime)  values  ('TC10100', 'skycfwu_tdeatest003', '2', '773632134', 'hy_gameid', '773632134', 'hy_gameid', '773632134', 'hy_gameid', '2020-03-28 10:03:59') "
@@ -377,7 +377,7 @@ https://www.jianshu.com/p/df2bb6ca178e
 [2020-03-28 10:04:00 711617] DEBUG tid:13583 con:0x7f8ae8c35400 user:midas_w C:100.99.70.99:49055 G:100.125.130.83:35352 S:100.125.130.84:4003 timecost:1.045(ms) inj_id:1 sql:3,258 "select FOfferId,FOrderId,FSubOrderId,FPayChannel,FPayChannelSubId,FState from `order_center`.t_midas_suborder_state where ((FOfferId = 'TC10100') and (FOrderId = 'skycfwu_tdeatest003') and (FSubOrderId = '20200323676000000001117752') and (FOrderType = '2')) "
 [2020-03-28 10:04:30 748321] DEBUG tid:13583 con:0x7f8ae8c35400 user:midas_w C:100.99.70.99:49055 G:100.125.130.83:32340 S:100.125.130.85:4002 timecost:0.299(ms) inj_id:7 sql:3,41 "XA START '36c73128-ba-87787f-5e7eb090-39'"
 
-```
+{% endhighlight %}
 
 * [Difference between SET autocommit=1 and START TRANSACTION in mysql](https://stackoverflow.com/questions/2950676/difference-between-set-autocommit-1-and-start-transaction-in-mysql-have-i-misse)
 * [13.3.7 SET TRANSACTION Statement](https://dev.mysql.com/doc/refman/8.0/en/set-transaction.html#isolevel_serializable)
@@ -419,16 +419,16 @@ refer:
 
 If you specify an ON DUPLICATE KEY UPDATE clause and a row to be inserted would cause a duplicate value in a UNIQUE index or PRIMARY KEY, an UPDATE of the old row occurs. For example, if column a is declared as UNIQUE and contains the value 1, the following two statements have similar effect:
 
-```sql
+{% highlight sql %}
 INSERT INTO t1 (a,b,c) VALUES (1,2,3)
   ON DUPLICATE KEY UPDATE c=c+1;
 
 UPDATE t1 SET c=c+1 WHERE a=1;
-```
+{% endhighlight %}
 
 测试：
 
-```sql
+{% highlight sql %}
 mysql> desc t_gerry;
 +-------+-------------+------+-----+---------+-------+
 | Field | Type        | Null | Key | Default | Extra |
@@ -515,7 +515,7 @@ mysql> select * from t_gerry;
 | NULL | 20   |
 +------+------+
 11 rows in set (0.00 sec)
-```
+{% endhighlight %}
 
 refer:
 * [INSERT ... ON DUPLICATE KEY UPDATE Statement](https://dev.mysql.com/doc/refman/8.0/en/insert-on-duplicate.html)
@@ -526,11 +526,11 @@ By default, [mysql_query()](https://dev.mysql.com/doc/refman/8.0/en/mysql-query.
 
 MySQL also supports the execution of a string containing multiple statements separated by semicolon (;) characters. This capability is enabled by special options that are specified either when you connect to the server with mysql_real_connect() or after connecting by calling [mysql_set_server_option()](https://dev.mysql.com/doc/refman/8.0/en/mysql-set-server-option.html).
 
-```
+{% highlight text %}
 If you enable multiple-statement support, **you should retrieve results from calls to mysql_query() or mysql_real_query() by using a loop that calls [mysql_next_result()](https://dev.mysql.com/doc/refman/8.0/en/mysql-next-result.html) to determine whether there are more results**. 
 
 Enabling multiple-statement support with **MYSQL_OPTION_MULTI_STATEMENTS_ON** does not have quite the same effect as enabling it by passing the **CLIENT_MULTI_STATEMENTS** flag to **mysql_real_connect()**.
-```
+{% endhighlight %}
 
 Executing a multiple-statement string can produce multiple result sets or row-count indicators. Processing these results involves a different approach than for the single-statement case: After handling the result from the first statement, it is necessary to check whether more results exist and process them in turn if so. To support multiple-result processing, the C API includes the [mysql_more_results()](https://dev.mysql.com/doc/refman/8.0/en/mysql-more-results.html) and [mysql_next_result()](https://dev.mysql.com/doc/refman/8.0/en/mysql-next-result.html) functions. These functions are used at the end of a loop that iterates as long as more results are available. Failure to process the result this way may result in a dropped connection to the server.
 
@@ -554,26 +554,26 @@ refer:
 
 [Duplicate / Copy records in the same MySQL table](https://stackoverflow.com/questions/729489/duplicate-copy-records-in-the-same-mysql-table)
 
-```sql
+{% highlight sql %}
 CREATE TEMPORARY TABLE tmp SELECT * FROM invoices WHERE id = 99;
 UPDATE tmp SET id=100 WHERE id = 99;
 INSERT INTO invoices SELECT * FROM tmp WHERE id = 100;
-```
+{% endhighlight %}
 
 或者
 
-```sql
+{% highlight sql %}
 create table t1 like t2;
 insert into t1 select * from t2;
 update t1 set a=xxx;
 insert into t2 select * from t1;
-```
+{% endhighlight %}
 
 ## 创建DB和库表，更新库表
 
 创建DB：
 
-```bash
+{% highlight bash %}
 #!/bin/sh
 
 echo ""
@@ -594,11 +594,11 @@ create database $db_xxx;
 " | mysql $Info
 
 echo "`date +%y-%m-%d-%X`: end to create" 
-```
+{% endhighlight %}
 
 创建库表，以下为分库分表的方式：
 
-```bash
+{% highlight bash %}
 #!/bin/sh
 
 echo ""
@@ -644,67 +644,67 @@ while test $iDTable -le $EndID; do
 done
 
 echo "`date +%y-%m-%d-%X`: end to create" 
-```
+{% endhighlight %}
 
 更新库表：
 
-```sql
+{% highlight sql %}
 ALTER TABLE t_xxx ADD Fxxx1 varchar(24) NOT NULL default ''  COMMENT 'xxx' AFTER Fxxx2;
-```
+{% endhighlight %}
 
 
 ## 索引创建，更新和删除
 
 在创建表时指定索引字段（INDEX）：
 
-```sql
+{% highlight sql %}
 CREATE TABLE t_xxx (
     Fusr_id    varchar(50)    NOT NULL COMMENT 'usr id',
     Fusr_name  varchar(1024)  NOT NULL default '' COMMENT 'usr name',
     PRIMARY KEY (Fusr_id),
     INDEX Fusr_name_idx (Fusr_name)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-```
+{% endhighlight %}
 
 创建表后添加索引字段：
 
-```sql
+{% highlight sql %}
 alter table t_xxx add index Fusr_id_idx(Fusr_id);
-```
+{% endhighlight %}
 
 删除索引字段：
 
-```sql
+{% highlight sql %}
 alter table t_xxx drop index Fusr_name_idx;
-```
+{% endhighlight %}
 
 查看索引字段查询性能：
 
-```
+{% highlight text %}
 explain select * from t_xxx where Fusr_name='10001'\G
-```
+{% endhighlight %}
 
 显示表的索引信息：
 
-```
+{% highlight text %}
 show index from t_xxx;
-```
+{% endhighlight %}
 
 创建唯一索引（UNIQUE INDEX）：
 
-```sql
+{% highlight sql %}
 CREATE UNIQUE INDEX index_name ON table_name(index_column_1,index_column_2,...);
-```
+{% endhighlight %}
 
 创建唯一性限制（UNIQUE KEY）：
 
-```sql
+{% highlight sql %}
 CREATE TABLE table_name(
    UNIQUE KEY(index_column_,index_column_2,...)
 );
 
 ALTER TABLE table_name ADD CONSTRAINT constraint_name UNIQUE KEY(column_1,column_2,...);
-```
+{% endhighlight %}
 
 **MySQL UNIQUE Index & NULL的关系：**
 
@@ -718,16 +718,16 @@ refer:
 ## 更改字段类型
 
 
-```sql
+{% highlight sql %}
 ALTER TABLE tablename MODIFY columnname INTEGER;
-```
+{% endhighlight %}
 
 https://dev.mysql.com/doc/refman/8.0/en/alter-table.html
 
 
 ## 时间函数
 
-```
+{% highlight text %}
 mysql> select unix_timestamp();
 +------------------+
 | unix_timestamp() |
@@ -767,7 +767,7 @@ mysql> select localtime();
 | 2014-07-10 13:00:47 | 
 +---------------------+
 1 row in set (0.00 sec)
-```
+{% endhighlight %}
 
 ## MySQL 5.7.8 JSON
 
@@ -815,7 +815,7 @@ query_cache_type (开关)
 
 > Query Cache命中率 = Qcache_hits / (Qcache_hits + Qcache_inserts)
 
-```
+{% highlight text %}
 mysql> show variables like '%query_cache%';
 +------------------------------+---------+
 | Variable_name                | Value   |
@@ -842,13 +842,13 @@ mysql> show status like 'Qcache%';
 | Qcache_queries_in_cache | 0     |
 | Qcache_total_blocks     | 0     |
 +-------------------------+-------+
-```
+{% endhighlight %}
 
 ## InnoDB的缓存性能
 
 当使用InnoDB存储引擎时，`innodb_buffer_pool_size`是影响性能的关键参数，用来设置用于缓存InnoDB索引及数据块的内存区域大小。即，当操作一个InnoDB表的时候，返回的所有数据或者查询过程中用到的任何一个索引块，都会在这个内存区域中查询一遍。如果有足够的内存，尽可能将该参数设置到足够大，将尽可能多的InnoDB的索引及数据都放到该缓冲区中。
 
-```
+{% highlight text %}
 mysql> show variables like '%innodb_buffer%';
 +-------------------------------------+----------------+
 | Variable_name                       | Value          |
@@ -863,7 +863,7 @@ mysql> show variables like '%innodb_buffer%';
 | innodb_buffer_pool_populate         | OFF            |
 | innodb_buffer_pool_size             | 1073741824     |
 +-------------------------------------+----------------+
-```
+{% endhighlight %}
 
 
 # 代码实践

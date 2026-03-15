@@ -10,13 +10,14 @@ out = []
 i = 0
 while i < lines.size
   line = lines[i]
-  # Match opening fence: ```lang or ``` (lang optional)
-  if line =~ /\A```(\w*)\s*\r?\n\z/
-    lang = $1.empty? ? "text" : $1
+  # Match opening fence: ```lang or ``` (lang may contain - or +, e.g. ```-wunused-function)
+  if line =~ /\A```([^\s\r\n]*)\s*\r?\n\z/
+    raw_lang = $1
+    lang = raw_lang.empty? ? "text" : (raw_lang =~ /\A[\w+]+\z/ ? raw_lang : "text")
     i += 1
     block = []
     while i < lines.size
-      break if lines[i] =~ /\A```\s*\r?\n\z/
+      break if lines[i] =~ /\A```\s*\r?\n?\z/
       block << lines[i]
       i += 1
     end

@@ -37,15 +37,15 @@ See [docs/heapprofile.html](https://gperftools.github.io/gperftools/heapprofile.
 2. Run your executable with the `HEAPPROFILE` environment var set: `HEAPPROFILE=/tmp/heapprof <path/to/binary> [binary args]`
 3. Run `pprof` to analyze the heap usage
 
-```
+{% highlight text %}
 $ pprof --text <path/to/binary> heapprof.0045.heap
-```
+{% endhighlight %}
 
 You can also use `LD_PRELOAD` to heap-profile an executable that you didn't compile.
 
 测试代码：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 using namespace std;
 
@@ -70,11 +70,11 @@ int main() {
         f2();
         return 0;
 }
-```
+{% endhighlight %}
 
 编译及内存使用分析：
 
-```
+{% highlight text %}
 $ g++ c.cc -L$HOME/tools/gperftools-2.9.1_install/lib -ltcmalloc -lprofiler
 $ HEAPPROFILE=heapprofile.out ./a.out
 Starting tracking the heap
@@ -88,18 +88,18 @@ Total: 6.0 MB
      0.0   0.0% 100.0%      6.0 100.0% __libc_start_main
      0.0   0.0% 100.0%      6.0 100.0% _start
      0.0   0.0% 100.0%      6.0 100.0% main
-```
+{% endhighlight %}
 
 使用`--svg`或`--pdf`的方式生成调用关系图形。其中，对于CPU profile，有向边的方向表示，调用者指向被调用者；有向边上的数字表示，被调用者所消耗的CPU时间。性能分析通过抽样的方法完成（尽量减少对原程序的运行影响），默认是1秒100个样本，一个样本是10毫秒，即时间单位是10毫秒；可以通过环境变量`CPUPROFILE_FREQUENCY`设置采样频率。
 
-```
+{% highlight text %}
 # 输出svg
 pprof --svg a.out heapprofile.out.0001.heap > heapprofile.svg
 
 # 输出 callgrind
 # http://kcachegrind.sourceforge.net/html/Home.html
 pprof --callgrind a.out heapprofile.out.0001.heap > heapprofile.callgrind
-```
+{% endhighlight %}
 
 查看`heapprofile.svg`文件：
 
@@ -137,9 +137,9 @@ Here's how to run a program with whole-program heap checking:
 
 Define the environment variable `HEAPCHECK` to the [type of heap-checking](https://gperftools.github.io/gperftools/heap_checker.html#types) to do. For instance, to heap-check /usr/local/bin/my_binary_compiled_with_tcmalloc:
 
-```
+{% highlight text %}
 env HEAPCHECK=normal /usr/local/bin/my_binary_compiled_with_tcmalloc
-```
+{% endhighlight %}
 
 Note that since the heap-checker uses the heap-profiling framework internally, it is not possible to run both the `heap-checker` and [heap profiler](https://gperftools.github.io/gperftools/heapprofile.html) at the same time.
 
@@ -167,14 +167,14 @@ Instead of whole-program checking, you can check certain parts of your code to v
 
 To use this kind of checking code, bracket the code you want checked by creating a `HeapLeakChecker` object at the beginning of the code segment, and call `NoLeaks()` at the end. These functions, and all others referred to in this file, are declared in `<gperftools/heap-checker.h>`.
 
-```cpp
+{% highlight cpp %}
 HeapLeakChecker heap_checker("test_foo");
 {
 code that exercises some foo functionality;
 this code should not leak memory;
 }
 if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
-```
+{% endhighlight %}
 
 env HEAPCHECK=local /usr/local/bin/my_binary_compiled_with_tcmalloc
 
@@ -184,12 +184,12 @@ If you want to do whole-program leak checking in addition to this manual leak ch
 
 Sometimes your code has leaks that you know about and are willing to accept. You would like the heap checker to ignore them when checking your program. You can do this by bracketing the code in question with an appropriate heap-checking construct:
 
-```cpp
+{% highlight cpp %}
 {
     HeapLeakChecker::Disabler disabler;
     <leaky code>
 }
-```
+{% endhighlight %}
 
 > Tuning the Heap Checker
 
@@ -197,7 +197,7 @@ The heap leak checker has many options, some that trade off running time and acc
 
 测试代码：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 using namespace std;
 
@@ -222,11 +222,11 @@ int main() {
         f2();
         return 0;
 }
-```
+{% endhighlight %}
 
 编译及内存泄漏分析：
 
-```
+{% highlight text %}
 $ g++ c.cc -L$HOME/tools/gperftools-2.9.1_install/lib -ltcmalloc -lprofiler
 $ $ env HEAPCHECK=normal ./a.out
 WARNING: Perftools heap leak checker is active -- Performance may suffer
@@ -250,11 +250,11 @@ pprof ./a.out "/tmp/a.out.154004._main_-end.heap" --inuse_objects --lines --heap
 If you are still puzzled about why the leaks are there, try rerunning this program with HEAP_CHECK_TEST_POINTER_ALIGNMENT=1 and/or with HEAP_CHECK_MAX_POINTER_OFFSET=-1
 If the leak report occurs in a small fraction of runs, try running with TCMALLOC_MAX_FREE_QUEUE_SIZE of few hundred MB or with TCMALLOC_RECLAIM_MEMORY=false, it might help find leaks more repeata
 Exiting with error code (instead of crashing) because of whole-program memory leaks
-```
+{% endhighlight %}
 
 也可以生成svg格式输出，可以看到有`4MB`的内存泄漏：
 
-```
+{% highlight text %}
 $ pprof ./a.out "/tmp/a.out.154004._main_-end.heap" --inuse_objects --lines --heapcheck  --edgefraction=1e-10 --nodefraction=1e-10
 Using local file ./a.out.
 Using local file /tmp/a.out.154004._main_-end.heap.
@@ -262,16 +262,16 @@ $ pprof --svg a.out /tmp/a.out.154004._main_-end.heap > a.heap_check3.svg
 Using local file a.out.
 Using local file /tmp/a.out.154004._main_-end.heap.
 Dropping nodes with <= 0.0 MB; edges with <= 0.0 abs(MB)
-```
+{% endhighlight %}
 
 ![gperftools_heap_check](/assets/images/202106/gperftools_heap_check.png)
 
 如果项目不可以链接`tcmalloc`，也可以通过`LD_PRELOAD`的方式执行：
 
-```
+{% highlight text %}
 $ g++ c.cc -L$HOME/tools/gperftools-2.9.1_install/lib
 $ LD_PRELOAD="/data/home/gerryyang/tools/gperftools-2.9.1_install/lib/libtcmalloc.so" HEAPCHECK=normal ./a.out
-```
+{% endhighlight %}
 
 # CPU PROFILER
 
@@ -281,13 +281,13 @@ See [docs/cpuprofile.html](https://gperftools.github.io/gperftools/cpuprofile.ht
 2. Run your executable with the `CPUPROFILE` environment var set: `CPUPROFILE=/tmp/prof.out <path/to/binary> [binary args]`
 3. Run pprof to analyze the CPU usage
 
-```
+{% highlight text %}
 $ pprof --text <path/to/binary> prof.out
-```
+{% endhighlight %}
 
 测试代码：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 using namespace std;
 void func1() {
@@ -312,11 +312,11 @@ int main() {
         func3();
         return 0;
 }
-```
+{% endhighlight %}
 
 编译及CPU使用分析：
 
-```
+{% highlight text %}
 $ g++ a.cc -L$HOME/tools/gperftools-2.9.1_install/lib -ltcmalloc -lprofiler
 $ CPUPROFILE=cpuprofile.out ./a.out
 PROFILE: interrupts/evictions/bytes = 65/1/344
@@ -330,17 +330,17 @@ Total: 65 samples
        0   0.0% 100.0%       65 100.0% _start
        0   0.0% 100.0%       65 100.0% func3
        0   0.0% 100.0%       65 100.0% main
-```
+{% endhighlight %}
 
 其他输出方式：
 
-```
+{% highlight text %}
 # 输出pdf
 pprof --pdf a.out cpuprofile.out > cpuprofile.pdf
 
 # 输出svg
 pprof --svg a.out cpuprofile.out > cpuprofile.svg
-```
+{% endhighlight %}
 
 ![gpreftools_cpu](/assets/images/202106/gpreftools_cpu.png)
 
@@ -377,9 +377,9 @@ gperftools 的 heap profiler 生成的 `heap.prof.*` 文件是堆分配的采样
 
 这两个过滤条件可以帮助 pprof 减少报告的复杂性，让你更容易关注那些分配了大量内存的函数和函数调用。如果你希望看到所有的内存分配，你可以在运行 pprof 时使用 `--nodecount` 和 `--edgecount` 选项来调整这两个过滤条件。例如：
 
-```bash
+{% highlight bash %}
 pprof --svg --nodecount=10000 --edgecount=10000 a.out heapprofile.out.0001.heap > heapprofile.svg
-```
+{% endhighlight %}
 
 这个命令将会显示最多 10000 个节点和边，无论它们分配了多少内存。
 
@@ -395,9 +395,9 @@ pprof --svg --nodecount=10000 --edgecount=10000 a.out heapprofile.out.0001.heap 
 
 这两个过滤条件可以帮助 pprof 减少报告的复杂性，让你更容易关注那些采样数较多的函数和函数调用。如果你希望看到所有的采样，你可以在运行 pprof 时使用 `--nodecount` 和 `--edgecount` 选项来调整这两个过滤条件。例如：
 
-```
+{% highlight text %}
 pprof --svg --nodecount=10000 --edgecount=10000 a.out profile.out > profile.svg
-```
+{% endhighlight %}
 
 这个命令将会显示最多 10000 个节点和边，无论它们的采样数是多少。
 
@@ -405,7 +405,7 @@ pprof --svg --nodecount=10000 --edgecount=10000 a.out profile.out > profile.svg
 
 ## gperf 输出 heap.prof.0001.heap 文件的内容含义
 
-```
+{% highlight text %}
 heap profile: 139930: 105204024 [305381: 114365828] @ heapprofile
      1: 20367388 [     1: 20367388] @ 0x0e0eac44 0x00000000 0x00000000
      1: 10240000 [     1: 10240000] @ 0x0e0e9a27 0x00000000 0x00000000
@@ -416,13 +416,13 @@ heap profile: 139930: 105204024 [305381: 114365828] @ heapprofile
      1:  8388712 [     1:  8388712] @ 0x086ad229 0x086b0aaf 0x086b0a2c 0x08ad5e84 0x08ad5e28 0x7f06c2d9b4aa 0xb0963b1d7f458d34 0x7f06c04f56d0
      1:  8388712 [     1:  8388712] @ 0x086ad229 0x08758fd1 0x08add728 0x08acf20c 0x08acf06b 0x08adba18 0x08647c19 0x088972ae 0x086e514a 0x086e3c81 0x7f06c2a3bf93 0x086e514a 0x086e3c81
      1:  4608280 [     1:  4608280] @ 0x0e0eac2a 0x08a99ef3 0x0872b8fb 0x0872f94f 0x0872d22b 0x0872ccc9 0x7f06c2d9b4aa 0x00000000 0x00000000
-```
+{% endhighlight %}
 
 gperf 的 heap profiler 输出的每一行表示一个内存分配的样本。每个样本表示一个或多个相同的内存分配。每行的格式如下：
 
-```
+{% highlight text %}
 n: t [k: s] @ stack_trace
-```
+{% endhighlight %}
 
 下面是每个字段的含义：
 
@@ -436,7 +436,7 @@ n: t [k: s] @ stack_trace
 
 ## EVERYTHING IN ONE (同时支持CPU和Heap分析)
 
-```
+{% highlight text %}
 If you want the CPU profiler, heap profiler, and heap leak-checker to
 all be available for your application, you can do:
    gcc -o myapp ... -lprofiler -ltcmalloc
@@ -448,11 +448,11 @@ library, this two-library linking won't work:
 Instead, use the special libtcmalloc_and_profiler library, which we
 make for just this purpose:
    gcc -o myapp ... /usr/lib/libtcmalloc_and_profiler.a
-```
+{% endhighlight %}
 
 ## ENVIRONMENT VARIABLES (环境变量)
 
-```
+{% highlight text %}
 The cpu profiler, heap checker, and heap profiler will lie dormant,
 using no memory or CPU, until you turn them on.  (Thus, there's no
 harm in linking -lprofiler into every application, and also -ltcmalloc
@@ -478,11 +478,11 @@ For a full list of variables, see the documentation pages:
    docs/cpuprofile.html
    docs/heapprofile.html
    docs/heap_checker.html
-```
+{% endhighlight %}
 
 ## PERFORMANCE
 
-```
+{% highlight text %}
 If you're interested in some third-party comparisons of tcmalloc to
 other malloc libraries, here are a few web pages that have been
 brought to our attention.  The first discusses the effect of using
@@ -495,7 +495,7 @@ It's possible to build tcmalloc in a way that trades off faster
 performance (particularly for deletes) at the cost of more memory
 fragmentation (that is, more unusable memory on your system).  See the
 INSTALL file for details.
-```
+{% endhighlight %}
 
 ## PROFILE: interrupts/evictions/bytes = 0/0/64 (没有输出profile文件)
 
@@ -527,7 +527,7 @@ The workaround in that issue solved my problem.
 
 > 解决方法
 
-```cpp
+{% highlight cpp %}
 // CPU profile
 #include "gperftools/profiler.h"
 
@@ -544,7 +544,7 @@ HeapProfilerStart("heap.prof");
 // ...
 HeapProfilerDump("over")
 HeapProfilerStop();
-```
+{% endhighlight %}
 
 * [I've set the CPUPROFILE environment variable and linked -lprofiler. Why is gperftools not starting the profiler?](https://stackoverflow.com/questions/33662765/ive-set-the-cpuprofile-environment-variable-and-linked-lprofiler-why-is-gperf)
 * [PROFILE: interrupts/evictions/bytes = 0/0/64 #1012](https://github.com/gperftools/gperftools/issues/1012)
@@ -552,7 +552,7 @@ HeapProfilerStop();
 
 ## 64-BIT LINUX Issue (死锁问题)
 
-```
+{% highlight text %}
 NOTE FOR 64-BIT LINUX SYSTEMS
 
 The glibc built-in stack-unwinder on 64-bit systems has some problems
@@ -561,20 +561,20 @@ may be in the middle of malloc, holding some malloc-related locks when
 they invoke the stack unwinder.  The built-in stack unwinder may call
 malloc recursively, which may require the thread to acquire a lock it
 already holds: deadlock.)
-```
+{% endhighlight %}
 
 可能的解决方法：
 
-```
+{% highlight text %}
 If you encounter problems, try compiling perftools with './configure
 --enable-frame-pointers'.  Note you will need to compile your
 application with frame pointers (via 'gcc -fno-omit-frame-pointer
 ...') in this case.
-```
+{% endhighlight %}
 
 ## heapcheck not work correctly
 
-```
+{% highlight text %}
 Two possibilities here.  One is that normal mode doesn't consider leaks in main to be
 a leak -- I forget the exact rules here.  You can test it by running HEAPCHECK=strict
 and seeing what happens.
@@ -589,7 +589,7 @@ the heap-checker to miss.  (Luckily, they're also the least dangerous.)
 Both possibilities could be in play. :-)
 
 Either way, I believe this is expected behavior.
-```
+{% endhighlight %}
 
 [heapcheck not work correctly. Is it a "live memory" problem? #384](https://github.com/gperftools/gperftools/issues/384)
 

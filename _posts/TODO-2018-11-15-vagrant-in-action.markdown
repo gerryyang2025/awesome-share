@@ -20,13 +20,13 @@ Keywords: Vagrant, VirtualBox, Ubuntu 18.04
 
 see [How to install Vagrant on Ubuntu 18.04].
 
-```
+{% highlight text %}
 # vagrant --version
 Vagrant 2.0.2
 
 # vboxmanage --version
 5.2.10_Ubuntur121806
-```
+{% endhighlight %}
 
 
 [Vagrant]: https://www.vagrantup.com/

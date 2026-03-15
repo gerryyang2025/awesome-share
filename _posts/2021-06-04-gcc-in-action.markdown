@@ -58,12 +58,12 @@ For information about the status of the library implementation, please see the [
 
 查看当前环境C++版本：
 
-```
+{% highlight text %}
 $ ls -l /lib64/libstdc++.so.6
 lrwxrwxrwx 1 root root 19 Aug 18  2020 /lib64/libstdc++.so.6 -> libstdc++.so.6.0.25
 $ rpm -qf /lib64/libstdc++.so.6
 libstdc++-8.3.1-5.el8.0.2.x86_64
-```
+{% endhighlight %}
 
 GCC 安装脚本：
 
@@ -91,7 +91,7 @@ Often people want the most recent version of gcc, and [devtoolset](https://www.s
 * [List of Software Collections available in SCLo SIG](https://wiki.centos.org/SpecialInterestGroup/SCLo/CollectionsList)
 * [Red Hat Software Collections Product Life Cycle](https://access.redhat.com/support/policy/updates/rhscl/)
 
-```bash
+{% highlight bash %}
 # 1. Install a package with repository for your system:
 # On CentOS, install package centos-release-scl available in CentOS repository:
 $ sudo yum install centos-release-scl
@@ -101,33 +101,33 @@ $ sudo yum install devtoolset-6
 
 # 3. Start using software collections:
 $ scl enable devtoolset-6 bash
-```
+{% endhighlight %}
 
 At this point you should be able to use `gcc` and other tools just as a normal application. See examples bellow:
 
-```
+{% highlight text %}
 $ gcc hello.c
 $ sudo yum install devtoolset-6-valgrind
 $ valgrind ./a.out
 $ gdb ./a.out
-```
+{% endhighlight %}
 
 In order to view the individual components included in this collection, including additional development tools, you can run:
 
-```
+{% highlight text %}
 $ sudo yum list devtoolset-6\*
-```
+{% endhighlight %}
 
 Developer Toolset Software Collections as Docker Formatted Containers
 
 On CentOS 7 and RHEL 7 you can pull the images with the following commands:
 
-```
+{% highlight text %}
 $ docker pull registry.access.redhat.com/rhscl/devtoolset-6-perftools-rhel7
 $ docker pull registry.access.redhat.com/rhscl/devtoolset-6-toolchain-rhel7
 $ docker pull centos/devtoolset-6-perftools-centos7
 $ docker pull centos/devtoolset-6-toolchain-centos7
-```
+{% endhighlight %}
 
 For more on the docker images follow the link to public source repository: https://github.com/sclorg/devtoolset-container
 
@@ -135,7 +135,7 @@ For more on the docker images follow the link to public source repository: https
 
 > 注意： When I open a new terminal, it is still v4.8.5. You need to `scl enable devtoolset-7 bash` every time you open a new shell, or add it to your `*rc`.
 
-```
+{% highlight text %}
 # enable gcc7
 
 sudo yum install centos-release-scl
@@ -160,11 +160,11 @@ $ scl enable devtoolset-7 bash
 
 $ which gcc
 $ gcc --version
-```
+{% endhighlight %}
 
 详细的输出：
 
-```
+{% highlight text %}
 ~$gcc -v
 使用内建 specs。
 COLLECT_GCC=/bin/gcc
@@ -191,12 +191,12 @@ Target: x86_64-redhat-linux
 Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,lto --prefix=/opt/rh/devtoolset-7/root/usr --mandir=/opt/rh/devtoolset-7/root/usr/share/man --infodir=/opt/rh/devtoolset-7/root/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-plugin --with-linker-hash-style=gnu --enable-initfini-array --with-default-libstdcxx-abi=gcc4-compatible --with-isl=/builddir/build/BUILD/gcc-7.3.1-20180303/obj-x86_64-redhat-linux/isl-install --enable-libmpx --enable-gnu-indirect-function --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
 Thread model: posix
 gcc version 7.3.1 20180303 (Red Hat 7.3.1-5) (GCC)
-```
+{% endhighlight %}
 
 
 ## Ubuntu
 
-```
+{% highlight text %}
 update-alternatives --query gcc
 
 sudo update-alternatives --config gcc
@@ -206,11 +206,11 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50 --slave 
 
 sudo apt install gcc-8 g++-8
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 80 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
-```
+{% endhighlight %}
 
 切换不同的版本：
 
-```
+{% highlight text %}
 # sudo update-alternatives --config gcc
 There are 6 choices for the alternative gcc (providing /usr/bin/gcc).
 
@@ -223,7 +223,7 @@ There are 6 choices for the alternative gcc (providing /usr/bin/gcc).
   4            /usr/bin/gcc-5     50        manual mode
   5            /usr/bin/gcc-8     80        manual mode
   6            /usr/bin/gcc-9     60        manual mode
-```
+{% endhighlight %}
 
 refer:
 
@@ -267,10 +267,10 @@ gcc最基本的用法是：`gcc [options] [filenames]`
 
 > 说明：C程序中的头文件包含两种情况：
 
-```cpp
+{% highlight cpp %}
 #include <stdio.h>
 #include "stdio.h"
-```
+{% endhighlight %}
 
 其中，使用尖括号（`<>`），预处理程序 `cpp` 在系统默认包含文件目录（如`/usr/include`）中搜索相应的文件；使用双引号，预处理程序 `cpp` 首先在当前目录中搜寻头文件，如果没有找到，就到指定的 `dirname` 目录中去寻找。在程序设计中，如果需要的这种包含文件分别分布在不同的目录中，就需要逐个使用 `-I` 选项给出搜索路径。
 
@@ -284,14 +284,14 @@ gcc最基本的用法是：`gcc [options] [filenames]`
 
 例子：假定有一个程序名为 `test.c` 的C语言源代码文件，要生成一个可执行文件。
 
-```c
+{% highlight c %}
 #include <stdio.h>
 int main(void)
 {
     printf("Hello world/n");
     return 0;
 }
-```
+{% endhighlight %}
 
 最简单的办法：`gcc test.c -o test`
 
@@ -315,36 +315,36 @@ int main(void)
 
 第一步：进行预编译，使用 `-E` 参数
 
-```
+{% highlight text %}
 gcc -E test.c -o test.i
-```
+{% endhighlight %}
 查看 `test.i` 文件中的内容，会发现 `stdio.h` 的内容确实都插到文件里去了，而其他应当被预处理的宏定义也都做了相应的处理。
 
 第二步：将 `test.i` 编译为目标代码，使用 `-c` 参数
 
-```
+{% highlight text %}
 gcc -c test.c -o test.o
-```
+{% endhighlight %}
 
 第三步：生成汇编源文件
 
-```
+{% highlight text %}
 gcc -S test.c -o test.s
-```
+{% endhighlight %}
 
 第四步：将生成的目标文件链接成可执行文件
 
-```
+{% highlight text %}
 gcc test.o - o test
-```
+{% endhighlight %}
 
 对于稍微复杂的情况，比如有多个源代码文件、需要链接库或有其他比较特别的要求，就要给定适当的调用选项参数。
 
 例子：整个源代码程序由两个文件 `testmain.c` 和 `testsub.c` 组成，程序中使用了系统提供的数学库（所有与浮点相关的数学运算都必须使用数学库）。
 
-```
+{% highlight text %}
 gcc testmain.c testsub.c -lm -o test
-```
+{% endhighlight %}
 
 其中，`-lm` 表示链接系统的数学库 `libm.a` 。
 
@@ -358,14 +358,14 @@ gcc包含完整的出错检查和警告提示功能，它们可以帮助Linux程
 
 当gcc在编译不符合`ANSI/ISO C` 语言标准的源代码时，将产生相应的警告信息。
 
-```c
+{% highlight c %}
 #include <stdio.h>
 void main(void)
 {
     long long int var = 1;
     printf("It is not standard C code!/n");
 }
-```
+{% endhighlight %}
 
 它有以下问题：
 1. `main` 函数的返回值被声明为 `void`，但实际上应该是 `int`。
@@ -442,9 +442,9 @@ gcc 在产生调试符号时，同样采用了分级的思路，开发人员可�
 
 保存编译过程中生成的一些列中间文件。
 
-```
+{% highlight text %}
 # gcc test.c -o test -save-temps
-```
+{% endhighlight %}
 
 除了生成执行文件test之外，还保存了`test.i` 和 `test.s` 中间文件，供用户查询调试。
 
@@ -462,7 +462,7 @@ Normally, the compiler places the objects it generates in sections like `data` a
 
 示例：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include "mydefine.h"
 
@@ -470,9 +470,9 @@ int main()
 {
   BIN_INFO(DESC_VER("gerry"));
 }
-```
+{% endhighlight %}
 
-```cpp
+{% highlight cpp %}
 // mydefine.h
 #pragma once
 
@@ -501,7 +501,7 @@ int main()
 #define BIN_INFO(info) BIN_INFO_EX(bin, info)
 #define LIB_INFO(info) LIB_INFO_EX(lib, info)
 #define MOD_INFO(info) MOD_INFO_EX(mod, info)
-```
+{% endhighlight %}
 
 用法解释：
 
@@ -509,7 +509,7 @@ int main()
 
 
 
-```
+{% highlight text %}
 # gcc -E main.cc
 
  static const char __me_bin6[] __attribute__ ((__used__)) __attribute__((section(".bininfo"),unused)) = "Ver_" "" "(" "gerry" ")" "-[" "Jun 13 2022" " " "18:04:18" "][gcc_" "4.8.5 20150623 (Red Hat 4.8.5-39)" "]";
@@ -539,9 +539,9 @@ In GNU C, you declare certain things about functions called in your program whic
 
 The keyword `__attribute__` allows you to specify special attributes when making a declaration. This keyword is followed by an attribute specification inside double parentheses. The following attributes are currently defined for functions on all targets:
 
-```
+{% endhighlight %}
 aligned, alloc_size, noreturn, returns_twice, noinline, noclone, always_inline, flatten, pure, const, nothrow, sentinel, format, format_arg, no_instrument_function, no_split_stack, section, constructor, destructor, used, unused, deprecated, weak, malloc, alias, ifunc, warn_unused_result, nonnull, gnu_inline, externally_visible, hot, cold, artificial, no_sanitize_address, no_address_safety_analysis, error and warning.
-```
+{% highlight text %}
 
 Several other attributes are defined for functions on particular target systems. Other attributes, including section are supported for variables declarations (see [Variable Attributes](https://gcc.gnu.org/onlinedocs/gcc-4.8.5/gcc/Variable-Attributes.html#Variable-Attributes)) and for types (see [Type Attributes](https://gcc.gnu.org/onlinedocs/gcc-4.8.5/gcc/Type-Attributes.html#Type-Attributes)).
 
@@ -556,9 +556,9 @@ See [Attribute Syntax](https://gcc.gnu.org/onlinedocs/gcc-4.8.5/gcc/Attribute-Sy
 
 The `format` attribute specifies that a function takes `printf`, `scanf`, `strftime` or `strfmon` style arguments that should be type-checked against a format string. For example, the declaration:
 
-```cpp
+{% highlight cpp %}
 extern int my_printf (void *my_object, const char *my_format, ...) __attribute__ ((format (printf, 2, 3)));
-```
+{% endhighlight %}
 
 causes the compiler to check the arguments in calls to `my_printf` for consistency with the `printf` style format string argument `my_format`.
 
@@ -583,10 +583,10 @@ The format attribute allows you to identify your own functions that take format 
 
 `vprintf` 是一个可变参数函数，用于格式化输出到标准输出。由于它的参数是可变的，编译器无法在编译时检查这些参数是否正确。因此，对于 `vprintf` 函数，编译器只检查格式字符串的格式是否一致。
 
-```cpp
+{% highlight cpp %}
 // Print formatted data from variable argument list to stdout
 int vprintf ( const char * format, va_list arg );
-```
+{% endhighlight %}
 
 * format: C string that contains a format string that follows the same specifications as **format** in printf (see [printf](https://cplusplus.com/printf) for details).
 * arg: A value identifying a variable arguments list initialized with [va_start](https://cplusplus.com/va_start). [va_list](https://cplusplus.com/va_list) is a special type defined in [<cstdarg>](https://cplusplus.com/cstdarg).
@@ -599,7 +599,7 @@ In any case, **arg** should have been initialized by [va_start](https://cplusplu
 
 Example:
 
-```cpp
+{% highlight cpp %}
 /* vprintf example */
 #include <stdio.h>
 #include <stdarg.h>
@@ -619,14 +619,14 @@ int main ()
 
    return 0;
 }
-```
+{% endhighlight %}
 
 The example illustrates how the WriteFormatted can be called with a different number of arguments, which are on their turn passed to the vprintf function, showing the following output:
 
-```
+{% highlight text %}
 Call with 1 variable argument.
 Call with 2 variable arguments.
-```
+{% endhighlight %}
 
 
 
@@ -634,9 +634,9 @@ Call with 2 variable arguments.
 
 The keyword `__attribute__` allows you to specify special attributes of struct and union types when you define such types. This keyword is followed by an attribute specification inside double parentheses. Seven attributes are currently defined for types:
 
-```
+{% highlight text %}
 aligned, packed, transparent_union, unused, deprecated, visibility, and may_alias.
-```
+{% endhighlight %}
 
 Other attributes are defined for functions (see [Function Attributes](https://gcc.gnu.org/onlinedocs/gcc-4.8.5/gcc/Function-Attributes.html#Function-Attributes)) and for variables (see [Variable Attributes](https://gcc.gnu.org/onlinedocs/gcc-4.8.5/gcc/Variable-Attributes.html#Variable-Attributes)).
 
@@ -674,7 +674,7 @@ The GNU C preprocessor recognizes several `pragmas` in addition to the compiler 
 
 示例代码：https://wandbox.org/permlink/U4CUnRy09abxOSHy
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <stdint.h>
 
@@ -709,7 +709,7 @@ int main()
   std::cout << std::boolalpha <<  b << std::endl;
 
 }
-```
+{% endhighlight %}
 
 
 # [ABI Policy and Guidelines](https://gcc.gnu.org/onlinedocs/libstdc++/manual/abi.html)
@@ -752,11 +752,11 @@ The following techniques are used:
 
 This is implemented via file names and the ELF `DT_SONAME` mechanism (at least on `ELF` systems). It is versioned as follows:
 
-```
+{% highlight text %}
 GCC 3.x: libgcc_s.so.1
 GCC 4.x: libgcc_s.so.1
 ...
-```
+{% endhighlight %}
 
 * Symbol versioning on the `libgcc_s.so` binary.
 
@@ -764,18 +764,18 @@ It is versioned with the following labels and version definitions, where the ver
 
 This corresponds to the mapfile: `gcc/libgcc-std.ver`
 
-```
+{% highlight text %}
 GCC 3.0.0: GCC_3.0
 GCC 3.3.0: GCC_3.3
 ...
 GCC 4.8.0: GCC_4.8.0
-```
+{% endhighlight %}
 
 * Release versioning on the `libstdc++.so` binary, implemented in the same way as the `libgcc_s.so` binary above. Listed is the filename: `DT_SONAME` can be deduced from the filename by removing the last two period-delimited numbers. For example, filename `libstdc++.so.5.0.4` corresponds to a `DT_SONAME` of `libstdc++.so.5`. **Binaries with equivalent DT_SONAMEs are forward-compatibile**: in the table below, releases incompatible with the previous one are explicitly noted. If a particular release is not listed, its `libstdc++.so` binary has the same filename and `DT_SONAME` as the preceding release.
 
 It is versioned as follows:
 
-```
+{% highlight text %}
 GCC 3.0.0: libstdc++.so.3.0.0
 GCC 3.0.1: libstdc++.so.3.0.1
 ...
@@ -786,13 +786,13 @@ GCC 5.1.0: libstdc++.so.6.0.21
 ...
 GCC 10.1.0: libstdc++.so.6.0.28
 GCC 11.1.0: libstdc++.so.6.0.29
-```
+{% endhighlight %}
 
 * Symbol versioning on the `libstdc++.so` binary.
 
 mapfile: `libstdc++-v3/config/abi/pre/gnu.ver`
 
-```
+{% highlight text %}
 GCC 4.8.0: GLIBCXX_3.4.18, CXXABI_1.3.7
 GCC 4.8.3: GLIBCXX_3.4.19, CXXABI_1.3.7
 GCC 4.9.0: GLIBCXX_3.4.20, CXXABI_1.3.8
@@ -800,7 +800,7 @@ GCC 5.1.0: GLIBCXX_3.4.21, CXXABI_1.3.9
 ...
 GCC 10.1.0: GLIBCXX_3.4.28, CXXABI_1.3.12
 GCC 11.1.0: GLIBCXX_3.4.29, CXXABI_1.3.13
-```
+{% endhighlight %}
 
 * [See More](https://gcc.gnu.org/onlinedocs/libstdc++/manual/abi.html)
 
@@ -817,7 +817,7 @@ A "C" application, dynamically linked to two shared libraries, `liba`, `libb`. T
 
 As above, `libone` is constructed as follows:
 
-```
+{% highlight text %}
 gcc-3.4.0/bin/g++ -fPIC -DPIC -c a.cc
 gcc-3.4.0/bin/g++ -shared -Wl,-soname -Wl,libone.so.1 -Wl,-O1 -Wl,-z,defs a.o -o libone.so.1.0.0
 
@@ -826,11 +826,11 @@ ln -s libone.so.1.0.0 libone.so
 gcc-3.4.0/bin/g++ -c a.cc
 
 ar cru libone.a a.o
-```
+{% endhighlight %}
 
 And, `libtwo` is constructed as follows:
 
-```
+{% highlight text %}
 gcc-3.3.3/bin/g++ -fPIC -DPIC -c b.cc
 gcc-3.3.3/bin/g++ -shared -Wl,-soname -Wl,libtwo.so.1 -Wl,-O1 -Wl,-z,defs b.o -o libtwo.so.1.0.0
 
@@ -838,11 +838,11 @@ ln -s libtwo.so.1.0.0 libtwo.so
 
 gcc-3.3.3/bin/g++ -c b.cc
 ar cru libtwo.a b.o
-```
+{% endhighlight %}
 
 with the resulting libraries looking like:
 
-```
+{% highlight text %}
 %ldd libone.so.1.0.0
 	libstdc++.so.6 => /usr/lib/libstdc++.so.6 (0x40016000)
 	libm.so.6 => /lib/tls/libm.so.6 (0x400fa000)
@@ -856,17 +856,17 @@ with the resulting libraries looking like:
 	libgcc_s.so.1 => /mnt/hd/bld/gcc/gcc/libgcc_s.so.1 (0x40103000)
 	libc.so.6 => /lib/tls/libc.so.6 (0x4010c000)
 	/lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x00355000)
-```
+{% endhighlight %}
 
 Then, the "C" compiler is used to compile a source file that uses functions from each library.
 
-```
+{% highlight text %}
 gcc test.c -g -O2 -L. -lone -ltwo /usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6
-```
+{% endhighlight %}
 
 Which gives the expected:
 
-```
+{% highlight text %}
 %ldd a.out
 	libstdc++.so.5 => /usr/lib/libstdc++.so.5 (0x00764000)
 	libstdc++.so.6 => /usr/lib/libstdc++.so.6 (0x40015000)
@@ -874,7 +874,7 @@ Which gives the expected:
 	libm.so.6 => /lib/tls/libm.so.6 (0x004a8000)
 	libgcc_s.so.1 => /mnt/hd/bld/gcc/gcc/libgcc_s.so.1 (0x400e5000)
 	/lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x00355000)
-```
+{% endhighlight %}
 
 This resulting binary, when executed, will be able to safely use code from both `liba`, and the dependent `libstdc++.so.6`, and `libb`, with the dependent `libstdc++.so.5`.
 
@@ -885,13 +885,13 @@ This resulting binary, when executed, will be able to safely use code from both 
 
 Now in order to compile with 32-bit gcc, just add a flag `-m32` in the command line of compling the ‘C’ language program. For instance, to compile a file of `geek.c` through Linux terminal, you must write the following commnad with `-m32` flag.
 
-```
+{% highlight text %}
 gcc -m32 geek.c -o geek
-```
+{% endhighlight %}
 
 How to check whether a program is compiled with 32-bit after adding a “-m32” flag?
 
-```c
+{% highlight c %}
 // C program to demonstrate difference
 // in output in 32-bit and 64-bit gcc
 // File name: geek.c
@@ -900,7 +900,7 @@ int main()
 {
     printf("Size = %lu", sizeof(size_t));
 }
-```
+{% endhighlight %}
 
 Input: gcc -m64 geek.c -o out
 Output: ./out
@@ -916,18 +916,20 @@ refer: https://www.geeksforgeeks.org/compile-32-bit-program-64-bit-gcc-c-c/
 
 The GCC compiler flags that control [unused warnings](http://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html) include:
 
-```-wunused-function
+{% highlight text %}
+-wunused-function
 -Wunused-label
 -Wunused-parameter
 -Wunused-value
 -Wunused-variable
 -Wunused (=all of the above)
-```
+{% endhighlight %}
 
 Each of these has a corresponding negative form with "no-" inserted after the W which turns off the warning (in case it was turned on by -Wall, for example). Thus, in your case you should use
 
-```-wno-unused-function
-```
+{% highlight text %}
+-wno-unused-function
+{% endhighlight %}
 
 refer: http://stackoverflow.com/questions/386220/how-can-i-hide-defined-but-not-used-warnings-in-gcc
 
@@ -938,7 +940,7 @@ refer: http://stackoverflow.com/questions/386220/how-can-i-hide-defined-but-not-
 * On Mac OS X you are using `clang + libc++`, which is not compatible with `GCC + libstdc++`, they define `std::string` differently so you get different mangled names.
 * One option is to use `-stdlib=libstdc++` when compiling with Clang on Mac OS X, to tell it to use `libstdc++`, however the version of `libstdc++` included with Mac OS X is ancient and doesn't support any of C++11. Doing that might also mean you can't link to other native Mac OS X libraries that use the C++ standard library, because they would probably not have been built with `-stdlib=libstdc++`
 
-```
+{% highlight text %}
 # MacOS
 $otool -L demo
 demo:
@@ -953,7 +955,7 @@ $ ldd demo
         libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f37a0ea4000)
         libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f37a0b06000)
         /lib64/ld-linux-x86-64.so.2 (0x00007f37a1a39000)
-```
+{% endhighlight %}
 
 * [We can’t mix the objects (or libraries) compiled by g++ and clang++ ? at least on Mac?](https://stackoverflow.com/questions/25266493/we-can-t-mix-the-objects-or-libraries-compiled-by-g-and-clang-at-least-o)
 * [Can Clang compile code with GCC compiled .a libs?](https://stackoverflow.com/questions/20875924/can-clang-compile-code-with-gcc-compiled-a-libs)
@@ -971,7 +973,7 @@ Defined to the value 1 by default. Configurable via --disable-libstdcxx-dual-abi
 
 https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_macros.html
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <list>
 #include <string>
@@ -986,48 +988,48 @@ int main()
     printf("sizeof(std::string) = %lu\n", sizeof(std::string) );
     printf("sizeof(std::list<uint64_t>) = %lu\n", sizeof(std::list<uint64_t>) );
 }
-```
+{% endhighlight %}
 
 gcc 8.3.0编译：
 
-```
+{% highlight text %}
 sizeof(std::unordered_map<uint64_t, uint64_t>) = 56
 sizeof(std::map<uint64_t, uint64_t>) = 48
 sizeof(std::string) = 32
 sizeof(std::list<uint64_t>) = 24
-```
+{% endhighlight %}
 
 gcc 8.3.0编译：带 `-D_GLIBCXX_USE_CXX11_ABI=0` 选项，可以保证`std::string`和`std::list` 与 gcc 4.8.5 ABI兼容。
 
-```
+{% highlight text %}
 sizeof(std::unordered_map<uint64_t, uint64_t>) = 56
 sizeof(std::map<uint64_t, uint64_t>) = 48
 sizeof(std::string) = 8
 sizeof(std::list<uint64_t>) = 16
-```
+{% endhighlight %}
 
 gcc 4.8.5编译：
 
-```
+{% highlight text %}
 sizeof(std::unordered_map<uint64_t, uint64_t>) = 48
 sizeof(std::map<uint64_t, uint64_t>) = 48
 sizeof(std::string) = 8
 sizeof(std::list<uint64_t>) = 16
-```
+{% endhighlight %}
 
 在CMake中检查是否存在_GLIBCXX_USE_CXX11_ABI宏定义的方法：
 
-```
+{% highlight text %}
 # @refer https://gitcode.net/mirrors/intel-isl/Open3D/-/blob/wei/rename-voxelhashing/CMakeLists.txt
 # Check if the compiler defines the _GLIBCXX_USE_CXX11_ABI macro
 include(CheckCXXSourceCompiles)
 check_cxx_source_compiles("#include <cxxabi.h>
 int main() { return _GLIBCXX_USE_CXX11_ABI; }" HAS_GLIBCXX_USE_CXX11_ABI)
-```
+{% endhighlight %}
 
 测试代码：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <cxxabi.h>
 #include <string>
@@ -1037,7 +1039,7 @@ int main()
     std::cout << _GLIBCXX_USE_CXX11_ABI;
     std::__cxx11::basic_string<char,std::char_traits<char>,std::allocator<char>> s;
 }
-```
+{% endhighlight %}
 
 
 * https://developers.redhat.com/blog/2015/02/05/gcc5-and-the-c11-abi
@@ -1051,11 +1053,11 @@ Any combination of the following objects will work (although see note below abou
 
 For exmaple,
 
-```
+{% highlight text %}
 object D compiled with GCC 4.9 and -std=c++03
 object E compiled with GCC 5 and -std=c++11
 object F compiled with GCC 7 and -std=c++17
-```
+{% endhighlight %}
 
 * because `C++03` support is stable in all three compiler versions used, and so the `C++03` components are compatible between all the objects.
 * C++11 support is stable since GCC 5, but object D doesn't use any C++11 features, and objects E and F both use versions where C++11 support is stable.
@@ -1075,11 +1077,11 @@ glibc documents the min required version of binutils & gcc in its [INSTALL file]
 
 glibc-2.23 states:
 
-```
+{% highlight text %}
 Recommended Tools for Compilation
 GCC 4.7 or newer
 GNU 'binutils' 2.22 or later
-```
+{% endhighlight %}
 
 typically if you want to go newer than those, glibc will generally work with the version of gcc that was in development at the time of the release. e.g. glibc-2.23 was released 18 Feb 2016 and gcc-6 was under development at that time, so glibc-2.23 will work with gcc-4.7 through gcc-6.
 
@@ -1092,30 +1094,30 @@ all that said, using an old version of glibc is a terrible idea. it will be full
 
 查看 GLIBC 版本：
 
-```bash
+{% highlight bash %}
 getconf GNU_LIBC_VERSION
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 getconf -a | grep GNU_LIBC
 GNU_LIBC_VERSION                   glibc 2.18
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 $ rpm -q glibc
 glibc-2.28-164.tl3.x86_64
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 $ ldd --version
 ldd (GNU libc) 2.28
-```
+{% endhighlight %}
 
 参考 [glibc升级到2.29](https://www.jianshu.com/p/f4d603967e1d) 升级 glibc 可行。
 
 例如，升级 glibc 2.18
 
-```bash
+{% highlight bash %}
 mkdir ~/glibc_install; cd ~/glibc_install
 wget http://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz
 tar zxvf glibc-2.18.tar.gz
@@ -1128,16 +1130,16 @@ cd build
 
 make -j4
 sudo make install
-```
+{% endhighlight %}
 
 验证：
 
-```
+{% highlight text %}
 $getconf -a | grep -i glibc
 GNU_LIBC_VERSION                   glibc 2.18
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ ll /lib64/libc.so.6
 lrwxrwxrwx 1 root root 12 10月 11 21:33 /lib64/libc.so.6 -> libc-2.18.so
 $ strings /lib64/libc.so.6 | grep ^GLIBC
@@ -1175,7 +1177,7 @@ GLIBC_2.10
 GLIBC_2.17
 GLIBC_2.13
 GLIBC_2.2.6
-```
+{% endhighlight %}
 
 refer:
 
@@ -1240,12 +1242,12 @@ Enable `UndefinedBehaviorSanitizer`, **a fast undefined behavior detector**. Var
 
 Generate instrumentation calls for entry and exit to functions. Just after function entry and just before function exit, the following profiling functions are called with the address of the current function and its call site. (On some platforms, __builtin_return_address does not work beyond the current function, so the call site information may not be available to the profiling functions otherwise.)
 
-```cpp
+{% highlight cpp %}
 void __cyg_profile_func_enter (void *this_fn,
                                void *call_site);
 void __cyg_profile_func_exit  (void *this_fn,
                                void *call_site);
-```
+{% endhighlight %}
 
 The first argument is the address of the start of the current function, which may be looked up exactly in the symbol table.
 
@@ -1259,9 +1261,9 @@ Set the list of functions that are excluded from instrumentation (see the descri
 
 For example:
 
-```
+{% highlight text %}
 -finstrument-functions-exclude-file-list=/bits/stl,include/sys
-```
+{% endhighlight %}
 
 excludes any inline function defined in files whose pathnames contain `/bits/stl` or `include/sys`.
 
@@ -1272,7 +1274,7 @@ This is similar to -finstrument-functions-exclude-file-list, but this option set
 
 测试代码：
 
-```c
+{% highlight c %}
 #include <stdio.h>
 
 #define DUMP(func, call) printf("%s: func = %p, called by = %p\n", __FUNCTION__, func, call)
@@ -1305,18 +1307,18 @@ int main()
     printf("result: %d\n", do_calc(a, b));
     return 0;
 }
-```
+{% endhighlight %}
 
 编译：
 
-```
+{% highlight text %}
 gcc -finstrument-functions test.c
 
-```
+{% endhighlight %}
 
 输出：
 
-```
+{% highlight text %}
 __cyg_profile_func_enter: func = 0x400733, called by = 0x7f11bf64bac5
 __cyg_profile_func_enter: func = 0x4006e8, called by = 0x40076a
 __cyg_profile_func_enter: func = 0x4006a5, called by = 0x400717
@@ -1324,7 +1326,7 @@ __cyg_profile_func_exit: func = 0x4006a5, called by = 0x400717
 __cyg_profile_func_exit: func = 0x4006e8, called by = 0x40076a
 result: 20
 __cyg_profile_func_exit: func = 0x400733, called by = 0x7f11bf64bac5
-```
+{% endhighlight %}
 
 
 * https://gcc.gnu.org/onlinedocs/gcc-8.1.0/gcc/Instrumentation-Options.html
@@ -1347,3 +1349,4 @@ Generate `N` NOPs right at the beginning of each function, with the function ent
 
 
 
+{% endhighlight %}

@@ -52,7 +52,7 @@ In this noncompliant code example, an object of type `S` is used to initialize t
 
 如果 throw 一个子类异常对象，catch 的类型是父类，则会发生 **sliced 对象切片问题**，可以捕获到子类的异常但是输出的 `e.what()` 信息是不对的，输出的是父类的错误信息而不是子类的错误信息。
 
-```cpp
+{% highlight cpp %}
 #include <exception>
 #include <iostream>
 
@@ -75,12 +75,12 @@ int main()
   f();
   return 0;
 }
-```
+{% endhighlight %}
 
 如果 throw 一个父类异常对象，catch 的类型是子类，则捕获不到，继续在后面的 catch 中进行判断。
 
 
-```cpp
+{% highlight cpp %}
 #include <exception>
 #include <iostream>
 
@@ -113,13 +113,13 @@ int main()
   }
   return 0;
 }
-```
+{% endhighlight %}
 
 #### Compliant Solution
 
 In this compliant solution, the variable declared by the exception-declaration is an **lvalue reference**. The call to `what()` results in executing `S::what()` instead of `std::exception::what()`.
 
-```cpp
+{% highlight cpp %}
 #include <exception>
 #include <iostream>
 
@@ -142,7 +142,7 @@ int main()
   f();
   return 0;
 }
-```
+{% endhighlight %}
 
 #### Q&A: [C++ catch blocks - catch exception by value or reference?](https://stackoverflow.com/questions/2522299/c-catch-blocks-catch-exception-by-value-or-reference)
 
@@ -183,28 +183,28 @@ Catching by value is problematic in the face of inheritance hierarchies. Suppose
 
 1. 在异常处理中途释放资源后重新抛出
 
-```cpp
+{% highlight cpp %}
 catch (...) {
     cleanupResources();  // 释放资源
     throw;              // 保留原始异常继续传播
 }
-```
+{% endhighlight %}
 
 2. 在记录日志后保留原始异常信息
 
-```cpp
+{% highlight cpp %}
 catch (const std::exception& e) {
     logError(e.what());  // 记录错误
     throw;               // 继续传播原始异常
 }
-```
+{% endhighlight %}
 
 3. 实现异常处理中间层时保持异常类型透明性
 
 
 代码示例：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <stdexcept>
 
@@ -280,17 +280,17 @@ Outer catch (by reference): DerivedException occurred
 Inner catch (by reference): DerivedException occurred
 Outer catch (by reference): DerivedException occurred
 */
-```
+{% endhighlight %}
 
 
 `throw;` 的核心行为：
 
-```cpp
+{% highlight cpp %}
 // 在 catch 块内部使用
 catch (...) {
     throw;  // 重新抛出当前处理的原始异常
 }
-```
+{% endhighlight %}
 
 * 总是重新抛出最初进入 `catch` 块的异常对象
 * 不受当前 `catch` 块捕获方式（值/引用）的影响
@@ -298,11 +298,11 @@ catch (...) {
 
 对比错误用法：
 
-```cpp
+{% highlight cpp %}
 catch (BaseException e) {
     throw e;  // 错误！抛出的是切片后的副本
 }
-```
+{% endhighlight %}
 
 这种带参数的 `throw` 会抛出当前局部对象 `e`（切片后的基类副本），而不是原始异常。
 
@@ -319,13 +319,13 @@ Avoid using forward declarations where possible. Instead, [include the headers y
 
 A "forward declaration" is a declaration of an entity without an associated definition.
 
-```cpp
+{% highlight cpp %}
 // In a C++ source file:
 class B;
 void FuncInB();
 extern int variable_in_b;
 ABSL_DECLARE_FLAG(flag_in_b);
-```
+{% endhighlight %}
 
 **Pros**:
 
@@ -340,7 +340,7 @@ ABSL_DECLARE_FLAG(flag_in_b);
 * Forward declaring symbols from namespace std:: yields undefined behavior.
 * It can be difficult to determine whether a forward declaration or a full #include is needed. Replacing an #include with a forward declaration can silently change the meaning of code:
 
-```cpp
+{% highlight cpp %}
 // b.h:
 struct B {};
 struct D : B {};
@@ -350,7 +350,7 @@ struct D : B {};
 void f(B*);
 void f(void*);
 void test(D* x) { f(x); }  // Calls f(B*)
-```
+{% endhighlight %}
 
 If the #include was replaced with forward decls for B and D, test() would call f(void*).
 
@@ -402,11 +402,11 @@ Use TODO comments for code that is temporary, a short-term solution, or good-eno
 
 TODOs should include the string TODO in all caps, followed by the name, e-mail address, bug ID, or other identifier of the person or issue with the best context about the problem referenced by the TODO. The main purpose is to have a consistent TODO that can be searched to find out how to get more details upon request. A TODO is not a commitment that the person referenced will fix the problem. Thus when you create a TODO with a name, it is almost always your name that is given.
 
-```
+{% highlight text %}
 // TODO(kl@gmail.com): Use a "*" here for concatenation operator.
 // TODO(Zeke) change this to use relations.
 // TODO(bug 12345): remove the "Last visitors" feature.
-```
+{% endhighlight %}
 
 If your TODO is of the form "At a future date do something" make sure that you either include a very specific date ("Fix by November 2005") or a very specific event ("Remove this code when all clients can handle XML responses.").
 
@@ -417,7 +417,7 @@ Use designated initializers only in their C++20-compliant form.
 
 [Designated initializers](https://en.cppreference.com/w/cpp/language/aggregate_initialization#Designated_initializers) are a syntax that allows for initializing an aggregate ("plain old struct") by naming its fields explicitly:
 
-```cpp
+{% highlight cpp %}
 struct Point {
     float x = 0.0;
     float y = 0.0;
@@ -429,7 +429,7 @@ struct Point {
     .y = 2.0,
     // z will be 0.0
   };
-```
+{% endhighlight %}
 
 The explicitly listed fields will be initialized as specified, and others will be initialized in the same way they would be in a traditional aggregate initialization expression like `Point{1.0, 2.0}`.
 
@@ -466,7 +466,7 @@ Exceptions:
 
 按照规则，应该这样抛出和捕获异常：
 
-```cpp
+{% highlight cpp %}
 class MyException {};
 
 void foo() {
@@ -480,13 +480,13 @@ int main() {
         // 处理异常
     }
 }
-```
+{% endhighlight %}
 
 以下是一些例外情况的示例：
 
 * 抛出字符串字面量：
 
-```cpp
+{% highlight cpp %}
 void foo() {
     throw "An error occurred"; // 抛出字符串字面量，不会被标记
 }
@@ -498,11 +498,11 @@ int main() {
         // 处理异常
     }
 }
-```
+{% endhighlight %}
 
 * 抛出函数参数：
 
-```cpp
+{% highlight cpp %}
 class MyException {};
 
 // 辅助函数，用于抛出异常
@@ -522,7 +522,7 @@ int main() {
         // 处理异常
     }
 }
-```
+{% endhighlight %}
 
 When an exception is thrown, the value of the object in the throw expression is used to initialize an anonymous temporary object called the exception object. The type of this exception object is used to transfer control to the nearest catch handler, which contains an exception declaration with a matching type. The C++ Standard, except.handle, paragraph 16 [ISO/IEC 14882-2014](https://wiki.sei.cmu.edu/confluence/display/cplusplus/AA.+Bibliography#AA.Bibliography-ISO/IEC14882-2014), in part, states the following:
 
@@ -553,7 +553,7 @@ Noncompliant Code Example:
 
 In this noncompliant code example, an object of type S is used to initialize the exception object that is later caught by an exception-declaration of type std::exception. The exception-declaration matches the exception object type, so the variable E is copy-initialized from the exception object, resulting in the exception object being sliced. Consequently, the output of this noncompliant code example is the implementation-defined value returned from calling std::exception::what() instead of "My custom exception".
 
-```cpp
+{% highlight cpp %}
 #include <exception>
 #include <iostream>
 
@@ -570,13 +570,13 @@ void f() {
     std::cout << e.what() << std::endl;  // 输出 std::exception 而不是 My custom exception
   }
 }
-```
+{% endhighlight %}
 
 Compliant Solution:
 
 In this compliant solution, the variable declared by the exception-declaration is an lvalue reference. The call to what() results in executing S::what() instead of std::exception::what().
 
-```cpp
+{% highlight cpp %}
 #include <exception>
 #include <iostream>
 
@@ -593,7 +593,7 @@ void f() {
     std::cout << e.what() << std::endl;
   }
 }
-```
+{% endhighlight %}
 
 
 参考：[ERR61-CPP. Catch exceptions by lvalue reference](https://wiki.sei.cmu.edu/confluence/display/cplusplus/ERR61-CPP.+Catch+exceptions+by+lvalue+reference)
@@ -606,7 +606,7 @@ void f() {
 
 Finds non-extern non-inline function and variable definitions in header files, which can lead to potential ODR violations in case these headers are included from multiple translation units.
 
-```cpp
+{% highlight cpp %}
 // Foo.h
 int a = 1; // Warning: variable definition.
 extern int d; // OK: extern variable.
@@ -685,7 +685,7 @@ constexpr int f10() { return 0; } // OK: constexpr function implies inline.
 // OK: C++14 variable templates are inline.
 template <class T>
 constexpr T pi = T(3.1415926L);
-```
+{% endhighlight %}
 
 
 
@@ -696,7 +696,7 @@ constexpr T pi = T(3.1415926L);
 
 建议代码示例：
 
-```cpp
+{% highlight cpp %}
 void foo(int Value) {
   int Local = 0;
   for (int i = 0; i < 42; i++) {
@@ -715,26 +715,26 @@ void foo(int Value) {
     Local++;
   }
 }
-```
+{% endhighlight %}
 
 ## [modernize-use-noexcept](https://clang.llvm.org/extra/clang-tidy/checks/modernize/use-noexcept.html)
 
 This check replaces deprecated dynamic exception specifications with the appropriate noexcept specification (introduced in C++11). By default this check will replace `throw()` with `noexcept`, and `throw(<exception>[,...])` or `throw(...)` with `noexcept(false)`.
 
-```cpp
+{% highlight cpp %}
 void foo() throw();    // 列表为空表示不抛出异常
 void bar() throw(int) {}
 
 // transforms to:
 void foo() noexcept;
 void bar() noexcept(false) {}
-```
+{% endhighlight %}
 
 ## [readability-use-anyofallof](https://clang.llvm.org/extra/clang-tidy/checks/readability/use-anyofallof.html)
 
 Finds range-based for loops that can be replaced by a call to `std::any_of` or `std::all_of`. In C++ 20 mode, suggests `std::ranges::any_of` or `std::ranges::all_of`.
 
-```cpp
+{% highlight cpp %}
 bool all_even(std::vector<int> V) {
   for (int I : V) {
     if (I % 2)
@@ -745,7 +745,7 @@ bool all_even(std::vector<int> V) {
   // Replace loop by
   // return std::ranges::all_of(V, [](int I) { return I % 2 == 0; });
 }
-```
+{% endhighlight %}
 
 ## [readability-simplify-boolean-expr](https://clang.llvm.org/extra/clang-tidy/checks/readability/simplify-boolean-expr.html)
 
@@ -788,7 +788,7 @@ Examples:
 
 Replaces explicit calls to the constructor in a return with a braced initializer list. This way the return type is not needlessly duplicated in the function definition and the return statement.
 
-```cpp
+{% highlight cpp %}
 Foo bar() {
   Baz baz;
   return Foo(baz);
@@ -800,7 +800,7 @@ Foo bar() {
   Baz baz;
   return {baz};
 }
-```
+{% endhighlight %}
 
 ## [modernize-use-nodiscard](https://clang.llvm.org/extra/clang-tidy/checks/modernize/use-nodiscard.html)
 
@@ -822,7 +822,7 @@ Adds `[[nodiscard]]` attributes (introduced in C++17) to member functions in ord
   + 特征：函数仅通过返回值传递结果，不修改对象或外部状态（因为是 const 成员函数），且无副作用。
   + 风险：若忽略返回值，计算逻辑完全浪费，可能隐藏逻辑错误。
 
-```cpp
+{% highlight cpp %}
 class MathUtils {
 public:
     // 计算结果，忽略返回值无意义
@@ -830,13 +830,13 @@ public:
         return someComplexCalculation();
     }
 };
-```
+{% endhighlight %}
 
 * 资源状态查询
   + 特征：返回对象关键状态（如是否为空、是否有效），但可能被误认为“动作”而非“查询”。
   + 风险：若未检查返回值直接操作资源（如发送数据），可能引发未定义行为。
 
-```cpp
+{% highlight cpp %}
 class Connection {
 public:
     // 检查连接是否有效，忽略返回值可能导致后续操作失败
@@ -844,13 +844,13 @@ public:
         return status == Connected;
     }
 };
-```
+{% endhighlight %}
 
 * 工厂方法或构造型函数
   + 特征：返回新对象或资源句柄，但可能被误认为修改当前对象。
   + 风险：若忽略返回值，开发者可能误以为原对象被修改，导致逻辑错误。
 
-```cpp
+{% highlight cpp %}
 class StringProcessor {
 public:
     // 生成新字符串，原对象未被修改
@@ -858,20 +858,20 @@ public:
         return transformToUppercase();
     }
 };
-```
+{% endhighlight %}
 
 **错误用法（触发警告）**
 
-```cpp
+{% highlight cpp %}
 auto result = vec.empty(); // 正确：使用返回值
 vec.empty();               // 警告：未处理 [[nodiscard]] 值
-```
+{% endhighlight %}
 
 绕过警告。若需主动忽略返回值（少数情况），可显式转换为 void：
 
-```cpp
+{% highlight cpp %}
 static_cast<void>(vec.someNodiscardMethod());
-```
+{% endhighlight %}
 
 
 ## [misc-throw-by-value-catch-by-reference](https://clang.llvm.org/extra/clang-tidy/checks/misc/throw-by-value-catch-by-reference.html)
@@ -885,7 +885,7 @@ With **move semantics** added to the language and the standard library updated w
 
 The transformation is usually beneficial when the calling code passes an **rvalue** and assumes the **move construction** is a cheap operation. This short example illustrates how the construction of the value happens:
 
-```cpp
+{% highlight cpp %}
 void foo(std::string s);
 std::string get_str();
 
@@ -893,7 +893,7 @@ void f(const std::string &str) {
   foo(str);       // lvalue  -> copy construction
   foo(get_str()); // prvalue -> move construction
 }
-```
+{% endhighlight %}
 
 > Note: Currently, **only constructors are transformed to make use of pass-by-value**. Contributions that handle other situations are welcome!
 
@@ -903,7 +903,7 @@ Detects local variable declarations declaring more than one variable and tries t
 
 The automatic code-transformation will use the same indentation as the original for every created statement and add a line break after each statement. It keeps the order of the variable declarations consistent, too.
 
-```cpp
+{% highlight cpp %}
 void f() {
   int * pointer = nullptr, value = 42, * const const_ptr = &value;
   // This declaration will be diagnosed and transformed into:
@@ -911,7 +911,7 @@ void f() {
   // int value = 42;
   // int * const const_ptr = &value;
 }
-```
+{% endhighlight %}
 
 
 

@@ -56,9 +56,9 @@ tags:
 
 方式一：安装包
 
-```
+{% highlight text %}
 yum install bazel4
-```
+{% endhighlight %}
 
 方式二：[源码编译](https://bazel.build/install/compile-source)
 
@@ -70,14 +70,14 @@ yum install bazel4
 > Bazelisk is a wrapper for Bazel written in Go. It automatically picks a good version of Bazel given your current working directory, downloads it from the official server (if required) and then transparently passes through all command-line arguments to the real Bazel binary. You can call it just like you would call Bazel.
 
 
-```bash
+{% highlight bash %}
 sudo wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.17.0/bazelisk-linux-amd64
 sudo chmod +x /usr/local/bin/bazel
-```
+{% endhighlight %}
 
 完整的安装脚本：先检查本地是否有，没有则下载安装
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 CUR_DIR=$(dirname $(readlink -f $0))
@@ -114,7 +114,7 @@ else
     echo "$(bazel version)"
     echo "-----------------------------------------"
 fi
-```
+{% endhighlight %}
 
 > 参考 [How does Bazelisk know which Bazel version to run?](https://github.com/bazelbuild/bazelisk#how-does-bazelisk-know-which-bazel-version-to-run) 控制使用的 bazel 版本。
 
@@ -228,7 +228,7 @@ Bazel 在这个阶段会加载 `WORKSPACE` 和 `BUILD`，同时会加载相关�
 
 # Bazel 语法
 
-```
+{% highlight text %}
 $bazel help target-syntax
                                                            [bazel release 6.2.1]
 Target pattern syntax
@@ -315,7 +315,7 @@ Subtractive patterns:
   also built unless --build_tests_only is set.)
 
 (Use 'help --long' for full details or --short to just enumerate options.)
-```
+{% endhighlight %}
 
 
 # [Output Directory Layout](https://bazel.build/remote/output-directories?hl=en) (输出目录布局)
@@ -340,7 +340,7 @@ The solution that's currently implemented:
 
 The symlinks for "`bazel-<workspace-name>`", "`bazel-out`", "`bazel-testlogs`", and "`bazel-bin`" are put in the workspace directory; these symlinks point to some directories inside a target-specific directory inside the output directory. These symlinks are only for the user's convenience, as Bazel itself does not use them. Also, this is done only if the workspace directory is writable.
 
-```
+{% highlight text %}
 --output_base 和 --output_user_root 都是 Bazel 配置选项，用于设置 Bazel 缓存和输出文件的存储位置。它们之间的主要区别在于它们影响的目录结构层次。
 
 --output_base：此选项设置 Bazel 的输出基目录。Bazel 会在此目录下创建一个名为 execroot 的子目录，用于存储构建过程中的所有文件，包括缓存、构建输出、日志等。此选项允许您为所有 Bazel 项目设置一个统一的输出基目录。例如，如果您设置 --output_base=/data/cache/bazel，那么所有项目的构建输出和缓存将存储在 /data/cache/bazel/execroot 目录下。
@@ -348,13 +348,13 @@ The symlinks for "`bazel-<workspace-name>`", "`bazel-out`", "`bazel-testlogs`", 
 --output_user_root：此选项设置 Bazel 的用户根目录。Bazel 会在此目录下为每个工作区创建一个子目录，用于存储与特定工作区相关的缓存和输出文件。例如，如果您设置 --output_user_root=/dev/shm/bazel_cache，那么每个工作区的构建输出和缓存将存储在 /dev/shm/bazel_cache/<workspace_name> 目录下。
 
 总之，--output_base 设置了一个全局的输出基目录，适用于所有 Bazel 项目，而 --output_user_root 设置了一个用户根目录，允许为每个工作区创建单独的缓存和输出目录。在大多数情况下，设置 --output_user_root 更具灵活性，因为它允许您为不同的工作区分配不同的缓存和输出目录。然而，如果您希望为所有项目设置一个统一的缓存和输出位置，可以选择使用 --output_base。
-```
+{% endhighlight %}
 
 ## Layout diagram (布局示意图)
 
 The directories are laid out as follows:
 
-```
+{% highlight text %}
 <workspace-name>/                         <== The workspace directory
   bazel-my-project => <...my-project>     <== Symlink to execRoot
   bazel-out => <...bin>                   <== Convenience symlink to outputPath
@@ -422,7 +422,7 @@ The directories are laid out as follows:
                                               building prerequisite tools, that will be used in later stages
                                               of the build (ex: Protocol Compiler)
         <packages>/                       <== Packages referenced in the build appear as if under a regular workspace
-```
+{% endhighlight %}
 
 The layout of the `*.runfiles` directories is documented in more detail in the places pointed to by RunfilesSupport.
 
@@ -438,7 +438,7 @@ The action graph represents the build artifacts, the relationships between them,
 
 通过 `bazel query` 输出 `graphviz` 格式数据，然后在 [GraphvizOnline](https://dreampuf.github.io/GraphvizOnline) 查看依赖图。
 
-```
+{% highlight text %}
 ~/github/bazelbuild/examples/cpp-tutorial/stage1$ bazel query --nohost_deps --noimplicit_deps 'deps(//main:hello-world)' --output graph
 digraph mygraph {
   node [shape=box];
@@ -447,14 +447,14 @@ digraph mygraph {
   "//main:hello-world.cc"
 }
 Loading: 0 packages loaded
-```
+{% endhighlight %}
 
 
 ![bazel_build5](/assets/images/202306/bazel_build5.png)
 
 完整的依赖图：
 
-```
+{% highlight text %}
 ~/github/bazelbuild/examples/cpp-tutorial/stage1$bazel query 'deps(//main:hello-world)' --output graph
 digraph mygraph {
   node [shape=box];
@@ -533,13 +533,13 @@ digraph mygraph {
   "@bazel_tools//tools/cpp:build_interface_so"
 }
 Loading: 0 packages loaded
-```
+{% endhighlight %}
 
 也可安装 [xdot](https://pypi.org/project/xdot/#files) 直接显示：`bazel query --nohost_deps --noimplicit_deps 'deps(//main:hello-world)' --output graph | xdot`
 
-```
+{% highlight text %}
 ~/tools/xdot/xdot-1.2$./setup.py install
-```
+{% endhighlight %}
 
 
 
@@ -584,13 +584,13 @@ A package is defined as a directory containing a `BUILD` file named either `BUIL
 
 For example, in the following directory tree there are two packages, `my/app`, and the subpackage `my/app/tests`. Note that `my/app/data` is not a package, but a directory belonging to package `my/app`.
 
-```
+{% highlight text %}
 src/my/app/BUILD
 src/my/app/app.cc
 src/my/app/data/input.txt
 src/my/app/tests/BUILD
 src/my/app/tests/test.cc
-```
+{% endhighlight %}
 
 ### Targets (BUILD 中的每个构建规则称为**目标**)
 
@@ -612,9 +612,9 @@ Package groups are sets of packages whose purpose is to limit accessibility of c
 
 All targets belong to exactly one package. The name of a target is called its **label**. Every label uniquely identifies a target. A typical label in canonical form looks like:
 
-```
+{% highlight text %}
 @myrepo//my/app/main:app_binary
-```
+{% endhighlight %}
 
 ## [BUILD files](https://bazel.build/concepts/build-files?hl=en)
 
@@ -631,9 +631,9 @@ By definition, every package contains a `BUILD` file, **which is a short program
 
 Bazel extensions are files ending in `.bzl`. Use the `load` statement to import a symbol from an extension.
 
-```
+{% highlight text %}
 load("//foo/bar:file.bzl", "some_library")
-```
+{% endhighlight %}
 
 This code loads the file `foo/bar/file.bzl` and adds the `some_library` symbol to the environment. This can be used to load new rules, functions, or constants (for example, a string or a list). Multiple symbols can be imported by using additional arguments to the call to `load`. Arguments must be string literals (no variable) and `load` statements must appear at top-level — they cannot be in a function body.
 
@@ -709,9 +709,9 @@ Start by [installing Bazel](https://bazel.build/install), if you haven’t alrea
 
 Next, retrieve the sample project from Bazel's GitHub repository by running the following in your command-line tool of choice:
 
-```
+{% highlight text %}
 git clone https://github.com/bazelbuild/examples
-```
+{% endhighlight %}
 
 The sample project for this tutorial is in the examples/cpp-tutorial directory.
 
@@ -724,7 +724,7 @@ There are three sets of files, each set representing a stage in this tutorial.
 * In the third and final stage, you will build a project with multiple packages and build it with multiple targets.
 
 
-```
+{% highlight text %}
 ~/github/examples$tree cpp-tutorial/
 cpp-tutorial/
 ├── README.md
@@ -756,7 +756,7 @@ cpp-tutorial/
     └── WORKSPACE
 
 7 directories, 20 files
-```
+{% endhighlight %}
 
 ## Set up the workspace
 
@@ -775,12 +775,12 @@ A `BUILD` file contains several different types of instructions for Bazel. Each 
 
 Take a look at the `BUILD` file in the `cpp-tutorial/stage1/main` directory:
 
-```
+{% highlight text %}
 cc_binary(
     name = "hello-world",
     srcs = ["hello-world.cc"],
 )
-```
+{% endhighlight %}
 
 In our example, the `hello-world` target instantiates Bazel's built-in `cc_binary` rule. The rule tells Bazel to build a self-contained executable binary from the `hello-world.cc` source file with no dependencies.
 
@@ -790,30 +790,30 @@ Now you are familiar with some key terms, and what they mean in the context of t
 
 It’s time to build the first part of the project. For a visual reference, the structure of the Stage 1 section of the project is:
 
-```examples
+{% highlight examples %}
 └── cpp-tutorial
     └──stage1
        ├── main
        │   ├── BUILD
        │   └── hello-world.cc
        └── WORKSPACE
-```
+{% endhighlight %}
 
 Run the following to move to the `cpp-tutorial/stage1` directory:
 
-```
+{% highlight text %}
 $ cd  ../cpp-tutorial/stage1
-```
+{% endhighlight %}
 
 Next, run:
 
-```
+{% highlight text %}
 $ bazel build //main:hello-world
-```
+{% endhighlight %}
 
 In the target label, the `//main:` part is the location of the `BUILD` file relative to the root of the workspace, and `hello-world` is the target name in the `BUILD` file.
 
-```
+{% highlight text %}
 ~/github/examples/cpp-tutorial/stage1/main$cat BUILD
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 
@@ -821,9 +821,9 @@ cc_binary(
     name = "hello-world",
     srcs = ["hello-world.cc"],
 )
-```
+{% endhighlight %}
 
-```cpp
+{% highlight cpp %}
 // ~/github/examples/cpp-tutorial/stage1/main$cat hello-world.cc
 
 #include <ctime>
@@ -848,11 +848,11 @@ int main(int argc, char** argv) {
   print_localtime();
   return 0;
 }
-```
+{% endhighlight %}
 
 Bazel produces something that looks like this:
 
-```
+{% highlight text %}
 ~/github/examples/cpp-tutorial/stage1$bazel build //main:hello-world
 WARNING: Ignoring JAVA_HOME, because it must point to a JDK, not a JRE.
 Starting local Bazel server and connecting to it...
@@ -863,11 +863,11 @@ Target //main:hello-world up-to-date:
 INFO: Elapsed time: 7.903s, Critical Path: 0.62s
 INFO: 6 processes: 4 internal, 2 processwrapper-sandbox.
 INFO: Build completed successfully, 6 total actions
-```
+{% endhighlight %}
 
 You just built your first Bazel target. Bazel places build outputs in the `bazel-bin` directory at the root of the workspace.
 
-```
+{% highlight text %}
 ~/github/examples/cpp-tutorial/stage1$tree
 .
 ├── bazel-bin -> /data/home/gerryyang/.cache/bazel/_bazel_gerryyang/0fa77b61e0ee4749e8c3bda193f05839/execroot/__main__/bazel-out/k8-fastbuild/bin
@@ -881,9 +881,9 @@ You just built your first Bazel target. Bazel places build outputs in the `bazel
 └── WORKSPACE
 
 5 directories, 4 files
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 ~/github/examples/cpp-tutorial/stage1/bazel-bin$tree
 .
 └── main
@@ -901,13 +901,13 @@ You just built your first Bazel target. Bazel places build outputs in the `bazel
             └── hello-world.pic.o
 
 6 directories, 7 files
-```
+{% endhighlight %}
 
 Now test your freshly built binary, which is:
 
-```
+{% highlight text %}
 $ bazel-bin/main/hello-world
-```
+{% endhighlight %}
 
 This results in a printed “Hello world” message.
 
@@ -927,7 +927,7 @@ While a single target is sufficient for small projects, you may want to split la
 
 This is the directory you are working with for Stage 2:
 
-```
+{% highlight text %}
     ├──stage2
     │  ├── main
     │  │   ├── BUILD
@@ -935,11 +935,11 @@ This is the directory you are working with for Stage 2:
     │  │   ├── hello-greet.cc
     │  │   └── hello-greet.h
     │  └── WORKSPACE
-```
+{% endhighlight %}
 
 Take a look below at the `BUILD` file in the `cpp-tutorial/stage2/main` directory:
 
-```
+{% highlight text %}
 cc_library(
     name = "hello-greet",
     srcs = ["hello-greet.cc"],
@@ -953,25 +953,25 @@ cc_binary(
         ":hello-greet",
     ],
 )
-```
+{% endhighlight %}
 
 With this `BUILD` file, Bazel first builds the `hello-greet` library (using Bazel's built-in `cc_library rule`), then the `hello-world` binary. The `deps` attribute in the `hello-world` target tells Bazel that the `hello-greet` library is required to build the `hello-world` binary.
 
 Before you can build this new version of the project, you need to change directories, switching to the `cpp-tutorial/stage2` directory by running:
 
-```
+{% highlight text %}
 $ cd  ../cpp-tutorial/stage2
-```
+{% endhighlight %}
 
 Now you can build the new binary using the following familiar command:
 
-```
+{% highlight text %}
 $ bazel build //main:hello-world
-```
+{% endhighlight %}
 
 Once again, Bazel produces something that looks like this:
 
-```
+{% highlight text %}
 ~/github/examples/cpp-tutorial/stage2$bazel build //main:hello-world
 WARNING: Ignoring JAVA_HOME, because it must point to a JDK, not a JRE.
 Starting local Bazel server and connecting to it...
@@ -982,13 +982,13 @@ Target //main:hello-world up-to-date:
 INFO: Elapsed time: 3.981s, Critical Path: 0.23s
 INFO: 7 processes: 4 internal, 3 processwrapper-sandbox.
 INFO: Build completed successfully, 7 total actions
-```
+{% endhighlight %}
 
 Now you can test your freshly built binary, which returns another “Hello world”:
 
-```
+{% highlight text %}
 $ bazel-bin/main/hello-world
-```
+{% endhighlight %}
 
 If you now modify `hello-greet.cc` and rebuild the project, **Bazel only recompiles that file**.
 
@@ -1004,7 +1004,7 @@ Looking at the dependency graph, you can see that hello-world depends on the sam
 
 This next stage adds another layer of complication and builds a project with multiple packages. Take a look below at the structure and contents of the `cpp-tutorial/stage3` directory:
 
-```
+{% highlight text %}
 ──stage3
    ├── main
    │   ├── BUILD
@@ -1016,24 +1016,24 @@ This next stage adds another layer of complication and builds a project with mul
    │   ├── hello-time.cc
    │   └── hello-time.h
    └── WORKSPACE
-```
+{% endhighlight %}
 
 You can see that now there are two sub-directories, and each contains a `BUILD` file. Therefore, to Bazel, the workspace now contains two packages: `lib` and `main`.
 
 Take a look at the `lib/BUILD` file:
 
-```
+{% highlight text %}
 cc_library(
     name = "hello-time",
     srcs = ["hello-time.cc"],
     hdrs = ["hello-time.h"],
     visibility = ["//main:__pkg__"],
 )
-```
+{% endhighlight %}
 
 And at the `main/BUILD` file:
 
-```
+{% highlight text %}
 cc_library(
     name = "hello-greet",
     srcs = ["hello-greet.cc"],
@@ -1048,7 +1048,7 @@ cc_binary(
         "//lib:hello-time",
     ],
 )
-```
+{% endhighlight %}
 
 The `hello-world` target in the main package depends on the `hello-time` target in the `lib` package (hence the target label `//lib:hello-time`) - Bazel knows this through the `deps` attribute. You can see this reflected in the dependency graph:
 
@@ -1059,19 +1059,19 @@ For the build to succeed, you make the `//lib:hello-time` target in `lib/BUILD` 
 
 Now build this final version of the project. Switch to the `cpp-tutorial/stage3` directory by running:
 
-```
+{% highlight text %}
 $ cd  ../cpp-tutorial/stage3
-```
+{% endhighlight %}
 
 Once again, run the following command:
 
-```
+{% highlight text %}
 $ bazel build //main:hello-world
-```
+{% endhighlight %}
 
 Bazel produces something that looks like this:
 
-```
+{% highlight text %}
 ~/github/examples/cpp-tutorial/stage3$bazel build //main:hello-world
 WARNING: Ignoring JAVA_HOME, because it must point to a JDK, not a JRE.
 INFO: Analyzed target //main:hello-world (35 packages loaded, 155 targets configured).
@@ -1081,13 +1081,13 @@ Target //main:hello-world up-to-date:
 INFO: Elapsed time: 2.172s, Critical Path: 0.25s
 INFO: 8 processes: 4 internal, 4 processwrapper-sandbox.
 INFO: Build completed successfully, 8 total actions
-```
+{% endhighlight %}
 
 Now test the last binary of this tutorial for a final Hello world message:
 
-```
+{% highlight text %}
 $ bazel-bin/main/hello-world
-```
+{% endhighlight %}
 
 > Summary: stage 3
 >
@@ -1116,25 +1116,25 @@ For information on cc_library and hdrs header files, see [cc_library](https://ba
 
 You can include multiple files in a single target with [glob](https://bazel.build/reference/be/functions#glob). For example:
 
-```
+{% highlight text %}
 cc_library(
     name = "build-all-the-files",
     srcs = glob(["*.cc"]),
     hdrs = glob(["*.h"]),
 )
-```
+{% endhighlight %}
 
 With this target, Bazel will build all the `.cc` and `.h` files it finds in the same directory as the `BUILD` file that contains this target (**excluding subdirectories**).
 
 考虑包含子目录的情况：
 
-```
+{% highlight text %}
 cc_library(
     name = "build-all-the-files-include-subdirectories",
     srcs = glob(["**/*.cc"]),
     hdrs = glob(["**/*.h"]),
 )
-```
+{% endhighlight %}
 
 
 ## Using transitive includes
@@ -1143,7 +1143,7 @@ If a file includes a header, then any rule with that file as a source (that is, 
 
 For example, suppose `sandwich.h` includes `bread.h` and `bread.h` includes `flour.h`. `sandwich.h` doesn't include `flour.h` (who wants flour in their sandwich?), so the `BUILD` file would look like this:
 
-```
+{% highlight text %}
 cc_library(
     name = "sandwich",
     srcs = ["sandwich.cc"],
@@ -1163,7 +1163,7 @@ cc_library(
     srcs = ["flour.cc"],
     hdrs = ["flour.h"],
 )
-```
+{% endhighlight %}
 
 Here, the `sandwich` library depends on the `bread` library, which depends on the `flour` library.
 
@@ -1171,7 +1171,7 @@ Here, the `sandwich` library depends on the `bread` library, which depends on th
 
 Sometimes you cannot (or do not want to) root include paths at the workspace root. Existing libraries might already have an include directory that doesn't match its path in your workspace. For example, suppose you have the following directory structure:
 
-```
+{% highlight text %}
 └── my-project
     ├── legacy
     │   └── some_lib
@@ -1180,18 +1180,18 @@ Sometimes you cannot (or do not want to) root include paths at the workspace roo
     │       │   └── some_lib.h
     │       └── some_lib.cc
     └── WORKSPACE
-```
+{% endhighlight %}
 
 Bazel will expect `some_lib.h` to be included as `legacy/some_lib/include/some_lib.h`, but suppose `some_lib.cc` includes "`some_lib.h`". To make that include path valid, `legacy/some_lib/BUILD` will need to specify that the `some_lib/include` directory is an include directory:
 
-```
+{% highlight text %}
 cc_library(
     name = "some_lib",
     srcs = ["some_lib.cc"],
     hdrs = ["include/some_lib.h"],
     copts = ["-Ilegacy/some_lib/include"],
 )
-```
+{% endhighlight %}
 
 This is especially useful for external dependencies, as their header files must otherwise be included with a `/` prefix.
 
@@ -1199,7 +1199,7 @@ This is especially useful for external dependencies, as their header files must 
 
 Suppose you are using [Google Test](https://github.com/google/googletest). You can use one of the repository functions in the `WORKSPACE` file to download Google Test and make it available in your repository:
 
-```
+{% highlight text %}
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
@@ -1208,7 +1208,7 @@ http_archive(
     sha256 = "94c634d499558a76fa649edb13721dce6e98fb1e7018dfaeba3cd7a083945e91",
     build_file = "@//:gtest.BUILD",
 )
-```
+{% endhighlight %}
 
 > Note: If the destination already contains a `BUILD` file, you can leave out the `build_file` attribute.
 
@@ -1220,7 +1220,7 @@ Then create `gtest.BUILD`, a `BUILD` file used to compile Google Test. Google Te
 
 The final rule therefore looks like this:
 
-```
+{% highlight text %}
 cc_library(
     name = "main",
     srcs = glob(
@@ -1238,11 +1238,11 @@ cc_library(
     linkopts = ["-pthread"],
     visibility = ["//visibility:public"],
 )
-```
+{% endhighlight %}
 
 This is somewhat messy(凌乱的): everything is prefixed with `googletest-release-1.10.0` as a byproduct of the archive's structure. You can make `http_archive` strip this prefix by adding the `strip_prefix` attribute:
 
-```
+{% highlight text %}
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
@@ -1252,11 +1252,11 @@ http_archive(
     build_file = "@//:gtest.BUILD",
     strip_prefix = "googletest-release-1.10.0",
 )
-```
+{% endhighlight %}
 
 Then `gtest.BUILD` would look like this:
 
-```
+{% highlight text %}
 cc_library(
     name = "main",
     srcs = glob(
@@ -1271,7 +1271,7 @@ cc_library(
     linkopts = ["-pthread"],
     visibility = ["//visibility:public"],
 )
-```
+{% endhighlight %}
 
 Now `cc_` rules can depend on `@gtest//:main`.
 
@@ -1279,18 +1279,18 @@ Now `cc_` rules can depend on `@gtest//:main`.
 
 For example, you could create a test `./test/hello-test.cc`, such as:
 
-```cpp
+{% highlight cpp %}
 #include "gtest/gtest.h"
 #include "main/hello-greet.h"
 
 TEST(HelloTest, GetGreet) {
   EXPECT_EQ(get_greet("Bazel"), "Hello Bazel");
 }
-```
+{% endhighlight %}
 
 Then create `./test/BUILD` file for your tests:
 
-```
+{% highlight text %}
 cc_test(
     name = "hello-test",
     srcs = ["hello-test.cc"],
@@ -1300,19 +1300,19 @@ cc_test(
         "//main:hello-greet",
     ],
 )
-```
+{% endhighlight %}
 
 To make `hello-greet` visible to `hello-test`, you must add `"//test:__pkg__"`, to the visibility attribute in `./main/BUILD`.
 
 Now you can use `bazel test` to run the test.
 
-```
+{% highlight text %}
 bazel test test:hello-test
-```
+{% endhighlight %}
 
 This produces the following output:
 
-```
+{% highlight text %}
 INFO: Found 1 test target...
 Target //test:hello-test up-to-date:
   bazel-bin/test/hello-test
@@ -1320,7 +1320,7 @@ INFO: Elapsed time: 4.497s, Critical Path: 2.53s
 //test:hello-test PASSED in 0.3s
 
 Executed 1 out of 1 tests: 1 test passes.
-```
+{% endhighlight %}
 
 More: https://google.github.io/googletest/quickstart-bazel.html
 
@@ -1328,13 +1328,13 @@ More: https://google.github.io/googletest/quickstart-bazel.html
 
 If you want to use a library of which you only have a compiled version (for example, `headers` and a `.so` file) wrap it in a `cc_library` rule:
 
-```
+{% highlight text %}
 cc_library(
     name = "mylib",
     srcs = ["mylib.so"],
     hdrs = ["mylib.h"],
 )
-```
+{% endhighlight %}
 
 This way, other C++ targets in your workspace can depend on this rule.
 
@@ -1343,9 +1343,9 @@ This way, other C++ targets in your workspace can depend on this rule.
 
 ## Available commands
 
-```
+{% highlight text %}
 bazel help
-```
+{% endhighlight %}
 
 * [analyze-profile](https://bazel.build/docs/user-manual#analyze-profile): Analyzes build profile data.
 * [aquery](https://bazel.build/docs/user-manual#aquery): Executes a query on the [post-analysis](https://bazel.build/run/build?hl=en#analysis) action graph.
@@ -1377,9 +1377,9 @@ The `bazel` tool performs many functions, called commands. The most commonly use
 
 ## [Building one target](https://bazel.build/run/build?hl=en#bazel-build)
 
-```
+{% highlight text %}
 bazel build //foo
-```
+{% endhighlight %}
 
 ## [Building multiple targets](https://bazel.build/run/build?hl=en#specifying-build-targets)
 
@@ -1409,15 +1409,15 @@ Once it has been run, you should not need to run it again until the `WORKSPACE` 
 
 fetch takes a list of targets to fetch dependencies for. For example, this would fetch dependencies needed to build `//foo:bar` and `//bar:baz`:
 
-```
+{% highlight text %}
 bazel fetch //foo:bar //bar:baz
-```
+{% endhighlight %}
 
 To fetch all external dependencies for a workspace, run:
 
-```
+{% highlight text %}
 bazel fetch //...
-```
+{% endhighlight %}
 
 
 # [Commands and Options](https://bazel.build/docs/user-manual?hl=en)
@@ -1433,7 +1433,7 @@ Most options can only be specified once. When specified multiple times, the last
 
 
 
-```
+{% highlight text %}
 $bazel help build --short
                                                            [bazel release 6.2.1]
 Usage: bazel build <options> <targets>
@@ -1452,9 +1452,9 @@ Options that appear before the command and are parsed by the client:
   --experimental_scale_timeouts
   --http_timeout_scaling
   --repository_cache
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $bazel help build --long | head -n50
                                                            [bazel release 6.2.1]
 Usage: bazel build <options> <targets>
@@ -1473,7 +1473,7 @@ Options that appear before the command and are parsed by the client:
     If set, the repository cache will hardlink the file in case of a cache hit,
     rather than copying. This is intended to save disk space.
       Tags: bazel_internal_configuration
-```
+{% endhighlight %}
 
 
 ### Package location
@@ -1504,9 +1504,9 @@ This option takes an argument which is to be passed to the compiler. The argumen
 
 This option can be used multiple times. For example:
 
-```
+{% highlight text %}
 % bazel build --copt="-g0" --copt="-fpic" //foo
-```
+{% endhighlight %}
 
 will compile the foo library without debug tables, generating position-independent code.
 
@@ -1523,9 +1523,9 @@ This is similar to `--copt`, but only applies to C++ compilation, not to C compi
 
 For example:
 
-```
+{% highlight text %}
 % bazel build --cxxopt="-fpermissive" --cxxopt="-Wno-error" //foo/cruddy_code
-```
+{% endhighlight %}
 
 > Note: copts parameters listed in specific cc_library or cc_binary build rules are placed on the compiler command line after these options.
 
@@ -1536,9 +1536,9 @@ This option takes an argument which is to be passed to the compiler when linking
 
 This is similar to `--copt`, but only applies to linking, not to compilation. So you can pass compiler options that only make sense at link time (such as `-lssp` or `-Wl,--wrap,abort`) using `--linkopt`. For example:
 
-```
+{% highlight text %}
 % bazel build --copt="-fmudflap" --linkopt="-lmudflap" //foo/buggy_code
-```
+{% endhighlight %}
 
 Build rules can also specify link options in their attributes. This option's settings always take precedence. Also see [cc_library.linkopts](https://bazel.build/reference/be/c-cpp#cc_library.linkopts).
 
@@ -1547,9 +1547,9 @@ Build rules can also specify link options in their attributes. This option's set
 
 This option determines whether Bazel will strip debugging information from all binaries and shared libraries, by invoking the linker with the `-Wl,--strip-debug` option. `--strip=always` means always strip debugging information. `--strip=never` means never strip debugging information. The default value of `--strip=sometimes` means strip if the `--compilation_mode` is `fastbuild`.
 
-```
+{% highlight text %}
 % bazel build --strip=always //foo:bar
-```
+{% endhighlight %}
 
 will compile the target while stripping debugging information from all generated binaries.
 
@@ -1687,17 +1687,17 @@ On Linux/macOS you can pass `--workspace_status_command=/bin/true` to **disable*
 
 Example program on Linux using Git:
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 echo "CURRENT_TIME $(date +%s)"
 echo "RANDOM_HASH $(cat /proc/sys/kernel/random/uuid)"
 echo "STABLE_GIT_COMMIT $(git rev-parse HEAD)"
 echo "STABLE_USER_NAME $USER"
-```
+{% endhighlight %}
 
 Pass this program's path with `--workspace_status_command`, and the stable status file will include the STABLE lines and the volatile status file will include the rest of the lines.
 
-```
+{% highlight text %}
 bazel-out$ls
 _actions  k8-fastbuild  stable-status.txt  _tmp  volatile-status.txt
 bazel-out$cat stable-status.txt
@@ -1710,7 +1710,7 @@ bazel-out$cat volatile-status.txt
 BUILD_TIMESTAMP 1687319715
 CURRENT_TIME 1687319715
 RANDOM_HASH df30a1c8-ecd4-47f9-a6b7-e0f8ba640cae
-```
+{% endhighlight %}
 
 
 refer:
@@ -1730,9 +1730,9 @@ Recall that each Bazel instance is associated with a single workspace, thus the 
 
 To completely remove the entire working tree created by a Bazel instance, you can specify the `--expunge` option. When executed with `--expunge`, the clean command simply removes the entire output base tree which, in addition to the build output, contains all temp files created by Bazel. It also stops the Bazel server after the clean, equivalent to the [shutdown](https://bazel.build/docs/user-manual?hl=en#shutdown) command. For example, to clean up all disk and memory traces of a Bazel instance, you could specify:
 
-```
+{% highlight text %}
 % bazel clean --expunge
-```
+{% endhighlight %}
 
 Alternatively, you can expunge in the background by using `--expunge_async`. It is safe to invoke a Bazel command in the same client while the asynchronous expunge continues to run.
 
@@ -1768,71 +1768,71 @@ The following resources will help you work with Bazel on C++ projects:
 
 ### [cc_binary](https://bazel.build/reference/be/c-cpp?hl=en#cc_binary)
 
-```
+{% highlight text %}
 cc_binary(name, deps, srcs, data, additional_linker_inputs, args, compatible_with, copts, defines, deprecation, distribs, env, exec_compatible_with, exec_properties, features, includes, licenses, linkopts, linkshared, linkstatic, local_defines, malloc, nocopts, output_licenses, restricted_to, stamp, tags, target_compatible_with, testonly, toolchains, visibility, win_def_file)
-```
+{% endhighlight %}
 
 ### [cc_import](https://bazel.build/reference/be/c-cpp?hl=en#cc_import)
 
-```
+{% highlight text %}
 cc_import(name, deps, data, hdrs, alwayslink, compatible_with, deprecation, distribs, features, interface_library, licenses, restricted_to, shared_library, static_library, system_provided, tags, target_compatible_with, testonly, visibility)
-```
+{% endhighlight %}
 
 ### [cc_library](https://bazel.build/reference/be/c-cpp?hl=en#cc_library)
 
-```
+{% highlight text %}
 cc_library(name, deps, srcs, data, hdrs, alwayslink, compatible_with, copts, defines, deprecation, distribs, exec_compatible_with, exec_properties, features, implementation_deps, include_prefix, includes, licenses, linkopts, linkstamp, linkstatic, local_defines, nocopts, restricted_to, strip_include_prefix, tags, target_compatible_with, testonly, textual_hdrs, toolchains, visibility, win_def_file)
-```
+{% endhighlight %}
 
 ### [cc_proto_library](https://bazel.build/reference/be/c-cpp?hl=en#cc_proto_library)
 
 cc_proto_library 从 `.proto` 文件生成 C++ 代码。
 
-```
+{% highlight text %}
 cc_proto_library(name, deps, data, compatible_with, deprecation, distribs, exec_compatible_with, exec_properties, features, licenses, restricted_to, tags, target_compatible_with, testonly, visibility)
-```
+{% endhighlight %}
 
 ### [cc_shared_library](https://bazel.build/reference/be/c-cpp?hl=en#cc_shared_library)
 
-```
+{% highlight text %}
 cc_shared_library(name, deps, additional_linker_inputs, dynamic_deps, exports_filter, shared_lib_name, tags, user_link_flags, win_def_file)
-```
+{% endhighlight %}
 
 ### [fdo_prefetch_hints](https://bazel.build/reference/be/c-cpp?hl=en#fdo_prefetch_hints)
 
-```
+{% highlight text %}
 fdo_prefetch_hints(name, compatible_with, deprecation, distribs, features, licenses, profile, restricted_to, tags, target_compatible_with, testonly, visibility)
-```
+{% endhighlight %}
 
 ### [fdo_profile](https://bazel.build/reference/be/c-cpp?hl=en#fdo_profile)
 
-```
+{% highlight text %}
 fdo_profile(name, absolute_path_profile, compatible_with, deprecation, distribs, features, licenses, profile, proto_profile, restricted_to, tags, target_compatible_with, testonly, visibility)
-```
+{% endhighlight %}
 
 ### [propeller_optimize](https://bazel.build/reference/be/c-cpp?hl=en#propeller_optimize)
 
-```
+{% highlight text %}
 propeller_optimize(name, compatible_with, deprecation, distribs, features, ld_profile, licenses, restricted_to, tags, target_compatible_with, testonly, visibility)
-```
+{% endhighlight %}
 
 ### [cc_test](https://bazel.build/reference/be/c-cpp?hl=en#cc_test)
 
-```
+{% highlight text %}
 cc_test(name, deps, srcs, data, additional_linker_inputs, args, compatible_with, copts, defines, deprecation, distribs, env, env_inherit, exec_compatible_with, exec_properties, features, flaky, includes, licenses, linkopts, linkstatic, local, local_defines, malloc, nocopts, restricted_to, shard_count, size, stamp, tags, target_compatible_with, testonly, timeout, toolchains, visibility, win_def_file)
-```
+{% endhighlight %}
 
 ### [cc_toolchain](https://bazel.build/reference/be/c-cpp?hl=en#cc_toolchain)
 
-```
+{% highlight text %}
 cc_toolchain(name, all_files, ar_files, as_files, compatible_with, compiler, compiler_files, compiler_files_without_includes, coverage_files, cpu, deprecation, distribs, dwp_files, dynamic_runtime_lib, exec_transition_for_inputs, features, libc_top, licenses, linker_files, module_map, objcopy_files, restricted_to, static_runtime_lib, strip_files, supports_header_parsing, supports_param_files, tags, target_compatible_with, testonly, toolchain_config, toolchain_identifier, visibility)
-```
+{% endhighlight %}
 
 ### [cc_toolchain_suite](https://bazel.build/reference/be/c-cpp?hl=en#cc_toolchain_suite)
 
-```
+{% highlight text %}
 cc_toolchain_suite(name, compatible_with, deprecation, distribs, features, licenses, restricted_to, tags, target_compatible_with, testonly, toolchains, visibility)
-```
+{% endhighlight %}
 
 
 
@@ -1857,24 +1857,24 @@ Follow the guidelines below when creating your `BUILD` files:
 
 * If there is a single source file in `srcs`, name the library the same as that C++ file's name. This library should contain C++ file(s), any matching header file(s), and the library's direct dependencies. For example:
 
-```
+{% highlight text %}
 cc_library(
     name = "mylib",
     srcs = ["mylib.cc"],
     hdrs = ["mylib.h"],
     deps = [":lower-level-lib"]
 )
-```
+{% endhighlight %}
 
 * Use one `cc_test` rule target per `cc_library` target in the file. Name the target `[library-name]_test` and the source file `[library-name]_test.cc`. For example, a test target for the mylib library target shown above would look like this:
 
-```
+{% highlight text %}
 cc_test(
     name = "mylib_test",
     srcs = ["mylib_test.cc"],
     deps = [":mylib"]
 )
-```
+{% endhighlight %}
 
 ## Include paths
 
@@ -1933,12 +1933,12 @@ Suppose the current repository is a chat client, rooted at the directory `~/chat
 
 The user can add a dependency on this target by adding the following lines to `~/chat-app/WORKSPACE`:
 
-```
+{% highlight text %}
 local_repository(
     name = "my-ssl",
     path = "/home/user/ssl",
 )
-```
+{% endhighlight %}
 
 Targets would specify `@my-ssl//src:openssl-lib` as a dependency to depend on this library.
 
@@ -1955,45 +1955,45 @@ Suppose the current repository is a chat client, rooted at the directory `~/chat
 
 The user can add a dependency by creating a `BUILD` file for the SSL library (`~/chat-app/BUILD.my-ssl`) containing:
 
-```
+{% highlight text %}
 java_library(
     name = "openssl",
     srcs = glob(['*.java'])
     visibility = ["//visibility:public"],
 )
-```
+{% endhighlight %}
 
 Then they can add the following lines to `~/chat-app/WORKSPACE`:
 
-```
+{% highlight text %}
 new_local_repository(
     name = "my-ssl",
     path = "/home/user/ssl",
     build_file = "BUILD.my-ssl",
 )
-```
+{% endhighlight %}
 
 This will create a `@my-ssl` repository that symlinks to `/home/user/ssl`. Targets can depend on this library by adding `@my-ssl//:openssl` to a target's dependencies.
 
 You can also use `new_local_repository` to include single files, not just directories. For example, suppose you had a jar file at `/home/username/Downloads/piano.jar`. You could add just that file to your build by adding the following to your `WORKSPACE` file:
 
-```
+{% highlight text %}
 new_local_repository(
     name = "piano",
     path = "/home/username/Downloads/piano.jar",
     build_file = "BUILD.piano",
 )
-```
+{% endhighlight %}
 
 And creating the following `BUILD.piano` file:
 
-```
+{% highlight text %}
 java_import(
     name = "play-music",
     jars = ["piano.jar"],
     visibility = ["//visibility:public"],
 )
-```
+{% endhighlight %}
 
 Then targets can depend on `@piano//:play-music` to use `piano.jar`.
 
@@ -2015,17 +2015,17 @@ A remote cache is used by a team of developers and/or a continuous integration (
 
 * 然后，在命令行中使用 `--remote_cache` 选项，指定远程缓存服务器的 URL。例如：
 
-```
+{% highlight text %}
 bazel build //:my_target --remote_cache=http://remote.cache.server.com:port
-```
+{% endhighlight %}
 
 这里 `http://remote.cache.server.com:port` 是部署的远程缓存服务器地址。在构建目标（例如 `//:my_target`）时，Bazel 将使用指定的远程缓存服务器。
 
 还可以将这个选项加入到项目根目录下的 `.bazelrc` 文件中，这样就不需要在每次构建时手动指定选项：
 
-```
+{% highlight text %}
 build --remote_cache=http://remote.cache.server.com:port
-```
+{% endhighlight %}
 
 当使用远程缓存时，请注意以下方面：
 
@@ -2075,7 +2075,7 @@ bazel 构建分为三个阶段：Loading, Analysising and Executing
 
 执行 analyze-profile 命令，查看 profile 数据
 
-```
+{% highlight text %}
 $bazel analyze-profile bazel_profile.log
 WARNING: This information is intended for consumption by Bazel developers only, and may change at any time. Script against it at your own risk
 INFO: Profile created on 2023-06-30T03:16:36.524737Z, build ID: 56b5d6fc-f100-43c6-8564-b5f3819ed9de, output base: /data/home/gerryyang/.cache/bazel/_bazel_gerryyang/31b5c5a4697c67885c83a7460c9628d6
@@ -2098,7 +2098,7 @@ Critical path (13.428 s):
     9.996 s   74.44%   action 'Compiling src/unittestsvr/UnittestCtrl.cpp'
     3.355 s   24.99%   action 'Linking src/unittestsvr/unittestsvr'
     0.18 ms    0.00%   runfiles for //src/unittestsvr unittestsvr
-```
+{% endhighlight %}
 
 通过分析上述 profiling 结果数据，可以看到 bazel 各阶段的耗时，以及 action 具体的编译耗时，根据这些信息可以大致了解构建耗时情况。
 
@@ -2114,7 +2114,7 @@ For the authoritative specification of the Starlark syntax and behavior, see the
 
 Starlark's syntax is inspired by `Python3`. This is valid syntax in Starlark:
 
-```python
+{% highlight python %}
 def fizz_buzz(n):
   """Print Fizz Buzz numbers from 1 to n."""
   for i in range(1, n + 1):
@@ -2126,7 +2126,7 @@ def fizz_buzz(n):
     print(s if s else i)
 
 fizz_buzz(20)
-```
+{% endhighlight %}
 
 Starlark's semantics can differ from Python, but behavioral differences are rare, except for cases where Starlark raises an error. The following Python types are supported:
 
@@ -2167,7 +2167,7 @@ More: https://bazel.build/rules/language?hl=en#differences_with_python
 
 `BUILD` files are intended to be simple and declarative. They will typically consist of a series of a target declarations. As your code base and your `BUILD` files get larger, you will probably notice some duplication, such as:
 
-```
+{% highlight text %}
 cc_library(
   name = "foo",
   copts = ["-DVERSION=5"],
@@ -2180,13 +2180,13 @@ cc_library(
   srcs = ["bar.cc"],
   deps = [":foo"],
 )
-```
+{% endhighlight %}
 
 Code duplication in `BUILD` files is usually fine. This can make the file more readable: each declaration can be read and understood without any context. This is important, not only for humans, but also for external tools. For example, a tool might be able to read and update `BUILD` files to add missing dependencies. Code refactoring and code reuse might prevent this kind of automated modification.
 
 If it is useful to share values (for example, if values must be kept in sync), you can introduce a variable:
 
-```
+{% highlight text %}
 COPTS = ["-DVERSION=5"]
 
 cc_library(
@@ -2201,7 +2201,7 @@ cc_library(
   srcs = ["bar.cc"],
   deps = [":foo"],
 )
-```
+{% endhighlight %}
 
 Multiple declarations now use the value `COPTS`. By convention, use uppercase letters to name global constants.
 
@@ -2212,13 +2212,13 @@ If you need to share a value across multiple `BUILD` files, you have to put it i
 
 In `path/to/variables.bzl`, write:
 
-```
+{% highlight text %}
 COPTS = ["-DVERSION=5"]
-```
+{% endhighlight %}
 
 Then, you can update your `BUILD` files to access the variable:
 
-```
+{% highlight text %}
 load("//path/to:variables.bzl", "COPTS")
 
 cc_library(
@@ -2233,7 +2233,7 @@ cc_library(
   srcs = ["bar.cc"],
   deps = [":foo"],
 )
-```
+{% endhighlight %}
 
 
 # [自定义扩展](https://bazel.build/extending/concepts?hl=en)
@@ -2313,7 +2313,7 @@ Macros are suitable for simple tasks. If you want to do anything more complicate
 
 The easiest way to create a macro that resizes an image is to use a `genrule`:
 
-```
+{% highlight text %}
 genrule(
     name = "logo_miniature",
     srcs = ["logo.png"],
@@ -2326,11 +2326,11 @@ cc_binary(
     srcs = ["my_app.cc"],
     data = [":logo_miniature"],
 )
-```
+{% endhighlight %}
 
 If you need to resize more images, you may want to reuse the code. To do that, define a function in a separate `.bzl` file, and call the file `miniature.bzl`:
 
-```
+{% highlight text %}
 def miniature(name, src, size="100x100", **kwargs):
   """Create a miniature of the src image.
 
@@ -2343,7 +2343,7 @@ def miniature(name, src, size="100x100", **kwargs):
     cmd = "convert $< -resize " + size + " $@",
     **kwargs
   )
-```
+{% endhighlight %}
 
 注意事项：
 
@@ -2354,7 +2354,7 @@ def miniature(name, src, size="100x100", **kwargs):
 
 Now, use the macro from the `BUILD` file:
 
-```
+{% highlight text %}
 load("//path/to:miniature.bzl", "miniature")
 
 miniature(
@@ -2367,7 +2367,7 @@ cc_binary(
     srcs = ["my_app.cc"],
     data = [":logo_miniature"],
 )
-```
+{% endhighlight %}
 
 # [Rules Tutorial](https://bazel.build/rules/rules-tutorial?hl=en)
 
@@ -2379,14 +2379,14 @@ Starlark 是一种类似于 Python 的配置语言，最初是在 Bazel 中使�
 
 To create your first rule, create the file `foo.bzl`:
 
-```
+{% highlight text %}
 def _foo_binary_impl(ctx):
     pass
 
 foo_binary = rule(
     implementation = _foo_binary_impl,
 )
-```
+{% endhighlight %}
 
 When you call the `rule` function, you must define a callback function. The logic will go there, but you can leave the function empty for now. The `ctx` argument provides information about the target.
 
@@ -2396,20 +2396,20 @@ You can load the rule and use it from a `BUILD` file.
 
 Create a `BUILD` file in the same directory:
 
-```
+{% highlight text %}
 load(":foo.bzl", "foo_binary")
 
 foo_binary(name = "bin")
-```
+{% endhighlight %}
 
 Now, the target can be built:
 
-```
+{% highlight text %}
 $ bazel build bin
 INFO: Analyzed target //:bin (2 packages loaded, 17 targets configured).
 INFO: Found 1 target...
 Target //:bin up-to-date (nothing to build)
-```
+{% endhighlight %}
 
 Even though the rule does nothing, it already behaves like other rules: it has a mandatory name, it supports common attributes like visibility, testonly, and tags.
 
@@ -2421,7 +2421,7 @@ Before going further, it's important to understand how the code is evaluated.
 
 Update `foo.bzl` with some print statements:
 
-```
+{% highlight text %}
 def _foo_binary_impl(ctx):
     print("analyzing", ctx.label)
 
@@ -2430,29 +2430,29 @@ foo_binary = rule(
 )
 
 print("bzl file evaluation")
-```
+{% endhighlight %}
 
 and `BUILD`:
 
-```
+{% highlight text %}
 load(":foo.bzl", "foo_binary")
 
 print("BUILD file")
 foo_binary(name = "bin1")
 foo_binary(name = "bin2")
-```
+{% endhighlight %}
 
 `ctx.label` corresponds to the label of the target being analyzed. The `ctx` object has many useful fields and methods; you can find an exhaustive list in the [API reference](https://bazel.build/rules/lib/ctx).
 
 Query the code:
 
-```
+{% highlight text %}
 $ bazel query :all
 DEBUG: /usr/home/bazel-codelab/foo.bzl:8:1: bzl file evaluation
 DEBUG: /usr/home/bazel-codelab/BUILD:2:1: BUILD file
 //:bin2
 //:bin1
-```
+{% endhighlight %}
 
 Make a few observations:
 
@@ -2462,13 +2462,13 @@ Make a few observations:
 
 To analyze the targets, use the [cquery](https://bazel.build/query/cquery) ("configured query") or the `build` command:
 
-```
+{% highlight text %}
 $ bazel build :all
 DEBUG: /usr/home/bazel-codelab/foo.bzl:2:5: analyzing //:bin1
 DEBUG: /usr/home/bazel-codelab/foo.bzl:2:5: analyzing //:bin2
 INFO: Analyzed 2 targets (0 packages loaded, 0 targets configured).
 INFO: Found 2 targets...
-```
+{% endhighlight %}
 
 As you can see, `_foo_binary_impl` is now called twice - once for each target.
 
@@ -2480,38 +2480,38 @@ To make your rule more useful, update it to generate a file. First, declare the 
 
 为了使规则更实用，请更新规则以生成文件。首先，声明文件并为其命名。在此示例中，请创建一个与目标同名的文件：
 
-```
+{% highlight text %}
 ctx.actions.declare_file(ctx.label.name)
-```
+{% endhighlight %}
 
 If you run bazel build :all now, you will get an error:
 
-```
+{% highlight text %}
 The following files have no generating action:
 bin2
-```
+{% endhighlight %}
 
 Whenever you declare a file, you have to tell Bazel how to generate it by creating an action. Use [ctx.actions.write](https://bazel.build/rules/lib/actions#write), to create a file with the given content.
 
-```
+{% highlight text %}
 def _foo_binary_impl(ctx):
     out = ctx.actions.declare_file(ctx.label.name)
     ctx.actions.write(
         output = out,
         content = "Hello\n",
     )
-```
+{% endhighlight %}
 
 The code is valid, but it won't do anything:
 
-```
+{% highlight text %}
 $ bazel build bin1
 Target //:bin1 up-to-date (nothing to build)
-```
+{% endhighlight %}
 
 The `ctx.actions.write` function registered an action, which taught Bazel how to generate the file. But Bazel won't create the file until it is actually requested. So the last thing to do is tell Bazel that the file is an output of the rule, and not a temporary file used within the rule implementation.
 
-```
+{% highlight text %}
 def _foo_binary_impl(ctx):
     out = ctx.actions.declare_file(ctx.label.name)
     ctx.actions.write(
@@ -2519,13 +2519,13 @@ def _foo_binary_impl(ctx):
         content = "Hello!\n",
     )
     return [DefaultInfo(files = depset([out]))]
-```
+{% endhighlight %}
 
 Look at the `DefaultInfo` and `depset` functions later. For now, assume that the last line is the way to choose the outputs of a rule.
 
 Now, run Bazel:
 
-```
+{% highlight text %}
 $ bazel build bin1
 INFO: Found 1 target...
 Target //:bin1 up-to-date:
@@ -2533,7 +2533,7 @@ Target //:bin1 up-to-date:
 
 $ cat bazel-bin/bin1
 Hello!
-```
+{% endhighlight %}
 
 You have successfully generated a file!
 
@@ -2543,27 +2543,27 @@ To make the rule more useful, add new attributes using [the attr module](https:/
 
 Add a string attribute called `username`:
 
-```
+{% highlight text %}
 foo_binary = rule(
     implementation = _foo_binary_impl,
     attrs = {
         "username": attr.string(),
     },
 )
-```
+{% endhighlight %}
 
 Next, set it in the `BUILD` file:
 
-```
+{% highlight text %}
 foo_binary(
     name = "bin",
     username = "Alice",
 )
-```
+{% endhighlight %}
 
 To access the value in the callback function, use `ctx.attr.username`. For example:
 
-```
+{% highlight text %}
 def _foo_binary_impl(ctx):
     out = ctx.actions.declare_file(ctx.label.name)
     ctx.actions.write(
@@ -2571,7 +2571,7 @@ def _foo_binary_impl(ctx):
         content = "Hello {}!\n".format(ctx.attr.username),
     )
     return [DefaultInfo(files = depset([out]))]
-```
+{% endhighlight %}
 
 Note that you can make the attribute mandatory or set a default value. Look at the documentation of [attr.string](https://bazel.build/rules/lib/attr#string). You may also use other types of attributes, such as [boolean](https://bazel.build/rules/lib/attr#bool) or [list of integers](https://bazel.build/rules/lib/attr#int_list).
 
@@ -2593,7 +2593,7 @@ You can create a rule that generates a `.cc` file based on a **template**. Also,
 
 Create a **template** attribute to declare a dependency on the template file:
 
-```
+{% highlight text %}
 def _hello_world_impl(ctx):
     out = ctx.actions.declare_file(ctx.label.name + ".cc")
     ctx.actions.expand_template(
@@ -2613,11 +2613,11 @@ hello_world = rule(
         ),
     },
 )
-```
+{% endhighlight %}
 
 Users can use the rule like this:
 
-```
+{% highlight text %}
 hello_world(
     name = "hello",
     username = "Alice",
@@ -2628,22 +2628,22 @@ cc_binary(
     name = "hello_bin",
     srcs = [":hello"],
 )
-```
+{% endhighlight %}
 
 If you don't want to expose the template to the end-user and always use the same one, you can set a default value and make the attribute private:
 
-```
+{% highlight text %}
     "_template": attr.label(
         allow_single_file = True,
         default = "file.cc.tpl",
     ),
-```
+{% endhighlight %}
 
 Attributes that start with an **underscore** are **private** and cannot be set in a `BUILD` file. The template is now an implicit dependency: Every `hello_world` target has a dependency on this file. Don't forget to make this file visible to other packages by updating the `BUILD` file and using [exports_files](https://bazel.build/reference/be/functions#exports_files):
 
-```
+{% highlight text %}
 exports_files(["file.cc.tpl"])
-```
+{% endhighlight %}
 
 ## Going further
 
@@ -2659,13 +2659,13 @@ exports_files(["file.cc.tpl"])
 
 ## 修改 bazel 输出目录使用 SSD 磁盘存储
 
-```bash
+{% highlight bash %}
 # .bazelrc
 startup --output_user_root=/data_ssd/home/gerryyang/bazel
 
 # 命令行
 bazel --output_user_root=/data1/home/bazel_build/.bazel build //...
-```
+{% endhighlight %}
 
 ## 在二进制中注入版本信息
 
@@ -2673,7 +2673,7 @@ bazel --output_user_root=/data1/home/bazel_build/.bazel build //...
 
 在工程根目录的 BUILD 中：
 
-```python
+{% highlight python %}
 load("//:version_info.bzl", "generate_version_info")
 
 # 自定义规则
@@ -2686,11 +2686,11 @@ config_setting(
     name = "enable_version_info",
     values = {"define": "enable_version_info=true"},
 )
-```
+{% endhighlight %}
 
 version_info.bzl 内容如下：
 
-```python
+{% highlight python %}
 """
 测试命令：
 ACTION_ENV="--action_env=COMPILER_NAME=clang --action_env=OS=$(uname -r)"
@@ -2741,11 +2741,11 @@ generate_version_info = rule(
         ),
     },
 )
-```
+{% endhighlight %}
 
 构建使用时：
 
-```bash
+{% highlight bash %}
 function SetActionEnvInfo()
 {
     # 获取环境信息
@@ -2776,16 +2776,16 @@ function SetVersionInfoTarget()
         #USE_RBS="" # 如果注入二进制版本信息带有时间戳会导致远程缓存失效，建议不使用 RC
     fi
 }
-```
+{% endhighlight %}
 
 在构建依赖的 BUILD 中根据条件编译选择是否依赖 version_info 目标：
 
-```python
+{% highlight python %}
 select({
           "//:enable_version_info": ["//:version_info"], # 版本信息
           "//conditions:default": [],
 })
-```
+{% endhighlight %}
 
 ### 方案2：通过 genrule
 
@@ -2793,7 +2793,7 @@ https://github.com/envoyproxy/envoy/blob/release/v1.22/source/common/version/BUI
 
 示例：
 
-```python
+{% highlight python %}
 genrule(
     name = "generate_version_number",
     srcs = ["//:VERSION.txt"],
@@ -2801,7 +2801,7 @@ genrule(
     cmd = """echo "#define BUILD_VERSION_NUMBER \\"$$(cat $<)\\"" >$@""",
     visibility = ["//visibility:private"],
 )
-```
+{% endhighlight %}
 
 
 
@@ -2831,12 +2831,12 @@ There are two potential problems:
 * The Bazel server runs in a JVM, and it internally tries to allocate more objects than the max heap size its allowed.
 * Bazel spawns subprocesses (called "actions", including test actions) and they collectively exhaust the memory in the machine or VM that Bazel runs in.
 
-```
+{% highlight text %}
 $ bazel info | grep heap
 committed-heap-size: 826MB
 max-heap-size: 32178MB
 used-heap-size: 193MB
-```
+{% endhighlight %}
 
 
 ## 生成 compile_commands.json 文件
@@ -2928,7 +2928,7 @@ Each command object contains the translation unit’s main file, the working dir
 
 Example:
 
-```json
+{% highlight json %}
 [
   { "directory": "/home/user/llvm/build",
     "arguments": ["/usr/bin/clang++", "-Irelative", "-DSOMEDEF=With spaces, quotes and \\-es.", "-c", "-o", "file.o", "file.cc"],
@@ -2940,7 +2940,7 @@ Example:
 
   ...
 ]
-```
+{% endhighlight %}
 
 The contracts for each field in the command object are:
 
@@ -2968,10 +2968,10 @@ For simple projects, Clang tools also recognize a **compile_flags.txt** file. Th
 
 Example:
 
-```-xc++
+{% highlight text %}
 -I
 libwidget/include/
-```
+{% highlight text %}
 
 Here `-I libwidget/include` is two arguments, and so becomes two lines. Paths are relative to the directory containing **compile_flags.txt**.
 
@@ -2985,22 +2985,22 @@ tags 是一个字符串列表，其中的每个元素都是一个标签。no-cac
 
 以下是一个简单的 BUILD.bazel 文件示例，其中定义了一个带有 no-cache 标签的 cc_binary 目标：
 
-```python
+{% highlight python %}
 cc_binary(
     name = "example_binary",
     srcs = ["example.cc"],
     tags = ["no-cache"],
 )
-```
+{% endhighlight %}
 
 在这个例子中，每次使用 `bazel build //:example_binary` 构建 example_binary 目标时，bazel 都会重新构建它，而不是尝试从远程缓存中查找已构建的结果。
 
 > 建议改成 `--modify_execution_info=^(CppLink|CppArchive)=+no-remote-cache` 的方式，对 CppLink 和 CppArchive 禁止上传 rc。
 
-```bash
+{% highlight bash %}
 # 控制只有 CppCompile 上传 rc
 build --modify_execution_info=^(CppLink|CppArchive)=+no-remote-cache
-```
+{% endhighlight %}
 
 
 ## 如何对使用远程缓存文件上传进行优化
@@ -3023,15 +3023,15 @@ bazel 使用 remote cache 远程缓存编译后，编译完成的目标文件需
 
 You can use the startup option [--output_base](https://docs.bazel.build/versions/master/command-line-reference.html#flag--output_base) to point to a location where there's more available storage. This will tell Bazel where to write all its outputs.
 
-```
+{% highlight text %}
 $ bazel --output_base=/path/to/more/space build ...
-```
+{% endhighlight %}
 
 To avoid specifying this for every command, add it to your project `<project>/.bazelrc` or user `~/.bazelrc`:
 
-```
+{% highlight text %}
 startup --output_base=/path/to/more/space
-```
+{% endhighlight %}
 
 
 ## 条件编译
@@ -3042,18 +3042,18 @@ startup --output_base=/path/to/more/space
 
 * 添加一个 config_setting 规则，用于定义一个名为 use_custom_lib 的配置标志：
 
-```
+{% highlight text %}
 config_setting(
     name = "use_custom_lib",
     values = {"define": "custom_lib=true"},
 )
-```
+{% endhighlight %}
 
 这将创建一个名为 use_custom_lib 的配置设置，它在 `--define custom_lib=true` 传递给 Bazel 时为真。
 
 * 在 BUILD 文件中添加一个 cc_library 规则，并使用 select 语句根据 use_custom_lib 的值选择不同的源文件：
 
-```
+{% highlight text %}
 cc_library(
     name = "conditional_lib",
     srcs = select({
@@ -3062,20 +3062,20 @@ cc_library(
     }),
     hdrs = ["lib.h"],
 )
-```
+{% endhighlight %}
 
 在这个示例中，当 custom_lib 定义为 true 时，conditional_lib 会使用 custom_lib.cc 作为源文件，否则会使用 default_lib.cc。
 
 
 * 构建目标
 
-```
+{% highlight text %}
 # 使用默认库构建
 bazel build //:conditional_lib
 
 # 使用自定义库构建
 bazel build //:conditional_lib --define custom_lib=true
-```
+{% endhighlight %}
 
 这个简单的示例展示了如何使用 config_setting 和 select 在 Bazel 构建中实现条件编译。你可以根据项目需求扩展这个示例，例如在不同的平台上使用不同的源文件或依赖项。
 
@@ -3122,7 +3122,7 @@ bazel info 提供了有关 Bazel 工作空间和其配置的信息。这些信�
 
 * 获取输出基本目录：此命令返回输出基本目录，该目录包含 Bazel 执行期间产生的中间文件和构建产物。
 
-```
+{% highlight text %}
 ls -l `bazel info output_base`
 总用量 18260
 drwxr-xr-x  2 gerryyang users     4096 6月  20 13:09 action_cache
@@ -3139,11 +3139,11 @@ lrwxrwxrwx  1 gerryyang users       76 6月  20 12:08 java.log -> java.log.gerry
 -rw-r--r--  1 gerryyang users       82 6月  20 13:13 lock
 -rw-r--r--  1 gerryyang users      789 6月  20 12:08 README
 drwx------  2 gerryyang users     4096 6月  20 12:08 server
-```
+{% endhighlight %}
 
 * 获取 bazel-bin 目录：此命令返回包含构建产物（如可执行文件和库）的 bazel-bin 目录。
 
-```
+{% highlight text %}
 $ls -l `bazel info bazel-bin`
 总用量 20
 drwxr-xr-x  3 gerryyang users 4096 6月  20 13:08 external
@@ -3151,11 +3151,11 @@ drwxr-xr-x  4 gerryyang users 4096 6月  20 13:08 frame
 drwxr-xr-x  3 gerryyang users 4096 6月  20 13:08 protocol
 drwxr-xr-x 14 gerryyang users 4096 6月  20 13:09 src
 drwxrwxrwx 24 gerryyang users 4096 6月  20 13:08 thirdparty
-```
+{% endhighlight %}
 
 * 获取工作空间根目录：此命令返回当前 Bazel 工作空间的根目录。
 
-```
+{% highlight text %}
 $ls -l `bazel info workspace`
 总用量 156
 lrwxrwxrwx  1 gerryyang users   128 6月  20 13:08 bazel-bin -> /data/home/gerryyang/.cache/bazel/_bazel_gerryyang/31b5c5a4697c67885c83a7460c9628d6/execroot/__main__/bazel-out/k8-fastbuild/bin
@@ -3191,11 +3191,11 @@ drwxr-xr-x 23 gerryyang users  4096 6月  11 21:27 tools
 drwxr-xr-x  5 gerryyang users  4096 6月  12 21:15 unittest
 -rw-r--r--  1 gerryyang users     0 6月  19 21:05 WORKSPACE
 drwxr-xr-x  7 gerryyang users  4096 6月  11 21:27 world-values
-```
+{% endhighlight %}
 
 * 获取构建配置信息：此命令可获取有关当前 Bazel 构建配置的详细信息。
 
-```
+{% highlight text %}
 $bazel info --show_make_env
 BINDIR: bazel-out/k8-fastbuild/bin
 COMPILATION_MODE: fastbuild
@@ -3224,7 +3224,7 @@ server_log: /data/home/gerryyang/.cache/bazel/_bazel_gerryyang/31b5c5a4697c67885
 server_pid: 3969149
 used-heap-size: 69MB
 workspace: /data/home/gerryyang/jlib_proj/JLib
-```
+{% endhighlight %}
 
 
 ## bazel aquery
@@ -3233,27 +3233,27 @@ bazel aquery 是一个强大的命令，用于查询关于构建操作的详细�
 
 * 查询特定构建目标的信息：此命令查询特定构建目标的详细信息。
 
-```
+{% highlight text %}
 bazel aquery '//path/to/package:target_name'
-```
+{% endhighlight %}
 
 * 查询特定构建目标和其直接依赖项的信息：此命令查询指定构建目标的详细信息，并包括其直接依赖项。
 
-```
+{% highlight text %}
 bazel aquery 'deps(//path/to/package:target_name)'
-```
+{% endhighlight %}
 
 * 查询具有特定属性的构建目标信息：此命令查询具有特定属性的构建目标及其直接依赖项的详细信息。
 
-```
+{% highlight text %}
 bazel aquery 'attr("srcs", ".*/file_to_search\\.cpp", deps(//path/to/package:target_name))'
-```
+{% endhighlight %}
 
 ## bazel analyze-profile
 
 通过 `--profile=file` 进行性能分析。
 
-```
+{% highlight text %}
 $bazel analyze-profile bazel_profile_output.log
 WARNING: This information is intended for consumption by Bazel developers only, and may change at any time. Script against it at your own risk
 INFO: Profile created on 2023-06-21T03:22:35.541621Z, build ID: c980b6c0-af1a-46ef-a5ca-cacc3d3f7264, output base: /data/home/gerryyang/.cache/bazel/_bazel_gerryyang/31b5c5a4697c67885c83a7460c9628d6
@@ -3276,13 +3276,13 @@ Critical path (17.842 s):
    14.314 s   80.23%   action 'Compiling src/unittestsvr1/UnittestCtrl.cpp'
     3.523 s   19.74%   action 'Linking src/unittestsvr1/unittestsvr1'
     0.09 ms    0.00%   runfiles for //src/unittestsvr1 unittestsvr1
-```
+{% endhighlight %}
 
 ## bazel print_action (查看有哪些 action)
 
-```
+{% highlight text %}
 bazel print_action //src/unittestsvr:unittestsvr
-```
+{% endhighlight %}
 
 
 
@@ -3457,15 +3457,15 @@ The Bazel subcommand [analyze-profile](https://bazel.build/docs/user-manual#anal
 
 For example, the commands
 
-```
+{% highlight text %}
 $ bazel build --profile=/tmp/profile.gz //path/to:target
 ...
 $ bazel analyze-profile /tmp/profile.gz
-```
+{% endhighlight %}
 
 may yield output of this form:
 
-```
+{% highlight text %}
 INFO: Profile created on Tue Jun 16 08:59:40 CEST 2020, build ID: 0589419c-738b-4676-a374-18f7bbc7ac23, output base: /home/johndoe/.cache/bazel/_bazel_johndoe/d8eb7a85967b22409442664d380222c0
 
 === PHASE SUMMARY INFORMATION ===
@@ -3488,7 +3488,7 @@ Critical path (4.245 s):
     0.25 ms    0.01%   runfiles for @com_google_protobuf// protoc
      126 ms    2.97%   action 'ProtoCompile external/com_google_protobuf/python/google/protobuf/compiler/plugin_pb2.py'
     0.96 ms    0.02%   runfiles for //tools/aquery_differ aquery_differ
-```
+{% endhighlight %}
 
 #### Bazel Invocation Analyzer
 
@@ -3498,7 +3498,7 @@ The open-source [Bazel Invocation Analyzer](https://github.com/EngFlow/bazel_inv
 
 `jq` is like `sed` for JSON data. An example usage of `jq` to extract all durations of the sandbox creation step in local action execution:（使用 jq 提取本地操作执行中沙盒创建步骤的所有时长的示例）
 
-```
+{% highlight text %}
 $ zcat $(../bazel-6.0.0rc1-linux-x86_64 info output_base)/command.profile.gz | jq '.traceEvents | .[] | select(.name == "sandbox.createFileSystem") | .dur'
 6378
 7247
@@ -3509,7 +3509,7 @@ $ zcat $(../bazel-6.0.0rc1-linux-x86_64 info output_base)/command.profile.gz | j
 8487
 15520
 [...]
-```
+{% endhighlight %}
 
 ### Profile information
 
@@ -3739,7 +3739,7 @@ Bazel uses a `major.minor.patch` Semantic Versioning scheme.
 
 问题描述：使用下面的构建规则出现生成的二进制文件中缺失功能。
 
-```python
+{% highlight python %}
 package(default_visibility = ["//visibility:public"])
 
 cc_binary(
@@ -3766,7 +3766,7 @@ cc_library(
     ],
     linkstatic = True,
 )
-```
+{% endhighlight %}
 
 解决方法：参考 https://bazel.build/reference/be/c-cpp?hl=zh-cn#cc_library.alwayslink，需要在 cc_library 中添加一个 `alwayslink = True` 保证 gamesvr_inner 所有符号链接到 gamesvr 这个目标。
 
@@ -3846,24 +3846,24 @@ Looks like Bazel 0.15 [added](https://github.com/bazelbuild/bazel/issues/4460#is
 
 1. Depend on this runfiles library from your build rule:
 
-```
+{% highlight text %}
 cc_binary(
   name = "my_binary",
   ...
   deps = ["@bazel_tools//tools/cpp/runfiles"],
 )
-```
+{% endhighlight %}
 
 2. Include the runfiles library.
 
-```cpp
+{% highlight cpp %}
 #include "tools/cpp/runfiles/runfiles.h"
 using bazel::tools::cpp::runfiles::Runfiles;
-```
+{% endhighlight %}
 
 3. Create a `Runfiles` object and use `Rlocation` to look up runfile paths:
 
-```cpp
+{% highlight cpp %}
 int main(int argc, char** argv) {
   std::string error;
   std::unique_ptr<Runfiles> runfiles(Runfiles::Create(argv[0], &error));
@@ -3881,7 +3881,7 @@ int main(int argc, char** argv) {
 
   // ...
 }
-```
+{% endhighlight %}
 
 * [Why can't my programs find resource files when using bazel run //package](https://stackoverflow.com/questions/71826978/why-cant-my-programs-find-resource-files-when-using-bazel-run-package)
 
@@ -3931,3 +3931,4 @@ https://github.com/vincent-picaud/Bazel_with_Data
 
 
 
+{% endhighlight %}

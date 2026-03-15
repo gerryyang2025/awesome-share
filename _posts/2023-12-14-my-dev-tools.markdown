@@ -30,7 +30,7 @@ tags:
 
 ## CMake 3.20.0
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 CUR_DIR=$(dirname $(readlink -f $0))
@@ -90,11 +90,11 @@ else
         InstallCMake
 
 fi
-```
+{% endhighlight %}
 
 ## Bazel (Bazelisk 1.17.0)
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 CUR_DIR=$(dirname $(readlink -f $0))
@@ -137,14 +137,14 @@ else
     echo "$(bazel version)"
     echo "-----------------------------------------"
 fi
-```
+{% endhighlight %}
 
 
 ## Clang
 
 编译安装 Clang 11.0.0 并指定编译安装一些辅助工具，包括 lld, lldb, clang-tools-extra 等。安装脚本参考如下：
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # Download the LLVM project
@@ -195,11 +195,11 @@ fi
 
 # Print the installed Clang version
 clang --version
-```
+{% endhighlight %}
 
 ## GoLang 1.20.7
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # Download Go
@@ -225,11 +225,11 @@ if ! mv go /usr/local; then
   echo "Error: Failed to move the extracted directory to /usr/local"
   exit 1
 fi
-```
+{% endhighlight %}
 
 ## Python 3.8.12
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # Download Python
@@ -282,20 +282,20 @@ fi
 
 # Print the installed Python version
 python --version
-```
+{% endhighlight %}
 
 
 ## CCache
 
-```bash
+{% highlight bash %}
 yum install ccache -y
-```
+{% endhighlight %}
 
 # Git
 
 ## git-lfs
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # Download Git LFS v3.4.0
@@ -323,15 +323,15 @@ fi
 ./install.sh
 
 echo "Git LFS installation successful"
-```
+{% endhighlight %}
 
 # 监控
 
 ## atop
 
-```bash
+{% highlight bash %}
 yum install atop -y
-```
+{% endhighlight %}
 
 
 
@@ -339,42 +339,42 @@ yum install atop -y
 
 可选编译选项：
 
-```bash
+{% highlight bash %}
 # 指定 ABI 编译版本
 ADD_DEFINITIONS(-D_GLIBCXX_USE_CXX11_ABI=0)
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 # 位置无关代码
 SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
-```
+{% endhighlight %}
 
 ## libatomic
 
-```bash
+{% highlight bash %}
 yum install libatomic -y
-```
+{% endhighlight %}
 
 ## libreadline
 
-```bash
+{% highlight bash %}
 yum install readline-devel
-```
+{% endhighlight %}
 
 ## protobuf
 
-```bash
+{% highlight bash %}
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release  -DCMAKE_INSTALL_PREFIX=/data/home/gerryyang/jlib_proj/deps_src/protobuf-3.7.1/install -DCMAKE_POSITION_INDEPENDENT_CODE=ON -Dprotobuf_BUILD_TESTS=OFF ../cmake
 
 make -j16 && make install
-```
+{% endhighlight %}
 
 或者
 
-```bash
+{% highlight bash %}
 ./autogen.sh -i
 ./configure --with-pic --disable-shared --prefix=/thirdparty/protobuf
-```
+{% endhighlight %}
 
 ## openssl
 
@@ -382,36 +382,36 @@ https://github.com/openssl/openssl/blob/master/INSTALL.md#building-openssl
 
 https://github.com/openssl/openssl/releases/tag/OpenSSL_1_1_1k
 
-```bash
+{% highlight bash %}
 ./Configure linux-x86_64-clang --prefix=/data/home/gerryyang/tools/openssl/openssl-OpenSSL_1_1_1k-install -fPIC
 make -j16 && make install
-```
+{% endhighlight %}
 
 ## curl
 
 https://github.com/curl/curl
 
-```bash
+{% highlight bash %}
 ./configure --prefix=/data/home/gerryyang/tools/curl/curl-7.81.0-install --with-ssl=/data/home/gerryyang/jlib_proj/JLib/thirdparty/openssl --enable-static=yes --enable-shared=no
-```
+{% endhighlight %}
 
 
 # 反汇编
 
 ## objdump
 
-```bash
+{% highlight bash %}
 objdump -d -M intel /path/to/your/binary > disassembly.txt
 objdump -d -M intel -j .text /path/to/your/binary > disassembly.txt
 grep -A10 "<your_function>:" disassembly.txt
-```
+{% endhighlight %}
 
 
 ## gdb
 
-```bash
+{% highlight bash %}
 disas /r your_function
-```
+{% endhighlight %}
 
 
 

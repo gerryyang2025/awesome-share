@@ -39,9 +39,9 @@ tags:
 * 官方的客服服务响应迅速。如果遇到问题可以向官方提issue获得帮助。
 * 环境自由，可以各种折腾，为程序员而生。
 
-```
+{% highlight text %}
 Simple cloud hosting, built for developers. A droplet is a KVM VPS which you get full root access to so you can install anything you like.
-```
+{% endhighlight %}
 
 [Tutorials]: https://www.digitalocean.com/community/tutorials
 
@@ -49,10 +49,10 @@ Simple cloud hosting, built for developers. A droplet is a KVM VPS which you get
 * 需要承担一些费用。比如，每月10美元(1GB Mem/1 Core processor/30GB SSD的配置)。使用[我的推荐码]注册，你可以得到`100美元`的奖励金额用于购买VPS，如果以后继续付费的话，我也可能得到一些奖励。
 * 暂时没想到第二条。
 
-```
+{% highlight text %}
 Give $100, Get $25
 Everyone you refer gets $100 in credit over 60 days. Once they’ve spent $25 with us, you'll get $25. There is no limit to the amount of credit you can earn through referrals.
-```
+{% endhighlight %}
 
 [我的推荐码]: https://m.do.co/c/06b03cc8b6ca
 
@@ -71,23 +71,23 @@ Everyone you refer gets $100 in credit over 60 days. Once they’ve spent $25 wi
 
 注意，DO创建完droplet就开始收费，即使你把它power off(sudo poweroff)，它也同样在计费，因为droplet使用的资源没有释放。在Billing的选项里可以查看自己的balance和usage情况。如果不希望继续付费可以把droplet删除(destroy)，但是会把这个droplet上的数据全部清除(scrub up)。
 
-```
+{% highlight text %}
 Note that when you power off your droplet you are still billed for it. This is because your diskspace, CPU, RAM, and IP address are all reserved while it is powered off.
-```
+{% endhighlight %}
 
 检查环境：
 
-```
+{% highlight text %}
 cat /etc/issue
 Ubuntu 14.04.1 LTS GNU Linux 3.13.0 37 generic x86_64
-```
+{% endhighlight %}
 
 查看droplet的public ip：
 
-```
+{% highlight text %}
 ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//'
 curl http://icanhazip.com
-```
+{% endhighlight %}
 
 ## Linode
 
@@ -112,10 +112,10 @@ curl http://icanhazip.com
 
 * apache/nginx
 
-```
+{% highlight text %}
 apt-get install apache2
 apt-get install nginx
-```
+{% endhighlight %}
 
 [how-to-install-nginx-on-ubuntu-14-04-lts](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-14-04-lts)
 
@@ -126,13 +126,13 @@ apt-get install nginx
 
 * mysql
 
-```
+{% highlight text %}
 apt-get install mysql-server php5-mysql
-```
+{% endhighlight %}
 
 * php
 
-```
+{% highlight text %}
 # for apache
 apt-get install php5 libapache2-mod-php5 php5-mcrypt
 # web root is /var/www/html
@@ -140,14 +140,14 @@ apt-get install php5 libapache2-mod-php5 php5-mcrypt
 # for nginx
 apt-get install php5-fpm php5-mysql
 # web root /usr/share/nginx/html
-```
+{% endhighlight %}
 
 * phpMyAdmin
 
-```
+{% highlight text %}
 apt-get install phpmyadmin apache2-utils
 http://104.131.173.242/phpmyadmin/
-```
+{% endhighlight %}
 
 * [FileZilla](https://filezilla-project.org/)
 
@@ -158,29 +158,29 @@ http://104.131.173.242/phpmyadmin/
 
 #### 设置命令行提示符显示格式
 
-```bash
+{% highlight bash %}
 # Ex. [gerryyang ~ 09:31:21]
 PS1="\[\e[1;35m\][\[\e[1;33m\]\u \[\e[1;31m\]\w \[\e[1;33m\]\t\[\e[1;35m\]]\[\e[1;36m\]\$\[\e[0m\] "
 
 PS1='\u@\h \W\$'
 PS1='\[\e[0;31m\]\u@\h\[\e[0;33m\]:\[\e[1;34m\]\w\[\e[1;37m\]$\[\e[m\]'
 PS1='\[\e[1;34m\]\w\[\e[1;37m\]$\[\e[m\]'
-```
+{% endhighlight %}
 
 #### 设置编码
 
-```bash
+{% highlight bash %}
 export LC_ALL="zh_CN.UTF-8"
 export LANG="zh_CN.UTF-8"
-```
+{% endhighlight %}
 
 
 #### 设置别名
 
-```bash
+{% highlight bash %}
 alias grep='grep --color'
 alias his='history | tail -n 10'
-```
+{% endhighlight %}
 
 
 # dotfiles
@@ -207,11 +207,11 @@ alias his='history | tail -n 10'
 
 ### 脚注
 
-```
+{% highlight text %}
 这是我的博客文章。这里有一个带有脚注的句子[^1]。
 
 [^1]: 这是脚注的内容。
-```
+{% endhighlight %}
 
 https://kramdown.gettalong.org/syntax.html#footnotes
 
@@ -239,11 +239,11 @@ More:
 
 To prevent an error, you'll need to wrap the JSON in Liquid raw tags, like this:
 
-```
+{% highlight text %}
 {% raw %}
 { {3478, udp}, ejabberd_stun, [] },
 {% endraw %}
-```
+{% endhighlight %}
 
 
 # 工具
@@ -384,7 +384,7 @@ A delightful community-driven (with 2,300+ contributors) framework for managing 
 
 
 
-```bash
+{% highlight bash %}
 #!/usr/bin/zsh
 
 # Powerlevel10k
@@ -419,7 +419,7 @@ echo 'source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' >>~/.zs
 zsh
 
 source ~/.zshrc
-```
+{% endhighlight %}
 
 > 通过 chsh -s $(which zsh) 可以将默认 shell 更改为 zsh
 
@@ -455,13 +455,13 @@ source ~/.zshrc
 
 * 粘贴功能
 
-```
+{% highlight text %}
 # To turn off autoindent when you paste code
 :set paste
 
 # After you pasted your code, turn off the paste-mode, so that auto-indenting when you type works correctly again
 :set nopaste
-```
+{% endhighlight %}
 
 
 
@@ -501,7 +501,7 @@ source ~/.zshrc
 
 "Preferences" -> "Key Bindings"，配置以下快捷键，之后即可通过`super+ctrl+=`来格式化`=`的语句。
 
-```
+{% highlight text %}
 [
   {
     "keys": ["super+ctrl+;"], "command": "align_tab",
@@ -522,7 +522,7 @@ source ~/.zshrc
     }
   }
 ]
-```
+{% endhighlight %}
 
 * Sublime​AStyle​Formatter 使用说明
 
@@ -532,7 +532,7 @@ source ~/.zshrc
 2. 配置缩进格式为4个空格。
 3. 配置bracket style。
 
-```
+{% highlight text %}
 {
     // Auto format on file save
     "autoformat_on_save": true,
@@ -552,7 +552,7 @@ source ~/.zshrc
 
     }
 }
-```
+{% endhighlight %}
 
 详细用法：http://astyle.sourceforge.net/astyle.html
 
@@ -605,7 +605,7 @@ source ~/.zshrc
 
 方法3：**命令行工具**
 
-```bash
+{% highlight bash %}
 # 安装 Mermaid CLI
 npm install -g @mermaid-js/mermaid-cli
 
@@ -614,7 +614,7 @@ mmdc -i MERMAID_DIAGRAMS.md -o diagrams.png
 
 # 导出为 SVG
 mmdc -i MERMAID_DIAGRAMS.md -o diagrams.svg
-```
+{% endhighlight %}
 
 * [Graphviz](https://www.graphviz.org/)
   - Graphviz is open source graph visualization software. Graph visualization is a way of representing structural information as diagrams of abstract graphs and networks. It has important applications in networking, bioinformatics, software engineering, database and web design, machine learning, and in visual interfaces for other technical domains.

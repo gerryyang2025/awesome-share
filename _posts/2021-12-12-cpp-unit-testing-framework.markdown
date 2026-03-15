@@ -62,19 +62,19 @@ A [Bazel workspace](https://docs.bazel.build/versions/main/build-ref.html#worksp
 
 First, create a directory for your workspace:
 
-```bash
+{% highlight bash %}
 $ mkdir my_workspace && cd my_workspace
-```
+{% endhighlight %}
 
 Next, you’ll create the `MODULE.bazel` file to specify dependencies. As of **Bazel 7.0**, the recommended way to consume **GoogleTest** is through the [Bazel Central Registry](https://registry.bazel.build/modules/googletest). To do this, create a `MODULE.bazel` file in the root directory of your Bazel workspace with the following content:
 
-```
+{% highlight text %}
 # MODULE.bazel
 
 # Choose the most recent version available at
 # https://registry.bazel.build/modules/googletest
 bazel_dep(name = "googletest", version = "1.15.2")
-```
+{% endhighlight %}
 
 Now you’re ready to build C++ code that uses **GoogleTest**.
 
@@ -82,7 +82,7 @@ Now you’re ready to build C++ code that uses **GoogleTest**.
 
 With your Bazel workspace set up, you can now use **GoogleTest** code within your own project. As an example, create a file named `hello_test.cc` in your `my_workspace` directory with the following contents:
 
-```cpp
+{% highlight cpp %}
 #include <gtest/gtest.h>
 
 // Demonstrate some basic assertions.
@@ -92,13 +92,13 @@ TEST(HelloTest, BasicAssertions) {
   // Expect equality.
   EXPECT_EQ(7 * 6, 42);
 }
-```
+{% endhighlight %}
 
 GoogleTest provides [assertions](https://google.github.io/googletest/primer.html#assertions) that you use to test the behavior of your code. The above sample includes the main GoogleTest header file and demonstrates some basic assertions.
 
 To build the code, create a file named `BUILD` in the same directory with the following contents:
 
-```
+{% highlight text %}
 cc_test(
     name = "hello_test",
     size = "small",
@@ -108,7 +108,7 @@ cc_test(
         "@googletest//:gtest_main",
     ],
 )
-```
+{% endhighlight %}
 
 This `cc_test` rule declares the C++ test binary you want to build, and links to the **GoogleTest** library (`@googletest//:gtest"`) and the **GoogleTest** `main() `function (`@googletest//:gtest_main`). For more information about Bazel `BUILD` files, see the [Bazel C++ Tutorial](https://docs.bazel.build/versions/main/tutorial/cpp.html).
 
@@ -116,7 +116,7 @@ This `cc_test` rule declares the C++ test binary you want to build, and links to
 
 Now you can build and run your test:
 
-```
+{% highlight text %}
 $ bazel test --cxxopt=-std=c++14 --test_output=all //:hello_test
 INFO: Analyzed target //:hello_test (26 packages loaded, 362 targets configured).
 INFO: Found 1 test target...
@@ -142,7 +142,7 @@ INFO: Build completed successfully, 27 total actions
 //:hello_test                                                     PASSED in 0.1s
 
 INFO: Build completed successfully, 27 total actions
-```
+{% endhighlight %}
 
 Congratulations! You’ve successfully built and run a test binary using **GoogleTest**.
 
@@ -180,13 +180,13 @@ CMake uses a file named `CMakeLists.txt` to configure the build system for a pro
 
 First, create a directory for your project:
 
-```bash
+{% highlight bash %}
 mkdir my_project && cd my_project
-```
+{% endhighlight %}
 
 Next, you’ll create the `CMakeLists.txt` file and declare a dependency on **GoogleTest**. There are many ways to express dependencies in the CMake ecosystem; in this quickstart, you’ll use the [FetchContent CMake module](https://cmake.org/cmake/help/latest/module/FetchContent.html). To do this, in your project directory (`my_project`), create a file named `CMakeLists.txt` with the following contents:
 
-```
+{% highlight text %}
 cmake_minimum_required(VERSION 3.14)
 project(my_project)
 
@@ -202,7 +202,7 @@ FetchContent_Declare(
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
-```
+{% endhighlight %}
 
 The above configuration declares a dependency on GoogleTest which is downloaded from GitHub. In the above example, `03597a01ee50ed33e9dfd640b249b4be3799d395` is the Git commit hash of the GoogleTest version to use; we recommend updating the hash often to point to the latest version.
 
@@ -214,7 +214,7 @@ With GoogleTest declared as a dependency, you can use GoogleTest code within you
 
 As an example, create a file named `hello_test.cc` in your `my_project` directory with the following contents:
 
-```cpp
+{% highlight cpp %}
 #include <gtest/gtest.h>
 
 // Demonstrate some basic assertions.
@@ -224,13 +224,13 @@ TEST(HelloTest, BasicAssertions) {
   // Expect equality.
   EXPECT_EQ(7 * 6, 42);
 }
-```
+{% endhighlight %}
 
 GoogleTest provides [assertions](https://google.github.io/googletest/primer.html#assertions) that you use to test the behavior of your code. The above sample includes the main GoogleTest header file and demonstrates some basic assertions.
 
 To build the code, add the following to the end of your `CMakeLists.txt` file:
 
-```
+{% highlight text %}
 enable_testing()
 
 add_executable(
@@ -244,13 +244,13 @@ target_link_libraries(
 
 include(GoogleTest)
 gtest_discover_tests(hello_test)
-```
+{% endhighlight %}
 
 The above configuration enables testing in CMake, declares the C++ test binary you want to build (`hello_test`), and links it to GoogleTest (`gtest_main`). The last two lines enable CMake’s test runner to discover the tests included in the binary, using the [GoogleTest CMake module](https://cmake.org/cmake/help/git-stage/module/GoogleTest.html).
 
 Now you can build and run your test:
 
-```
+{% highlight text %}
 my_project$ cmake -S . -B build
 -- The C compiler identification is GNU 10.2.1
 -- The CXX compiler identification is GNU 10.2.1
@@ -270,7 +270,7 @@ Test project .../my_project/build
 100% tests passed, 0 tests failed out of 1
 
 Total Test time (real) =   0.01 sec
-```
+{% endhighlight %}
 
 Congratulations! You’ve successfully built and run a test binary using GoogleTest.
 
@@ -331,13 +331,13 @@ Since a failed `ASSERT_*` returns from the current function immediately, possibl
 
 To provide a custom failure message, simply stream it into the macro using the `<< operator` or a sequence of such operators. See the following example, using the [ASSERT_EQ and EXPECT_EQ macros](https://google.github.io/googletest/reference/assertions.html#EXPECT_EQ) to verify value equality:
 
-```cpp
+{% highlight cpp %}
 ASSERT_EQ(x.size(), y.size()) << "Vectors x and y are of unequal length";
 
 for (int i = 0; i < x.size(); ++i) {
   EXPECT_EQ(x[i], y[i]) << "Vectors x and y differ at index " << i;
 }
-```
+{% endhighlight %}
 
 Anything that can be streamed to an ostream can be streamed to an assertion macro–in particular, C strings and string objects. If a wide string (`wchar_t*`, `TCHAR*` in `UNICODE` mode on Windows, or `std::wstring`) is streamed to an assertion, it will be translated to `UTF-8` when printed.
 
@@ -352,23 +352,23 @@ To create a test:
 2. In this function, along with any valid C++ statements you want to include, use the various googletest assertions to check values.
 3. The test’s result is determined by the assertions; if any assertion in the test fails (either fatally or non-fatally), or if the test crashes, the entire test fails. Otherwise, it succeeds.
 
-```cpp
+{% highlight cpp %}
 TEST(TestSuiteName, TestName) {
     // ... test body ...
 }
-```
+{% endhighlight %}
 
 `TEST()` arguments go from general to specific. The first argument is the name of the test suite, and the second argument is the test’s name within the test suite. Both names must be valid C++ identifiers, and they should not contain any underscores (`_`). A test’s full name consists of its containing test suite and its individual name. Tests from different test suites can have the same individual name.
 
 For example, let’s take a simple integer function:
 
-```cpp
+{% highlight cpp %}
 int Factorial(int n);  // Returns the factorial of n
-```
+{% endhighlight %}
 
 A test suite for this function might look like:
 
-```cpp
+{% highlight cpp %}
 // Tests factorial of 0.
 TEST(FactorialTest, HandlesZeroInput) {
   EXPECT_EQ(Factorial(0), 1);
@@ -381,7 +381,7 @@ TEST(FactorialTest, HandlesPositiveInput) {
   EXPECT_EQ(Factorial(3), 6);
   EXPECT_EQ(Factorial(8), 40320);
 }
-```
+{% endhighlight %}
 
 googletest groups the test results by test suites, so logically related tests should be in the same test suite; in other words, the first argument to their `TEST()` should be the same. In the above example, we have two tests, `HandlesZeroInput` and `HandlesPositiveInput`, that belong to the same test suite `FactorialTest`.
 
@@ -402,11 +402,11 @@ To create a fixture:
 
 When using a **fixture**, use `TEST_F()` instead of `TEST()` as it **allows you to access objects and subroutines in the test fixture**:
 
-```cpp
+{% highlight cpp %}
 TEST_F(TestFixtureName, TestName) {
     // ... test body ...
 }
-```
+{% endhighlight %}
 
 Like `TEST()`, the first argument is the test suite name, but for `TEST_F()` this must be the name of the test fixture class. You’ve probably guessed: `_F` is for **fixture**.
 
@@ -418,7 +418,7 @@ For each test defined with `TEST_F()`, **googletest will create a fresh test fix
 
 As an example, let’s write tests for a FIFO queue class named `Queue`, which has the following interface:
 
-```cpp
+{% highlight cpp %}
 template <typename E>  // E is the element type.
 class Queue {
  public:
@@ -428,11 +428,11 @@ class Queue {
   size_t size() const;
   ...
 };
-```
+{% endhighlight %}
 
 First, define a fixture class. By convention, you should give it the name `FooTest` where `Foo` is the class being tested.
 
-```cpp
+{% highlight cpp %}
 class QueueTest : public ::testing::Test {
  protected:
   void SetUp() override {
@@ -447,13 +447,13 @@ class QueueTest : public ::testing::Test {
   Queue<int> q1_;
   Queue<int> q2_;
 };
-```
+{% endhighlight %}
 
 In this case, `TearDown()` is not needed since we don’t have to clean up after each test, other than what’s already done by the destructor.
 
 Now we’ll write tests using `TEST_F()` and this fixture.
 
-```cpp
+{% highlight cpp %}
 TEST_F(QueueTest, IsEmptyInitially) {
   EXPECT_EQ(q0_.size(), 0);
 }
@@ -474,7 +474,7 @@ TEST_F(QueueTest, DequeueWorks) {
   EXPECT_EQ(q2_.size(), 1);
   delete n;
 }
-```
+{% endhighlight %}
 
 The above uses both `ASSERT_*` and `EXPECT_*` assertions. The rule of thumb is to use `EXPECT_*` when you want the test to continue to reveal more errors after the assertion failure, and use `ASSERT_*` when continuing after failure doesn’t make sense. For example, the second assertion in the Dequeue test is `ASSERT_NE(n, nullptr)`, as we need to dereference the pointer n later, which would lead to a segfault when n is NULL.
 
@@ -525,7 +525,7 @@ If you write your own `main` function, it should return the value of `RUN_ALL_TE
 
 You can start from this boilerplate(样板):
 
-```cpp
+{% highlight cpp %}
 #include "this/package/foo.h"
 
 #include "gtest/gtest.h"
@@ -586,7 +586,7 @@ int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-```
+{% endhighlight %}
 
 The `::testing::InitGoogleTest()` function parses the command line for googletest flags, and removes all recognized flags. This allows the user to control a test program’s behavior via various flags, which we’ll cover in the [AdvancedGuide](https://google.github.io/googletest/advanced.html). You must call this function before calling `RUN_ALL_TESTS()`, or the flags won’t be properly initialized.
 
@@ -683,7 +683,7 @@ gMock is bundled with googletest.
 
 Let’s look at an example. Suppose you are developing a graphics program that relies on a [LOGO](https://en.wikipedia.org/wiki/Logo_programming_language)-like API for drawing. **How would you test that it does the right thing? Well, you can run it and compare the screen with a golden screen snapshot, but let’s admit it: tests like this are expensive to run and fragile** (What if you just upgraded to a shiny new graphics card that has better anti-aliasing? Suddenly you have to update all your golden images.). It would be too painful if all your tests are like this. **Fortunately, you learned about [Dependency Injection(依赖注入)](https://en.wikipedia.org/wiki/Dependency_injection) and know the right thing to do: instead of having your application talk to the system API directly, wrap the API in an interface (say, Turtle) and code to that interface**:
 
-```cpp
+{% highlight cpp %}
 class Turtle {
   ...
   virtual ~Turtle() {}
@@ -696,7 +696,7 @@ class Turtle {
   virtual int GetX() const = 0;
   virtual int GetY() const = 0;
 };
-```
+{% endhighlight %}
 
 > Note that the destructor of `Turtle` **must be virtual**, as is the case for all classes you intend to inherit from - otherwise the destructor of the derived class will not be called when you delete an object through a base pointer, and you’ll get corrupted program states like memory leaks.
 
@@ -728,7 +728,7 @@ Using the `Turtle` interface as example, here are the simple steps you need to f
 
 After the process, you should have something like:
 
-```cpp
+{% highlight cpp %}
 #include <gmock/gmock.h>  // Brings in gMock.
 
 class MockTurtle : public Turtle {
@@ -742,7 +742,7 @@ class MockTurtle : public Turtle {
   MOCK_METHOD(int, GetX, (), (const, override));
   MOCK_METHOD(int, GetY, (), (const, override));
 };
-```
+{% endhighlight %}
 
 You don’t need to define these mock methods somewhere else - the `MOCK_METHOD` macro **will generate the definitions** for you. It’s that simple!
 
@@ -775,7 +775,7 @@ Once you have a mock class, using it is easy. The typical work flow is:
 
 Here’s an example:
 
-```cpp
+{% highlight cpp %}
 #include "path/to/mock-turtle.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -791,18 +791,18 @@ TEST(PainterTest, CanDrawSomething) {
 
   EXPECT_TRUE(painter.DrawCircle(0, 0, 10));      // #5
 }
-```
+{% endhighlight %}
 
 As you might have guessed, this test checks that `PenDown()` is called at least once. If the painter object didn’t call this method, your test will fail with a message like this:
 
-```
+{% highlight text %}
 path/to/my_test.cc:119: Failure
 Actual function call count doesn't match this expectation:
 Actually: never called;
 Expected: called at least once.
 Stack trace:
 ...
-```
+{% endhighlight %}
 
 
 
@@ -819,13 +819,13 @@ You can find recipes for using gMock here. If you haven’t yet, please read [th
 
 Mock classes are defined as normal classes, using the `MOCK_METHOD` macro to generate mocked methods. The macro gets 3 or 4 parameters:
 
-```cpp
+{% highlight cpp %}
 class MyMock {
  public:
   MOCK_METHOD(ReturnType, MethodName, (Args...));
   MOCK_METHOD(ReturnType, MethodName, (Args...), (Specs...));
 };
-```
+{% endhighlight %}
 
 The first 3 parameters are simply the method declaration, split into 3 parts. The 4th parameter accepts a closed list of qualifiers, which affect the generated method:
 
@@ -847,7 +847,7 @@ Unprotected commas, i.e. commas which are not surrounded by parentheses, prevent
 
 You must always put a mock method definition (`MOCK_METHOD`) in a `public`: section of the mock class, regardless of the method being mocked being `public`, `protected`, or `private` in the base class. This allows `ON_CALL` and `EXPECT_CALL` to reference the mock function from outside of the mock class. (Yes, C++ allows a subclass to change the access level of a virtual function in the base class.) Example:
 
-```cpp
+{% highlight cpp %}
 class Foo {
  public:
   ...
@@ -870,13 +870,13 @@ class MockFoo : public Foo {
   MOCK_METHOD(void, Resume, (), (override));
   MOCK_METHOD(int, GetTimeOut, (), (override));
 };
-```
+{% endhighlight %}
 
 #### Mocking Overloaded Methods
 
 You can mock overloaded functions as usual. No special attention is required:
 
-```cpp
+{% highlight cpp %}
 class Foo {
   ...
 
@@ -900,11 +900,11 @@ class MockFoo : public Foo {
   MOCK_METHOD(Bar&, GetBar, (), (override));
   MOCK_METHOD(const Bar&, GetBar, (), (const, override));
 };
-```
+{% endhighlight %}
 
 > **Note**: if you don’t mock all versions of the overloaded method, the compiler will give you a warning about some methods in the base class being hidden. To fix that, use using to bring them in scope:
 
-```cpp
+{% highlight cpp %}
 class MockFoo : public Foo {
   ...
   using Foo::Add;
@@ -912,13 +912,13 @@ class MockFoo : public Foo {
   // We don't want to mock int Add(int times, Element x);
   ...
 };
-```
+{% endhighlight %}
 
 #### Mocking Class Templates
 
 You can mock class templates just like any class.
 
-```cpp
+{% highlight cpp %}
 template <typename Elem>
 class StackInterface {
   ...
@@ -935,7 +935,7 @@ class MockStack : public StackInterface<Elem> {
   MOCK_METHOD(int, GetSize, (), (const, override));
   MOCK_METHOD(void, Push, (const Elem& x), (override));
 };
-```
+{% endhighlight %}
 
 #### Mocking Non-virtual Methods
 
@@ -943,7 +943,7 @@ gMock can mock non-virtual functions to be used in Hi-perf dependency injection.
 
 In this case, instead of sharing a common base class with the real class, your mock class will be unrelated to the real class, but contain methods with the same signatures. The syntax for mocking non-virtual methods is the same as mocking virtual methods (just don’t add `override`):
 
-```cpp
+{% highlight cpp %}
 // A simple packet stream class.  None of its members is virtual.
 class ConcretePacketStream {
  public:
@@ -961,7 +961,7 @@ class MockPacketStream {
   MOCK_METHOD(size_t, NumberOfPackets, (), (const));
   ...
 };
-```
+{% endhighlight %}
 
 Note that the mock class doesn’t define `AppendPacket()`, unlike the real class. **That’s fine as long as the test doesn’t need to call it**.
 
@@ -969,7 +969,7 @@ Next, you need a way to say that you want to use `ConcretePacketStream` in produ
 
 One way to do it is to templatize your code that needs to use a packet stream. More specifically, you will give your code a template type argument for the type of the packet stream. In production, you will instantiate your template with `ConcretePacketStream` as the type argument. In tests, you will instantiate the same template with `MockPacketStream`. For example, you may write:
 
-```cpp
+{% highlight cpp %}
 template <class PacketStream>
 void CreateConnection(PacketStream* stream) { ... }
 
@@ -978,17 +978,17 @@ class PacketReader {
  public:
   void ReadPackets(PacketStream* stream, size_t packet_num);
 };
-```
+{% endhighlight %}
 
 Then you can use `CreateConnection<ConcretePacketStream>()` and `PacketReader<ConcretePacketStream>` in production code, and use `CreateConnection<MockPacketStream>()` and `PacketReader<MockPacketStream>` in tests.
 
-```
+{% highlight text %}
   MockPacketStream mock_stream;
   EXPECT_CALL(mock_stream, ...)...;
   .. set more expectations on mock_stream ...
   PacketReader<MockPacketStream> reader(&mock_stream);
   ... exercise reader ...
-```
+{% endhighlight %}
 
 #### Mocking Free Functions
 
@@ -996,7 +996,7 @@ It is not possible to directly mock a free function (i.e. **a C-style function**
 
 Instead of calling a free function (say, `OpenFile`) directly, introduce an interface for it and have a concrete subclass that calls the free function:
 
-```cpp
+{% highlight cpp %}
 class FileInterface {
  public:
   ...
@@ -1010,7 +1010,7 @@ class File : public FileInterface {
      return OpenFile(path, mode);
   }
 };
-```
+{% endhighlight %}
 
 Your code should talk to `FileInterface` to open a file. Now it’s easy to mock out the function.
 
@@ -1063,7 +1063,7 @@ gMock Cheat Sheet相比[gMock Cookbook](https://google.github.io/googletest/gmoc
 
 If you put your fixture setup code into a `SetUp` method, and it fails and issues a fatal failure (ASSERT_XXX or FAIL macros), Google Test will not run your test body. So all you have to write is
 
-```cpp
+{% highlight cpp %}
 class MyTestCase : public testing::Test {
  protected:
   bool InitMyTestData() { ... }
@@ -1074,7 +1074,7 @@ class MyTestCase : public testing::Test {
 };
 
 TEST_F(MyTestCase, Foo) { ... }
-```
+{% endhighlight %}
 
 More: [Checking for Failures in the Current Test](http://google.github.io/googletest/advanced.html#checking-for-failures-in-the-current-test)
 
@@ -1160,10 +1160,10 @@ Software developers also use coverage testing in concert with `testsuites`, to m
 **`gcov` works only on code compiled with `GCC`. It is not compatible with any other profiling or test coverage mechanism.**
 
 
-```
+{% highlight text %}
 # ubuntu
 sudo apt-get install -y gcovr
-```
+{% endhighlight %}
 
 ## Procedure
 
@@ -1220,7 +1220,7 @@ Running the program will cause profile output to be generated. For each source f
 
 Running `gcov` with your program’s source file names as arguments will now produce a listing of the code along with frequency of execution for each line. For example, if your program is called `tmp.cpp`, this is what you see when you use the basic `gcov` facility:
 
-```
+{% highlight text %}
 $ g++ --coverage tmp.cpp -c
 $ g++ --coverage tmp.o
 $ a.out
@@ -1228,11 +1228,11 @@ $ gcov tmp.cpp -m
 File 'tmp.cpp'
 Lines executed:92.86% of 14
 Creating 'tmp.cpp.gcov'
-```
+{% endhighlight %}
 
 The file `tmp.cpp.gcov` contains output from `gcov`. Here is a sample:
 
-```
+{% highlight text %}
         -:    0:Source:tmp.cpp
         -:    0:Working directory:/home/gcc/testcase
         -:    0:Graph:tmp.gcno
@@ -1290,13 +1290,13 @@ Foo<int>::inc():
         1:   35:    printf ("Success\n");
         1:   36:  return 0;
         -:   37:}
-```
+{% endhighlight %}
 
 Note that line 7 is shown in the report multiple times. First occurrence presents total number of execution of the line and the next two belong to instances of class Foo constructors. As you can also see, line 30 contains some unexecuted basic blocks and thus execution count has asterisk symbol.
 
 When you use the -b option, your output looks like this:
 
-```
+{% highlight text %}
         -:    0:Source:tmp.cpp
         -:    0:Working directory:/home/gcc/testcase
         -:    0:Graph:tmp.gcno
@@ -1380,7 +1380,7 @@ branch  1 taken 100% (fallthrough)
 branch  2 taken 0% (throw)
         1:   36:  return 0;
         -:   37:}
-```
+{% endhighlight %}
 
 For each function, a line is printed showing how many times the function is called, how many times it returns and what percentage of the function’s blocks were executed.
 
@@ -1420,7 +1420,7 @@ From this point onwards “code coverage” will refer to the source-based kind.
 
 > 注意：clang12 使用 gcov 链接库符号冲突问题
 
-```
+{% highlight text %}
 [turbo client] /usr/bin/ld: /usr/lib64/clang/12.0.1/lib/linux/libclang_rt.profile-x86_64.a(GCDAProfiling.c.o): in function `__gcov_fork':
 [turbo client] (.text+0xd00): multiple definition of `__gcov_fork'; /usr/lib/gcc/x86_64-redhat-linux/8/libgcov.a(_gcov_fork.o):(.text+0x0): first defin
 ed here
@@ -1431,7 +1431,7 @@ ned here
 [turbo client] (.text+0xe00): multiple definition of `__gcov_reset'; /usr/lib/gcc/x86_64-redhat-linux/8/libgcov.a(_gcov_reset.o):(.text+0x100): first d
 efined here
 [turbo client] clang-12: error: linker command failed with exit code 1 (use -v to see invocation)
-```
+{% endhighlight %}
 
 gcc 的使用方式：编译选项增加 `-ftest-coverage` 和 `-fprofile-arcs`，并增加 `-lgcov` 链接选项。在 clang 3.5.2 使用同样方式也没有问题，而使用 clang12 则出现下述链接错误。后在 clang12 改为只使用编译选项 `--coverage`，功能正常。
 
@@ -1443,9 +1443,9 @@ gcc 的使用方式：编译选项增加 `-ftest-coverage` 和 `-fprofile-arcs`�
 
 Most likely this is a result of the build tools failing to merge current results into the existing `.gcda` coverage files. As [Dave Meehan points out here](http://davemeehan.com/technology/xcode/how-to-fix-profiler-invalid-magic-number-in-xcode-4-6-when-generate-test-coverage-files-is-enabled), there is a brute force way of dealing with this by cleaning the product build folder, but a less hard core approach is to delete the `.gcda` files from targets generating them (for me, just the test target) as part of the build process. Dave includes a sample script to be included as a build phase -- or, at the project root by hand:
 
-```bash
+{% highlight bash %}
 find . -name "*.gcda" -print0 | xargs -0 rm
-```
+{% endhighlight %}
 
 
 

@@ -23,9 +23,9 @@ tags:
 * *nix 允许多个文件名指向同一个 inode 号码 (`stat file` 可查看连接数)，即 hard-link；相反 soft-link 不会增加 Links 数目，只会增加新的 inode。
 * 当 filename 包含特殊字符，无法正常 rm 时，可以通过先找到文件的 inode 号码再对其进行 delete。例如：
 
-```bash
+{% highlight bash %}
 rm -rfi `find -inum 1805121`
-```
+{% endhighlight %}
 
 * mv 重命名文件不影响 inode 号码，因此在对现网配置进行更新时不会导致程序 crash。
 
@@ -36,9 +36,9 @@ rm -rfi `find -inum 1805121`
 
 The proc filesystem is a pseudo-filesystem which provides an interface to kernel data structures.  It is commonly mounted at `/proc`. Typically, it is mounted automatically by the system, but it can also be mounted manually using a command such as:
 
-```bash
+{% highlight bash %}
 mount -t proc proc /proc
-```
+{% endhighlight %}
 Most of the files in the proc filesystem are read-only, but some files are writable, allowing kernel variables to be changed.
 
 Underneath `/proc`, there are the following general groups of files and subdirectories:
@@ -72,10 +72,10 @@ When a thread accesses this magic symbolic link, it resolves to the process's ow
 
 Status information about the process.  This is used by `ps(1)`.  It is defined in the kernel source file `fs/proc/array.c`.
 
-```
+{% highlight text %}
 ~$cat /proc/3100717/stat
 3100717 (unittestsvr) S 1 3100716 3100716 0 -1 4202560 1123163 0 56 0 1377525 296772 0 0 20 0 8 0 4715620677 3944722432 109878 18446744073709551615 4194304 47321236 140734650356688 140734650335168 140232066947133 0 0 3215367 18976 18446744073709551615 0 0 17 4 0 0 49 0 0 49420928 50225480 119697408 140734650366993 140734650367104 140734650367104 140734650392510 0
-```
+{% endhighlight %}
 
 (1) **pid**  %d
 
@@ -242,18 +242,18 @@ Status information about the process.  This is used by `ps(1)`.  It is defined i
 
 Provides information about memory usage, measured in **pages**. The columns are:
 
-```
+{% highlight text %}
 $getconf -a|grep -i page
 PAGESIZE                           4096
 PAGE_SIZE                          4096
 _AVPHYS_PAGES                      157508
 _PHYS_PAGES                        32857825
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $cat /proc/1457274/statm
 1079417 108417 5394 10532 0 887414 0
-```
+{% endhighlight %}
 
 size       (1) total program size
                              (same as `VmSize` in `/proc/[pid]/status`)
@@ -278,7 +278,7 @@ Linux supports both POSIX reliable signals (hereinafter "standard signals") and 
 
 Using these system calls, a process can elect one of the following behaviors to occur on delivery of the signal: perform the default action; ignore the signal; or catch the signal with a signal handler, a programmer-defined function that is automatically invoked when the signal is delivered.
 
-```
+{% highlight text %}
 $kill -l
  1) SIGHUP       2) SIGINT       3) SIGQUIT      4) SIGILL       5) SIGTRAP
  2) SIGABRT      7) SIGBUS       8) SIGFPE       9) SIGKILL     10) SIGUSR1
@@ -293,7 +293,7 @@ $kill -l
 9)  SIGRTMAX-11 54) SIGRTMAX-10 55) SIGRTMAX-9  56) SIGRTMAX-8  57) SIGRTMAX-7
 10) SIGRTMAX-6  59) SIGRTMAX-5  60) SIGRTMAX-4  61) SIGRTMAX-3  62) SIGRTMAX-2
 11) SIGRTMAX-1  64) SIGRTMAX
-```
+{% endhighlight %}
 
 * https://man7.org/linux/man-pages/man7/signal.7.html
 * [Why there are only two user defined signals?](https://unix.stackexchange.com/questions/48582/why-there-are-only-two-user-defined-signals)
@@ -329,33 +329,33 @@ How Linux programs call functions in the Linux kernel.
 
 * Compress an entire directory or a single file
 
-```
+{% highlight text %}
 tar -czvf name-of-archive.tar.gz /path/to/directory-or-file
 
 -c: Create an archive.
 -z: Compress the archive with gzip.
 -v: Display progress in the terminal while creating the archive, also known as “verbose” mode. The v is always optional in these commands, but it’s helpful.
 -f: Allows you to specify the filename of the archive.
-```
+{% endhighlight %}
 * Compress multiple directories or files at once
 
-```
+{% highlight text %}
 tar -czvf archive.tar.gz /home/ubuntu/Downloads /usr/local/stuff /home/ubuntu/Documents/notes.txt
-```
+{% endhighlight %}
 
 * Exclude directories and files
 
 In some cases, you may wish to compress an entire directory, but not include certain files and directories. You can do so by appending an `--exclude` switch for each directory or file you want to exclude.
 
-```
+{% highlight text %}
 tar -czvf archive.tar.gz /home/ubuntu --exclude=/home/ubuntu/Downloads --exclude=/home/ubuntu/.cache
-```
+{% endhighlight %}
 
 The `--exclude` switch is very powerful. It doesn’t take names of directories and files–it actually accepts patterns. There’s a lot more you can do with it. For example, you could archive an entire directory and exclude all .mp4 files with the following command:
 
-```
+{% highlight text %}
 tar -czvf archive.tar.gz /home/ubuntu --exclude=*.mp4
-```
+{% endhighlight %}
 
 * Use bzip2 compression instead
 
@@ -363,23 +363,23 @@ While `gzip` compression is most frequently used to create `.tar.gz` or `.tgz` f
 
 `Gzip` is faster, but it generally compresses a bit less, so you get a somewhat larger file. `Bzip2` is slower, but it compresses a bit more, so you get a somewhat smaller file
 
-```
+{% highlight text %}
 tar -cjvf archive.tar.bz2 stuff
-```
+{% endhighlight %}
 
 * Extract an archive
 
 Once you have an archive, you can extract it with the tar command. The following command will extract the contents of archive.tar.gz to the current directory. It’s the same as the archive creation command we used above, except the `-x` switch replaces the `-c` switch. This specifies you want to e**x**tract an archive instead of create one.
 
-```
+{% highlight text %}
 tar -xzvf archive.tar.gz
-```
+{% endhighlight %}
 
 You may want to extract the contents of the archive to a specific directory. You can do so by appending the `-C` switch to the end of the command. For example, the following command will extract the contents of the archive.tar.gz file to the /tmp directory.
 
-```
+{% highlight text %}
 tar -xzvf archive.tar.gz -C /tmp
-```
+{% endhighlight %}
 
 https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/
 
@@ -418,7 +418,7 @@ https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar
 | SIGSTOP | 19 | 暂停
 
 
-```bash
+{% highlight bash %}
 $ kill -l
  1) SIGHUP       2) SIGINT       3) SIGQUIT      4) SIGILL       5) SIGTRAP
  2) SIGABRT      7) SIGBUS       8) SIGFPE       9) SIGKILL     10) SIGUSR1
@@ -433,13 +433,13 @@ $ kill -l
 9)  SIGRTMAX-11 54) SIGRTMAX-10 55) SIGRTMAX-9  56) SIGRTMAX-8  57) SIGRTMAX-7
 10) SIGRTMAX-6  59) SIGRTMAX-5  60) SIGRTMAX-4  61) SIGRTMAX-3  62) SIGRTMAX-2
 11) SIGRTMAX-1  64) SIGRTMAX
-```
+{% endhighlight %}
 
 ### 场景示例
 
 场景1: 终止浏览器进程
 
-```bash
+{% highlight bash %}
 # kill - 知道具体 PID
 ps aux | grep chrome
 kill 8842 8843 8844
@@ -451,11 +451,11 @@ pkill -f "google-chrome"
 # killall - 需要精确的进程名
 killall chrome
 killall google-chrome-stable
-```
+{% endhighlight %}
 
 场景2: 安全地终止进程
 
-```bash
+{% highlight bash %}
 # kill - 需要精确知道 PID，最安全
 kill 1234
 
@@ -466,11 +466,11 @@ pkill firefox
 
 # killall - 交互式确认
 killall -i firefox
-```
+{% endhighlight %}
 
 场景3: 批量操作
 
-```bash
+{% highlight bash %}
 # 杀死所有 Python 相关进程
 pkill -f "python"
 
@@ -482,12 +482,12 @@ killall -u username process_name
 kill -HUP 1234
 pkill -HUP nginx
 killall -HUP nginx
-```
+{% endhighlight %}
 
 场景4: 其他
 
 
-```bash
+{% highlight bash %}
 > pgrep firefox
 6316
 6565
@@ -499,23 +499,23 @@ killall <name>
 kill -9 `pidof firefox`
 kill -9 `pgrep firefox`
 ps ax | grep <snippet> | grep -v grep | awk '{print $1}' | xargs kill
-```
+{% endhighlight %}
 
 `kill -STOP` 命令用于发送一个 STOP 信号给指定的进程。STOP 信号（也称为 SIGSTOP）会导致进程暂停执行，即进程会被挂起（suspended）并停止运行。在收到 STOP 信号后，进程不会继续执行任何操作，直到收到一个 CONT（继续）信号（即 SIGCONT）。
 
-```bash
+{% highlight bash %}
 kill -STOP <process_id>
-```
+{% endhighlight %}
 
 发送 STOP 信号的一个常见用途是暂停一个正在运行的进程，以便在稍后恢复其执行。例如，可能希望暂停一个 CPU 密集型任务，以便在系统负载较低时继续运行。为了恢复暂停的进程，可以使用 `kill -CONT` 命令发送一个 CONT 信号：
 
-```bash
+{% highlight bash %}
 kill -CONT <process_id>
-```
+{% endhighlight %}
 
 ### kill 使用示例
 
-```bash
+{% highlight bash %}
 # 基本语法
 kill [信号] <PID>
 
@@ -531,11 +531,11 @@ kill 8842                    # 然后终止特定PID
 
 # 杀死当前shell
 kill $$                      # $$ 表示当前shell的PID
-```
+{% endhighlight %}
 
 ### pkill 使用示例
 
-```bash
+{% highlight bash %}
 # 1. 杀死所有 Firefox 进程
 pkill firefox
 
@@ -560,12 +560,12 @@ pkill -l process_name
 
 # 8. 杀死进程组
 pkill -g process_group_id
-```
+{% endhighlight %}
 
 
 ### killall 使用示例
 
-```bash
+{% highlight bash %}
 # 1. 杀死所有指定进程
 killall firefox
 
@@ -592,13 +592,13 @@ killall -u username process_name
 # 8. 基于进程启动时间杀死进程
 killall -o 1h process_name  # 杀死启动时间超过1小时的进程
 killall -y 1h process_name  # 杀死启动时间少于1小时的进程
-```
+{% endhighlight %}
 
 
 ## Process State (ps/top)
 
 
-```
+{% highlight text %}
 PROCESS STATE CODES:
 
 Here are the different values that the s, stat and state output specifiers
@@ -631,7 +631,7 @@ s is a session leader
 l is multi-threaded (using CLONE_THREAD, like NPTL pthreads do)
 
 + is in the foreground process group
-```
+{% endhighlight %}
 
 ### ps
 
@@ -645,7 +645,7 @@ This version of `ps` accepts several kinds of options:
 
 EXAMPLES
 
-```bash
+{% highlight bash %}
 # To see every process on the system using standard syntax:
 ps -ef
 
@@ -679,32 +679,32 @@ ps -q 42 -o comm=
 
 # 查看进程精确的启动时间
 ps -eo pid,lstart,cmd | grep your_process_name
-```
+{% endhighlight %}
 
 
 
-```
+{% highlight text %}
 $ps xao pid,ppid,pgid,sid,comm | head -n5
     PID    PPID    PGID     SID COMMAND
       1       0       1       1 systemd
      26       1      26      26 systemd-journal
      53       1      53      53 dbus-daemon
      54       1      54      54 systemd-logind
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ps -efj | less
 UID          PID    PPID    PGID     SID  C STIME TTY          TIME CMD
 root           1       0       1       1  0  2021 ?        00:44:06 /usr/sbin/init
 root          26       1      26      26  0  2021 ?        00:13:28 /usr/lib/systemd/systemd-journald
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 # for example, ps -ejf | egrep 'STIME|http'
 $ps -ejf | egrep 'STIME|ProcessName'
 UID          PID    PPID    PGID     SID  C STIME TTY          TIME CMD
 gerryya+ 2527581 2233037 2527580 2233012  0 12:11 pts/3    00:00:00 grep -E --color=auto STIME|ProcessName
-```
+{% endhighlight %}
 
 * https://unix.stackexchange.com/questions/82724/ps-arguments-to-display-pid-ppid-pgid-and-sid-collectively
 
@@ -712,7 +712,7 @@ gerryya+ 2527581 2233037 2527580 2233012  0 12:11 pts/3    00:00:00 grep -E --co
 
 ## CPU个数
 
-```
+{% highlight text %}
 # 查看物理CPU个数
 cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l
 
@@ -721,16 +721,16 @@ cat /proc/cpuinfo| grep "cpu cores"| uniq
 
 # 查看逻辑CPU的个数
 cat /proc/cpuinfo| grep "processor"| wc -l
-```
+{% endhighlight %}
 
 ## CPU负载
 
 通过`uptime`命令可以查看机器的CPU负载，这三个数据分别是CPU 1分钟、5分钟、15分钟内系统的平均负载。当CPU完全空闲的时候，平均负载为0；当CPU工作量饱和的时候，平均负载为1。
 
-```
+{% highlight text %}
 $ uptime
  14:32:18 up 58 days, 23:20,  2 users,  load average: 5.55, 3.91, 3.78
-```
+{% endhighlight %}
 
 > 理解CPU负载
 
@@ -764,10 +764,10 @@ CPU的系统负载，基本上等同于上面的类比。大桥的通行能力�
 
 怎么知道有多少个CPU核心呢？
 
-```
+{% highlight text %}
 $ grep -c 'model name' /proc/cpuinfo
 48
-```
+{% endhighlight %}
 
 > 观察时长
 
@@ -780,16 +780,16 @@ $ grep -c 'model name' /proc/cpuinfo
 
 通过读取`/proc/loadavg`文件来得到CPU的1分钟、5分钟、15分钟平均负载。一般来说CPU负载带了两位的小数。为了保留精度，会把CPU负载值乘以100再上报。
 
-```
+{% highlight text %}
 $ cat /proc/loadavg
 5.26 4.80 4.65 4/8728 1837325
-```
+{% endhighlight %}
 
 ## CPU使用率采集算法
 
 CPU使用率衡量的是程序运行占用的CPU百分比。Linux的CPU使用率信息可以通过`/proc/stat`文件计算得到。`/proc/stat`包含了所有CPU活动的信息，该文件中的所有值都是从系统启动开始累计的，单位为`jiffies`。
 
-```
+{% highlight text %}
 $ cat /proc/stat | grep 'cpu'
 
 cpu  4409701839 5860491 3043372756 11777957443 471600199 13606335 49392558 0
@@ -797,7 +797,7 @@ cpu0 980245201 1554799 596504303 3214215192 126029552 6603537 17697344 0
 cpu1 1209283591 1411942 861982464 2749190858 113506249 255348 7220138 0
 cpu2 971403569 1530154 624934033 3195318936 125767475 6491354 17450205 0
 cpu3 1248769476 1363594 959951956 2619232456 106296922 256096 7024869 0
-```
+{% endhighlight %}
 
 cpu一行指的是总的CPU信息，cpu0、cpu1、cpu2、cpu3几行指的是CPU各个核的CPU信息。从这里也可以看出这台服务器共有4个核。每列从左到右的意思为：
 
@@ -813,7 +813,7 @@ cpu一行指的是总的CPU信息，cpu0、cpu1、cpu2、cpu3几行指的是CPU�
 
 根据这些信息，就可以计算出CPU使用率。CPU使用率采集算法如下（以CPU0为例）：
 
-```bash
+{% highlight bash %}
 # 得到cpu0的信息
 cat /proc/stat | grep 'cpu0'
 
@@ -831,17 +831,17 @@ cpu_used2 = user + nice + system + irq + softirq
 
 # 得到cpu0在15秒内的平均使用率
 (cpu_used2 - cpu_used1) / (cpu_total2 - cpu_total1) * 100%
-```
+{% endhighlight %}
 
 采集策略：每分钟会采集4次15秒内的CPU平均使用率。为了避免漏采集CPU峰值，取这一分钟内四次采集的最大值上报。
 
 
 ## CPU进程使用率采集算法
 
-```
+{% highlight text %}
 $cat /proc/3100717/stat
 3100717 (unittestsvr) S 1 3100716 3100716 0 -1 4202560 1123163 0 56 0 1377525 296772 0 0 20 0 8 0 4715620677 3944722432 109878 18446744073709551615 4194304 47321236 140734650356688 140734650335168 140232066947133 0 0 3215367 18976 18446744073709551615 0 0 17 4 0 0 49 0 0 49420928 50225480 119697408 140734650366993 140734650367104 140734650367104 140734650392510 0
-```
+{% endhighlight %}
 
 参考 https://man7.org/linux/man-pages/man5/proc.5.html，其中 14 -17 四个参数中分别表示进程的 utime，stime，cutime，cstime。
 
@@ -869,25 +869,25 @@ $cat /proc/3100717/stat
   + `free`: 空闲内存
 * Swap 含义：交换分区
 
-```
+{% highlight text %}
 # free
              total       used       free     shared    buffers     cached
 Mem:       1017796     819720     198076      16784      46240     468880
 -/+ buffers/cache:     304600     713196
 Swap:            0          0          0
-```
+{% endhighlight %}
 
 > 在很多Linux服务器上运行free命令，会发现剩余内存（Mem:行的free列）很少，但实际服务器上的进程并没有占用很大的内存。这是因为Linux特殊的内存管理机制。Linux内核会把空闲的内存用作buffer/cached，用于提高文件读取性能。当应用程序需要用到内存时，buffer/cached内存是可以马上回收的。所以，对应用程序来说，buffer/cached是可用的，可用内存应该是free+buffers+cached。因为这个原因，free命令也才有第三行的-/+ buffers/cache。
 
 通过`top`命令查看内存。
 
-```
+{% highlight text %}
 KiB Mem :  1009184 total,    98908 free,   399864 used,   510412 buff/cache
 KiB Swap:        0 total,        0 free,        0 used.   453712 avail Mem
 
 PID USER    PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+  COMMAND
 1 root      20   0   77908   6184   3808 S  0.0  0.6   2:25.47 systemd
-```
+{% endhighlight %}
 
 * VIRT，进程虚拟内存的大小，虚拟内存并不会全部分配物理内存
 * RES，常驻内存的大小，是进程实际使用的物理内存大小，**但不包括Swap和共享内存**
@@ -959,10 +959,10 @@ Regarding process-wide sums:
 
 * **RSS** can be (approximately) obtained by summing the `Rss`: entries in smaps
 
-```bash
+{% highlight bash %}
 # 单位 kB
 awk '/Rss:/{ sum += $2 } END { print sum }' /proc/$pid/smaps
-```
+{% endhighlight %}
 
 * You can sum up `Pss`: values the same way, to get process-global **PSS**.
 
@@ -973,7 +973,7 @@ awk '/Rss:/{ sum += $2 } END { print sum }' /proc/$pid/smaps
 
 ### pmap
 
-```
+{% highlight text %}
 $pmap -x `pidof gamesvr`
 ...
 Address           Kbytes     RSS   Dirty Mode  Mapping
@@ -986,7 +986,7 @@ Address           Kbytes     RSS   Dirty Mode  Mapping
 ...
 ---------------- ------- ------- -------
 total kB         1372708  402092  367472
-```
+{% endhighlight %}
 
 ### smem
 
@@ -1000,7 +1000,7 @@ smem 需要单独安装。
 ![mem_diff](/assets/images/202409/mem_diff.png)
 
 
-```
+{% highlight text %}
   PID User     Command                         Swap      USS      PSS      RSS
     1 root     /pause                             0       36       57      412
   939 root     crond -s -P                        0      892     1271     3128
@@ -1009,17 +1009,17 @@ smem 需要单独安装。
   284 root     /deploysidecar/bin/xxxxxxx1        0    15792    30939    47592
  1295 root     /data/home/user00/xxxxxxxx2        0    40396    40540    41740
  3138 root     /data/home/user00/xxxxxxxx3        0  5242696  5254234  5267336
-```
+{% endhighlight %}
 
 ## dump memory (gdb)
 
 根据`pmap`输出的进程地址可以通过`gdb`将内存的内容dump出来。
 
-```
+{% highlight text %}
 (gdb) dump memory memory.dump 0x66c2000 0x66d2000
 (gdb) !strings memory.dump | head -n10
 %%%%%%%%%%%%%%%%
-```
+{% endhighlight %}
 
 或者：
 
@@ -1042,7 +1042,7 @@ gdb --batch --pid {PID} -ex "dump memory native_memory.dump 0x66c2000 0x66d2000"
 
 > 注意：在32位系统上，/proc/net/dev中的数值系统使用4个字节的无符号整型保存，当数值达到2^32-1，即4294967295之后，数值会溢出，计算流量包量时需要把这一点考虑进去。而64位系统中/proc/net/dev使用的是8个字节的无符号整型，因此就不需要注意溢出的问题。
 
-```
+{% highlight text %}
 $ cat /proc/net/dev
 Inter-|   Receive                                                |  Transmit
  face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed
@@ -1050,7 +1050,7 @@ Inter-|   Receive                                                |  Transmit
   eth1: 20762575244 116974442    0    0    0     0          0         0 27863156472 128930710    0    0    0     0       0          0
     lo: 1857145146 24970433    0    0    0     0          0         0 1857145146 24970433    0    0    0     0       0          0
 docker0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
-```
+{% endhighlight %}
 
 如何计算网卡流量，以`eth1`为例：
 
@@ -1068,7 +1068,7 @@ docker0:       0       0    0    0    0     0          0         0        0     
 
 `/proc/net/snmp`记录了一些TCP信息，其中比较有用的是`CurrEstab`字段，即当前已建立的TCP连接数。
 
-```
+{% highlight text %}
 $ cat /proc/net/snmp
 Ip: Forwarding DefaultTTL InReceives InHdrErrors InAddrErrors ForwDatagrams InUnknownProtos InDiscards InDelivers OutRequests OutDiscards OutNoRoutes ReasmTimeout ReasmReqds ReasmOKs ReasmFails FragOKs FragFails FragCreates
 Ip: 1 64 134291507 0 2 0 0 0 134291505 146203684 362 218 0 0 0 0 6 0 18
@@ -1082,7 +1082,7 @@ Udp: InDatagrams NoPorts InErrors OutDatagrams RcvbufErrors SndbufErrors InCsumE
 Udp: 1435 738 0 10020862 0 0 0 1
 UdpLite: InDatagrams NoPorts InErrors OutDatagrams RcvbufErrors SndbufErrors InCsumErrors IgnoredMulti
 UdpLite: 0 0 0 0 0 0 0 0
-```
+{% endhighlight %}
 
 ## UDP接收和发送数据报
 
@@ -1103,16 +1103,16 @@ UDP接收和发送数据报计算方法与`/proc/net/dev`类似，步骤如下�
 
 Tracing socket (file) descriptor back to bound address
 
-```
+{% highlight text %}
 lsof | grep pid.*sd.*IP
-```
+{% endhighlight %}
 
 * `pid` is to be replaced by the program process id
 * `sd` is to be replaced by the socket descriptor as shown by strace
 
 例子：
 
-```
+{% highlight text %}
 $strace -p14407 -e recvfrom
 Process 14407 attached
 recvfrom(55, 0x65c86000, 667104, 0, 0, 0) = -1 EAGAIN (Resource temporarily unavailable)
@@ -1124,24 +1124,24 @@ gamesvr   14407       gerryyang   55u     IPv4         1098817885        0t0    
 gamesvr   14407 14409 gerryyang   55u     IPv4         1098817885        0t0        TCP qsm_cloud_dev-15:51496->9.143.64.189:8856 (ESTABLISHED)
 gamesvr   14407 14410 gerryyang   55u     IPv4         1098817885        0t0        TCP qsm_cloud_dev-15:51496->9.143.64.189:8856 (ESTABLISHED)
 ...
-```
+{% endhighlight %}
 
 ## 根据fd找到ip信息
 
-```
+{% highlight text %}
 ls -lrt /proc/24748/fd | grep 854
 netstat -e | grep 169393703
 
 # or
 lsof -i -a -p 20640
-```
+{% endhighlight %}
 
 ## TIME_WAIT
 
-```
+{% highlight text %}
 echo 1 > /proc/sys/net/ipv4/tcp_tw_reuse
 echo 1 > /proc/sys/net/ipv4/tcp_tw_recycle
-```
+{% endhighlight %}
 
 * [tcp_tw_reuse、tcp_tw_recycle 使用场景及注意事项](https://www.cnblogs.com/lulu/p/4149312.html)
 * [Linux tcp_tw_reuse = 2 — how is this set and what is the significance?](https://forum.vyos.io/t/linux-tcp-tw-reuse-2-how-is-this-set-and-what-is-the-significance/5286/4)
@@ -1151,10 +1151,10 @@ echo 1 > /proc/sys/net/ipv4/tcp_tw_recycle
 
 注意，如果服务器有较多程序开放端口，请注意程序的端口开放范围，以避免随机端口跟设置的端口范围冲突。
 
-```
+{% highlight text %}
 $cat /proc/sys/net/ipv4/ip_local_port_range
 32768   61000
-```
+{% endhighlight %}
 
 * [linux下设置ip_local_port_range参数](https://cloud.tencent.com/developer/article/1691625)
 
@@ -1163,7 +1163,7 @@ $cat /proc/sys/net/ipv4/ip_local_port_range
 
 `ss` is used to dump socket statistics. It allows showing information similar to `netstat`.  It can display more TCP and state information than other tools.
 
-```
+{% highlight text %}
 $ ss -s
 Total: 2144
 TCP:   2000 (estab 1757, closed 200, orphaned 0, timewait 200)
@@ -1174,19 +1174,19 @@ UDP       13        11        2
 TCP       1800      1795      5
 INET      1815      1807      8
 FRAG      0         0         0
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ ss -ltupn
 State       Recv-Q Send-Q    Local Address:Port     Peer Address:Port
 LISTEN      0      128       *:15434                *:*                     users:(("tconnd",pid=3304405,fd=35))
-```
+{% endhighlight %}
 
 ### nslookup
 
 query Internet name servers interactively
 
-```
+{% highlight text %}
 # nslookup 8.8.8.8
 Server:         8.8.8.8
 Address:        8.8.8.8#53
@@ -1195,9 +1195,9 @@ Non-authoritative answer:
 8.8.8.8.in-addr.arpa    name = google-public-dns-a.google.com.
 
 Authoritative answers can be found from:
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ nslookup gerryyang.com
 Server:         10.85.61.21
 Address:        10.85.61.21#53
@@ -1205,11 +1205,11 @@ Address:        10.85.61.21#53
 Non-authoritative answer:
 Name:   gerryyang.com
 Address: 119.28.41.102
-```
+{% endhighlight %}
 
 ### dig
 
-```
+{% highlight text %}
 $ dig gerryyang.com
 
 ; <<>> DiG 9.11.26-RedHat-9.11.26-4.tl3 <<>> gerryyang.com
@@ -1230,11 +1230,11 @@ gerryyang.com.          598     IN      A       119.28.41.102
 ;; SERVER: 10.85.61.21#53(10.85.61.21)
 ;; WHEN: Wed Jan 31 20:05:05 CST 2024
 ;; MSG SIZE  rcvd: 58
-```
+{% endhighlight %}
 
 ### nc
 
-```
+{% highlight text %}
 ncat [options] [hostname] [port]
 
 # test UDP port was open or not
@@ -1242,7 +1242,7 @@ nc -vzu <host> <port>
 
 on server listen UDP port: `nc -ul 6111`
 on client: `nc -u <server> 6111`
-```
+{% endhighlight %}
 
 https://serverfault.com/questions/416205/testing-udp-port-connectivity
 
@@ -1252,7 +1252,7 @@ https://en.wikipedia.org/wiki/Netcat#Test_if_UDP_port_is_open:_simple_UDP_server
 
 ## iostat
 
-```
+{% highlight text %}
 $ iostat -x 10
 
 avg-cpu:  %user   %nice %system %iowait  %steal   %idle
@@ -1280,7 +1280,7 @@ vdp               0.00     0.50    0.00    0.20     0.00     2.80    28.00     0
 vds               0.00     0.50    0.00    0.20     0.00     2.80    28.00     0.00    0.00    0.00    0.00   0.00   0.00
 vdh               0.00     5.30    0.00    1.50     0.00   258.80   345.07     0.00    2.40    0.00    2.40   1.07   0.16
 vdk               0.00     0.50    0.00    0.20     0.00     2.80    28.00     0.00    0.00    0.00    0.00   0.00   0.00
-```
+{% endhighlight %}
 
 每一列的含义如下：
 
@@ -1323,7 +1323,7 @@ vdk               0.00     0.50    0.00    0.20     0.00     2.80    28.00     0
 使用 iostat -x 命令时没有看到 CFS 文件系统的信息，可能是因为 iostat 命令默认只显示本地设备的信息，而不包括网络文件系统（NFS）等远程文件系统。nfsiostat 是一个专门用于监视 NFS 文件系统的工具，可以显示每个 NFS 服务器的 I/O 使用率和延迟时间等信息。
 
 
-```
+{% highlight text %}
 # nfsiostat 5
 
 11.147.151.12:/log/121 mounted on /var/lib/kubelet/pods/eb7854e4-a01a-4a95-8f6e-ccb761ca0e4d/volumes/kubernetes.io~nfs/friendsvr-121-pv-log:
@@ -1334,21 +1334,21 @@ read:            ops/s             kB/s           kB/op         retrans         
                   0.126   1.496  11.860       0 (0.0%)    2.875   2.945
 write:           ops/s             kB/s           kB/op         retrans         avg RTT (ms)    avg exe (ms)
                  11.843 434.621  36.698       0 (0.0%)   12.302  15.766
-```
+{% endhighlight %}
 
 ## 磁盘IO采集算法
 
 通过`/proc/diskstats`文件计算得到。
 
-```
+{% highlight text %}
 252       0 vda 58964 2845 2864110 163028 56607103 29847638 1634532676 260114388 0 13189912 260253616
 252       1 vda1 58883 2407 2859958 162956 55731294 29847638 1634532668 260028636 0 13104408 260168496
 252      16 vdb 5743072 3056 239591974 19078076 66105709 19855513 4542946783 973079144 0 30841824 992260604
-```
+{% endhighlight %}
 
 The `/proc/diskstats` file displays the I/O statistics of block devices. Each line contains the following 14 fields:
 
-```
+{% highlight text %}
 1 - major number
 2 - minor mumber
 3 - device name
@@ -1363,16 +1363,16 @@ The `/proc/diskstats` file displays the I/O statistics of block devices. Each li
 12 - I/Os currently in progress
 13 - time spent doing I/Os (ms)
 14 - weighted time spent doing I/Os (ms)
-```
+{% endhighlight %}
 
 `/proc/diskstats`中每个字段的数值也是从系统启动后一直累加的。我们用`delta`来表示在时间`t`内某个字段的增量。
 
-```
+{% highlight text %}
 delta(reads merged) = reads merged的值 - t秒前reads merged的值
 
 svctm的计算方式：
 delta(time spent doing I/Os) / (delta(reads completed) + delta(writes completed))
-```
+{% endhighlight %}
 
 
 # 信号处理
@@ -1446,7 +1446,7 @@ On a multithreaded application – the signal handler execute in one of the thre
 
 测试程序：
 
-```cpp
+{% highlight cpp %}
 #include<stdio.h>
 #include<unistd.h>
 #include<pthread.h>
@@ -1522,35 +1522,35 @@ int main()
 	pthread_exit(NULL);
 	return 0;
 }
-```
+{% endhighlight %}
 
 Compile and run the app, you will see periodic output for each thread:
 
-```thread1
+{% highlight thread1 %}
 thread2
 thread3
 thread1
 thread2
 thread3
 ...
-```
+{% endhighlight %}
 
 Now send a signal to the process using the kill command:
 
-```
+{% highlight text %}
 # kill -37 [pid]
-```
+{% endhighlight %}
 
 The kernel choose one thread and run the signal handler in its context. In my case thread 1 selected so the output for 10 times is:
 
-```signal
+{% highlight signal %}
 thread2
 thread3
 signal
 thread2
 thread3
 ...
-```
+{% endhighlight %}
 
 This behaviour can be problematic in case the selected thread is an important task.
 
@@ -1558,7 +1558,7 @@ This behaviour can be problematic in case the selected thread is an important ta
 
 We can’t choose the selected thread but we can do a little trick to hack the system to choose the thread we want. The trick is to block the signal on all threads except one thread – the one we want  to run the signal in:
 
-```cpp
+{% highlight cpp %}
 #include<stdio.h>
 #include<unistd.h>
 #include<pthread.h>
@@ -1646,20 +1646,20 @@ int main()
 	pthread_exit(NULL);
 	return 0;
 }
-```
+{% endhighlight %}
 
 We block the signal on threads 1,2 so the system will deliver the signal to thread 3
 
 Run the app, send the signal with kill command. The output:
 
-```signal
+{% highlight signal %}
 thread1
 thread2
 signal
 thread1
 thread2
 ...
-```
+{% endhighlight %}
 
 Another trick is to create a thread for signal handling that will be blocked using sigwait , waiting for signal.
 
@@ -1669,7 +1669,7 @@ Inside the kernel, each thread has a `task_struct` object defines in `sched.h`:
 
 All the signals fields are stored per thread. Actually , there is no structure for the process , all the threads on the same process points to the same memory and files tables so the kernel need to choose a thread to deliver the signal to:
 
-```cpp
+{% highlight cpp %}
 struct task_struct {
 #ifdef CONFIG_THREAD_INFO_IN_TASK
 	/*
@@ -1697,13 +1697,13 @@ struct task_struct {
 ...
 ...
 }
-```
+{% endhighlight %}
 
 ### Sending signals to a thread
 
 Another option is to use `pthread_kill(3)` to send a signal directly to a thread. This can be done only in the same process. For example:
 
-```cpp
+{% highlight cpp %}
 #include<stdio.h>
 #include<unistd.h>
 #include<pthread.h>
@@ -1784,15 +1784,15 @@ int main()
 	pthread_exit(NULL);
 	return 0;
 }
-```
+{% endhighlight %}
 
 We start with creating 3 threads, then we send a signal to thread 1, wait for the signal handler to finish then send signals both to threads 2 and 3 , they will run the signal handler at the same time so in this case we will see :
 
-```signal
+{% highlight signal %}
 signal
 thread1
 ...
-```
+{% endhighlight %}
 
 
 
@@ -1801,13 +1801,13 @@ thread1
 
 ## clock_getres/clock_gettime/clock_settime
 
-```cpp
+{% highlight cpp %}
 #include <time.h>
 
 int clock_getres(clockid_t clk_id, struct timespec *res);
 int clock_gettime(clockid_t clk_id, struct timespec *tp);
 int clock_settime(clockid_t clk_id, const struct timespec *tp);
-```
+{% endhighlight %}
 
 The function `clock_getres()` finds the resolution (precision) of the specified clock `clk_id`, and, if `res` is non-NULL, stores it in the struct `timespec` pointed to by `res`. The resolution of clocks depends on the implementation and cannot be configured by a particular process. If the time value pointed to by the argument tp of `clock_settime()` is not a multiple of `res`, then it is truncated to a multiple of `res`.
 
@@ -1815,12 +1815,12 @@ The functions `clock_gettime()` and `clock_settime()` retrieve and set the time 
 
 The `res` and `tp` arguments are `timespec` structs, as specified in `<time.h>`:
 
-```cpp
+{% highlight cpp %}
 struct timespec {
         time_t   tv_sec;        /* seconds */
         long     tv_nsec;       /* nanoseconds */
 };
-```
+{% endhighlight %}
 
 The `clk_id` argument is the identifier of the particular clock on which to act. A clock may be system-wide and hence visible for all processes, or per-process if it measures time only within a single process.
 
@@ -1828,13 +1828,13 @@ The `clk_id` argument is the identifier of the particular clock on which to act.
 
 ## pthread_setname_np
 
-```cpp
+{% highlight cpp %}
 #define _GNU_SOURCE             /* See feature_test_macros(7) */
 #include <pthread.h>
 
 int pthread_setname_np(pthread_t thread, const char *name);
 int pthread_getname_np(pthread_t thread, char *name, size_t len);
-```
+{% endhighlight %}
 
 By default, all the threads created using `pthread_create()` inherit the program name.  The [pthread_setname_np()](https://man7.org/linux/man-pages/man3/pthread_setname_np.3.html) function can be used to set a unique name for a thread, which can be useful for debugging multithreaded applications.  The thread name is a meaningful C language string, whose length is restricted to `16 characters`, including the terminating null byte ('\0').  The thread argument specifies the thread whose name is to be changed; name specifies the new name.
 
@@ -1844,10 +1844,10 @@ By default, all the threads created using `pthread_create()` inherit the program
 
 ## pthread_kill
 
-```cpp
+{% highlight cpp %}
 #include <signal.h>
 int pthread_kill(pthread_t thread, int sig);
-```
+{% endhighlight %}
 
 The [pthread_kill()](https://man7.org/linux/man-pages/man3/pthread_kill.3.html) function sends the signal sig to thread, a thread in the same process as the caller. The signal is asynchronously directed to thread. If sig is 0, then no signal is sent, but error checking is still performed.
 
@@ -1856,10 +1856,10 @@ POSIX.1-2008 recommends that if an implementation detects the use of a thread ID
 
 ## malloc_trim
 
-```cpp
+{% highlight cpp %}
 #include <malloc.h>
 int malloc_trim(size_t pad);
-```
+{% endhighlight %}
 
 [malloc_trim](https://man7.org/linux/man-pages/man3/malloc_trim.3.html) function **attempts to release free memory from the heap** (by calling `sbrk(2)` or `madvise(2)` with suitable arguments). This function is a GNU extension.
 
@@ -1867,20 +1867,20 @@ The `pad` argument specifies **the amount of free space to leave untrimmed at th
 
 ## madvise
 
-```cpp
+{% highlight cpp %}
 #include <sys/mman.h>
 int madvise(void *addr, size_t length, int advice);
-```
+{% endhighlight %}
 
 The [madvise()](https://man7.org/linux/man-pages/man2/madvise.2.html) system call is used to give advice or directions to the kernel about the address range beginning at address addr and with size length bytes In most cases, the goal of such advice is **to improve system or application performance**.
 
 
 ## [std::thread::hardware_concurrency](https://en.cppreference.com/w/cpp/thread/thread/hardware_concurrency.html)
 
-```cpp
+{% highlight cpp %}
 // Returns the number of concurrent threads supported by the implementation. The value should be considered only a hint.
 static unsigned int hardware_concurrency() noexcept; // (since C++11)
-```
+{% endhighlight %}
 
 
 
@@ -1900,7 +1900,7 @@ The returned value typically corresponds to the number of logical CPU cores, inc
 It is important to note that the value returned by `hardware_concurrency()` **is a hint and not a strict guarantee**. The actual number of threads that can run truly in parallel can be influenced by various factors, including operating system scheduling, other running processes, and the nature of the workload.
 
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <thread>
 
@@ -1914,7 +1914,7 @@ int main()
     }
     return 0;
 }
-```
+{% endhighlight %}
 
 
 
@@ -1945,7 +1945,7 @@ More: man top
 
 ### 循环记录某个进程的 CPU 使用率符合某个条件时，输出这个进程所有线程的堆栈信息
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # @brief 循环记录某个进程的 cpu 使用率符合某个条件时，输出这个进程所有线程的堆栈信息
@@ -1977,15 +1977,15 @@ while :; do
     # 等待一段时间再继续检测
     sleep 10
 done
-```
+{% endhighlight %}
 
 ### 监控某个进程每隔 N 秒刷新一次，共刷新 M 次，并将输出重定向到 top.log 文件中
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 top -Hp 3668452 -d 0.5 -n 3 -b > top.log
-```
+{% endhighlight %}
 
 * `-Hp 3668452`：-H 参数表示以线程模式运行，-p 参数表示只显示指定进程的信息。在这里，3668452 是进程ID，所以这个命令将只显示进程ID为 3668452 的进程的线程信息。
 * `-d 0.5`：-d 参数表示刷新间隔。在这里，0.5 表示每隔 0.5 秒刷新一次。
@@ -2000,13 +2000,13 @@ top -Hp 3668452 -d 0.5 -n 3 -b > top.log
 
 dmesg is used to examine or control the kernel ring buffer. The default action is to display all messages from the kernel ring buffer.
 
-```
+{% highlight text %}
 # 显示可读时间, 定位内存异常错误
 $dmesg -T
 
 [Sun Dec 13 23:41:22 2020] Out of memory: Kill process 15395 (cc1plus) score 7 or sacrifice child
 [Sun Dec 13 23:41:22 2020] Killed process 15395 (cc1plus) total-vm:168940kB, anon-rss:119492kB, file-rss:0kB
-```
+{% endhighlight %}
 
 ## strace (relies on ptrace system call)
 
@@ -2026,10 +2026,10 @@ strace/ltrace 是一类不错的工具，在工作中经常会用到，其主要
 
 strace 和 ltrace 的区别：
 
-```
+{% highlight text %}
 strace —— Trace system calls and signals （跟踪一个进程的系统调用或信号产生的情况）
 ltrace —— A library call tracer （跟踪进程调用库函数的情况）
-```
+{% endhighlight %}
 
 * strace 最初是为 SunOS 系统编写的，ltrace 最早出现在 GUN/Debian Linux 中，这两个工具现在已被移植到了大部分 Unix 系统中（可以通过 which 命令查找系统中是否存在此命令），大多数 Linux 发行版都自带了 strace 和 ltrace，没有的话也可以尝试手动安装它们。
 * 关于系统调用和库函数的区别，APUE 第一章有详细的介绍。
@@ -2047,7 +2047,7 @@ ltrace —— A library call tracer （跟踪进程调用库函数的情况）
 
 使用示例：
 
-```cpp
+{% highlight cpp %}
 #include<stdio.h>
 #include<stdlib.h>
 
@@ -2067,11 +2067,11 @@ gcc -Wall -g -o st1 st1.c
 $ ./st1
 Error!
 */
-```
+{% endhighlight %}
 
 执行该程序报错是因为程序试图打开一般用户没有读权限的 /etc/shadow 文件，但是通过错误消息无法得知这一点。真实的程序也会有错误信息内容不明确、所有地方都显示同样的错误信息的情况，甚至可能什么都不显示。这种情况下，就很难确定错误发生在源代码的什么地方（通过日志信息可以知道最上层调用出错的地方），因此也无法用 GDB 设置断点，此时可以使用 strace 来进一步定位错误。
 
-```bash
+{% highlight bash %}
 $ strace ./st1
 
 execve("./st1", ["./st1"], [/* 59 vars */]) = 0
@@ -2103,7 +2103,7 @@ write(1, "Error!\n", 7Error!										// (3)
 )                 = 7
 exit_group(1)                           = ?
 Process 22259 detached
-```
+{% endhighlight %}
 
 出错并结束的话，从后往前看 strace 的输出结果是解决问题的捷径。从标注的位置可以发现，最后即为在界面上显示错误信息的系统调用，再往前看，系统调用 open() 失败，而且立即可以得知程序在试图打开 /etc/shadow 时发生了 Permission denied错误（EACCES）。
 
@@ -2115,7 +2115,7 @@ Process 22259 detached
 
 Print the instruction pointer at the time of the system call. 给 strace 添加 -i 选项即可显示程序在哪个地址进行了系统调用，可以将该地址作为断点使用，然后使用 GDB 进一步定位问题。各行开头 `[]` 中的数字就是执行系统调用的代码的地址。在 GDB 中可以指定该地址并显示 `backstrace`，例如：`b *0xb7e44d2a`
 
-```bash
+{% highlight bash %}
 $ strace -i ./st1
 
 [b7e44d2a] execve("./st1", ["./st1"], [/* 59 vars */]) = 0
@@ -2147,7 +2147,7 @@ $ strace -i ./st1
 )      = 7
 [b7f0bcf3] exit_group(1)                = ?
 Process 17355 detached
-```
+{% endhighlight %}
 
 #### -p PID (或 -p `pidof ProcName`) attach 到进程上调试后台程序
 
@@ -2155,7 +2155,7 @@ Attach to the process with the process ID pid and begin tracing. The trace may b
 
 此选项主要用于查看运行中的进程（如守护进程）的行为。将上面的程序做一下修改：
 
-```cpp
+{% highlight cpp %}
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
@@ -2184,16 +2184,16 @@ int main()
 /*
    gcc -Wall -g -o st1 st1_p260.c
 */
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 ps ux | grep st1
 1006    17673  0.0  0.0   1640  348 pts/0    S+   10:21  0:00 ./st1
-```
+{% endhighlight %}
 
 使用 -p 选项跟踪当前正在运行的程序，按 Ctrl-C 键来结束程序。
 
-```bash
+{% highlight bash %}
 $ strace -p 17673
 
 Process 17673 attached - interrupt to quit
@@ -2237,7 +2237,7 @@ rt_sigaction(SIGCHLD, NULL, {SIG_DFL}, 8) = 0
 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
 nanosleep({3, 0},  <unfinished ...>
 Process 17673 detached
-```
+{% endhighlight %}
 
 #### -o output.log 将 strace 信息输出到文件方便进一步查找
 
@@ -2245,18 +2245,18 @@ Write the trace output to the file filename rather than to **stderr**. Use filen
 
 `-ff`: If the `-o` filename option is in effect, each processes trace is written to filename.pid where pid is the numeric process id of each process.
 
-```bash
+{% highlight bash %}
 $ strace -o output.log ./st1
 $ cat output.log
 execve("./st1", ["./st1"], [/* 59 vars */]) = 0
 brk(0)                                  = 0x804a000
 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7f2e000
 access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-```
+{% endhighlight %}
 
 > 注意：strace 的输出为标准错误输出，因此可以像下面这样将显示内容输出到标准输出上，通过管道再传给 grep、less 等。
 
-```bash
+{% highlight bash %}
 $ strace ./st1 2>&1 | grep open
 
 open("/etc/ld.so.cache", O_RDONLY)      = 3
@@ -2265,13 +2265,13 @@ open("/etc/shadow", O_RDONLY)           = -1 EACCES (Permission denied)
 open("/etc/shadow", O_RDONLY)           = -1 EACCES (Permission denied)
 open("/etc/shadow", O_RDONLY)           = -1 EACCES (Permission denied)
 open("/etc/shadow", O_RDONLY)           = -1 EACCES (Permission denied)
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 2>&1   将标准出错重定向到标准输出
 2>     代表错误重定向
 &1     代表标准输出
-```
+{% endhighlight %}
 
 #### -f 跟踪 fork 之后的子进程
 
@@ -2280,7 +2280,7 @@ Trace child processes as they are created by currently traced processes as a res
 
 #### -t / -tt 显示系统调用的执行时刻
 
-```
+{% highlight text %}
 -t    以秒为单位
 -tt   以微秒为单位
 -T    显示系统调用的耗时
@@ -2289,11 +2289,11 @@ Trace child processes as they are created by currently traced processes as a res
 -tt        If given twice, the time printedwill include the microseconds.
 -ttt       If given thrice, the time printed will include the microseconds and the leading portion will be printed as the number of seconds since the epoch.
 -T         Show the time spent in system calls. This records the time difference between the beginning and the end of each system call.
-```
+{% endhighlight %}
 
 #### -e 显示指定跟踪的系统调用
 
-```
+{% highlight text %}
 -e expr
 
 A qualifying expression which modifies which events to trace or how to trace them. The format of the expression is:
@@ -2303,7 +2303,7 @@ A qualifying expression which modifies which events to trace or how to trace the
 where qualifier is one of trace, abbrev, verbose, raw, signal, read, or write and value is  a qualifier-dependent symbol or number. **The default qualifier is trace**. Using an exclamation mark negates the set of values. For example, `-e open` means literally `-etrace=open` which in turn means trace only the `open` system call. By contrast, `-etrace=!open` means to trace every system call except open. In addition, the special values all and none have the obvious meanings.
 
 Note that some shells use the exclamation point for history expansion even inside quoted arguments. If so, you must escape the exclamation point with a backslash.
-```
+{% endhighlight %}
 
 * -e trace=all        跟踪进程的所有系统调用
 * -e trace=network    只记录和网络 api 相关的系统调用
@@ -2314,7 +2314,7 @@ Note that some shells use the exclamation point for history expansion even insid
 
 只记录 open 的系统调用：
 
-```cpp
+{% highlight cpp %}
 $ strace -e trace=open ./st1
 
 open("/etc/ld.so.cache", O_RDONLY)      = 3
@@ -2323,7 +2323,7 @@ open("/etc/shadow", O_RDONLY)           = -1 EACCES (Permission denied)
 Error!
 open("/etc/shadow", O_RDONLY)           = -1 EACCES (Permission denied)
 Error!
-```
+{% endhighlight %}
 
 
 #### -s 指定系统调用参数的长度
@@ -2334,9 +2334,9 @@ Error!
 
 例如：
 
-```bash
+{% highlight bash %}
 strace -s 1024 ./st1
-```
+{% endhighlight %}
 
 #### 用 strace 了解程序的工作原理
 
@@ -2344,7 +2344,7 @@ strace -s 1024 ./st1
 
 我们换个角度思考：Unix 下有没有什么命令可以获取进程打开了哪些文件？使用 lsof 命令即可以知道程序打开了哪些文件，也可以了解一个文件被哪个进程打开。（平时工作中很常用，例如，使用 lsof -p PID 来查找某个进程存放的位置）
 
-```cpp
+{% highlight cpp %}
 #include<stdio.h>
 #include<unistd.h>
 #include<sys/types.h>
@@ -2362,9 +2362,9 @@ int main()
 gcc -Wall -g -o testlsof testlsof.c
 ./testlsof &
 */
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ gcc -Wall -g -o testlsof testlsof.c
 $ ./testlsof &
 [1] 12371
@@ -2389,11 +2389,11 @@ lrwx------ 1 gerryyang users 64 2012-03-23 14:14 0 -> /dev/pts/0
 lrwx------ 1 gerryyang users 64 2012-03-23 14:14 1 -> /dev/pts/0
 lrwx------ 1 gerryyang users 64 2012-03-23 14:14 2 -> /dev/pts/0
 lr-x------ 1 gerryyang users 64 2012-03-23 14:14 3 -> /data/home/gerryyang/test/HACK/wcdj
-```
+{% endhighlight %}
 
 用 strace 跟踪 lsof 的运行，输出结果保存在 lsof.strace 中。然后通过对 lsof.strace 内容的分析，从而了解到其实现原理是：lsof 利用了 /proc/pid/fd 目录。Linux 内核会为每一个进程在 /proc 建立一个以其 pid 为名的目录用来保存进程的相关信息，而其子目录 fd 保存的是该进程打开的所有文件的 fd。进入 /proc/pid/fd 目录下，发现每一个 fd 文件都是符号链接，而此链接就指向被该进程打开的一个文件。只要用 readlink() 系统调用就可以获取某个 fd 对应的文件了。
 
-```cpp
+{% highlight cpp %}
 #include<stdio.h>
 #include<string.h>
 #include<sys/types.h>
@@ -2428,7 +2428,7 @@ int main()
 /*
 gcc -Wall -g -o GetPathByFd GetPathByFd.c
 */
-```
+{% endhighlight %}
 
 
 ## ltrace
@@ -2437,7 +2437,7 @@ gcc -Wall -g -o GetPathByFd GetPathByFd.c
 
 ltrace - A library call tracer
 
-```bash
+{% highlight bash %}
 $ ltrace ./st1
 
 __libc_start_main(0x8048494, 1, 0xbfe4a204, 0x8048500, 0x80484f0 <unfinished ...>
@@ -2455,7 +2455,7 @@ puts("r"Error!
 sleep(3 <unfinished ...>
 --- SIGINT (Interrupt) ---
 +++ killed by SIGINT +++
-```
+{% endhighlight %}
 
 
 
@@ -2464,37 +2464,37 @@ sleep(3 <unfinished ...>
 
 当发现进程异常时，比如CPU过高可以通过`gdb`attach到进程上查看具体情况，如果是多线程程序可以通过`info threads`选择异常的线程查看。
 
-```
+{% highlight text %}
 gdb -p `pidof program`
 
 info threads
 thread $id
-```
+{% endhighlight %}
 
 ## gstack
 
 `gstack` attaches to the active process named by the pid on the command line, and prints out an execution stack trace. If ELF symbols exist in the binary (usually the case unless you have run strip(1)), then symbolic addresses are printed as well.
 
-```
+{% highlight text %}
 $gstack 31310
 Thread 2 (Thread 0x7f131c596700 (LWP 31315)):
 #0  0x00007f13d2a6b1bd in nanosleep () from /lib64/libc.so.6
 #1  0x00007f13d2a9bed4 in usleep () from /lib64/libc.so.6
 ...
 #10 0x0000000000416cb0 in main (argc=<optimized out>, argv=<optimized out>) at base_server/base_so_loader.cc:216
-```
+{% endhighlight %}
 
 ## gcore
 
 [gcore](https://man7.org/linux/man-pages/man1/gcore.1.html) - Generate a core file of a running program.
 
-```
+{% highlight text %}
 gcore [-a] [-o prefix] pid1 [pid2...pidN]
-```
+{% endhighlight %}
 
 Generate core dumps of one or more running programs with process IDs pid1, pid2, etc. **A core file produced by gcore is equivalent to one produced by the kernel when the process crashes (and when "ulimit -c" was used to set up an appropriate core dump limit). However, unlike after a crash, after gcore finishes its job the program remains running without any change**.
 
-```
+{% highlight text %}
 ~$gcore 2302385
 [New LWP 2302394]
 [New LWP 2302403]
@@ -2509,18 +2509,18 @@ Using host libthread_db library "/lib64/libthread_db.so.1".
 warning: target file /proc/2302385/cmdline contained unexpected null characters
 Saved corefile core.2302385
 [Inferior 1 (process 2302385) detached
-```
+{% endhighlight %}
 
 
 ## disassemble
 
-```
+{% highlight text %}
 objdump -d /path/to/binary
 
 gdb a.out
 info functions
 disassemble /m main
-```
+{% endhighlight %}
 
 * https://stackoverflow.com/questions/5125896/how-to-disassemble-a-binary-executable-in-linux-to-get-the-assembly-code
 
@@ -2535,9 +2535,9 @@ A backtrace is a list of the function calls that are currently active in a threa
 
 The header file `execinfo.h` declares three functions that obtain and manipulate backtraces of the current thread.
 
-```cpp
+{% highlight cpp %}
 int backtrace (void **buffer, int size)
-```
+{% endhighlight %}
 
 The `backtrace` function obtains a backtrace for the current thread, as a list of pointers, and places the information into `buffer`. The argument `size` should be the number of `void *` elements that will fit into buffer. The return value is the actual number of entries of buffer that are obtained, and is at most size.
 
@@ -2545,9 +2545,9 @@ The pointers placed in buffer are actually return addresses obtained by inspecti
 
 **Note that certain compiler optimizations may interfere with obtaining a valid backtrace**. `Function inlining` causes the inlined function to not have a stack frame; `tail call optimization` replaces one stack frame with another; `frame pointer elimination` will stop backtrace from interpreting the stack contents correctly.
 
-```cpp
+{% highlight cpp %}
 char ** backtrace_symbols (void *const *buffer, int size)
-```
+{% endhighlight %}
 
 The `backtrace_symbols` function translates the information obtained from the `backtrace` function into an array of strings. The argument `buffer` should be a pointer to an array of addresses obtained via the `backtrace` function, and `size` is the number of entries in that array (the return value of `backtrace`).
 
@@ -2559,15 +2559,15 @@ The return value of `backtrace_symbols` is a pointer obtained via the `malloc` f
 
 The return value is `NULL` if sufficient memory for the strings cannot be obtained.
 
-```cpp
+{% highlight cpp %}
 void backtrace_symbols_fd (void *const *buffer, int size, int fd)
-```
+{% endhighlight %}
 
 The `backtrace_symbols_fd` function performs the same translation as the function `backtrace_symbols` function. **Instead of returning the strings to the caller, it writes the strings to the file descriptor `fd`, one per line**. It does not use the `malloc` function, and can therefore be used in situations where that function might fail.
 
 The following program illustrates the use of these functions. Note that the array to contain the return addresses returned by `backtrace` is allocated on the **stack**. Therefore code like this can be used in situations where the memory handling via `malloc` does not work anymore (in which case the `backtrace_symbols` has to be replaced by a `backtrace_symbols_fd` call as well). The number of return addresses is normally not very large. Even complicated programs rather seldom have a nesting level of more than, say, 50 and with 200 possible entries probably all programs should be covered.
 
-```cpp
+{% highlight cpp %}
 #include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -2602,13 +2602,13 @@ int main()
   dummy_function();
   return 0;
 }
-```
+{% endhighlight %}
 
 
 测试代码：
 
 
-```cpp
+{% highlight cpp %}
 #include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -2688,11 +2688,11 @@ backtrace() returned 8 addresses
 /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xe7) [0x7f57275c9bf7]
 ./a.out(_start+0x2a) [0x5568d100d9aa]
 */
-```
+{% endhighlight %}
 
 使用GDB调试：
 
-```
+{% highlight text %}
 (gdb) p buffer[0]
 $2 = (void *) 0x555555554873 <myfunc3()+46>
 (gdb) p buffer[1]
@@ -2711,7 +2711,7 @@ $8 = (void *) 0x7ffff7a03bf7 <__libc_start_main+231>
 $9 = (void *) 0x55555555478a <_start+42>
 (gdb) p buffer[8]
 $10 = (void *) 0x0
-```
+{% endhighlight %}
 
 优化方案：
 
@@ -2726,7 +2726,7 @@ The definition of the macro assert depends on another macro, `NDEBUG`, which is 
 * If `NDEBUG` is defined as a macro name at the point in the source code where `<cassert>` is included, then assert does nothing.
 * If `NDEBUG` is not defined, then assert checks if its argument (which must have scalar type) compares equal to zero. If it does, assert outputs implementation-specific diagnostic information on the standard error output and calls `std::abort`. The diagnostic information is required to include the text of expression, as well as the values of the standard macros `__FILE__`, `__LINE__`, and the standard variable `__func__` (since C++11).
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 // uncomment to disable assert()
 // #define NDEBUG
@@ -2748,9 +2748,9 @@ prog.exe: prog.cc:13: int main(): Assertion `((void)"There are five lights", 2+2
 Execution continues past the first assert
 Aborted
 */
-```
+{% endhighlight %}
 
-```cpp
+{% highlight cpp %}
 #include <stdio.h>
 #include <exception>
 #include <cassert>
@@ -2774,29 +2774,29 @@ int main()
 prog.exe: prog.cc:9: int main(): Assertion `0' failed.
 Aborted
 */
-```
+{% endhighlight %}
 
 * https://en.cppreference.com/w/cpp/error/assert
 
 ## lsof
 
-```
+{% highlight text %}
 # 查看进程打开文件的情况
 lsof -p pid
-```
+{% endhighlight %}
 
 ## c++filt (Demangle C++ and Java symbols)
 
 使用`c++filt`对符号进行 demangle 得到可读的符号名：
 
-```
+{% highlight text %}
 dlopen(./liballocatesvr_plugin.so) failed(./liballocatesvr_plugin.so: undefined symbol: _ZTIN6google8protobuf7MessageE)
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $c++filt _ZTIN6google8protobuf7MessageE
 typeinfo for google::protobuf::Message
-```
+{% endhighlight %}
 
 ## addr2line (convert addresses into file names and line numbers)
 
@@ -2804,14 +2804,14 @@ addr2line translates addresses into file names and line numbers. Given an addres
 
 安装方法：https://command-not-found.com/addr2line
 
-```
+{% highlight text %}
 # ubuntu
 apt-get install binutils
-```
+{% endhighlight %}
 
 https://linux.die.net/man/1/addr2line
 
-```bash
+{% highlight bash %}
 $ addr2line -h
 Usage: addr2line [option(s)] [addr(s)]
  Convert addresses into line number/file name pairs.
@@ -2834,13 +2834,13 @@ Usage: addr2line [option(s)] [addr(s)]
 
 addr2line: supported targets: elf64-x86-64 elf32-i386 elf32-iamcu elf32-x86-64 pei-i386 pei-x86-64 elf64-l1om elf64-k1om elf64-little elf64-big elf32-little elf32-big pe-x86-64 pe-bigobj-x86-64 pe-i386 srec symbolsrec verilog tekhex binary ihex plugin
 Report bugs to <http://bugzilla.redhat.com/bugzilla/>
-```
+{% endhighlight %}
 
 
 测试代码：
 
 
-```cpp
+{% highlight cpp %}
 // backtrace.c
 #include <execinfo.h>
 #include <stdio.h>
@@ -2879,7 +2879,7 @@ main (void)
         dummy_function ();
         return 0;
 }
-```
+{% endhighlight %}
 
 默认，符号全部导出，编译构建：
 
@@ -2887,7 +2887,7 @@ gcc -rdynamic backtrace.c
 
 执行结果，可以显示堆栈的符号名称：
 
-```
+{% highlight text %}
 $./a.out
 Obtained 5 stack frames.
 ./a.out(print_trace+0x19) [0x400896]
@@ -2895,17 +2895,17 @@ Obtained 5 stack frames.
 ./a.out(main+0x9) [0x400923]
 /lib64/libc.so.6(__libc_start_main+0xf5) [0x7f0e5326e555]
 ./a.out() [0x4007b9]
-```
+{% endhighlight %}
 
 
 使用`version-script`控制不导出符号，`symbol.txt`配置为（即，只导出 foo* 开头的符号）：
 
-```
+{% highlight text %}
 {
     global: foo*;
     local: *;
 };
-```
+{% endhighlight %}
 
 编译构建：
 
@@ -2913,7 +2913,7 @@ gcc -rdynamic backtrace.c -Wl,--version-script=symbol.txt
 
 执行结果，只显示了地址信息，而没有符号信息：
 
-```
+{% highlight text %}
 $./a.out
 Obtained 5 stack frames.
 ./a.out() [0x400676]
@@ -2921,19 +2921,19 @@ Obtained 5 stack frames.
 ./a.out() [0x400703]
 /lib64/libc.so.6(__libc_start_main+0xf5) [0x7fbec9745555]
 ./a.out() [0x400599]
-```
+{% endhighlight %}
 
 使用 addr2line 对地址进行翻译：
 
-```
+{% highlight text %}
 $addr2line 0x400676 -f -e a.out
 print_trace
 :?
-```
+{% endhighlight %}
 
 查看 elf 头部信息：
 
-```
+{% highlight text %}
 $readelf -h a.out
 ELF 头：
   Magic：  7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00
@@ -2955,19 +2955,19 @@ ELF 头：
   节头大小：         64 (字节)
   节头数量：         30
   字符串表索引节头： 29
-```
+{% endhighlight %}
 
 注意，在 ubuntu 18.04 上测试上述程序，使用 addr2line 无法翻译地址信息。具体原因可参考：[addr2line not woking on Ubuntu 16.10?](https://stackoverflow.com/questions/41890103/addr2line-not-woking-on-ubuntu-16-10)
 
-```
+{% highlight text %}
 $ addr2line 0x55c43fa639fd -f -e a.out
 ??
 ??:0
-```
+{% endhighlight %}
 
 elf 的头部信息显示：The entry point doesn't start at `0x400000`
 
-```
+{% highlight text %}
 $ readelf -h a.out
 ELF Header:
   Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00
@@ -2989,13 +2989,13 @@ ELF Header:
   Size of section headers:           64 (bytes)
   Number of section headers:         29
   Section header string table index: 28
-```
+{% endhighlight %}
 
 ## LD_DEBUG ./a.out
 
 通过`LD_DEBUG`显示符号链接过程。
 
-```
+{% highlight text %}
 $ LD_DEBUG=all ./prog 2>&1 | grep cout
        919:     symbol=_ZSt5wcout;  lookup in file=./prog [0]
        919:     symbol=_ZSt5wcout;  lookup in file=/lib/x86_64-linux-gnu/libdl.so.2 [0]
@@ -3011,7 +3011,7 @@ $ LD_DEBUG=all ./prog 2>&1 | grep cout
        919:     symbol=_ZSt4cout;  lookup in file=/lib64/ld-linux-x86-64.so.2 [0]
        919:     symbol=_ZSt4cout;  lookup in file=./prog [0]
        919:     binding file ./libbar.so [0] to ./prog [0]: normal symbol `_ZSt4cout'
-```
+{% endhighlight %}
 
 ## df -T (查看文件系统类型)
 
@@ -3023,7 +3023,7 @@ And a maximum path of 4096 characters. Found in [this Unix&Linux SE Question](ht
 
 Although, I did find [this wiki article](https://en.wikipedia.org/wiki/Comparison_of_file_systems) that does not specify a max file path in ext4.
 
-```
+{% highlight text %}
 JLib$df -T
 文件系统                        类型         1K-块      已用       可用 已用% 挂载点
 overlay                         overlay 1048064000 517494544  530569456   50% /
@@ -3040,7 +3040,7 @@ tmpfs                           tmpfs     65716364         0   65716364    0% /p
 tmpfs                           tmpfs     65716364         0   65716364    0% /sys/firmware
 tmpfs                           tmpfs     13143276         0   13143276    0% /run/user/0
 tmpfs                           tmpfs     13143276         0   13143276    0% /run/user/1012
-```
+{% endhighlight %}
 
 ## jq (Command-line JSON processor)
 
@@ -3053,7 +3053,7 @@ https://stedolan.github.io/jq/
 
 ethtool - query or control network driver and hardware settings
 
-```
+{% highlight text %}
 $ethtool eth0
 Settings for eth0:
         Supported ports: [ ]
@@ -3074,47 +3074,47 @@ Settings for eth0:
         MDI-X: Unknown
 Cannot get wake-on-lan settings: Operation not permitted
         Link detected: yes
-```
+{% endhighlight %}
 
 ## yum (CentOS)
 
 查看安装包信息：
 
-```
+{% highlight text %}
 rpm -qa | grep redis
 redis-3.2.10-2.el7.x86_64
-```
+{% endhighlight %}
 
 查看安装包路径：
 
-```
+{% highlight text %}
 rpm -ql redis-3.2.10-2.el7.x86_64
-```
+{% endhighlight %}
 
 ## scl
 
 Setup and run software from Software Collection environment. See: https://linux.die.net/man/1/scl
 
-```
+{% highlight text %}
 scl <action> [<collection1> <collection2> ...] <command>
 scl {-l|--list}
-```
+{% endhighlight %}
 
 ### CentOS 安装 scl 相关工具
 
-```
+{% highlight text %}
 yum install tlinux-release-scl -y
 yum install scl-utils -y
-```
+{% endhighlight %}
 
 安装指定版本 gcc 工具，目前 scl 软件源中有 7/8/9 版本 devtoolset 安装的 gcc 中强制设置了 `_GLIBCXX_USE_CXX11_ABI=0`，如果需要采用 CXX11 ABI 为 1 的方式构建，需要手动修改对应的 `c++config.h` 配置
 
-```
+{% highlight text %}
 devtoolset-8的配置文件路径：/opt/rh/devtoolset-8/root/usr/include/c++/8/x86_64-redhat-linux/bits/c++config.h
 devtoolset-9的配置文件路径：/opt/rh/devtoolset-9/root/usr/include/c++/9/x86_64-redhat-linux/bits/c++config.h
-```
+{% endhighlight %}
 
-```cpp
+{% highlight cpp %}
 # define _GLIBCXX_USE_DUAL_ABI 1  // 将此值从0改为1
 
 #if ! _GLIBCXX_USE_DUAL_ABI
@@ -3125,7 +3125,7 @@ devtoolset-9的配置文件路径：/opt/rh/devtoolset-9/root/usr/include/c++/9/
 #ifndef _GLIBCXX_USE_CXX11_ABI
 # define _GLIBCXX_USE_CXX11_ABI 1  // 将此值从0改为1
 #endif
-```
+{% endhighlight %}
 
 在当前会话中打开新的会话窗口使用 gcc9 开发环境 `scl enable devtoolset-9 /bin/bash`
 在编译脚本中执行时，在执行命令前通过 `source scl_source enable devtoolset-9`
@@ -3133,9 +3133,9 @@ devtoolset-9的配置文件路径：/opt/rh/devtoolset-9/root/usr/include/c++/9/
 
 ## eu-readelf
 
-```
+{% highlight text %}
 Usage: eu-readelf [OPTION...] FILE...
-```
+{% endhighlight %}
 
 Print information from ELF file in human-readable form.
 
@@ -3144,7 +3144,7 @@ Print information from ELF file in human-readable form.
 
 make a hexdump or do the reverse.
 
-```
+{% highlight text %}
 $xxd --help
 Usage:
        xxd [options] [infile [outfile]]
@@ -3165,19 +3165,19 @@ Options:
     -s [+][-]seek  start at <seek> bytes abs. (or +: rel.) infile offset.
     -u          use upper case hex letters.
     -v          show version: "xxd V1.10 27oct98 by Juergen Weigert".
-```
+{% endhighlight %}
 
 ## nfsiostat
 
 `nfsiostat` 是一个用于监视 NFS（Network File System）I/O 性能的命令行工具。它可以显示 NFS 客户端和服务器上的 I/O 统计信息，包括读写操作的数量、传输速率和延迟等。
 
-```bash
+{% highlight bash %}
 sudo yum install nfs-utils
-```
+{% endhighlight %}
 
 显示 NFS 客户端上的 I/O 统计信息，包括读写操作的数量、传输速率和延迟等。
 
-```bash
+{% highlight bash %}
 $nfsiostat
 
 9.134.56.11:/data1/share/tlinux mounted on /tools:
@@ -3188,7 +3188,7 @@ read:            ops/s             kB/s           kB/op         retrans         
                   0.000   0.000 318.509       0 (0.0%)    4.600   5.000
 write:           ops/s             kB/s           kB/op         retrans         avg RTT (ms)    avg exe (ms)
                   0.000   0.000   0.000       0 (0.0%)    0.000   0.000
-```
+{% endhighlight %}
 
 
 ## tcpdump
@@ -3204,7 +3204,7 @@ tcpdump - dump traffic on a network
 
 > 常用选项
 
-```
+{% highlight text %}
 -i     指定监听的网络接口，可以指定为: lo, any, eth0, eth1 等，（`-i lo` 表示只监控网卡 lo 设备，默认是监控第一个网络设备。）
 -n     使用数字形式的 IP 名字，不使用域名
 -s     指定抓包的长度，`-s0` 抓整个数据包
@@ -3217,68 +3217,68 @@ tcpdump - dump traffic on a network
 -tt    打印时每行显示 UNIX 时间戳
 -v     详细显示指令执行过程
 -vv    更详细显示指令执行过程
-```
+{% endhighlight %}
 
 > 常用的组合命令
 
 (1) 捕获指定源地址和目的地址及端口
 
-```bash
+{% highlight bash %}
 tcpdump -Xns0 -i eth1 src 172.27.198.179 and dst 10.130.73.95 and dst port 30007 -c10
-```
+{% endhighlight %}
 
 (2) 捕获不区分源地址和目的地址
 
-```bash
+{% highlight bash %}
 tcpdump -Xns0 -i eth1 host 172.27.198.179 and 10.130.73.95 and  port 30007 -c10
-```
+{% endhighlight %}
 
 (3) 只捕获本机指定端口的数据包
 
-```bash
+{% highlight bash %}
 tcpdump -Xns0 -i eth1 port 30007
-```
+{% endhighlight %}
 
 (4) 捕获所有172.27.198.179的主机收到的和发出的所有的数据包
 
-```bash
+{% highlight bash %}
 tcpdump host 172.27.198.179
-```
+{% endhighlight %}
 
 (5) 捕获（在任意网卡）指定地址和端口的数据包
 
-```bash
+{% highlight bash %}
 tcpdump -i any -Xns0  host 172.27.198.179 and port 30007 -c 10
-```
+{% endhighlight %}
 
 (6) 捕获主机172.27.198.179和主机172.27.198.169或10.130.73.95的数据包，注意在命令行中适用括号时，一定要转义
 
-```bash
+{% highlight bash %}
 tcpdump host 172.27.198.179 and \ (172.27.198.169 or 10.130.73.95\) and port 30007 -c10
-```
+{% endhighlight %}
 
 (7) 捕获主机172.27.198.179除了和主机10.130.73.95之外所有主机通信的IP数据包，注意!后面要有一个空格
 
-```bash
+{% highlight bash %}
 tcpdump ip host 172.27.198.179 and ! 10.130.73.95
-```
+{% endhighlight %}
 
 (8) 捕获主机172.27.198.179接收或发出的telnet数据包
 
-```bash
+{% highlight bash %}
 tcpdump tcp port 23 and host 172.27.198.179
-```
+{% endhighlight %}
 
 (9) 将捕获的数据包保存在文件中，进行后续分析
 
-```bash
+{% highlight bash %}
 tcpdump -Xns0 host 172.27.198.179 -w 179.cap
 tcpdump -r 179.cap
-```
+{% endhighlight %}
 
 (10) 只显示具体的协议，不显示包体内容
 
-```bash
+{% highlight bash %}
 # -S 打印 TCP 数据包的顺序号时，使用绝对的顺序号，而不是相对的顺序号
 # -nn 表示不进行端口到名称的转换
 # -vvv 表示产生尽可能详细的协议输出
@@ -3286,27 +3286,27 @@ tcpdump -r 179.cap
 # port 6888 表示只监控端口 6888 的相关监控数据，包括从 6888 端口接收和从 6888 端口发送的报文
 
 tcpdump -S -nn -vvv -i lo port 6888
-```
+{% endhighlight %}
 
 (11) 将 tcpdump 的输出保存到文件，记录 3 分钟的数据
 
-```bash
+{% highlight bash %}
 tcpdump -Xns0 -iany port 4318 -w output.pcap &
 sleep 30
 
 # $!是一个特殊的shell变量，表示最后一个后台进程的PID
 kill $!
-```
+{% endhighlight %}
 
 (12) 查看 output.pcap 的二进制内容
 
 方法1: 使用 tcpdump 查看
 
-```bash
+{% highlight bash %}
 # -r file
 #    Read packets from file (which was created with the -w option or by other tools that write pcap or pcap-ng files).  Standard input is used if file is ``-''.
 tcpdump -r output.pcap
-```
+{% endhighlight %}
 
 方法2: 使用 Wireshark 查看
 
@@ -3318,10 +3318,10 @@ A terminal UI for tshark, inspired by Wireshark
 
 https://github.com/gcla/termshark
 
-```bash
+{% highlight bash %}
 # 安装依赖
 yum install wireshark
-```
+{% endhighlight %}
 
 ![termshark](/assets/images/202409/termshark.png)
 
@@ -3344,52 +3344,52 @@ yum install wireshark
 
 在本地启动一个监听 TCP 端口 `8080` 的 `netcat` 服务，并将接收到的数据输出到终端
 
-```bash
+{% highlight bash %}
 nc -l 8080
-```
+{% endhighlight %}
 
 在本地计算机上启动一个监听 TCP 端口 `8080` 的 `netcat` 服务，并将接收到的数据保存到名为 `received_data.txt` 的文件
 
-```bash
+{% highlight bash %}
 nc -l 8080 > received_data.txt
-```
+{% endhighlight %}
 
 返回指定的应答内容
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 nc -l 8080 < response.txt
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 HTTP/1.1 200 OK
 Content-Type: text/plain
 Content-Length: 29
 
 {"rsp": {"switch_status": 2}}
-```
+{% endhighlight %}
 
 
 连接到名为 `remote.host.com` 的远程主机上的 TCP 端口 `8080`，并向其发送字符串 `"Hello, World!"`
 
-```bash
+{% highlight bash %}
 echo "Hello, World!" | nc remote.host.com 8080
-```
+{% endhighlight %}
 
 将连接到名为 `remote.host.com` 的远程主机上的 TCP 端口 `8080`，并从名为 `data_to_send.txt` 的文件中读取数据并将其发送到远程主机
 
-```bash
+{% highlight bash %}
 nc remote.host.com 8080 < data_to_send.txt
-```
+{% endhighlight %}
 
 
 ## ldconfig
 
 列出系统中已安装的所有动态库及其版本信息
 
-```bash
+{% highlight bash %}
 ldconfig -p
-```
+{% endhighlight %}
 
 ## rsync
 
@@ -3397,7 +3397,7 @@ ldconfig -p
 
 rsync works like this:
 
-```
+{% highlight text %}
 1. Build a file-list of the source location.
 
 2. For all files in the source location:
@@ -3407,7 +3407,7 @@ rsync works like this:
   c. If they differ, copy the file from the source to the destination
 
 Done.
-```
+{% endhighlight %}
 
 * https://stackoverflow.com/questions/38293783/why-is-rsync-so-slow
 * https://docs.oracle.com/en-us/iaas/Content/File/Troubleshooting/rsync_is_slow_copying_files.htm
@@ -3416,11 +3416,11 @@ Done.
 
 ### 按文件层级拷贝文件
 
-```bash
+{% highlight bash %}
 # 将 /a/b/file.txt 文件保持目录层级复制到 tmp 目录下
 mkdir -p tmp
 rsync -avz --relative ./a/b/file.txt tmp
-```
+{% endhighlight %}
 
 * `-avz` 选项表示以归档模式拷贝文件，保留文件属性和权限
 * `--relative` 选项表示保持相对路径结构
@@ -3431,7 +3431,7 @@ rsync -avz --relative ./a/b/file.txt tmp
 
 可以使用 rsync 命令来实现这个需求。rsync 是一个在本地和远程之间进行文件和目录同步的工具，可以根据文件的修改时间和内容来决定是否拷贝。
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # 源目录
@@ -3441,7 +3441,7 @@ dst_dir="/path/to/destination/"
 
 # 使用rsync命令进行同步
 rsync -av --update "${src_dir}" "${dst_dir}"
-```
+{% endhighlight %}
 
 在这个脚本中，使用了以下 rsync 选项：
 
@@ -3461,7 +3461,7 @@ bpftrace is a high-level tracing language for Linux enhanced Berkeley Packet Fil
 
 EXAMPLES
 
-```
+{% highlight text %}
 bpftrace -l '*sleep*'
         List probes containing "sleep".
 
@@ -3473,7 +3473,7 @@ bpftrace -c 'sleep 5' -e 'kprobe:do_nanosleep { printf("PID %d sleeping\n", pid)
 
 bpftrace -e 'tracepoint:raw_syscalls:sys_enter { @[comm]=count(); }'
         Count syscalls by process name.
-```
+{% endhighlight %}
 
 FURTHER READING
 
@@ -3483,13 +3483,13 @@ The official documentation can be found here: https://github.com/iovisor/bpftrac
 
 true - do nothing, successfully
 
-```
+{% highlight text %}
 $ which true
 /bin/true
 $ true
 $ echo $?
 0
-```
+{% endhighlight %}
 
 ## command -v
 
@@ -3497,18 +3497,18 @@ $ echo $?
 
 当使用`command -v`查询一个命令时，如果该命令存在于系统中，它会输出该命令的路径；如果命令不存在，它不会输出任何内容。
 
-```bash
+{% highlight bash %}
 # Check if Bazelisk is already installed
 if command -v bazel &> /dev/null; then
     echo "Bazelisk is already installed, version: $(bazel --version)"
 else
     echo "Installing Bazelisk version ${BAZELISK_VERSION}..."
 fi
-```
+{% endhighlight %}
 
 ## 使用`LD_DEBUG`环境变量查看某程序加载so的过程
 
-```
+{% highlight text %}
 # 查看帮助
 LD_DEBUG=help ./bin
 
@@ -3517,22 +3517,22 @@ LD_DEBUG=libs ./bin
 
 # 将信息输出到log中
 LD_DEBUG=libs LD_DEBUG_OUTPUT=log ./bin
-```
+{% endhighlight %}
 
 ## errno
 
 在 Linux 中可以通过 `errno` 命令来查看错误码对应的错误信息，在 centos 系统中可以通过下面方式安装。
 
-```bash
+{% highlight bash %}
 yum install moreutils
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ errno 11
 EAGAIN 11 Resource temporarily unavailable
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ errno -l
 EPERM 1 Operation not permitted
 ENOENT 2 No such file or directory
@@ -3668,21 +3668,21 @@ ENOTRECOVERABLE 131 State not recoverable
 ERFKILL 132 Operation not possible due to RF-kill
 EHWPOISON 133 Memory page has hardware error
 ENOTSUP 95 Operation not supported
-```
+{% endhighlight %}
 
 C标准 定义了两个函数，用于打印出错信息：
 
-```cpp
+{% highlight cpp %}
 char *strerror(int errnum);
 void perror(const char *s);
-```
+{% endhighlight %}
 
 * `strerror` 返回指向消息字符串的指针。strerror 函数将 errnum（通常就是 errno 值）映射为一个出错信息字符串，并且返回此字符串的指针。（可以用于自己的日志函数）
 * `perror` 函数基于 errno 的当前值，在标准出错上产生一条出错消息，然后返回。它首先输出由 s 指向的字符串（用户自己定义的信息），然后是一个冒号，一个空格，接着是对应于 errno 值的错误信息，最后是一个换行符（仅用于标准输出）
 
 下面代码用于显示 errno 对应的错误信息：
 
-```cpp
+{% highlight cpp %}
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -3768,17 +3768,17 @@ int main()
 first setsockopt() worked
 second setsockopt() worked
 */
-```
+{% endhighlight %}
 
 ## nproc
 
-```bash
+{% highlight bash %}
 # 显示当前进程可用的CPU数量
 nproc
 
 # 显示所有CPU数量
 nproc --all
-```
+{% endhighlight %}
 
 
 # 第三方工具
@@ -3806,16 +3806,16 @@ GNU parallel can work similar to `xargs -n1`.
 
 To compress all html files using `gzip` run:
 
-```bash
+{% highlight bash %}
 find . -name '*.html' | parallel gzip --best
-```
+{% endhighlight %}
 > Reading arguments from command line
 
 GNU `parallel` can take the arguments from command line instead of `stdin` (standard input). To compress all html files in the current dir using `gzip` run:
 
-```bash
+{% highlight bash %}
 parallel gzip --best ::: *.html
-```
+{% endhighlight %}
 
 > Running full commands in parallel
 
@@ -3823,55 +3823,55 @@ If there is no command given to GNU parallel, then the arguments are treated as 
 
 To run `gzip foo` and `bzip2 bar` in parallel run:
 
-```bash
+{% highlight bash %}
 parallel ::: "gzip foo" "bzip2 bar"
-```
+{% endhighlight %}
 
 or:
 
-```bash
+{% highlight bash %}
 (echo "gzip foo"; echo "bzip2 bar") | parallel
-```
+{% endhighlight %}
 
 > Inserting multiple arguments
 
 When moving a lot of files like this: `mv *.log destdir` you will sometimes get the error:
 
-```
+{% highlight text %}
 bash: /bin/mv: Argument list too long
-```
+{% endhighlight %}
 
 because there are too many files. You can instead do:
 
-```bash
+{% highlight bash %}
 ls | grep -E '\.log$' | parallel mv {} destdir
-```
+{% endhighlight %}
 
 This will run mv for each file. It can be done faster if mv gets as many arguments that will fit on the line:
 
-```bash
+{% highlight bash %}
 ls | grep -E '\.log$' | parallel -m mv {} destdir
-```
+{% endhighlight %}
 
 > Composed commands
 
 A job can consist of several commands. This will print the number of files in each directory:
 
-```bash
+{% highlight bash %}
 # 查看当前目录的文件个数，不包括子目录
 ls | parallel --no-notice 'echo -n {}" "; ls {}|wc -l'
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 # 查看当前目录的文件个数，包括子目录
 ls | parallel --no-notice 'echo -n {}" "; find {} -type f |wc -l'
-```
+{% endhighlight %}
 
 > Function tester
 
 To test a program with different parameters:
 
-```bash
+{% highlight bash %}
 tester() {
   if (eval "$@") >&/dev/null; then
     perl -e 'printf "\033[30;102m[ OK ]\033[0m @ARGV\n"' "$@"
@@ -3882,7 +3882,7 @@ tester() {
 export -f tester
 parallel tester my_program ::: arg1 arg2
 parallel tester exit ::: 1 0 2 0
-```
+{% endhighlight %}
 
 If `my_program` fails a red FAIL will be printed followed by the failing command; otherwise a green OK will be printed followed by the command.
 
@@ -3891,20 +3891,20 @@ If `my_program` fails a red FAIL will be printed followed by the failing command
 
 Log rotation renames a logfile to an extension with a higher number: log.1 becomes log.2, log.2 becomes log.3, and so on. The oldest log is removed. To avoid overwriting files the process starts backwards from the high number to the low number. This will keep 10 old versions of the log:
 
-```bash
+{% highlight bash %}
 seq 9 -1 1 | parallel -j1 mv log.{} log.'{= $_++ =}'
 mv log log.1
-```
+{% endhighlight %}
 
 > Simple network scanner
 
 `prips` can generate IP-addresses from CIDR notation. With GNU `parallel` you can build a simple network scanner to see which addresses respond to `ping`:
 
-```bash
+{% highlight bash %}
 prips 130.229.16.0/20 | \
   parallel --timeout 2 -j0 \
     'ping -c 1 {} >/dev/null && echo {}' 2>/dev/null
-```
+{% endhighlight %}
 
 #### 用法建议
 
@@ -3912,9 +3912,9 @@ prips 130.229.16.0/20 | \
 
 例如：
 
-```bash
+{% highlight bash %}
 ls | parallel --no-notice 'echo -n {}" "; find {} -type f | wc -l'
-```
+{% endhighlight %}
 
 > Tips2: parallel命令有一个 --dry-run 选项，可以打印出实际执行的命令，而不是真正执行它们
 
@@ -3922,13 +3922,13 @@ ls | parallel --no-notice 'echo -n {}" "; find {} -type f | wc -l'
 
 > Tips3: --eta 参数用于显示估计的剩余时间
 
-```
+{% highlight text %}
 Computers / CPU cores / Max jobs to run
 1:local / 48 / 48
 
 Computer:jobs running/jobs completed/%of started jobs/Average seconds to complete
 ETA: 0s Left: 3 AVG: 0.00s  local:3/411/100%/0.0s
-```
+{% endhighlight %}
 
 以上信息输出的含义：
 
@@ -3952,7 +3952,7 @@ atop 工具在 `/var/log/atop` 中创建日志文件。这些文件以下列格�
 
 要访问日志文件，请运行命令 `atop -r atoplogfilepath`。将 atoplogfilepath 替换为 atop 日志文件的完整路径。命令和日志文件如以下示例所示：
 
-```
+{% highlight text %}
 atop -r /var/log/atop/atop_20210902
 
 ATOP - ip-172-20-139-91                2021/09/02  17:03:44                ----------------                 3h33m7s elapsed
@@ -3960,17 +3960,17 @@ PRC |  sys    6.51s  |  user   7.85s  |  #proc    103  |  #tslpi    81 |  #tslpu
 CPU |  sys     0%  |  user      3%  |  irq       0%  |  idle    197% |  wait      0%  |  ipc notavail  |  curscal   ?%  |
 cpu |  sys     0%  |  user      1%  |  irq       0%  |  idle     98% |  cpu000 w  0%  |  ipc notavail  |  curscal   ?%  |
 cpu |  sys     0%  |  user      1%  |  irq       0%  |  idle     98% |  cpu001 w  0%  |  ipc notavail  |  curscal   ?%  |
-```
+{% endhighlight %}
 
 在前面的输出示例中，第一个记录的快照是在 `2021/09/02 17:03:44`。要前进到下一个快照，请按键盘上的 `t` 键（小写）。要返回到上一个快照，请按 `T` 键（大写）。
 
 要分析特定时隙，请按 `b` 键，然后输入日期和时间。atop 工具会跳到输入新时间变量中指定的时间：
 
-```
+{% highlight text %}
 NET |  lo      ----  |  pcki       2  |  pcko       2  |  sp    0 Mbps |  si    0 Kbps  |  so    0 Kbps  |  erro       0  |
 Enter new time (format [YYYYMMDD]hhmm):
   PID              TID              RDDSK              WRDSK             WCANCL              DSK             CMD        1/4
-```
+{% endhighlight %}
 
 可以按快捷键查看不同的统计数据：
 
@@ -3997,11 +3997,11 @@ Enter new time (format [YYYYMMDD]hhmm):
 
 
 
-```
+{% highlight text %}
 yum install atop
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 Usage: atop [-flags] [interval [samples]]
                 or
 Usage: atop -w  file  [-S] [-a] [interval [samples]]
@@ -4060,43 +4060,43 @@ forced manually by sending signal USR1 (kill -USR1 pid_atop)
 or with the keystroke 't' in interactive mode.
 
 Please refer to the man-page of 'atop' for more details.
-```
+{% endhighlight %}
 
 * 创建 atop 日志存储目录
 
-```
+{% highlight text %}
 mkdir ~/atop_data
-```
+{% endhighlight %}
 
 * 以下是 atop 的默认配置，可以调整 atop 监控周期，默认 600s 采集一次
 
-```
+{% highlight text %}
 $ cat /etc/sysconfig/atop
 LOGOPTS=""
 LOGINTERVAL=600
 LOGGENERATIONS=28
 LOGPATH=/var/log/atop
-```
+{% endhighlight %}
 
 * 使能和重启 atop
 
-```
+{% highlight text %}
 systemctl enable atop.serivce
 systemctl restart atop.service
-```
+{% endhighlight %}
 
 * 查看日志方法
 
-```
+{% highlight text %}
 atop -r atop_20230827
-```
+{% endhighlight %}
 
 * 如何防止 atop.acct 文件过大
 
 方法1: 调整 atop 配置。如果可能，可以调整 atop 的配置，减少采样频率或者采样的信息量，以减少进程记账文件的大小。
 方法2: 监控文件大小。可以创建一个简单的脚本，定期检查 atop.acct 文件的大小。如果文件大小超过预设的阈值，可以清空文件。例如：实现下面的脚本 check_atop_acct.sh，并通过 cron 定时执行此脚本。
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 FILE="/var/cache/atop.d/atop.acct"
 MAX_SIZE=$((200 * 1024 * 1024)) # 设定最大文件大小为 200 MiB
@@ -4107,7 +4107,7 @@ if ((file_size > MAX_SIZE)); then
     echo "atop.acct 文件过大，清空文件"
     echo -n > "$FILE"
 fi
-```
+{% endhighlight %}
 
 
 refer:
@@ -4124,7 +4124,7 @@ atopsar 命令使用颜色编码和（根据要求）标记来突出显示资源
 
 在以下示例中，使用标志 `-c` 生成有关系统当前 CPU 利用率的报告。以下示例显示了两个结果，相隔一秒钟。
 
-```
+{% highlight text %}
 $ atopsar -c 1 2
 
 ip-172-20-139-91  4.14.238-182.422.amzn2.x86_64  #1 SMP Tue Jul 20 20:35:54 UTC 2021  x86_64  2021/09/02
@@ -4138,7 +4138,7 @@ ip-172-20-139-91  4.14.238-182.422.amzn2.x86_64  #1 SMP Tue Jul 20 20:35:54 UTC 
 18:50:18  all     0     0    0    0        0       0      0      0   200
             0     0     0    0    0        0       0      0      0   100
             1     0     0    0    0        0       0      0      0   100
-```
+{% endhighlight %}
 
 
 
@@ -4159,7 +4159,7 @@ zlib is designed to be a free, general-purpose, legally unencumbered -- that is,
 
 `Zstandard`, or `zstd` as short version, is a fast lossless compression algorithm, targeting real-time compression scenarios at zlib-level and better compression ratios. It's backed by a very fast entropy stage, provided by [Huff0 and FSE library](https://github.com/Cyan4973/FiniteStateEntropy).
 
-```
+{% highlight text %}
 $./zstd -h
 Compress or decompress the INPUT file(s); reads from STDIN if INPUT is `-` or not provided.
 
@@ -4185,7 +4185,7 @@ Options:
   -h                            Display short usage and exit.
   -H, --help                    Display full help and exit.
   -V, --version                 Display the program version and exit.
-```
+{% endhighlight %}
 
 [Benchmarks](https://github.com/facebook/zstd#benchmarks)
 
@@ -4196,9 +4196,9 @@ Options:
 
 `.gz` is a gzipped file and is not related to `tar`. To unzip a gzipped file you use the `gunzip` command.
 
-```bash
+{% highlight bash %}
 gunzip filename.vw.gz
-```
+{% endhighlight %}
 
 https://stackoverflow.com/questions/50625441/how-to-unzip-a-vw-gz-file-in-linux
 
@@ -4221,13 +4221,13 @@ A tool for showing disk usage. (Linux, MacOS and Windows)
 
 https://github.com/chenquan/diskusage
 
-```
+{% highlight text %}
 $diskusage .
 Total: 4.514M   /data/home/gerryyang/tools/diskusage
 -------------------------------------------------------------
  4.5M  99.9% ┌─ diskusage
  2.7K   0.1% └─ README.md
-```
+{% endhighlight %}
 
 
 
@@ -4249,7 +4249,7 @@ The DNS subsystem provides a local DNS server for the network, with forwarding o
 
 用法示例：
 
-```
+{% highlight text %}
 passwd:         compat
 group:          compat
 shadow:         compat
@@ -4263,7 +4263,7 @@ ethers:         db files
 rpc:            db files
 
 netgroup:       nis
-```
+{% endhighlight %}
 
 * `passwd: compat`、`group: compat` 和 `shadow: compat` 字段定义了在解析用户、组和阴影密码方面使用`/etc/passwd`、`/etc/group` 和 `/etc/shadow` 文件中的兼容信息。
 * `hosts: files dns` 表示在解析主机名时，首先查看 `/etc/hosts` 文件，然后再查询 DNS 服务器。
@@ -4285,12 +4285,12 @@ netgroup:       nis
 
 用法示例：
 
-```
+{% highlight text %}
 nameserver 8.8.8.8
 nameserver 8.8.4.4
 search example.com example.org
 options timeout:2 attempts:3
-```
+{% endhighlight %}
 
 * 第一行和第二行定义了两个 DNS 服务器。它们分别使用了 Google 公共 DNS 服务器的 IP 地址 8.8.8.8 和 8.8.4.4。解析器将首先查询第一个服务器，在查询失败的情况下尝试第二个服务器。
 * 第三行表示非 FQDN 查询时，系统将按顺序尝试在 example.com 和 example.org 两个域中查找。
@@ -4311,10 +4311,10 @@ options timeout:2 attempts:3
 
 用法示例：
 
-```
+{% highlight text %}
 127.0.0.1   localhost
 192.168.1.1 myserver.example.com myserver
-```
+{% endhighlight %}
 
 * 第一行将 IP 地址 127.0.0.1 映射到主机名 localhost，它表示当前设备。
 * 第二行将 IP 地址 192.168.1.1 映射到主机名 myserver.example.com 和 myserver。在这种情况下，myserver.example.com 是完全限定域名（FQDN），而 myserver 是一个简称，可以在解析这个 IP 地址时使用。
@@ -4342,9 +4342,9 @@ This is not a comprehensive list of all utilities that existed in the various hi
 
 ## ls 根据文件大小倒序排序
 
-```bash
+{% highlight bash %}
 ls -lSh
-```
+{% endhighlight %}
 
 ls 命令用于列出目录内容。
 -l 选项表示以长格式输出文件信息。
@@ -4383,9 +4383,9 @@ I haven't done development on Windows, but perhaps you could get further details
 
 I received a `SIGTRAP` from my debugger and found out that the cause was due to a missing return value.
 
-```cpp
+{% highlight cpp %}
 string getName() { printf("Name!");};
-```
+{% endhighlight %}
 
 * [How can I find out the root cause of SIGTRAP core dump of GDB](https://stackoverflow.com/questions/60387440/how-can-i-find-out-the-root-cause-of-sigtrap-core-dump-of-gdb)
 
@@ -4393,7 +4393,7 @@ My app is randomly (once a day) crashed and I have tried several ways to find ou
 
 GDB output when my app crashed
 
-```
+{% highlight text %}
 [Thread debugging using libthread_db enabled]
     Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
     Core was generated by `/home/greystone/myapp/myapp'.
@@ -4410,7 +4410,7 @@ GDB output when my app crashed
     #3  0x00007f5d3a42cab3 in g_main_context_new () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
     No symbol table info available.
     #4  0x00007f5d3f4894c9 in QEventDispatcherGlibPrivate::QEventDispatcherGlibPrivate(_GMainContext*) () from /opt/Qt5.9.2/5.9.2/gcc_64/lib/libQt5Core.so.5
-```
+{% endhighlight %}
 
 Solutions I have tried
 

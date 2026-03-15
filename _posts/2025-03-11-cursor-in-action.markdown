@@ -379,7 +379,7 @@ The `.cursorignore` file uses pattern matching syntax identical to that used in 
 
 Basic Pattern Examples
 
-```bash
+{% highlight bash %}
 # Ignore specific file `config.json`
 config.json
 
@@ -388,11 +388,11 @@ dist/
 
 # Ignore all files with a `.log` extension
 *.log
-```
+{% endhighlight %}
 
 Advanced Pattern Examples
 
-```bash
+{% highlight bash %}
 # Ignore entire codebase
 *
 
@@ -401,7 +401,7 @@ Advanced Pattern Examples
 
 # Ignores logs directories in any directory
 **/logs
-```
+{% endhighlight %}
 
 ### New models
 
@@ -752,16 +752,16 @@ Cursor 启动时，会自动从技能目录中发现并加载技能，并将它�
 
 每个技能应为一个包含 `SKILL.md` 文件的文件夹：
 
-```bash
+{% highlight bash %}
 .cursor/
 └── skills/
     └── my-skill/
         └── SKILL.md
-```
+{% endhighlight %}
 
 技能还可以包含脚本、参考文件和资源等可选目录：
 
-```bash
+{% highlight bash %}
 .cursor/
 └── skills/
     └── deploy-app/
@@ -773,13 +773,13 @@ Cursor 启动时，会自动从技能目录中发现并加载技能，并将它�
         │   └── REFERENCE.md
         └── assets/
             └── config-template.json
-```
+{% endhighlight %}
 
 ### SKILL.md 文件格式
 
 每个 Skill 都在带有 YAML 前置信息（frontmatter）的 `SKILL.md` 文件中定义：
 
-```markdown
+{% highlight markdown %}
 ---
 name: my-skill
 description: 简要描述此技能的功能及使用时机。
@@ -800,7 +800,7 @@ description: 简要描述此技能的功能及使用时机。
 - 特定领域的约定
 - 最佳实践和模式
 - 如需向用户澄清需求,请使用提问工具
-```
+{% endhighlight %}
 
 > Frontmatter 字段
 
@@ -815,7 +815,7 @@ description: 简要描述此技能的功能及使用时机。
 
 技能可以包含 `scripts/` 目录，内含可由代理运行的可执行代码。在 `SKILL.md` 文件中使用相对于技能根目录的相对路径引用这些脚本。
 
-```markdown
+{% highlight markdown %}
 ---
 name: deploy-app
 description: 将应用部署到预发布或生产环境。在部署代码时使用,或当用户提及部署、发布或环境时使用。
@@ -834,7 +834,7 @@ Where `<environment>` is either `staging` or `production`.
 ## Pre-deployment Validation
 
 Before deploying, run the validation script: `python scripts/validate.py`
-```
+{% endhighlight %}
 
 当技能被调用时，agent 会读取这些指令并执行引用的脚本。脚本可以使用任何语言编写，例如 Bash、Python、JavaScript，或 agent 实现所支持的任何其他可执行格式。
 
@@ -895,13 +895,13 @@ Agent Skills 是一项开放标准。详见 [agentskills.io](https://agentskills
 
 借助 Cursor CLI，你可以直接在终端与 AI 代理交互，以编写、审阅和修改代码。无论你偏好交互式终端界面，还是为脚本与 CI 流水线进行输出式自动化，CLI 都能在你的工作环境中提供强大的编码协助。
 
-```bash
+{% highlight bash %}
 # 安装
 curl https://cursor.com/install -fsS | bash
 
 # 运行交互式会话
 agent
-```
+{% endhighlight %}
 
 ![cursor_cli](/assets/images/202601/cursor_cli.png)
 
@@ -917,25 +917,25 @@ agent
 
 与代理开启对话会话，用于阐述你的目标、审阅建议的更改并批准命令：
 
-```bash
+{% highlight bash %}
 # 启动交互式会话
 agent
 
 # 使用初始提示启动
 agent "重构认证模块以使用 JWT 令牌"
-```
+{% endhighlight %}
 
 ### 非交互模式
 
 在脚本、CI 流水线或自动化等非交互场景下使用打印模式：
 
-```bash
+{% highlight bash %}
 # 使用特定提示和模型运行
 agent -p "find and fix performance issues" --model "gpt-5"
 
 # 包含 git 变更以供审查
 agent -p "review these changes for security issues" --output-format text
-```
+{% endhighlight %}
 
 
 ### 模式
@@ -949,10 +949,10 @@ agent -p "review these changes for security issues" --output-format text
 
 将你的对话推送到 [Cloud Agent](https://cursor.com/docs/cloud-agent)，让其在你离开时继续运行。在任意消息前加上 `&` 即可：
 
-```bash
+{% highlight bash %}
 # 向 Cloud Agent 发送任务
 & refactor the auth module and add comprehensive tests
-```
+{% endhighlight %}
 
 在网页或移动端访问 [cursor.com/agents](https://cursor.com/agents)，继续处理你的 Cloud Agent 任务。
 
@@ -961,7 +961,7 @@ agent -p "review these changes for security issues" --output-format text
 
 继续之前的对话，在多次交互中保持上下文：
 
-```bash
+{% highlight bash %}
 # List all previous chats
 agent ls
 
@@ -970,7 +970,7 @@ agent resume
 
 # 恢复指定对话
 agent --resume="chat-id-here"
-```
+{% endhighlight %}
 
 
 ## [子代理](https://cursor.com/cn/docs/context/subagents)
@@ -1054,7 +1054,7 @@ Composer-1 模型使用分析：
 
 
 
-```python
+{% highlight python %}
 # Sample data
 SAMPLE_DATA = """Date,Kind,Model,Max Mode,Input (w/ Cache Write),Input (w/o Cache Write),Cache Read,Output Tokens,Total Tokens,Cost
 2025-12-02T01:46:34.592Z,Included,auto,No,21865,0,68608,3043,93516,0.06
@@ -1062,7 +1062,7 @@ SAMPLE_DATA = """Date,Kind,Model,Max Mode,Input (w/ Cache Write),Input (w/o Cach
 2025-12-01T12:56:34.058Z,Included,auto,No,136654,0,853248,26477,1016379,0.54
 2025-12-01T12:49:10.345Z,Included,auto,No,26323,0,190720,4617,221660,0.11
 """
-```
+{% endhighlight %}
 
 各字段说明：
 
@@ -1143,7 +1143,7 @@ Cache Read - 从缓存读取
 
 执行过程示例：
 
-```
+{% highlight text %}
 用户提问： "优化这段排序算法代码"
 ↓
 Cursor 检查缓存：
@@ -1158,7 +1158,7 @@ Cursor 检查缓存：
 如果是缓存命中：
    - `Cache Read` 增加
    - `Input (w/ Cache Write)` 为 0
-```
+{% endhighlight %}
 
 ## Cost 成本计算公式
 
@@ -1216,12 +1216,12 @@ Cursor 中的每个对话都有自己的上下文窗口。在一次会话中，�
 * 包括：**输入 + 输出的总和**
 * 就像模型的工作内存或短期记忆
 
-```
+{% highlight text %}
 模型实际处理的上下文大小 =
     Input (w/ Cache Write) +
     Input (w/o Cache Write) +
     Output Tokens
-```
+{% endhighlight %}
 
 > 注意：
 >
@@ -1244,7 +1244,7 @@ Cursor 中的每个对话都有自己的上下文窗口。在一次会话中，�
 
 **在 Cursor 中的体现：**
 
-```
+{% highlight text %}
 你的请求结构：
 ┌─────────────────────────────────────┐
 │ 系统提示 (System Prompt): ~2k tokens │
@@ -1254,7 +1254,7 @@ Cursor 中的每个对话都有自己的上下文窗口。在一次会话中，�
 │ 模型回答: ~10k tokens                │
 └─────────────────────────────────────┘
 总计：~113k tokens < 200k
-```
+{% endhighlight %}
 
 **上下文窗口的影响：**
 
@@ -1270,10 +1270,10 @@ Cursor 中的每个对话都有自己的上下文窗口。在一次会话中，�
 
 * 复杂任务处理
 
-```bash
+{% highlight bash %}
 # 可以一次性要求：
 "分析整个项目的架构，找出性能瓶颈，然后为每个模块提供优化建议"
-```
+{% endhighlight %}
 
 **潜在问题**
 

@@ -120,9 +120,9 @@ Persistent Installation (Recommended)
 
 Install once and use everywhere:
 
-```bash
+{% highlight bash %}
 uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
-```
+{% endhighlight %}
 
 > uv: An extremely fast Python package manager
 
@@ -131,10 +131,10 @@ uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 
 Then use the tool directly:
 
-```bash
+{% highlight bash %}
 specify init <PROJECT_NAME>
 specify check
-```
+{% endhighlight %}
 
 ![speckit3](/assets/images/202511/speckit3.png)
 
@@ -144,9 +144,9 @@ specify check
 
 To upgrade Specify, see the [Upgrade Guide](https://github.com/github/spec-kit/blob/main/docs/upgrade.md) for detailed instructions. Quick upgrade:
 
-```bash
+{% highlight bash %}
 uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git
-```
+{% endhighlight %}
 
 
 ### Establish project principles
@@ -155,41 +155,41 @@ Launch your AI assistant in the project directory. The `/speckit.*` commands are
 
 Use the `/speckit.constitution` command to **create your project's governing principles and development guidelines that will guide all subsequent development**.
 
-```bash
+{% highlight bash %}
 /speckit.constitution Create principles focused on code quality, testing standards, user experience consistency, and performance requirements
-```
+{% endhighlight %}
 
 ### Create the spec
 
 Use the `/speckit.specify` command to **describe what you want to build. Focus on the what and why, not the tech stack**.
 
-```bash
+{% highlight bash %}
 /speckit.specify Build an application that can help me organize my photos in separate photo albums. Albums are grouped by date and can be re-organized by dragging and dropping on the main page. Albums are never in other nested albums. Within each album, photos are previewed in a tile-like interface.
-```
+{% endhighlight %}
 
 ### Create a technical implementation plan
 
 Use the `/speckit.plan` command to **provide your tech stack and architecture choices**.
 
-```bash
+{% highlight bash %}
 /speckit.plan The application uses Vite with minimal number of libraries. Use vanilla HTML, CSS, and JavaScript as much as possible. Images are not uploaded anywhere and metadata is stored in a local SQLite database.
-```
+{% endhighlight %}
 
 ### Break down into tasks
 
 Use `/speckit.tasks` to **create an actionable task list from your implementation plan**.
 
-```bash
+{% highlight bash %}
 /speckit.tasks
-```
+{% endhighlight %}
 
 ### Execute implementation
 
 Use `/speckit.implement` to **execute all tasks and build your feature according to the plan**.
 
-```bash
+{% highlight bash %}
 /speckit.implement
-```
+{% endhighlight %}
 
 
 For detailed step-by-step instructions, see our [comprehensive guide](https://github.com/github/spec-kit/blob/main/spec-driven.md).
@@ -261,10 +261,10 @@ Crucially, your role isn’t just to steer. It’s to verify. At each phase, you
 Setting it up is straightforward. First, install the `specify` command-line tool. This tool initializes your project and sets up the necessary structure.
 
 
-```bash
+{% highlight bash %}
 uvx --from git+https://github.com/github/spec-kit.git
 specify init <PROJECT_NAME>
-```
+{% endhighlight %}
 
 Once your project is initialized, use the `/specify` command to provide a high-level prompt, and the coding agent generates the full spec. Focus on the “what” and “why” of your project, not the technical details.
 

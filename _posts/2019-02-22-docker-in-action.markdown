@@ -57,9 +57,9 @@ Docker底层是基于成熟的`Linux Container(LXC)`技术实现。自Docker 0.9
 
 https://docs.docker.com/engine/reference/commandline/build/
 
-```bash
+{% highlight bash %}
 docker build -t vieux/apache:2.0 .
-```
+{% endhighlight %}
 
 # 容器指标
 
@@ -69,7 +69,7 @@ docker build -t vieux/apache:2.0 .
 # 测试使用 (CentOS)
 
 
-```
+{% highlight text %}
 $docker version
 Client:
  Version:           18.09.7
@@ -89,9 +89,9 @@ Server: Docker Engine - Community
   Built:            Thu Jun 27 17:26:28 2019
   OS/Arch:          linux/amd64
   Experimental:     false
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $docker info
 Containers: 0
  Running: 0
@@ -144,14 +144,14 @@ Registry Mirrors:
  http://csighub.tencentyun.com/
 Live Restore Enabled: false
 Product License: Community Engine
-```
+{% endhighlight %}
 
 # 用户管理
 
-```
+{% highlight text %}
 sudo service docker start         # 启动 docker 服务
 sudo usermod -aG docker ${USER}   # 当前用户加入 docker 组
-```
+{% endhighlight %}
 
 > 说明：
 >
@@ -168,11 +168,11 @@ sudo usermod -aG docker ${USER}   # 当前用户加入 docker 组
 
 The `CMD` instruction has three forms:
 
-```
+{% highlight text %}
 CMD ["executable","param1","param2"] (exec form, this is the preferred form)
 CMD ["param1","param2"] (as default parameters to ENTRYPOINT)
 CMD command param1 param2 (shell form)
-```
+{% endhighlight %}
 
 There can only be one `CMD` instruction in a Dockerfile. If you list more than one `CMD` then only the last `CMD` will take effect.
 
@@ -184,17 +184,17 @@ If `CMD` is used to provide default arguments for the `ENTRYPOINT` instruction, 
 
 If you use the shell form of the `CMD`, then the `<command>` will execute in `/bin/sh -c`:
 
-```
+{% highlight text %}
 FROM ubuntu
 CMD echo "This is a test." | wc -
-```
+{% endhighlight %}
 
 If you want to **run your `<command>` without a shell** then you must express the command as a JSON array and give the full path to the executable. **This array form is the preferred format of `CMD`**. Any additional parameters must be individually expressed as strings in the array:
 
-```
+{% highlight text %}
 FROM ubuntu
 CMD ["/usr/bin/wc","--help"]
-```
+{% endhighlight %}
 
 If you would like your container to run the same executable every time, then you should consider using `ENTRYPOINT` in combination with `CMD`. See [ENTRYPOINT](https://docs.docker.com/engine/reference/builder/#entrypoint).
 
@@ -214,12 +214,12 @@ I try to locate one specific tag for a Docker image. How can I do it on the comm
 
 Answers:
 
-```bash
+{% highlight bash %}
 #!/usr/bin/bashs
 
 # docker_remote_tags.sh
 curl -s -S "https://registry.hub.docker.com/v2/repositories/library/$@/tags/" | jq '."results"[]["name"]' | sort
-```
+{% endhighlight %}
 
 
 # 历史文章

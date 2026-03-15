@@ -14,7 +14,7 @@ tags:
 
 # 简单对象内存分布
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 using namespace std;
 
@@ -31,7 +31,7 @@ int main()
     tmp.a = 1;
     return 0;
 }
-```
+{% endhighlight %}
 
 使用 GDB 查看对象 `tmp` 的内存布局如下：`int` 类型在 **x86-64** 平台上占用 **4** 个字节，而 `double` 成员的起始地址与 `int` 成员的起始地址之间相差 **8** 个字节，说明在 `a` 之后存在内存对齐填充，具体取决于编译器的实现细节和平台的对齐要求。内存对齐要求数据的起始地址在某个特定大小的倍数上，这样可以优化硬件和操作系统访问内存的效率。**因为许多处理器访问对齐的内存地址比访问非对齐地址更快**。在不进行内存对齐的情况下，较大的数据结构可能会跨越多个缓存行或内存页边界，这会导致额外的缓存行或页的加载，降低内存访问效率。不过大多时候我们不需要手动管理内存对齐，编译器和操作系统会自动处理这些问题。
 
@@ -39,7 +39,7 @@ int main()
 
 # 带方法的对象内存分布
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 class Basic
@@ -61,7 +61,7 @@ int main()
     tmp.setB(3.14);
     return 0;
 }
-```
+{% endhighlight %}
 
 文本段 (代码段) 是存储程序执行代码的内存区域，通常是只读的，以防止程序在运行时意外或恶意修改其执行代码。
 
@@ -78,10 +78,10 @@ int main()
 
 `setB` 的函数原型为 ` (void (*)(Basic * const, double))`，函数的第一个参数是 `Basic*` 指针，然而在代码中的调用是 `temp.setB(3.14)`，这种用法其实是一种语法糖，编译器在调用成员函数时自动将当前对象的地址作为 `this` 指针传递给了函数。参数传递了对象的地址，但是在函数里面是怎么拿到成员变量 `b` 的地址呢？在调用 `setB` 的地方打断点，执行到断点后，用 `step` 进入到函数，然后查看相应**寄存器的值**和汇编代码。
 
-```
+{% highlight text %}
 (gdb) p &Basic::setB(double)
 $7 = (void (*)(Basic * const, double)) 0x4011c4 <Basic::setB(double)>
-```
+{% endhighlight %}
 
 ![object_model4](/assets/images/202405/object_model4.png)
 
@@ -113,7 +113,7 @@ $7 = (void (*)(Basic * const, double)) 0x4011c4 <Basic::setB(double)>
 
 # 私有成员内存分布
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 class Basic
@@ -144,7 +144,7 @@ int main()
     tmp.setB(3.14);
     return 0;
 }
-```
+{% endhighlight %}
 
 通过 GDB 可以打印出所有成员变量的地址，发现这里私有变量的内存布局并没有什么特殊地方，也是依次顺序存储在对象中。私有的方法也没有特殊地方，一样存储在文本段。
 
@@ -152,7 +152,7 @@ int main()
 
 那么 `private` 怎么进行可见性控制的呢？首先编译期肯定是有保护的，无法通过 tmp 对象直接调用 secret 方法，否则会编译报错。那么运行期是否有保护呢？可以测试下，前面已经验证 `private` 成员变量也是根据偏移来找到内存位置的，可以在代码中直接根据偏移找到内存位置并更改里面的值。
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 class Basic
@@ -188,7 +188,7 @@ int main()
 
     return 0;
 }
-```
+{% endhighlight %}
 
 ![object_model7](/assets/images/202405/object_model7.png)
 
@@ -201,7 +201,7 @@ int main()
 
 # 静态成员 (数据和函数)
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 class Basic
@@ -235,7 +235,7 @@ int main()
     tmp.show();
     return 0;
 }
-```
+{% endhighlight %}
 
 静态成员变量在类的所有实例之间共享，不管创建了多少个类的对象，静态成员变量只有一份数据。静态成员变量的生命周期从它们被定义的时刻开始，直到程序结束。静态成员方法不依赖于类的任何实例来执行，主要用在工厂方法、单例模式的实例获取方法、或其他与类的特定实例无关的工具函数。
 
@@ -250,18 +250,18 @@ int main()
 
 静态方法通过输出内存地址，发现在 `.text` 代码段，这点和其他成员方法是一样的。不过和成员方法不同的是，第一个参数并不是 `this` 指针了。在实现上它与普通的全局函数类似，主要区别在于它们的作用域是限定在其所属的类中。
 
-```
+{% highlight text %}
 (gdb) p tmp.setB
 $13 = {void (Basic * const, double)} 0x4011f8 <Basic::setB(double)>
 (gdb) p Basic::show
 $14 = {void (void)} 0x401216 <Basic::show()>
-```
+{% endhighlight %}
 
 # 类继承的内存布局
 
 ## 不带虚函数的继承
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 class Base
@@ -295,7 +295,7 @@ int main()
     tmp.setC(3);
     return 0;
 }
-```
+{% endhighlight %}
 
 用 GDB 打印成员变量的内存分布，发现 `Derived` 类的对象在内存中的布局首先包含其基类 `Base` 的所有成员变量，紧接着是 `Derived` 类自己的成员变量。
 
@@ -307,7 +307,7 @@ int main()
 
 ## 带有虚函数的继承
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 class Base
@@ -365,7 +365,7 @@ int main()
 
     return 0;
 }
-```
+{% endhighlight %}
 
 `Base* pBase = &tmp` 用一个基类指针指向派生类对象，当通过基类指针调用虚函数 `pBase->printInfo()` 时，将在运行时解析为 `Derived::printInfo()` 方法，这是就是**运行时多态**。对于 `pBase->printB()` 调用，由于**派生类**中没有定义 `printB()` 方法，所以会调用**基类的** `printB()` 方法。
 
@@ -403,9 +403,9 @@ int main()
 
 前面使用 GDB 进行调试时，之所以观察到内存地址是固定不变的，这是因为 GDB 默认禁用了 `ASLR`，以便于调试过程中更容易重现问题。可以在使用 GDB 时启用 `ASLR`，从而让调试环境更贴近实际运行环境。启动 GDB 后，可以通过下面命令开启地址空间的随机化。
 
-```
+{% highlight text %}
 (gdb) set disable-randomization off
-```
+{% endhighlight %}
 
 ![object_model14](/assets/images/202405/object_model14.png)
 

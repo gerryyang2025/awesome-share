@@ -20,7 +20,7 @@ tags:
 
 # 目录结构
 
-```
+{% highlight text %}
 my-project/
 ├── cmd/                # 可执行文件入口
 │   └── myapp/          # 主程序入口目录
@@ -43,11 +43,11 @@ my-project/
 ├── docs/               # 文档
 ├── go.mod              # 模块定义
 └── go.sum              # 依赖校验
-```
+{% endhighlight %}
 
 # 环境变量配置
 
-```bash
+{% highlight bash %}
 # .bashrc
 
 # golang
@@ -62,14 +62,14 @@ export GO111MODULE=on
 export GOPROXY="xxx"
 export GOPRIVATE=""
 export GOSUMDB="xxx"
-```
+{% endhighlight %}
 
 
 # 编译构建
 
 代码目录示例：
 
-```
+{% highlight text %}
 .
 ├── app
 │   └── demo
@@ -84,12 +84,12 @@ export GOSUMDB="xxx"
 │   └── trpc
 │       └── demo
 └── vendor
-```
+{% endhighlight %}
 
 构建脚本：
 
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # Colors for output
@@ -343,7 +343,7 @@ case "${1:-build}" in
         exit 1
         ;;
 esac
-```
+{% endhighlight %}
 
 
 # GoLang IDE
@@ -358,7 +358,7 @@ TODO
 
 可以在工程的 VSCode `.vscode/settings.json` 配置中设置开启 gopls 服务，即，`"go.useLanguageServer": true`
 
-```json
+{% highlight json %}
 {
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
@@ -372,7 +372,7 @@ TODO
         "editor.formatOnSave": true
     },
 }
-```
+{% endhighlight %}
 
 VSCode 第一次加载时会根据 settings.json 配置下载和启动 gopls 服务。
 
@@ -397,7 +397,7 @@ VSCode 第一次加载时会根据 settings.json 配置下载和启动 gopls 服
 > 注意：在没有连接客户端的情况下，共享 `gopls` 进程将在一分钟后自动关闭。关于共享 `gopls` 更多的内容，可以查看 [Gopls: Running as a daemon](https://github.com/golang/tools/blob/master/gopls/doc/daemon.md) 文档。
 
 
-```
+{% highlight text %}
 $ gopls -h
 
 gopls is a Go language server.
@@ -487,7 +487,7 @@ flags:
         verbose output
   -vv,-veryverbose
         very verbose output
-```
+{% endhighlight %}
 
 
 # Tools
@@ -496,19 +496,19 @@ flags:
 
 这是 `go list all` 命令的替代者，用于列出可用的 Go 包，速度比 `go list all` 更快。
 
-```bash
+{% highlight bash %}
 # Go 1.12+
 go install github.com/uudashr/gopkgs/v2/cmd/gopkgs@latest
-```
+{% endhighlight %}
 
 
 ## [go-outline](https://github.com/lukehoban/go-outline)
 
 将 Go 源码中的声明提取为 JSON 的工具。
 
-```bash
+{% highlight bash %}
 go get -u github.com/lukehoban/go-outline
-```
+{% endhighlight %}
 
 ## goimports
 
@@ -518,12 +518,12 @@ go get -u github.com/lukehoban/go-outline
 
 [golangci-lint](https://golangci-lint.run/) is a Go linters aggregator.
 
-```
+{% highlight text %}
 # binary will be $(go env GOPATH)/bin/golangci-lint
 curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.52.2
 
 golangci-lint --version
-```
+{% endhighlight %}
 
 ## delve
 
@@ -541,7 +541,7 @@ golangci-lint --version
 
 * 配置管理
 
-```go
+{% highlight go %}
 // 推荐使用 Viper + 环境变量
 func InitConfig() {
     viper.AutomaticEnv()
@@ -550,26 +550,26 @@ func InitConfig() {
         log.Fatal("Error reading config: ", err)
     }
 }
-```
+{% endhighlight %}
 
 * 错误处理
   - 使用`errors.Wrap`保留堆栈信息
   - 定义可导出错误类型
 
-```go
+{% highlight go %}
 var ErrRecordNotFound = errors.New("record not found")
-```
+{% endhighlight %}
 
 * 日志规范
 
-```go
+{% highlight go %}
 // 推荐使用 zap 或 logrus
 logger, _ := zap.NewProduction()
 defer logger.Sync()
 logger.Info("Server started",
     zap.String("port", cfg.Port),
     zap.Int("workers", cfg.Workers))
-```
+{% endhighlight %}
 
 * 测试策略
   - 单元测试：与被测试文件同目录（`_test.go`）
@@ -589,7 +589,7 @@ logger.Info("Server started",
 
 * 持续集成
 
-```yaml
+{% highlight yaml %}
 # 示例 GitHub Actions 配置
 name: CI
 on: [push]
@@ -601,30 +601,30 @@ jobs:
       - uses: actions/setup-go@v2
         with: { go-version: '1.21' }
       - run: go test -race -coverprofile=coverage.txt ./...
-```
+{% endhighlight %}
 
 * 文档生成
 
-```bash
+{% highlight bash %}
 # 安装 swag 工具
 go install github.com/swaggo/swag/cmd/swag@latest
 
 # 生成 API 文档
 swag init -g cmd/myapp/main.go
-```
+{% endhighlight %}
 
 * 代码质量
   - 使用`golangci-lint`进行静态检查
   - 设置`pre-commit`钩子
 
-```yaml
+{% highlight yaml %}
 # .pre-commit-config.yaml
 repos:
 - repo: https://github.com/golangci/golangci-lint
   rev: v1.55.2
   hooks:
     - id: golangci-lint
-```
+{% endhighlight %}
 
 * 微服务架构
   - 使用`go-kit`或`gRPC`构建服务
@@ -633,30 +633,30 @@ repos:
 
 * 分布式追踪
 
-```go
+{% highlight go %}
 // 使用 OpenTelemetry
 provider := otel.GetTracerProvider()
 tracer := provider.Tracer("service-name")
 ctx, span := tracer.Start(ctx, "operation-name")
 defer span.End()
-```
+{% endhighlight %}
 
 * 错误监控
   - 集成`Sentry`或`DataDog`
 
-```go
+{% highlight go %}
 sentry.Init(sentry.ClientOptions{
     Dsn: "your-dsn",
     Release: "myapp@v1.0.0",
 })
-```
+{% endhighlight %}
 
 * 代码生成
   - 使用`go:generate`指令
 
-```go
+{% highlight go %}
 //go:generate mockgen -source=repository.go -destination=mock_repository.go -package=repository
-```
+{% endhighlight %}
 
 * 性能关键路径
   - 使用`cgo`优化计算密集型任务
@@ -667,21 +667,21 @@ sentry.Init(sentry.ClientOptions{
 
 ## 初始化模块
 
-```bash
+{% highlight bash %}
 go mod init my-project
 go mod tidy
-```
+{% endhighlight %}
 
 ## 单元测试
 
-```bash
+{% highlight bash %}
 # 安装测试依赖
 go install github.com/stretchr/testify@v1.9.0
 go install github.com/stretchr/testify/mock@v1.9.0
 
 # 执行测试
 go test -v ./...
-```
+{% endhighlight %}
 
 # 第三方组件
 
@@ -697,7 +697,7 @@ https://github.com/spf13/viper
 
 简单示例：
 
-```go
+{% highlight go %}
 // 高性能模式（零内存分配）
 logger := zap.NewExample()
 defer logger.Sync()
@@ -706,17 +706,17 @@ logger.Debug("This is a debug message")
 // 兼容模式（类似 fmt.Printf）
 sugar := logger.Sugar()
 sugar.Debugf("Formatted message: %s", "value")
-```
+{% endhighlight %}
 
 在其他 package 中使用 zap 的全局实例（推荐）：
 
-```go
+{% highlight go %}
 import "go.uber.org/zap"
 
 func example() {
 	zap.L().Info("This is a log using global instance")
 }
-```
+{% endhighlight %}
 
 ## [Gin](github.com/gin-gonic/gin) (高性能 HTTP Web 框架)
 
@@ -729,20 +729,20 @@ Gin is a web framework written in Go. It features a martini-like API with perfor
 
 ## 生成 vendor 目录 (方便查看第三方源码)
 
-```bash
+{% highlight bash %}
 # 在 VS Code 终端运行
 go mod vendor
-```
+{% endhighlight %}
 
 > 注意：如果使用 `-mod=vendor` 模式构建，vendor 仅包含 Go 代码，不含 C/C++ 头文件代码，会提示找不到 C/C++ 头文件导致编译错误。需要改为编译使用 `-mod=mod` 强制使用 module 模式，而不是使用 vendor 目录的代码构建，从 module 缓存读取完整 C/C++ 源码，Go module 缓存保留完整 C/C++ 源码，满足 CGO 编译需要。
 
 
 ## 清理旧依赖缓存
 
-```bash
+{% highlight bash %}
 go clean -cache
 go clean -modcache
-```
+{% endhighlight %}
 
 > 注意：模块缓存的位置在 ~/go/pkg/mod 或 $GOMODCACHE，存储已下载的模块源码。作用是避免重复下载，加快构建。默认构建流程不建议清空，否则需要重新下载所有依赖。
 
@@ -751,10 +751,10 @@ go clean -modcache
 
 获取当前环境变量信息：
 
-```bash
+{% highlight bash %}
 go env GOOS
 go env GOARCH
-```
+{% endhighlight %}
 
 All of the following information is based on `go version go1.17.1 darwin/amd64`.
 
@@ -815,15 +815,15 @@ All of the following information is based on `go version go1.17.1 darwin/amd64`.
 
 All 32-bit GOARCH values:
 
-```text
+{% highlight text %}
 "386", "amd64p32", "arm", "armbe", "mips", "mips64p32", "mips64p32le", "mipsle", "ppc", "riscv", "s390", "sparc"
-```
+{% endhighlight %}
 
 All 64-bit GOARCH values:
 
-```text
+{% highlight text %}
 "amd64", "arm64", "arm64be", "loong64", "mips64", "mips64le", "ppc64", "ppc64le", "riscv64", "s390x", "sparc64", "wasm"
-```
+{% endhighlight %}
 
 > **Note**: "Out of the box" means the GOARCH is supported out of the box, i.e. the stocked `go` command can build the source code without the help of a C compiler, etc.
 
@@ -835,7 +835,7 @@ All 64-bit GOARCH values:
 
 ### macOS
 
-```bash
+{% highlight bash %}
 # 1. 下载
 # https://github.com/protocolbuffers/protobuf/releases/
 # 2. 解压
@@ -848,25 +848,25 @@ source ~/.zshrc
 # 首次运行时若提示"无法验证开发者"，需前往 系统设置 → 隐私与安全性 → 仍允许，以授权
 # 6. 验证安装
 protoc --version
-```
+{% endhighlight %}
 
 ### Linux
 
-```bash
+{% highlight bash %}
 apt-get install -y protobuf-compiler
-```
+{% endhighlight %}
 
 
 ## [golangci-lint](https://github.com/golangci/golangci-lint)
 
 **golangci-lint** is a fast Go linters runner. It runs linters in parallel, uses caching, supports YAML configuration, integrates with all major IDEs, and includes over a hundred linters.
 
-```bash
+{% highlight bash %}
 # binary will be $(go env GOPATH)/bin/golangci-lint
 curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.7
 
 golangci-lint --version
-```
+{% endhighlight %}
 
 ## [jq](https://github.com/jqlang/jq)
 

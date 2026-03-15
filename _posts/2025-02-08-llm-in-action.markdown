@@ -54,7 +54,7 @@ Few things I wish I said (I'll add items here as they come up):
 * You might also enjoy my 2015 blog post "Unreasonable Effectiveness of Recurrent Neural Networks". The way we obtain base models today is pretty much identical on a high level, except the RNN is swapped for a Transformer. http://karpathy.github.io/2015/05/21/...
 * What is in the run.c file? A bit more full-featured 1000-line version hre: https://github.com/karpathy/llama2.c/...
 
-```
+{% highlight text %}
 Chapters:
 
 Part 1: LLMs
@@ -85,7 +85,7 @@ Part 3: LLM Security
 
 End
 00:59:23 Outro
-```
+{% endhighlight %}
 
 # [Deep Dive into LLMs like ChatGPT - Andrej Karpathy](https://www.youtube.com/watch?v=7xTGNNLPyMI)
 
@@ -96,7 +96,7 @@ Instructor
 Andrej was a founding member at OpenAI (2015) and then Sr. Director of AI at Tesla (2017-2022), and is now a founder at Eureka Labs, which is building an AI-native school. His goal in this video is to raise knowledge and understanding of the state of the art in AI, and empower people to effectively use the latest and greatest in their work.
 Find more at https://karpathy.ai/ and https://x.com/karpathy
 
-```chapters
+{% highlight chapters %}
 00:00:00 introduction
 00:01:00 pretraining data (internet)
 00:07:47 tokenization
@@ -121,7 +121,7 @@ Find more at https://karpathy.ai/ and https://x.com/karpathy
 03:15:15 keeping track of LLMs
 03:18:34 where to find LLMs
 03:21:46 grand summary
-```links
+{% highlight links %}
 * ChatGPT https://chatgpt.com/
 * FineWeb (pretraining dataset): https://huggingface.co/spaces/Hugging...
 * Tiktokenizer: https://tiktokenizer.vercel.app/
@@ -188,3 +188,5 @@ Find more at https://karpathy.ai/ and https://x.com/karpathy
 
 ![llm_params](/assets/images/202511/llm_params.png)
 
+{% endhighlight %}
+{% endhighlight %}

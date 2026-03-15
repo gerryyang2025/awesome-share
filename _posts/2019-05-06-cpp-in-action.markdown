@@ -74,7 +74,7 @@ tags:
 
 例子：栈展开
 
-```cpp
+{% highlight cpp %}
 #include <cstdio>
 
 class obj {
@@ -110,14 +110,14 @@ obj()
 ~obj()
 exception
 */
-```
+{% endhighlight %}
 
 
 * 参考《程序员的自我修养》，栈的地址比堆高，栈是向下增长的，堆是向上增长的。但是在Windows上测试却不是。
 
 测试代码：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -149,7 +149,7 @@ int main()
 
     return 0;
 }
-```
+{% endhighlight %}
 
 Windows的输出：
 
@@ -157,7 +157,7 @@ Windows的输出：
 
 Linux的输出：
 
-```
+{% highlight text %}
 a0[2]: 3.6 at 0x7ffe0bbce190
 a1[2]: 3.6 at 0x7ffe0bbce170
 a1[3]: 4.8 at 0x7ffe0bbce178
@@ -165,7 +165,7 @@ a2[2]: 0.142857 at 0x1b64020
 a2[3]: 0.111111 at 0x1b64028
 a3[2]: 0.142857 at 0x1b64050
 a3[3]: 0.111111 at 0x1b64058
-```
+{% endhighlight %}
 
 * `进程地址空间的分布`取决于`操作系统`，栈向什么方向增长取决于操作系统与CPU的组合。不要把别的操作系统的实现方式套用到Windows上。x86硬件直接支持的栈确实是“向下增长”的：push指令导致sp自减一个slot，pop指令导致sp自增一个slot。其它硬件有其它硬件的情况。
 
@@ -199,7 +199,7 @@ RAII(Resource Acquisition Is Initialization, pronounced as "R, A, double I")，�
 
 > Resource acquisition is initialization (RAII) is a programming idiom used in several object-oriented languages to describe a particular language behavior. In RAII, holding a resource is a class invariant, and is tied to object lifetime: resource allocation (or acquisition) is done during object creation (specifically initialization), by the constructor, while resource deallocation (release) is done during object destruction (specifically finalization), by the destructor. In other words, resource acquisition must succeed for initialization to succeed. Thus the resource is guaranteed to be held between when initialization finishes and finalization starts (holding the resources is a class invariant), and to be held only when the object is alive. Thus if there are no object leaks, there are no resource leaks.
 
-```cpp
+{% highlight cpp %}
 void foo()
 {
     bar* ptr = new bar();
@@ -208,7 +208,7 @@ void foo()
 
     delete ptr;
 }
-```
+{% endhighlight %}
 
 上述示例，在不使用RAII的方法时存在的问题：
 1. 若delete之前的代码出现异常时，导致delete无法执行从而产生内存泄露。
@@ -218,7 +218,7 @@ void foo()
 
 方法1（不推荐）：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>       // std::cout
 #include <thread>         // std::thread
 #include <mutex>          // std::mutex
@@ -249,11 +249,11 @@ $ ./mutex2
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 **************************************************
 */
-```
+{% endhighlight %}
 
 方法2（推荐）：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <map>
 #include <string>
@@ -292,11 +292,11 @@ $ ./mutex
 http://bar => fake content
 http://foo => fake content
 */
-```
+{% endhighlight %}
 
 方法3（推荐）：
 
-```cpp
+{% highlight cpp %}
 #include <thread>
 #include <mutex>
 #include <iostream>
@@ -334,7 +334,7 @@ main: 0
 139691712153344: 2
 main: 2
 */
-```
+{% endhighlight %}
 
 refer:
 
@@ -384,10 +384,10 @@ C++标准里定义了**表达式的值类别**（注意，区别术语`值类型
 * 在C++11之前，**右值**可以绑定到**常左值引用（const lvalue reference）**的参数，如，`const T&`，但不可以绑定到**非常左值引用（non-const lvalue reference）**，如，`T&`。
 * 从C++11开始，新增了一种**右值引用（T&&）**，通过不同的引用类型进行重载，从而可以实现不同的行为，比如，性能优化。
 
-```cpp
+{% highlight cpp %}
 smart_ptr<shape> ptr1{new circle()};
 smart_ptr<shape> ptr2 = std::move(ptr1);
-```
+{% endhighlight %}
 
 第一个表达式，`new circle()`是一个**纯右值prvalue**，对于指针通常使用值传递，并不关心它是左值还是右值。
 第二个表达式，`std::move(ptr1)`的作用是，**把一个左值引用强制转换成一个右值引用，而并不改变其内容**。可以把`std::move(ptr1)`看作是**一个有名字的右值**，为了和无名的纯右值prvalue相区别，C++里目前把这种表达式称为**xvalue**。与左值lvalue不同，xvalue仍然是不能取地址的（xvalue与prvalue相同），因此xvalue和prvalue都被归为**右值rvalue**。
@@ -404,7 +404,7 @@ More: [Value categories](https://en.cppreference.com/w/cpp/language/value_catego
 
 [GotW #88: A Candidate For the “Most Important const”](https://herbsutter.com/2008/01/01/gotw-88-a-candidate-for-the-most-important-const/)提出了一个问题：
 
-```cpp
+{% highlight cpp %}
 // Is the following code legal C++?
 string f() { return "abc"; }
 
@@ -412,11 +412,11 @@ void g() {
     const string& s = f();
     cout << s << endl;    // can we still use the "temporary" object? Yes
 }
-```
+{% endhighlight %}
 
 如果把`const`去掉呢？
 
-```cpp
+{% highlight cpp %}
 // What if we take out the const… is Example 2 still legal C++?
 string f() { return "abc"; }
 
@@ -424,21 +424,21 @@ void g() {
     string& s = f();       // still legal? No
     cout << s << endl;
 }
-```
+{% endhighlight %}
 
 另一个例子，当引用生命周期结束时，对象是如何析构的？
 
-```cpp
+{% highlight cpp %}
 Derived factory(); // construct a Derived object
 
 void g() {
   const Base& b = factory(); // calls Derived::Derived here
   // … use b …
 } // calls Derived::~Derived directly here — not Base::~Base + virtual dispatch!
-```
+{% endhighlight %}
 
 
-```cpp
+{% highlight cpp %}
 // When the reference goes out of scope, which destructor gets called?
 
 #include <iostream>
@@ -484,7 +484,7 @@ end
 ~Derived()
 ~Base()
 */
-```
+{% endhighlight %}
 
 即，你可以把一个没有虚析构函数的子类对象绑定到基类的引用变量上，这个子类对象的析构仍然是完全正常的。这是因为这条规则只是延后了临时对象的析构而已，不是利用引用计数等复杂的方法，因而只要引用绑定成功，其类型并没有什么影响。
 
@@ -493,7 +493,7 @@ end
 
 测试：
 
-```cpp
+{% highlight cpp %}
 #include <cstdio>
 
 class shape {
@@ -543,11 +543,11 @@ result()
 ~triangle()
 something else
 */
-```
+{% endhighlight %}
 
 修改代码，将prvalue绑定到引用（const T& 或者 T&&）后，临时对象的生命周期则会和引用对象的生命周期一致：
 
-```cpp
+{% highlight cpp %}
 int main()
 {
         puts("main()");
@@ -566,11 +566,11 @@ result()
 something else
 ~result()
 */
-```
+{% endhighlight %}
 
 如果改为xvalue，则此规则无效。注意，有效变量r指向的对象已经不存在了，对r解引用是一个**未定义行为**。
 
-```cpp
+{% highlight cpp %}
 #include <utility>
 int main()
 {
@@ -591,16 +591,16 @@ result()
 ~triangle()
 something else
 */
-```
+{% endhighlight %}
 
 > C++ 中 const 引用可以延缓临时变量的生命周期，而 const 指针不能延长临时对象的生命周期
 
 当一个临时对象的地址被赋给一个 const 指针时，临时对象的生命周期并不会被延长。当临时对象的生命周期结束时，const 指针将成为悬空指针。
 
-```cpp
+{% highlight cpp %}
 const std::string *p = &std::string("hello");  // 指针 p 指向一个临时对象
 std::cout << *p;  // 未定义行为，因为 p 是一个悬空指针
-```
+{% endhighlight %}
 
 在这个例子中，临时字符串对象 "hello" 在第一行结束时就被销毁了，所以在第二行中，指针 p 已经成为了悬空指针，解引用它将导致未定义行为。
 
@@ -613,9 +613,9 @@ std::cout << *p;  // 未定义行为，因为 p 是一个悬空指针
 
 在使用容器类的情况下，移动更有意义。例如：
 
-```cpp
+{% highlight cpp %}
 string result = string("Hello, ") + name + ".";
-```
+{% endhighlight %}
 
 执行流程大致如下：
 
@@ -628,12 +628,12 @@ string result = string("Hello, ") + name + ".";
 
 因此，建议的写法是：
 
-```cpp
+{% highlight cpp %}
 // 只会调用构造函数一次和 string::operator+= 两次，没有任何临时对象需要生成和析构
 string result = "Hello, ";
 result += name;
 result += ".";
-```
+{% endhighlight %}
 
 但是，从 C++11 开始，以上`+=`的写法不再是必须的。同样上面那个单行的语句，执行流程大致如下：
 
@@ -663,7 +663,7 @@ result += ".";
 
 例子：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>  // std::cout/endl
 #include <utility>   // std::move
 
@@ -732,7 +732,7 @@ Obj()
 Obj()
 Obj(Obj&&)
 */
-```
+{% endhighlight %}
 
 ### 引用坍缩（引用折叠）和完美转发
 
@@ -752,17 +752,17 @@ Obj(Obj&&)
 因为在 T 是模板参数时，T&& 的作用主要是保持值类别进行转发，它有个名字就叫“转发引用”（forwarding reference）。因为既可以是左值引用，也可以是右值引用，它也曾经被叫做“万能引用”（universal reference）。
 
 
-```cpp
+{% highlight cpp %}
 template <typename T>
 void bar(T&& s)
 {
   foo(std::forward<T>(s));
 }
-```
+{% endhighlight %}
 
 测试代码：https://gcc.godbolt.org/z/sYfcnoj7M
 
-```cpp
+{% highlight cpp %}
 #include <type_traits>
 #include <iostream>
 #include <string>
@@ -798,14 +798,14 @@ XType is reference &&
 XType is reference &
 XType is reference &&
 */
-```
+{% endhighlight %}
 
 
 ## 智能指针
 
 智能指针本质上就是RAII资源管理功能的自然展现。
 
-```cpp
+{% highlight cpp %}
 class shape_wrapper {
 public:
         explicit shape_wrapper(shape* ptr = nullptr) : m_ptr(ptr) {}
@@ -816,7 +816,7 @@ public:
 private:
         shape* m_ptr;
 };
-```
+{% endhighlight %}
 
 上面的`shape`类完成了智能指针的最基本功能，对超出作用域的对象进行释放。但是仍缺少以下功能：
 
@@ -828,7 +828,7 @@ private:
 
 要让这个类能够包装任意类型的指针，需要把它变成一个模板类。在使用的时候将`shape_wrapper`改成`smart_ptr<shape>`。
 
-```cpp
+{% highlight cpp %}
 template <typename T>
 class smart_ptr {
 public:
@@ -840,11 +840,11 @@ public:
 private:
         T* m_ptr;
 };
-```
+{% endhighlight %}
 
 然后添加一些成员函数（解引用操作符`*`, 箭头操作符`->`, 布尔表达式），从而可以用类似内置的指针方式使用其对象。
 
-```cpp
+{% highlight cpp %}
 template <typename T>
 class smart_ptr {
 public:
@@ -861,13 +861,13 @@ public:
 private:
         T* m_ptr;
 };
-```
+{% endhighlight %}
 
 ### 拷贝构造和赋值
 
 需要关心如何定义其`行为`。考虑如果允许拷贝，则会存在多次内存释放的问题，因此需要禁止拷贝。
 
-```cpp
+{% highlight cpp %}
 #define DISALLOW_COPY_AND_ASSIGN(Type) \
     Type(const Type&) = delete; \
     Type& operator=(const Type&) = delete
@@ -895,7 +895,7 @@ public:
 private:
         T* m_ptr;
 };
-```
+{% endhighlight %}
 通过禁止`拷贝构造`和`赋值构造`，就可以在`编译时`发现存在拷贝的错误，例如，`smart_ptr<shape> ptr2(ptr1);`的写法，而不是在`运行时`出现两次释放内存的错误导致程序崩溃。
 
 另一种解决思路是，**使用智能指针的目的是，减少对象的拷贝**。因此，可以将拷贝实现为**转移指针的所有权**。在拷贝构造函数中，通过release方法释放指针所有权。在赋值构造函数中，通过拷贝构造产生一个**临时对象**并调用swap来交换对指针的所有权。
@@ -904,7 +904,7 @@ private:
 1. 用临时对象是为了把要转移的赋值对象控制权去除，同时在转移后把被赋值对象的资源释放掉
 2. 此处赋值构造函数的用法，是一种惯用法（[参考: What is the copy-and-swap idiom?](https://stackoverflow.com/questions/3279543/what-is-the-copy-and-swap-idiom)），保证了**强异常安全性**。赋值分为拷贝构造和交换两步，异常只可能在第一步发生，而第一步如果发生异常的话，this对象完全不受任何影响。无论拷贝构造成功与否，结果都是明确的两种状态，而不会发生因为赋值破坏了当前对象的场景。
 
-```cpp
+{% highlight cpp %}
 template <typename T>
 class smart_ptr {
 public:
@@ -948,7 +948,7 @@ public:
 private:
         T* m_ptr;
 };
-```
+{% endhighlight %}
 
 以上用法和标准库的`auto_ptr`类（为动态分配的对象提供异常安全）的行为类似（行为解释如下表所示）。注意，auto_ptr是在C++98提出的，因为此语义容易让程序犯错，在C++17时已经被正式从C++标准里删除。
 
@@ -974,7 +974,7 @@ private:
 
 一个对象只能被单个`unique_ptr`所拥有；`shared_ptr`允许多个智能指针同时拥有一个对象，当它们全部都失效时（共享计数），这个对象也同时会被删除。以下实现一个类似标准[shared_ptr](https://en.cppreference.com/w/cpp/memory/shared_ptr)的智能指针，但是还缺少部分功能。
 
-```cpp
+{% highlight cpp %}
 #include <cstdio>
 #include <iostream>
 #include <utility>  // std::swap
@@ -1169,11 +1169,11 @@ sptr4 use conut: 2
 sptr1 is empty
 */
 
-```
+{% endhighlight %}
 
 关于`shared_ptr`的一个使用例子：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <memory>
 #include <thread>
@@ -1244,7 +1244,7 @@ local pointer in a thread:
 All threads completed, the last one deleted Derived
  */
 
-```
+{% endhighlight %}
 
 ## 普通容器
 
@@ -1273,12 +1273,12 @@ string 当然是为了存放字符串，和简单的 C 字符串不同：
 * 如果需要在函数内修改字符串内容、但不影响调用者的该字符串，使用 string 作为参数类型（自动拷贝）
 * 如果需要改变调用者的字符串内容，使用 string& 作为参数类型（通常不推荐）
 
-```cpp
+{% highlight cpp %}
 string name;
 cout << "What's your name? ";
 getline(cin, name);
 cout << "Nice to meet you, " << name << "!\n";
-```
+{% endhighlight %}
 
 ### vector
 
@@ -1313,7 +1313,7 @@ vector 允许下面的操作（不完全列表）：
 
 例子：Obj1 和 Obj2 的定义只差了一个`noexcept`，但这个小小的差异就导致了 vector **是否会移动对象**，这点非常重要。
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -1367,7 +1367,7 @@ Obj2()
 Obj2(Obj2&&)
 Obj2(Obj2&&)
 */
-```
+{% endhighlight %}
 
 ### deque
 
@@ -1405,14 +1405,14 @@ list 的内存布局如下图所示：
 * 虽然 list 提供了任意位置插入新元素的灵活性，但由于每个元素的内存空间都是单独分配、不连续，它的遍历性能比 vector 和 deque 都要低。这在很大程度上抵消了它在插入和删除操作时不需要移动元素的理论性能优势。如果你不太需要遍历容器、又需要在中间频繁插入或删除元素，可以考虑使用 list。
 * 因为某些标准算法在 list 上会导致问题，list 提供了成员函数作为替代，比如：merge，remove，remove_if，reverse，sort，unique。
 
-```cpp
+{% highlight cpp %}
 list lst{1, 7, 2, 8, 3};
 vector vec{1, 7, 2, 8, 3};
 
 sort(vec.begin(), vec.end());     //  正常
 // sort(lst.begin(), lst.end());  //  会出错
 lst.sort();                       //  正常
-```
+{% endhighlight %}
 
 ### forward_list
 
@@ -1440,7 +1440,7 @@ queue 缺省用 deque 来实现。它的接口跟 deque 比，有如下改变：
 
 鉴于 queue 不提供 begin 和 end 方法，无法无损遍历：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <queue>
 
@@ -1456,7 +1456,7 @@ int main()
     q.pop();
   }
 }
-```
+{% endhighlight %}
 
 ### stack（类容器）
 
@@ -1473,7 +1473,7 @@ stack 缺省也是用 deque 来实现，但它的概念和 vector 更相似。�
 
 ![stack_mem](/assets/images/201911/stack_mem.png)
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <stack>
 
@@ -1489,7 +1489,7 @@ int main()
     s.pop();
   }
 }
-```
+{% endhighlight %}
 
 ## 需要函数对象的容器
 
@@ -1497,7 +1497,7 @@ int main()
 
 首先来讨论一下两个重要的函数对象，`less` 和 `hash`。在标准库里，通用的 `less` 大致是这样定义的：
 
-```cpp
+{% highlight cpp %}
 template <class T>
 struct less
   : binary_function<T, T, bool> {
@@ -1507,7 +1507,7 @@ struct less
     return x < y;
   }
 };
-```
+{% endhighlight %}
 
 * less 是一个**函数对象**，并且是个**二元函数**，执行对任意类型的值的比较，返回布尔类型。**作为函数对象，它定义了函数调用运算符（operator()）**，并且缺省行为是对指定类型的对象进行 < 的比较操作。
 * 在需要大小比较的场合，C++ 通常默认会使用 less（如果需要产生相反的顺序的话，则可以使用 greater）。
@@ -1516,7 +1516,7 @@ struct less
 
 例如，int类型的特化：
 
-```cpp
+{% highlight cpp %}
 template <class T> struct hash;
 
 template <>
@@ -1528,11 +1528,11 @@ struct hash<int>
     return static_cast<size_t>(v);
   }
 };
-```
+{% endhighlight %}
 
 更复杂的类型，如指针或者 string 的特化。**要点是，对于每个类，类的作者都可以提供 hash 的特化，使得对于不同的对象值，函数调用运算符都能得到尽可能均匀分布的不同数值**。
 
-```cpp
+{% highlight cpp %}
 #include <algorithm>   // std::sort
 #include <functional>  // std::less/greater/hash
 #include <iostream>    // std::cout/endl
@@ -1584,17 +1584,17 @@ v.data()       = 0x55fcc1441e70
 hash("hello")  = 26553298fdbe39c8
 hash("hellp")  = 62ca8a73f37cbb7b
 */
-```
+{% endhighlight %}
 
 以上结果为在gcc下编译，若改为MSVC下编译则为：
 
-```
+{% highlight text %}
 hash(nullptr) = a8c7f832281a39c5
 hash(v.data()) = 7a0bdfd7df0923d2
 v.data() = 000001EFFB10EAE0
 hash("hello") = a430d84680aabd0b
 hash("hellp") = a430e54680aad322
-```
+{% endhighlight %}
 
 可以看到，在MSVC的实现里，空指针的哈希值是一个非零的数值，指针的哈希值也和指针的数值不一样。要注意不同的实现处理的方式会不一样。事实上，测试结果是 GCC、Clang 和 MSVC 对常见类型的哈希方式都各有不同。
 
@@ -1605,7 +1605,7 @@ priority_queue 也是一个**容器适配器**。但是，它用到了**比较�
 * 它和 stack 相似，支持 push、pop、top 等有限的操作，但容器内的顺序既不是后进先出，也不是先进先出，**而是（部分）排序的结果**。
 * 在使用缺省的 less 作为其 Compare 模板参数时，最大的数值会出现在容器的“顶部”。如果需要最小的数值出现在容器顶部，则可以传递 greater 作为其 Compare 模板参数。
 
-```cpp
+{% highlight cpp %}
 #include <functional>  // std::greater
 #include <iostream>    // std::cout/endl
 #include <memory>      // std::pair
@@ -1637,7 +1637,7 @@ int main()
 (2, 2)
 (9, 4)
 */
-```
+{% endhighlight %}
 
 ### 关联容器
 
@@ -1663,7 +1663,7 @@ unordered_set，unordered_map，unordered_multiset，unordered_multimap
 
 这些容器和关联容器非常相似，**主要的区别就在于它们是“无序”的。这些容器不要求提供一个排序的函数对象，而要求一个可以计算哈希值的函数对象**。你当然可以在声明容器对象时手动提供这样一个函数对象类型，但更常见的情况是，我们使用标准的 hash 函数对象及其特化。
 
-```cpp
+{% highlight cpp %}
 #include <complex>        // std::complex
 #include <iostream>       // std::cout/endl
 #include <unordered_map>  // std::unordered_map
@@ -1698,14 +1698,14 @@ int main()
 
   cout << umc << endl;
 }
-```
+{% endhighlight %}
 
 输出可能是（顺序不能保证）：
 
-```
+{% highlight text %}
 { 21, 5, 8, 3, 13, 2, 1 }
 { (3,4) => 5, (1,1) => 1.4142 }
-```
+{% endhighlight %}
 
 * 请注意我们在 std 名空间中添加了特化，这是少数用户可以向 std 名空间添加内容的情况之一。正常情况下，向 std 名空间添加声明或定义是禁止的，属于未定义行为。
 * 从实际的工程角度，无序关联容器的主要优点在于其性能。关联容器和 priority_queue 的插入和删除操作，以及关联容器的查找操作，其复杂度都是 `O(log(n))`，而无序关联容器的实现使用哈希表，可以达到平均 `O(1)`！**但这取决于我们是否使用了一个好的哈希函数：在哈希函数选择不当的情况下，无序关联容器的插入、删除、查找性能可能成为最差情况的 O(n)，那就比关联容器糟糕得多了。**
@@ -1721,14 +1721,14 @@ int main()
 
 获得数组的长度：
 
-```cpp
+{% highlight cpp %}
 #define ARRAY_LEN(a) \
   (sizeof(a) / sizeof((a)[0]))
-```
+{% endhighlight %}
 
 C++17 直接提供了一个 `size` 方法，可以用于提供数组长度，并且在数组退化成指针的情况下会直接失败：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>  // std::cout/endl
 #include <iterator>  // std::size
 
@@ -1747,7 +1747,7 @@ int main()
             << std::endl;
   test(arr);
 }
-```
+{% endhighlight %}
 
 如果不用 C 数组的话，该用什么来替代？
 
@@ -1755,7 +1755,7 @@ int main()
 * 对于字符串数组，当然应该考虑 string。
 * 如果数组大小固定（C 的数组在 C++ 里本来就是大小固定的）并且较小的话，应该考虑 array。array 保留了 C 数组在栈上分配的特点，同时，提供了 begin、end、size 等通用成员函数。
 
-```cpp
+{% highlight cpp %}
 #include <array>     // std::array
 #include <iostream>  // std::cout/endl
 #include <map>       // std::map
@@ -1770,7 +1770,7 @@ int main()
   mp[mykey] = 5;  // OK
   std::cout << mp << std::endl;
 }
-```
+{% endhighlight %}
 
 ## 异常
 
@@ -1782,7 +1782,7 @@ int main()
 
 我们可能有大量需要判断错误的代码，零散分布在代码各处。
 
-```cpp
+{% highlight cpp %}
   matrix c;
 
   //  不清零的话，错误处理和资源清理会更复杂
@@ -1797,7 +1797,7 @@ int main()
 error_exit:
   matrix_dealloc(&c);
   return errcode;
-```
+{% endhighlight %}
 
 上面还只展示了单层的函数调用。事实上，如果出错位置离处理错误的位置相差很远的话，每一层的函数调用里都得有判断错误码的代码，这就既对写代码的人提出了严格要求，也对读代码的人造成了视觉上的干扰。
 
@@ -1840,14 +1840,14 @@ error_exit:
 
 GCC/Clang 下的 `-fexceptions`（缺省开启）。用 GCC，加上 `-fno-exceptions` 命令行参数，对于下面这样的小程序，也能看到产生的可执行文件的大小的变化。
 
-```cpp
+{% highlight cpp %}
 #include <vector>
 int main()
 {
     std::vector<int> v{1, 2, 3, 4, 5};
     v.push_back(20);
 }
-```
+{% endhighlight %}
 
 1. 对于第一条，开发者没有什么可做的。事实上，这也算是 C++ 实现的一个折中了。目前的主流异常实现中，都倾向于牺牲可执行文件大小、提高主流程（happy path）的性能。[只要程序不抛异常，C++ 代码的性能比起完全不做错误检查的代码，都只有几个百分点的性能损失](https://isocpp.org/wiki/faq/exceptions)。除了非常有限的一些场景，可执行文件大小通常不会是个问题。
 2. 第二条可以算作是一个真正有效的批评。和 Java 不同，C++ 里不会对异常规约进行编译时的检查。**从 C++17 开始，C++ 甚至完全禁止了以往的动态异常规约，你不再能在函数声明里写你可能会抛出某某异常。你唯一能声明的，就是某函数不会抛出异常——noexcept、noexcept(true) 或 throw()。这也是 C++ 的运行时唯一会检查的东西了。如果一个函数声明了不会抛出异常、结果却抛出了异常，C++ 运行时会调用 std::terminate 来终止应用程序**。不管是程序员的声明，还是编译器的检查，都不会告诉你哪些函数会抛出哪些异常。**当然，不声明异常是有理由的。特别是在泛型编程的代码里，几乎不可能预知会发生些什么异常**。
@@ -1862,7 +1862,7 @@ int main()
 
 **异常是渗透在 C++ 中的标准错误处理方式。标准库的错误处理方式就是异常**。其中不仅包括运行时错误，甚至包括一些逻辑错误。比如，在说容器的时候，在能使用 [] 运算符的地方，C++ 的标准容器也提供了 at 成员函数，能够在下标不存在的时候抛出异常，作为一种额外的帮助调试的手段。
 
-```cpp
+{% highlight cpp %}
 vector<int> v{1, 2, 3};
 int a = v[0];
 int b = v.at(0)
@@ -1876,7 +1876,7 @@ try {
 catch (const out_of_range& e) {
   cerr << e.what() << endl;
 }
-```
+{% endhighlight %}
 
 * **C++ 的标准容器在大部分情况下提供了强异常保证，即，一旦异常发生，现场会恢复到调用函数之前的状态，容器的内容不会发生改变，也没有任何资源泄漏**。前面提到过，vector 会在元素类型没有提供保证不抛异常的**移动构造函数**的情况下，在移动元素时会使用**拷贝构造函数**。这是因为一旦某个操作发生了异常，被移动的元素已经被破坏，处于只能析构的状态，异常安全性就不能得到保证了。
 * **只要你使用了标准容器，不管你自己用不用异常，你都得处理标准容器可能引发的异常**。至少有 bad_alloc，除非你明确知道你的目标运行环境不会产生这个异常。
@@ -1907,7 +1907,7 @@ catch (const out_of_range& e) {
 
 如果一个类型像输入迭代器，但 `*i` 只能作为左值来写而不能读，那它就是个**输出迭代器（output iterator）**。
 
-```cpp
+{% highlight cpp %}
 #include <algorithm>  // std::copy
 #include <iterator>   // std::back_inserter
 #include <vector>     // std::vector
@@ -1921,32 +1921,32 @@ copy(v1.begin(), v1.end(), back_inserter(v2));
 // output v2 is { 1, 2, 3, 4, 5 }
 
 copy(v2.begin(), v2.end(), ostream_iterator<int>(cout, " "));
-```
+{% endhighlight %}
 
 * 输出迭代器是`back_inserter` 返回的类型 `back_inserter_iterator` ，用它可以很方便地在容器的尾部进行插入操作。
 * 输出迭代器`ostream_iterator`，方便把容器内容“拷贝”到一个输出流。
 
 总结：
 
-```cpp
+{% highlight cpp %}
 cout << *it  // 输入迭代器，就是读
 *it = 42     // 输出迭代器，就是写
-```
+{% endhighlight %}
 
 ### 使用输入行迭代器（例子）
 
 通过自定义的输入迭代器。它的功能本身很简单，就是把一个输入流（istream）的内容一行行读进来。配上 C++11 引入的基于范围的 for 循环的语法，我们可以把遍历输入流的代码以一种自然、非过程式的方式写出来。
 
-```cpp
+{% highlight cpp %}
 for (const string& line : istream_line_reader(is)) {
   //  示例循环体中仅进行简单输出
   cout << line << endl;
 }
-```
+{% endhighlight %}
 
 对比一下以传统的方式写的 C++ 代码，其中需要照顾不少细节：(从 is 读入输入行的逻辑，在前面的代码里一个语句就全部搞定了，在这儿用了 5 个语句)
 
-```cpp
+{% highlight cpp %}
 string line;
 for (;;) {
   getline(is, line);
@@ -1955,11 +1955,11 @@ for (;;) {
   }
   cout << line << endl;
 }
-```
+{% endhighlight %}
 
 基于范围的 for 循环这个语法。虽然这可以说是个语法糖，但它对提高代码的可读性真的非常重要。如果不用这个语法糖的话，简洁性上的优势就小多了。我们直接把这个循环改写成等价的普通 for 循环的样子。
 
-```cpp
+{% highlight cpp %}
 {
   // auto&& 是用一个“万能”引用捕获一个对象，左值和右值都可以。C++ 的生命期延长规则，保证了引用有效期间，istream_line_reader 这个“临时”对象一直存在。没有生命期延长的话，临时对象在当前语句执行结束后即销毁
   auto&& r = istream_line_reader(is);
@@ -1970,7 +1970,7 @@ for (;;) {
     cout << line << endl;
   }
 }
-```
+{% endhighlight %}
 
 ### 定义输入行迭代器（例子）
 
@@ -1978,7 +1978,7 @@ for (;;) {
 
 C++ 里有些固定的类型要求规范。对于一个迭代器，我们需要定义下面的类型：
 
-```cpp
+{% highlight cpp %}
 class istream_line_reader {
 public:
   class iterator {  //  实现  InputIterator
@@ -1992,7 +1992,7 @@ public:
   };
   …
 };
-```
+{% endhighlight %}
 
 仿照一般的容器，我们把迭代器定义为 istream_line_reader 的嵌套类。它里面的这**五个类型是必须定义的（其他泛型 C++ 代码可能会用到这五个类型**。[之前标准库定义了一个可以继承的类模板 std::iterator 来产生这些类型定义，但这个类目前已经被废弃](https://www.fluentcpp.com/2018/05/08/std-iterator-deprecated/)）。其中：
 
@@ -2006,7 +2006,7 @@ public:
 
 让 `++` 负责读取，`*` 负责返回读取的内容。这个 iterator 类需要有一个数据成员指向输入流，一个数据成员来存放读取的结果。
 
-```cpp
+{% highlight cpp %}
 class istream_line_reader {
 public:
   class iterator {
@@ -2052,7 +2052,7 @@ public:
   };
   …
 };
-```
+{% endhighlight %}
 
 * 定义了默认构造函数，将 stream_ 清空
 * 在带参数的构造函数里，根据传入的输入流来设置 stream_
@@ -2063,7 +2063,7 @@ public:
 
 对于迭代器之间的比较，则主要考虑文件有没有读到尾部的情况，简单定义为：
 
-```cpp
+{% highlight cpp %}
     bool operator==(const iterator& rhs) const noexcept
     {
       return stream_ == rhs.stream_;
@@ -2073,11 +2073,11 @@ public:
     {
       return !operator==(rhs);
     }
-```
+{% endhighlight %}
 
 有了这个 iterator 的定义后，istream_line_reader 的定义就简单得很了：
 
-```cpp
+{% highlight cpp %}
 class istream_line_reader {
 public:
   class iterator {…};
@@ -2101,7 +2101,7 @@ public:
 private:
   istream* stream_;
 };
-```
+{% endhighlight %}
 
 * 构造函数只是简单地把输入流的指针赋给 stream_ 成员变量
 * begin 成员函数则负责构造一个真正有意义的迭代器
@@ -2111,7 +2111,7 @@ private:
 
 注意以上实现存在一定的使用限制，不能多次调用begin。
 
-```cpp
+{% highlight cpp %}
 #include <fstream>
 #include <iostream>
 #include "istream_line_reader.h"
@@ -2130,7 +2130,7 @@ int main()
 }
 
 // 以上代码，因为 begin 多调用了一次，输出就少了一行……
-```
+{% endhighlight %}
 
 ## C++易用性改进
 
@@ -2138,7 +2138,7 @@ int main()
 
 `auto` 自动类型推断，顾名思义，就是编译器能够根据表达式的类型，自动决定变量的类型（从 C++14 开始，还有函数的返回类型），不再需要程序员手工声明。**但需要说明的是，auto 并没有改变 C++ 是静态类型语言这一事实——使用 auto 的变量（或函数返回值）的类型仍然是编译时就确定了，只不过编译器能自动帮你填充而已**。
 
-```cpp
+{% highlight cpp %}
 // 完整的写法
 vector<int> v;
 for (vector<int>::iterator
@@ -2153,11 +2153,11 @@ for (auto it = v.begin(), end = v.end();
      it != end; ++it) {
   //  循环体
 }
-```
+{% endhighlight %}
 
 不使用自动类型推断时，**如果容器类型未知的话，还需要加上 typename**：
 
-```cpp
+{% highlight cpp %}
 template <typename T>
 void foo(const T& container)
 {
@@ -2166,7 +2166,7 @@ void foo(const T& container)
          // …
       ) {}
 }
-```
+{% endhighlight %}
 
 ### decltype
 
@@ -2185,45 +2185,45 @@ void foo(const T& container)
 
 decltype(expr) 既可以是值类型，也可以是引用类型。
 
-```cpp
+{% highlight cpp %}
 decltype(expr) a = expr;
-```
+{% endhighlight %}
 
 这种写法明显不能让人满意，特别是表达式很长的情况（而且，任何代码重复都是潜在的问题）。为此，C++14 引入了 `decltype(auto)` 语法。对于上面的情况，只需要像下面这样写就行了。
 
-```cpp
+{% highlight cpp %}
 decltype(auto) a = expr;
-```
+{% endhighlight %}
 这种代码主要用在通用的转发函数模板中：你可能根本不知道你调用的函数是不是会返回一个引用。这时使用这种语法就会方便很多。
 
 ### 函数返回值类型推断
 
 后置返回值类型声明。通常，在返回类型比较复杂、特别是返回类型跟参数类型有某种推导关系时会使用这种语法。
 
-```cpp
+{% highlight cpp %}
 auto foo(参数) ->  返回值类型声明
 {
   //  函数体
 }
-```
+{% endhighlight %}
 
 ### 类模板的模板参数推导
 
 因为函数模板有模板参数推导，使得调用者不必手工指定参数类型；但 C++17 之前的类模板却**没有这个功能，也因而催生了像 make_pair 这样的工具函数**：
-```cpp
+{% highlight cpp %}
 pair pr{1, 42};            // 一般不这样写
 auto pr = make_pair(1, 42);// 一般这样写
-```
+{% endhighlight %}
 
 在进入了 C++17 的世界后，这类函数变得不必要了。现在可以直接写：
 
-```cpp
+{% highlight cpp %}
 pair pr{1, 42};
-```
+{% endhighlight %}
 
 这种自动推导机制，可以是编译器根据构造函数来自动生成：
 
-```cpp
+{% highlight cpp %}
 template <typename T>
 struct MyObj {
   MyObj(T value);
@@ -2234,43 +2234,43 @@ MyObj obj1{string("hello")};
 //  得到  MyObj<string>
 MyObj obj2{"hello"};
 //  得到  MyObj<const char*>
-```
+{% endhighlight %}
 
 ### 结构化绑定
 
-```cpp
+{% highlight cpp %}
 multimap<string, int>::iterator lower, upper;
 std::tie(lower, upper) = mmp.equal_range("four");
-```
+{% endhighlight %}
 
 返回值是个 pair，希望用两个变量来接收数值，就不得不声明了两个变量，然后使用 tie 来接收结果。在 C++11/14 里，这里是没法使用 auto 的。好在 C++17 引入了一个新语法，解决了这个问题。可以把上面的代码简化为：
 
 
-```cpp
+{% highlight cpp %}
 auto [lower, upper] = mmp.equal_range("four");
-```
+{% endhighlight %}
 
 ### 列表初始化
 
 在 C++98 里，标准容器比起 C 风格数组至少有一个明显的劣势：不能在代码里方便地初始化容器的内容。比如，对于数组可以写：
 
-```cpp
+{% highlight cpp %}
 int a[] = {1, 2, 3, 4, 5};
-```
+{% endhighlight %}
 
 而对于 vector 却得写：
 
-```cpp
+{% highlight cpp %}
 vector<int> v;
 v.push(1);
 v.push(2);
-```
+{% endhighlight %}
 
 于是，C++ 标准委员会引入了**列表初始化**，允许以更简单的方式来初始化对象。现在初始化容器也可以和初始化数组一样简单了：
 
-```cpp
+{% highlight cpp %}
 vector<int> v{1, 2, 3, 4, 5};
-```
+{% endhighlight %}
 
 从技术角度，编译器的魔法只是对 {1, 2, 3} 这样的表达式自动生成一个初始化列表，在这个例子里其类型是 initializer_list。程序员只需要声明一个接受 initializer_list 的构造函数即可使用。
 
@@ -2278,12 +2278,12 @@ vector<int> v{1, 2, 3, 4, 5};
 
 几乎可以在所有初始化对象的地方使用大括号而不是小括号。
 
-```cpp
+{% highlight cpp %}
 Obj getObj()
 {
   return {1.0};
 }
-```
+{% endhighlight %}
 
 {1.0} 跟 Obj(1.0) 的主要区别是，后者可以用来调用 Obj(int)，而使用大括号时编译器会拒绝“窄”转换，不接受以 {1.0} 或 Obj{1.0} 的形式调用构造函数 Obj(int)。
 
@@ -2299,7 +2299,7 @@ Obj getObj()
 
 使用数据成员的默认初始化的话，可以这么写：
 
-```cpp
+{% highlight cpp %}
 class Complex {
 public:
   Complex() {}
@@ -2311,7 +2311,7 @@ private:
   float re_{0};
   float im_{0};
 };
-```
+{% endhighlight %}
 
 * 第一个构造函数没有任何初始化列表，所以类数据成员的初始化全部由默认初始化完成，re_ 和 im_ 都是 0。
 * 第二个构造函数提供了 re_ 的初始化，im_ 仍由默认初始化完成。
@@ -2330,7 +2330,7 @@ private:
 
 C++11 引入了自定义字面量，可以使用 `operator""` 后缀，来将用户提供的字面量转换成实际的类型。
 
-```cpp
+{% highlight cpp %}
 #include <chrono>
 #include <complex>
 #include <iostream>
@@ -2349,13 +2349,13 @@ int main()
   cout << "Hello world"s.substr(0, 5)
        << endl;
 }
-```
+{% endhighlight %}
 
 上面这个例子展示了 C++ 标准里提供的帮助生成虚数、时间和 basic_string 字面量的后缀。
 
 如何在自己的类里支持字面量？
 
-```cpp
+{% highlight cpp %}
 struct length {
   double value;
   enum unit {
@@ -2387,11 +2387,11 @@ length operator+(length lhs,
 }
 
 //  可能有其他运算符
-```
+{% endhighlight %}
 
 可以手写 `length(1.0, length::metre)` 这样的表达式，但估计大部分开发人员都不愿意这么做，而更希望是 `1.0_m + 10.0_cm`。要允许这个表达式，只需要提供下面的运算符即可：
 
-```cpp
+{% highlight cpp %}
 length operator"" _m(long double v)
 {
   return length(v, length::metre);
@@ -2401,15 +2401,15 @@ length operator"" _cm(long double v)
 {
   return length(v, length::centimetre);
 }
-```
+{% endhighlight %}
 
 ### 二进制字面量
 
 从 C++14 开始，对于二进制也有了直接的字面量：
 
-```cpp
+{% highlight cpp %}
 unsigned mask = 0b111000000;
-```
+{% endhighlight %}
 
 这在需要比特级操作等场合还是非常有用的。
 
@@ -2426,12 +2426,12 @@ unsigned mask = 0b111000000;
 
 例子：
 
-```cpp
+{% highlight cpp %}
 unsigned mask = 0b111'000'000;
 long r_earth_equatorial = 6'378'137;
 double pi = 3.14159'26535'89793;
 const unsigned magic = 0x44'42'47'4E;
-```
+{% endhighlight %}
 
 ### 静态断言
 
@@ -2439,17 +2439,17 @@ C++98 的 assert 允许在**运行时**检查一个函数的前置条件是否�
 
 C++11 直接从语言层面提供了静态断言机制，不仅能输出更好的信息，而且适用性也更好，可以直接放在类的定义中。
 
-```cpp
+{% highlight cpp %}
 static_assert(编译期条件表达式,
                可选输出信息);
-```
+{% endhighlight %}
 
 例如：
 
-```cpp
+{% highlight cpp %}
 static_assert((alignment & (alignment - 1)) == 0,
   "Alignment must be power of two");
-```
+{% endhighlight %}
 
 ### default 和 delete 成员函数
 
@@ -2471,7 +2471,7 @@ static_assert((alignment & (alignment - 1)) == 0,
 
 * 如果正常情况不需要复制行为、只是想防止其他开发人员误操作时，可以简单地在类的定义中加入：
 
-```cpp
+{% highlight cpp %}
 class shape_wrapper {
   …
   shape_wrapper(
@@ -2480,7 +2480,7 @@ class shape_wrapper {
     const shape_wrapper&) = delete;
   …
 };
-```
+{% endhighlight %}
 
 **在 C++11 之前，我们可能会用在 private 段里声明这些成员函数的方法，来达到相似的目的**。但目前这个语法效果更好，可以产生更明确的错误信息。另外，你可以注意一下，用户声明成删除也是一种声明，因此编译器不会提供默认版本的移动构造和移动赋值函数。
 
@@ -2499,7 +2499,7 @@ final 还有一个作用是标志某个类或结构不可被派生。同样，�
 
 例子：
 
-```cpp
+{% highlight cpp %}
 class A {
 public:
   virtual void foo();
@@ -2526,7 +2526,7 @@ class D : public C {
   //  错误：final  类不可派生
   …
 };
-```
+{% endhighlight %}
 
 ## 到底应不应该返回对象？
 
@@ -2540,11 +2540,11 @@ class D : public C {
 
 一种常见的做法是，接口的调用者负责分配一个对象所需的内存并负责其生命周期，接口负责生成或修改该对象。这种做法意味着对象可以默认构造（甚至只是一个结构），代码一般使用错误码而非异常。例如：
 
-```cpp
+{% highlight cpp %}
 MyObj obj;
 ec = initialize(&obj);
 // …
-```
+{% endhighlight %}
 
 **另一种做法：接口负责对象的堆上生成和内存管理**
 
@@ -2556,7 +2556,7 @@ ec = initialize(&obj);
 * 一个用来返回的对象，通常应当是**可移动构造 / 赋值的**，一般也同时是**可拷贝构造 / 赋值的**。
 * 如果这样一个对象同时又可以**默认构造**，我们就称其为**一个半正则（semiregular）的对象**。如果可能的话，应当尽量让我们的类满足**半正则**这个要求。
 
-```cpp
+{% highlight cpp %}
 class matrix {
 public:
   //  普通构造
@@ -2571,11 +2571,11 @@ public:
   matrix& operator=(const matrix&);
   matrix& operator=(matrix&&);
 };
-```
+{% endhighlight %}
 
 在**没有返回值优化**的情况下 C++ 是怎样返回对象的？
 
-```cpp
+{% highlight cpp %}
 matrix operator*(const matrix& lhs,
                  const matrix& rhs)
 {
@@ -2588,7 +2588,7 @@ matrix operator*(const matrix& lhs,
   //  具体计算过程
   return result;
 }
-```
+{% endhighlight %}
 
 * 注意对于一个本地变量，我们永远不应该返回其引用（或指针），不管是作为左值还是右值。从标准的角度，这会导致未定义行为（undefined behavior）
 * 从实际的角度，这样的对象一般放在栈上可以被调用者正常覆盖使用的部分，随便一个函数调用或变量定义就可能覆盖这个对象占据的内存。这还是这个对象的析构不做事情的情况：如果析构函数会释放内存或破坏数据的话，那你访问到的对象即使内存没有被覆盖，也早就不是有合法数据的对象了……
@@ -2596,7 +2596,7 @@ matrix operator*(const matrix& lhs,
 
 ### 返回值优化（拷贝消除）
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 
 using namespace std;
@@ -2619,20 +2619,20 @@ int main()
 {
   auto a = getA_unnamed();
 }
-```
+{% endhighlight %}
 
 如果你认为执行结果里应当有一行“Copy A”或“Move A”的话，你就忽视了**返回值优化**的威力了。
 
 **即使完全关闭优化**，三种主流编译器（GCC、Clang 和 MSVC）都只输出两行：
 
-```
+{% highlight text %}
 Create A
 Destroy A
-```
+{% endhighlight %}
 
 把代码稍稍改一下：
 
-```cpp
+{% highlight cpp %}
 A getA_named()
 {
   A a;
@@ -2643,22 +2643,22 @@ int main()
 {
   auto a = getA_named();
 }
-```
+{% endhighlight %}
 
 这回结果有了一点点小变化。虽然 GCC 和 Clang 的结果完全不变，但 MSVC 在非优化编译的情况下产生了不同的输出（优化编译——使用命令行参数 /O1、/O2 或 /Ox——则不变）：
 
-```
+{% highlight text %}
 Create A
 Move A
 Destroy A
 Destroy A
-```
+{% endhighlight %}
 
 也就是说，返回内容被移动构造了。
 
 继续变形一下：
 
-```cpp
+{% highlight cpp %}
 #include <stdlib.h>
 
 A getA_duang()
@@ -2677,24 +2677,24 @@ int main()
 {
   auto a = getA_duang();
 }
-```
+{% endhighlight %}
 
 这回所有的编译器都被难倒了，输出是：
 
-```
+{% highlight text %}
 Create A
 Create A
 Move A
 Destroy A
 Destroy A
 Destroy A
-```
+{% endhighlight %}
 
 关于返回值优化的实验我们就做到这里。下一步，我们试验一下把移动构造函数删除：
 
-```cpp
+{% highlight cpp %}
 A(A&&) = delete;
-```
+{% endhighlight %}
 
 可以立即看到“Copy A”出现在了结果输出中，说明目前结果变成**拷贝构造**了。
 
@@ -2753,13 +2753,13 @@ Unicode 字符的常见编码方式有：
 
 例子：
 
-```
+{% highlight text %}
 UTF-32：U+0020 映射为 0x00000020，U+6C49 映射为 0x00006C49，U+1F600 映射为 0x0001F600。
 
 UTF-16：U+0020 映射为 0x0020，U+6C49 映射为 0x6C49，而 U+1F600 会映射为 0xD83D DE00。
 
 UTF-8：U+0020 映射为 0x20，U+6C49 映射为 0xE6 B1 89，而 U+1F600 会映射为 0xF0 9F 98 80。
-```
+{% endhighlight %}
 
 在上面三种编码方式里，只有 UTF-8 完全保持了和 ASCII 的兼容性，目前得到了最广泛的使用。
 
@@ -2782,13 +2782,13 @@ UTF-8：U+0020 映射为 0x20，U+6C49 映射为 0xE6 B1 89，而 U+1F600 会映
 
 **在面向对象的开发里，最基本的一个特性就是“多态” —— 用相同的代码得到不同结果**。以 shape 类为例，它可能会定义一些通用的功能，然后在子类里进行实现或覆盖：
 
-```cpp
+{% highlight cpp %}
 class shape {
 public:
   …
   void draw(const position&) = 0;
 };
-```
+{% endhighlight %}
 
 上面的类定义意味着所有的子类必须实现 draw 函数，所以可以认为 shape 是定义了一个接口（按 Java 的概念）。在面向对象的设计里，接口抽象了一些基本的行为，实现类里则去具体实现这些功能。当我们有着接口类的指针或引用时，我们实际可以唤起具体的实现类里的逻辑。
 
@@ -2818,7 +2818,7 @@ public:
 
 #### 定义模板函数
 
-```cpp
+{% highlight cpp %}
 // 求最大公约数的辗转相除法
 template <typename E>
 E my_gcd(E a, E b)
@@ -2830,7 +2830,7 @@ E my_gcd(E a, E b)
   }
   return a;
 }
-```
+{% endhighlight %}
 
 除了函数模版，还有类模板，比如智能指针类。
 
@@ -2856,7 +2856,7 @@ E my_gcd(E a, E b)
 
 特化的例子：
 
-```cpp
+{% highlight cpp %}
 template <typename E>
 E my_mod(const E& lhs,
          const E& rhs)
@@ -2872,7 +2872,7 @@ cln::cl_I my_mod<cln::cl_I>(
 {
   return mod(lhs, rhs);
 }
-```
+{% endhighlight %}
 
 **注意：**
 ** 1. 特化和重载在行为上没有本质的区别。就一般而言，特化是一种更通用的技巧，最主要的原因是特化可以用在类模板和函数模板上，而重载只能用于函数。**
@@ -2881,7 +2881,7 @@ cln::cl_I my_mod<cln::cl_I>(
 
 展示**特化的更好的例子**是 C++11 之前的**静态断言**。使用特化技巧可以大致实现 `static_assert` 的功能：
 
-```cpp
+{% highlight cpp %}
 template <bool>
 struct compile_time_error;
 template <>
@@ -2893,7 +2893,7 @@ struct compile_time_error<true> {};
       ERROR_##_Msg;                \
     (void)ERROR_##_Msg;            \
   }
-```
+{% endhighlight %}
 
 **原理：**
 
@@ -2919,7 +2919,7 @@ struct compile_time_error<true> {};
 可以用 `typeid` 直接来获取对象的实际类型，例如：
 
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <typeinfo>
 #include <boost/core/demangle.hpp>
@@ -2946,14 +2946,14 @@ int main()
   cout << (type == typeid(circle) ? "is circle\n" : "");
   delete ptr;
 }
-```
+{% endhighlight %}
 
 在 GCC 下的输出：
 
-```6circle
+{% highlight 6circle %}
 circle
 is circle
-```
+{% endhighlight %}
 
 ## 编译期计算（模板元编程）
 
@@ -2967,7 +2967,7 @@ is circle
 
 ### 计算阶乘
 
-```cpp
+{% highlight cpp %}
 template <int n>
 struct factorial {
   static const int value =
@@ -2978,11 +2978,11 @@ template <>
 struct factorial<0> {
   static const int value = 1;
 };
-```
+{% endhighlight %}
 
 注意，**要先定义，才能特化**。那怎么知道这个计算是不是在编译时做的呢？可以直接看编译输出。下面直接贴出对上面这样的代码加输出（`printf("%d\n", factorial<10>::value);`）在 x86-64 下的编译结果：
 
-```
+{% highlight text %}
 .LC0:
         .string "%d\n"
 main:
@@ -2995,19 +2995,19 @@ main:
         mov     eax, 0
         pop     rbp
         ret
-```
+{% endhighlight %}
 
 编译结果直接出现了常量 3628800。上面那些递归什么的，完全都没有了踪影。
 
 如果我们传递一个**负数**给 factorial 呢？这时的结果就应该是编译期间的递归溢出。如 GCC 会报告：
 
-```
+{% highlight text %}
 fatal error: template instantiation depth exceeds maximum of 900 (use -ftemplate-depth= to increase the maximum)
-```
+{% endhighlight %}
 
 通用的解决方案是使用 `static_assert`，确保参数永远不会是负数。
 
-```cpp
+{% highlight cpp %}
 template <int n>
 struct factorial {
   static_assert(
@@ -3017,13 +3017,13 @@ struct factorial {
   static const int value =
     n * factorial<n - 1>::value;
 };
-```
+{% endhighlight %}
 
 这样，当 factorial 接收到一个负数作为参数时，就会得到一个干脆的错误信息：
 
-```
+{% highlight text %}
 error: static assertion failed: Arg must be non-negative
-```
+{% endhighlight %}
 
 > 结论：可以看到，要进行编译期编程，最主要的一点，是需要把**计算**转变成**类型推导**。
 
@@ -3031,7 +3031,7 @@ error: static assertion failed: Arg must be non-negative
 
 再看一个例子，下面的模板可以代表**条件语句**：
 
-```cpp
+{% highlight cpp %}
 template <bool cond,
           typename Then,
           typename Else>
@@ -3048,7 +3048,7 @@ template <typename Then,
 struct If<false, Then, Else> {
   typedef Else type;
 };
-```
+{% endhighlight %}
 
 * If 模板有三个参数，第一个是布尔值，后面两个则是代表不同分支计算的类型
 * 第一个 struct 声明规定了模板的形式，然后我们不提供通用定义，而是提供了两个特化
@@ -3056,7 +3056,7 @@ struct If<false, Then, Else> {
 
 下面的函数和模板是基本等价的：
 
-```cpp
+{% highlight cpp %}
 int foo(int n)
 {
   if (n == 2 || n == 3 || n == 5) {
@@ -3076,13 +3076,13 @@ struct Foo {
 };
 
 // foo(3) 等价于 Foo<3>::type::value
-```
+{% endhighlight %}
 
 ### 循环
 
 另一个例子，**循环**：
 
-```cpp
+{% highlight cpp %}
 template <bool condition,
           typename Body>
 struct WhileLoop;
@@ -3107,7 +3107,7 @@ struct While {
     Body::cond_value, Body>::type
     type;
 };
-```
+{% endhighlight %}
 
 * 首先，我们对循环体类型有一个约定，它必须提供一个静态数据成员，cond_value，及两个子类型定义，res_type 和 next_type。
     + cond_value 代表循环的条件（真或假）
@@ -3120,19 +3120,19 @@ struct While {
 
 下面这个模板可以通用地代表一个整数常数：
 
-```cpp
+{% highlight cpp %}
 template <class T, T v>
 struct integral_constant {
   static const T value = v;
   typedef T value_type;
   typedef integral_constant type;
 };
-```
+{% endhighlight %}
 
 * integral_constant 模板同时包含了整数的**类型**和**数值**，而通过这个类型的 value 成员我们又可以重新取回这个数值。
 * 有了这个模板的帮忙，我们就可以进行一些更通用的计算了。
 
-```cpp
+{% highlight cpp %}
 template <int result, int n>
 struct SumLoop {
   static const bool cond_value =
@@ -3150,7 +3150,7 @@ template <int n>
 struct Sum {
   typedef SumLoop<0, n> type;
 };
-```
+{% endhighlight %}
 
 然后使用 `While<Sum<10>::type>::type::value` 就可以得到 1 加到 10 的结果。
 
@@ -3158,7 +3158,7 @@ struct Sum {
 
 C++ 标准库在 `<type_traits>` 头文件里定义了很多**工具类模板**，**用来提取某个类型（type）在某方面的特点（trait）** [refer: cppreference.com, “Standard library header ”](https://en.cppreference.com/w/cpp/header/type_traits)。
 
-```cpp
+{% highlight cpp %}
 typedef std::integral_constant<
   bool, true> true_type;
 typedef std::integral_constant<
@@ -3186,14 +3186,14 @@ private:
     ptr->~T();
   }
 };
-```
+{% endhighlight %}
 
 * 类似上面，很多容器类里会有一个 destroy 函数，通过指针来析构某个对象。为了确保最大程度的优化，常用的一个技巧就是用 **is_trivially_destructible 模板**来判断类是否是**可平凡析构的——也就是说，不调用析构函数，不会造成任何资源泄漏问题**。
 * 模板返回的结果还是一个类，要么是 true_type，要么是 false_type。如果要得到布尔值的话，当然使用 `is_trivially_destructible<T>::value` 就可以，但此处不需要。我们需要的是，使用 () 调用该类型的构造函数，让编译器根据数值类型来选择合适的重载。这样，在优化编译的情况下，编译器可以把不需要的析构操作彻底全部删除。
 
 另外一些模板，可以用来做一些类型的转换。以一个常见的模板 remove_const 为例（用来去除类型里的 const 修饰）:
 
-```cpp
+{% highlight cpp %}
 template <class T>
 struct remove_const {
   typedef T type;
@@ -3202,7 +3202,7 @@ template <class T>
 struct remove_const<const T> {
   typedef T type;
 };
-```
+{% endhighlight %}
 
 * 利用模板的特化，针对 const 类型去掉相应的修饰。
 * 例如，`remove_const<const string&>::type` 等价于 `string&`。
@@ -3211,7 +3211,7 @@ struct remove_const<const T> {
 
 从概念本源来看，map 和 reduce 都来自**函数式编程**。
 
-```cpp
+{% highlight cpp %}
 template <
   template <typename, typename>
   class OutContainer = vector,
@@ -3232,7 +3232,7 @@ auto fmap(F&& f, R&& inputs)
   }
   return result;
 }
-```
+{% endhighlight %}
 
 * 用 decltype 来获得用 f 来调用 inputs 元素的类型
 * 用 decay_t 来把获得的类型变成一个普通的值类型
@@ -3242,7 +3242,7 @@ auto fmap(F&& f, R&& inputs)
 
 下面的代码可以验证其功能：
 
-```cpp
+{% highlight cpp %}
 vector<int> v{1, 2, 3, 4, 5};
 int add_1(int x)
 {
@@ -3251,11 +3251,11 @@ int add_1(int x)
 
 // 在 fmap 执行之后，在 result 里得到一个新容器，其内容是 2, 3, 4, 5, 6
 auto result = fmap(add_1, v);
-```
+{% endhighlight %}
 
 完整代码：使用 C++17、GCC 7编译
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <vector>
 #include <type_traits>
@@ -3292,7 +3292,7 @@ int main()
         cout << v << endl;
     }
 }
-```
+{% endhighlight %}
 
 总结：**模板元编程，其本质是把`计算过程用编译期`的`类型推导`和`类型匹配`表达出来**。
 
@@ -3311,7 +3311,7 @@ int main()
 * 如果没有找到最佳匹配，或者找到多个匹配程度相当的函数，则编译器需要报错
 
 例子：
-```cpp
+{% highlight cpp %}
 #include <stdio.h>
 
 struct Test {
@@ -3335,13 +3335,13 @@ int main()
   f<Test>(10);
   f<int>(10);
 }
-```
+{% endhighlight %}
 
 输出为：
 
-```1
+{% highlight 1 %}
 2
-```
+{% endhighlight %}
 
 首先看 `f<Test>(10)` 的情况：
 * 有两个模板符合名字 f
@@ -3361,7 +3361,7 @@ int main()
 
 下面这个模板，就可以检测一个类是否有一个名叫 reserve、参数类型为 size_t 的成员函数：
 
-```cpp
+{% highlight cpp %}
 template <typename T>
 struct has_reserve {
 
@@ -3384,7 +3384,7 @@ struct has_reserve {
     sizeof(reserve<T>(nullptr))
     == sizeof(good);
 };
-```
+{% endhighlight %}
 
 * 首先定义了两个结构 good 和 bad；它们的内容不重要，我们只关心它们的大小必须不一样。
 * 然后定义了一个 SFINAE 模板，内容也同样不重要，但模板的第二个参数需要是第一个参数的成员函数指针，并且参数类型是 size_t，返回值是 void。
@@ -3397,15 +3397,15 @@ C++11 开始，标准库里有了一个叫 `enable_if` 的模板（定义在 `<t
 
 假设有一个函数，用来往一个容器尾部追加元素。我们希望原型是这个样子的：
 
-```cpp
+{% highlight cpp %}
 template <typename C, typename T>
 void append(C& container, T* ptr,
             size_t size);
-```
+{% endhighlight %}
 
 显然，container 有没有 `reserve` 成员函数，是对性能有影响的——如果有的话，我们通常应该预留好内存空间，以免产生不必要的对象移动甚至拷贝操作。利用 `enable_if` 和上面的 `has_reserve` 模板，我们就可以这么写：
 
-```cpp
+{% highlight cpp %}
 // 有 reserve 的 append 版本
 template <typename C, typename T>
 enable_if_t<has_reserve<C>::value,
@@ -3433,7 +3433,7 @@ append(C& container, T* ptr,
     container.push_back(ptr[i]);
   }
 }
-```
+{% endhighlight %}
 
 我们可以用 `enable_if_t` 来取到结果的类型。
 
@@ -3444,7 +3444,7 @@ append(C& container, T* ptr,
 
 如果只需要在某个操作有效的情况下启用某个函数，而不需要考虑相反的情况的话。
 
-```cpp
+{% highlight cpp %}
 template <typename C, typename T>
 auto append(C& container, T* ptr,
             size_t size)
@@ -3459,7 +3459,7 @@ auto append(C& container, T* ptr,
     container.push_back(ptr[i]);
   }
 }
-```
+{% endhighlight %}
 
 上面使用到了 `declval` （[refer: cppreference.com, “std::declval”](https://en.cppreference.com/w/cpp/utility/declval)）
 
@@ -3471,10 +3471,10 @@ auto append(C& container, T* ptr,
 
 void_t 是 C++17 新引入的一个模板。它的定义简单得令人吃惊：
 
-```cpp
+{% highlight cpp %}
 template <typename...>
 using void_t = void;
-```
+{% endhighlight %}
 
 这个类型模板会把任意类型映射到 void。它的特殊性在于，在这个看似无聊的过程中，编译器会检查那个“任意类型”的有效性。
 
@@ -3485,7 +3485,7 @@ using void_t = void;
 * 一个 constexpr 变量是一个编译时完全确定的常数。
 * 一个 constexpr 函数至少对于某一组实参可以在编译期间产生一个编译期常数。
 
-```cpp
+{% highlight cpp %}
 #include <array>
 
 constexpr int sqr(int n)
@@ -3499,11 +3499,11 @@ int main()
   std::array<int, n> a;
   int b[n];
 }
-```
+{% endhighlight %}
 
 以阶乘函数为例：
 
-```cpp
+{% highlight cpp %}
 #include <cstdio>
 #include <stdexcept>
 
@@ -3535,7 +3535,7 @@ constexpr.cpp:8:31: error: expression ‘<throw-expression>’ is not a constant
      "Arg must be non-negative");
                                ^
 */
-```
+{% endhighlight %}
 
 验证确实得到了一个编译期常量。如果看产生的汇编代码的话，一样可以直接看到常量 3628800。
 
@@ -3543,7 +3543,7 @@ constexpr.cpp:8:31: error: expression ‘<throw-expression>’ is not a constant
 
 如果没有检查判断，编译展开时会报错：
 
-```
+{% highlight text %}
 $ g++ -o constexpr constexpr.cpp
 constexpr.cpp: In function ‘int main()’:
 constexpr.cpp:23:29:   in constexpr expansion of ‘factorial(-1)’
@@ -3555,16 +3555,16 @@ constexpr.cpp:16:23:   in constexpr expansion of ‘factorial((n + -1))’
 constexpr.cpp:23:32: error: constexpr evaluation depth exceeds maximum of 512 (use -fconstexpr-depth= to increase the maximum)
   constexpr int n = factorial(-1);
                                 ^
-```
+{% endhighlight %}
 
 ### constexpr 和 const
 
 初学 `constexpr` 时，一个很可能有的困惑是，它跟 `const` 用法上的区别到底是什么？产生这种困惑是正常的，毕竟 `const` 是个重载了很多不同含义的关键字。`const` 的原本和基础的含义，自然是表示**它修饰的内容不会变化**，如：
 
-```cpp
+{% highlight cpp %}
 const int n = 1:
 n = 2;  //  出错！
-```
+{% endhighlight %}
 
 注意: **`const` 在类型声明的不同位置会产生不同的结果**。对于常见的 `const char*` 这样的类型声明，意义和 `char const*` 相同，**是指向常字符的指针，指针指向的内容不可更改**；但和 `char * const` 不同，那代表**指向字符的常指针，指针本身不可更改**。本质上，`const` 用来表示一个**运行时常量**。
 
@@ -3574,10 +3574,10 @@ n = 2;  //  出错！
 
 一个 constexpr 变量仍然是 const 常类型。需要注意的是，就像 const char* 类型是指向常量的指针、自身不是 const 常量一样，**下面这个表达式里的 const 也是不能缺少的**：
 
-```cpp
+{% highlight cpp %}
 constexpr int a = 42;
 constexpr const int& b = a;
-```
+{% endhighlight %}
 
 constexpr 表示 b 是一个编译期常量，const 表示这个引用是常量引用。去掉这个 const 的话，编译器就会认为你是试图将一个普通引用绑定到一个常数上，报一个类似下面的错误信息：`error: binding reference of type ‘int&’ to ‘const int’ discards qualifiers`
 
@@ -3590,7 +3590,7 @@ constexpr 表示 b 是一个编译期常量，const 表示这个引用是常量�
 
 下面定义了一个简单的加 n 的**函数对象类**：
 
-```cpp
+{% highlight cpp %}
 struct adder {
   adder(int n) : n_(n) {}
   int operator()(int x) const
@@ -3603,13 +3603,13 @@ private:
 
 adder add_2(2);
 int res = add_2(5);       // 2 + 5 = 7
-```
+{% endhighlight %}
 
 ### 函数的指针和引用
 
 除非用一个**引用模板参数**来捕捉函数类型，传递给一个函数的**函数实参**会退化成为一个**函数指针**。不管是**函数指针**还是**函数引用**，都可以当成**函数对象**来用。
 
-```cpp
+{% highlight cpp %}
 #include <cstdio>
 
 template <typename T>
@@ -3644,17 +3644,17 @@ test1(T fn)
 add_2(int x)
 4
 */
-```
+{% endhighlight %}
 
 当用 `add_2` 去调用这三个函数模板时，`fn` 的类型将分别被推导为 `int (*)(int)`、`int (&)(int)` 和 `int (*)(int)`。不管得到的是**指针**还是**引用**，都可以直接拿它当普通的函数用。当然，在函数指针的情况下，直接写 `*value` 也可以。因而上面三个函数拿 add_2 作为实参调用的结果都是 4。
 
 ### Lambda 表达式
 
-```cpp
+{% highlight cpp %}
 auto add_2 = [](int x) {
   return x + 2;
 };
-```
+{% endhighlight %}
 
 * Lambda 表达式以一对**中括号**开始
 * 跟函数定义一样，有**参数列表**
@@ -3664,7 +3664,7 @@ auto add_2 = [](int x) {
 
 定义一个通用的 adder：
 
-```cpp
+{% highlight cpp %}
 auto adder = [](int n) {
   return [n](int x) {
     return x + n;
@@ -3672,28 +3672,28 @@ auto adder = [](int n) {
 };
 
 auto seven = adder(2)(5);
-```
+{% endhighlight %}
 
 不过，最常见的情况是，写匿名函数就是希望不需要起名字。以前面的把所有容器元素值加 2 的操作为例，使用匿名函数可以得到更简洁可读的代码：
 
-```cpp
+{% highlight cpp %}
 transform(v.begin(), v.end(),
           v.begin(),
           [](int x) {
             return x + 2;
           });
-```
+{% endhighlight %}
 
 一个 lambda 表达式除了没有名字之外，还有一个特点是你可以**立即进行求值**。一个 lambda 表达式默认就是 constexpr 函数。
 
-```cpp
+{% highlight cpp %}
 // 9
 [](int x) { return x * x; }(3)
-```
+{% endhighlight %}
 
 另外一种用途是**解决多重初始化路径**的问题。假设有这样的代码：
 
-```cpp
+{% highlight cpp %}
 Obj obj;
 switch (init_mode) {
 
@@ -3706,11 +3706,11 @@ case init_mode2;
   break;
 …
 }
-```
+{% endhighlight %}
 
 这样的代码，实际上是调用了默认构造函数、带参数的构造函数和（移动）赋值函数：既可能有性能损失，也对 Obj 提出了**有默认构造函数的额外要求**。对于这样的代码，有一种重构意见是把这样的代码分离成独立的函数。**不过，有时候更直截了当的做法是用一个 lambda 表达式来进行改造，既可以提升性能（不需要默认函数或拷贝 / 移动），又让初始化部分显得更清晰**：
 
-```cpp
+{% highlight cpp %}
 auto obj = [init_mode]() {
   switch (init_mode) {
 
@@ -3724,7 +3724,7 @@ auto obj = [init_mode]() {
   …
   }
 }();
-```
+{% endhighlight %}
 
 ### 变量捕获
 
@@ -3751,7 +3751,7 @@ lambda 表达式中变量捕获的细节：
 
 按引用捕获：按引用捕获 v1 和 v2，因为需要修改它们的内容。
 
-```cpp
+{% highlight cpp %}
 vector<int> v1;
 vector<int> v2;
 …
@@ -3763,11 +3763,11 @@ auto push_data = [&](int n) {
 
 push_data(2);
 push_data(3);
-```
+{% endhighlight %}
 
 按值捕获外围对象：
 
-```cpp
+{% highlight cpp %}
 #include <chrono>
 #include <iostream>
 #include <sstream>
@@ -3824,40 +3824,40 @@ $ ./lambda
 Done work 37 (No. 2) in thread 140555858978560
 Done work 37 (No. 1) in thread 140555867371264
 */
-```
+{% endhighlight %}
 
 如果将 `*this`（按值） 改成 `this`（按引用），则结果为：
 
-```
+{% highlight text %}
 Done work 37 (No. 1) in thread 139984678594304
 Done work 37 (No. 1) in thread 139984678594304
-```
+{% endhighlight %}
 
 ### 泛型 lambda 表达式
 
 在 lambda 表达式的定义过程中是没法写 `template` 关键字的。
 
-```cpp
+{% highlight cpp %}
 template <typename T1,
           typename T2>
 auto sum(T1 x, T2 y)
 {
   return x + y;
 }
-```
+{% endhighlight %}
 
 跟上面的函数等价的 lambda 表达式是：
 
-```cpp
+{% highlight cpp %}
 auto sum = [](auto x, auto y)
 {
   return x + y;
 }
-```
+{% endhighlight %}
 
 你可能要问，这么写有什么用呢？问得好。简单来说，答案是**可组合性**。上面这个 sum，就跟标准库里的 plus 模板一样，**是可以传递给其他接受函数对象的函数的**，而 + 本身则不行。
 
-```cpp
+{% highlight cpp %}
 #include <array>    // std::array
 #include <iostream> // std::cout/endl
 #include <numeric>  // std::accumulate
@@ -3874,13 +3874,13 @@ int main()
     });
   cout << s << endl;
 }
-```
+{% endhighlight %}
 
 ### function 模板
 
 每一个 lambda 表达式都是一个单独的类型，所以只能使用 auto 或模板参数来接收结果。在很多情况下，我们需要使用一个更方便的通用类型来接收，这时我们就可以使用 function 模板。function 模板的参数就是函数的类型，一个函数对象放到 function 里之后，外界可以观察到的就只剩下它的参数、返回值类型和执行效果了。**注意 function 对象的创建还是比较耗资源的，所以请你只在用 auto 等方法解决不了问题的时候使用这个模板**。
 
-```cpp
+{% highlight cpp %}
 map<string, function<int(int, int)>>
   op_dict{
     {"+",
@@ -3902,7 +3902,7 @@ map<string, function<int(int, int)>>
   };
 
 op_dict.at("+")(1, 6);
-```
+{% endhighlight %}
 
 
 ## 函数式编程：一种越来越流行的编程范式
@@ -3938,7 +3938,7 @@ C++ 里以 algorithm（算法）名义提供的很多函数都是高阶函数。
 
 启用 C++17 的并行执行策略（[refer: cppreference.com, “Standard library header <execution>”](https://en.cppreference.com/w/cpp/header/execution)），就能自动获得在多核环境下的性能提升：
 
-```cpp
+{% highlight cpp %}
 int count_lines(const char** begin,
                 const char** end)
 {
@@ -3951,7 +3951,7 @@ int count_lines(const char** begin,
     execution::par,
     count.begin(), count.end());
 }
-```
+{% endhighlight %}
 
 两个高阶函数的调用中都加入了 `execution::par`，来**启动自动并行计算**。
 
@@ -3974,7 +3974,7 @@ refer: [Functional Programming in C++. Manning, 2019](https://www.manning.com/bo
 
 以标准库里的 `make_unique` 为例，它的定义差不多是下面这个样子：
 
-```cpp
+{% highlight cpp %}
 template <typename T,
           typename... Args>
 inline unique_ptr<T>
@@ -3983,7 +3983,7 @@ make_unique(Args&&... args)
   return unique_ptr<T>(
     new T(forward<Args>(args)...));
 }
-```
+{% endhighlight %}
 
 这样，它就**可以把传递给自己的全部参数转发到模板参数类的构造函数上去**。注意，在这种情况下，我们通常会使用 `std::forward`，确保参数转发时仍然**保持正确的左值或右值引用类型**。
 
@@ -3996,13 +3996,13 @@ make_unique(Args&&... args)
 
 例如，如果需要在堆上传递一个 vector，假设希望初始构造的大小为 100，每个元素都是 1：
 
-```cpp
+{% highlight cpp %}
 make_unique<vector<int>>(100, 1)
-```
+{% endhighlight %}
 
 模板实例化之后，会得到相当于下面的代码：
 
-```cpp
+{% highlight cpp %}
 template <>
 inline unique_ptr<vector<int>>
 make_unique(int&& arg1, int&& arg2)
@@ -4012,13 +4012,13 @@ make_unique(int&& arg1, int&& arg2)
       forward<int>(arg1),
       forward<int>(arg2)));
 }
-```
+{% endhighlight %}
 
 #### 递归用法
 
 也可以用可变模板来实现编译期递归。
 
-```cpp
+{% highlight cpp %}
 template <typename T>
 constexpr auto sum(T x)
 {
@@ -4032,24 +4032,24 @@ constexpr auto sum(T1 x, T2 y,
 {
   return sum(x + y, args...);
 }
-```
+{% endhighlight %}
 
 在上面的定义里，如果 sum 得到的参数只有一个，会走到上面那个重载。如果有两个或更多参数，编译器就会选择下面那个重载，执行一次加法，随后你的参数数量就少了一个，因而递归总会终止到上面那个重载，结束计算。
 
 要使用上面这个模板，就可以写出像下面这样的函数调用：
 
-```cpp
+{% highlight cpp %}
 auto result = sum(1, 2, 3.5, x);
-```
+{% endhighlight %}
 
 模板会这样依次展开：
 
-```
+{% highlight text %}
 sum(1 + 2, 3.5, x)
 sum(3 + 3.5, x)
 sum(6.5 + x)
 6.5 + x
-```
+{% endhighlight %}
 
 注意我们都不必使用相同的数据类型：只要这些数据之间可以应用 `+`，它们的类型无关紧要。
 
@@ -4057,7 +4057,7 @@ sum(6.5 + x)
 
 在 C++ 里，要通用地**用一个变量来表达多个值**，那就得看**多元组 `tuple` 模板**了。tuple 算是 C++98 里的 pair 类型的一般化，可以表达任意多个固定数量、固定类型的值的组合。
 
-```cpp
+{% highlight cpp %}
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -4105,7 +4105,7 @@ int main()
     tuple_size_v<num_tuple>;
   cout << "Tuple size is " << size << endl;
 }
-```
+{% endhighlight %}
 
 可以看到：
 
@@ -4120,7 +4120,7 @@ int main()
 
 利用 `constexpr` 函数，可以通过**编译期完成计算**：
 
-```cpp
+{% highlight cpp %}
 constexpr int
 count_bits(unsigned char value)
 {
@@ -4131,11 +4131,11 @@ count_bits(unsigned char value)
            count_bits(value >> 1);
   }
 }
-```
+{% endhighlight %}
 
 定义一个模板，它的参数是一个序列，在初始化时这个模板会对参数里的每一项计算比特数，并放到数组成员里。
 
-```cpp
+{% highlight cpp %}
 template <size_t... V>
 struct bit_count_t {
   unsigned char
@@ -4143,7 +4143,7 @@ struct bit_count_t {
       static_cast<unsigned char>(
         count_bits(V))...};
 };
-```
+{% endhighlight %}
 
 * 用 `sizeof...(V)` 可以获得参数的个数。
 
@@ -4170,7 +4170,7 @@ struct bit_count_t {
 
 一个使用**thread 线程类**的例子：
 
-```cpp
+{% highlight cpp %}
 #include <chrono>
 #include <iostream>
 #include <mutex>
@@ -4195,14 +4195,14 @@ int main()
   t1.join();
   t2.join();
 }
-```
+{% endhighlight %}
 
 这是某次执行的结果：
 
-```
+{% highlight text %}
 I am thread B
 I am thread A
-```
+{% endhighlight %}
 
 > 注意：一个平台细节，在 Linux 上编译线程相关的代码都需要加上 `-pthread` 命令行参数。Windows 和 macOS 上则不需要。
 
@@ -4214,7 +4214,7 @@ I am thread A
 
 thread 不能在析构时自动 join 有点不那么自然，这可以算是一个缺陷吧。在 C++20 的 [jthread](https://en.cppreference.com/w/cpp/thread/jthread) 到来之前，我们只能自己小小封装一下了。
 
-```cpp
+{% highlight cpp %}
 class scoped_thread {
 public:
   template <typename... Arg>
@@ -4245,7 +4245,7 @@ int main()
   scoped_thread t1{func, "A"};
   scoped_thread t2{func, "B"};
 }
-```
+{% endhighlight %}
 
 * 使用了可变模板和完美转发来构造 thread 对象。
 * thread 不能拷贝，但可以移动。
@@ -4278,7 +4278,7 @@ int main()
 
 比较传统的做法是使用**信号量**或者**条件变量**。
 
-```cpp
+{% highlight cpp %}
 #include <chrono>
 #include <condition_variable>
 #include <functional>
@@ -4317,7 +4317,7 @@ int main()
 
   cout << "Answer: " << result << '\n';
 }
-```
+{% endhighlight %}
 
 用 `ref` 模板来告诉 thread 的构造函数，我们需要传递条件变量和结果变量的**引用**，因为 thread **默认复制或移动所有的参数作为线程函数的参数**。
 
@@ -4325,7 +4325,7 @@ int main()
 
 更简单的方法是，把上面的代码直接翻译成使用 [async](https://en.cppreference.com/w/cpp/thread/async)（它会返回一个 `future`）：
 
-```cpp
+{% highlight cpp %}
 #include <chrono>
 #include <future>
 #include <iostream>
@@ -4347,7 +4347,7 @@ int main()
   cout << "I am waiting now\n";
   cout << "Answer: " << fut.get() << '\n';
 }
-```
+{% endhighlight %}
 
 * work 函数现在不需要考虑条件变量之类的实现细节了，专心干好自己的计算活、老老实实返回结果就可以了。
 * 调用 async 可以获得一个未来量，`launch::async` 是运行策略，告诉函数模板 async 应当在新线程里异步调用目标函数。在一些老版本的 GCC 里，不指定运行策略，默认不会起新线程。
@@ -4363,7 +4363,7 @@ int main()
 
 上面用 async 函数生成了未来量，但这不是唯一的方式。另外有一种常用的方式是 [promise](https://zh.cppreference.com/w/cpp/thread/promise)，我称之为**“承诺量”**。用 promise 该怎么写：
 
-```cpp
+{% highlight cpp %}
 #include <chrono>
 #include <future>
 #include <iostream>
@@ -4392,7 +4392,7 @@ int main()
   cout << "I am waiting now\n";
   cout << "Answer: " << fut.get() << '\n';
 }
-```
+{% endhighlight %}
 
 `promise` 和 `future` 在这里成对出现，**可以看作是一个一次性管道：有人需要兑现承诺，往 promise 里放东西（set_value）；有人就像收期货一样，到时间去 future（写到这里想到，期货英文不就是 future 么，是不是该翻译成**期货量**呢？）里拿（get）就行了**。我们把 prom 移动给新线程，这样老线程就完全不需要管理它的生命周期了。
 
@@ -4418,26 +4418,26 @@ C++98 的年代里，开发者们已经了解了线程的概念，但 C++ 的标
 
 例子，假设有**两个全局变量**：
 
-```cpp
+{% highlight cpp %}
 int x = 0;
 int y = 0;
-```
+{% endhighlight %}
 
 然后在一个线程里执行：
 
-```cpp
+{% highlight cpp %}
 x = 1;
 y = 2;
-```
+{% endhighlight %}
 
 在另一个线程里执行：
 
-```cpp
+{% highlight cpp %}
 if (y == 2) {
   x = 3;
   y = 4;
 }
-```
+{% endhighlight %}
 
 想一下，x、y 的数值有几种可能？
 
@@ -4454,7 +4454,7 @@ if (y == 2) {
 
 在**多线程**可能对**同一个单件进行初始化**的情况下，有一个**双重检查锁定**的技巧，可基本示意如下：
 
-```cpp
+{% highlight cpp %}
 // 头文件
 class singleton {
 public:
@@ -4477,7 +4477,7 @@ singleton* singleton::instance()
   }
   return inst_ptr_;
 }
-```
+{% endhighlight %}
 
 **这个代码的目的是消除大部分执行路径上的加锁开销**。原本的意图是：**如果 inst_ptr_ 没有被初始化，执行才会进入加锁的路径，防止单件被构造多次；如果 inst_ptr_ 已经被初始化，那它就会被直接返回，不会产生额外的开销**。虽然看上去很美，**但它一样有着上面提到的问题**。**Scott Meyers 和 Andrei Alexandrecu 详尽地分析了这个用法（[refer: Scott Meyers and Andrei Alexandrescu, “C++ and the perils of double-checked locking”](https://www.aristeia.com/Papers/DDJ_Jul_Aug_2004_revised.pdf)），然后得出结论：即使花上再大的力气，这个用法仍然有着非常多的难以填补的漏洞**。本质上还是上面说的，**优化编译器会努力击败你试图想防止优化的努力，而多处理器会以令人意外的方式让代码走到错误的执行路径上去**。
 
@@ -4505,21 +4505,21 @@ singleton* singleton::instance()
 
 在**线程 1** 需要使用释放语义：
 
-```cpp
+{% highlight cpp %}
 atomic<int> y;
 
 x = 1;
 y.store(2, memory_order_release); // 释放，写操作
-```
+{% endhighlight %}
 
 在**线程 2** 对 y 的读取应当使用获得语义，但存储只需要松散内存序即可：
 
-```cpp
+{% highlight cpp %}
 if (y.load(memory_order_acquire) == 2) { // 获得，读操作
   x = 3;
   y.store(4, memory_order_relaxed);
 }
-```
+{% endhighlight %}
 
 用下图示意一下，**每一边的代码都不允许重排越过黄色区域**，且如果 y 上的释放早于 y 上的获取的话，释放前对内存的修改都在另一个线程的获取操作后可见：
 
@@ -4566,7 +4566,7 @@ C++11 在 头文件中引入了 [atomic](https://en.cppreference.com/w/cpp/atomi
 
 由于我们并不需要 `++` 之后计数值影响其他行为，在 add_count 中执行简单的 ++、使用顺序一致性语义略有浪费。更好的做法是将其实现成：
 
-```cpp
+{% highlight cpp %}
 #include <atomic>
 
 std::atomic_long count_;// atomic_long 是 atomic<long> 的类型别名
@@ -4576,7 +4576,7 @@ void add_count() noexcept
 count_.fetch_add(
   1, std::memory_order_relaxed);
 }
-```
+{% endhighlight %}
 
 > 注意：is_lock_free 的可能问题
 >
@@ -4598,7 +4598,7 @@ count_.fetch_add(
 
 实现一个真正**安全的双重检查锁定**：
 
-```cpp
+{% highlight cpp %}
 // 头文件
 class singleton {
 public:
@@ -4631,7 +4631,7 @@ singleton* singleton::instance()
   }
   return inst_ptr_;
 }
-```
+{% endhighlight %}
 
 > 注意：对互斥量和原子量的区别。
 >
@@ -4646,7 +4646,7 @@ singleton* singleton::instance()
 
 标准库里 queue 有下面这样的接口：
 
-```cpp
+{% highlight cpp %}
 template <typename T>
 class queue {
 public:
@@ -4656,13 +4656,13 @@ public:
   void pop();
   …
 }
-```
+{% endhighlight %}
 
 会不会在我们正在访问 front() 的时候，这个元素就被 pop 掉了？
 
 事实上，上面这样的接口是不可能做到并发安全的。并发安全的接口大概长下面这个样子：
 
-```cpp
+{% highlight cpp %}
 template <typename T>
 class queue {
 public:
@@ -4671,7 +4671,7 @@ public:
   bool try_pop(T& dest);
   …
 }
-```
+{% endhighlight %}
 
 换句话说，要准备好位置去接收；然后如果接收成功了，才安安静静地在自己的线程里处理已经被弹出队列的对象。接收方式还得分两种，阻塞式的和非阻塞式的……
 
@@ -4724,7 +4724,7 @@ C++17 引入的 [optional 模板](https://en.cppreference.com/w/cpp/utility/opti
 
 在没有 `variant` 类型之前，你要达到类似的目的，恐怕会使用一种叫做**带标签的联合（tagged union）**的数据结构。比如，下面就是一个可能的数据结构定义：
 
-```cpp
+{% highlight cpp %}
 struct FloatIntChar {
   enum {
     Float,
@@ -4738,16 +4738,16 @@ struct FloatIntChar {
     char char_value;
   };
 };
-```
+{% endhighlight %}
 
 这个数据结构的最大问题，就是它实际上有很多复杂情况需要特殊处理。对于上面例子里的 **POD 类型**，这么写就可以了。如果把其中一个类型换成**非 POD 类型**，就会有复杂问题出现（编译器会很合理地看到在 union 里使用 string 类型会带来构造和析构上的问题，所以会拒绝工作）。
 
 所以，**目前的主流建议是，应该避免使用“裸” union 了。替换为 `variant`**。
 
-```cpp
+{% highlight cpp %}
 variant<string, int, char> obj{"Hello world"};
 cout << get<string>(obj) << endl;
-```
+{% endhighlight %}
 
 * 可以注意到我上面构造时使用的是 `const char*`，但构造函数仍然能够正确地选择 `string` 类型，这是**因为标准要求实现在没有一个完全匹配的类型的情况下，会选择成员类型中能够以传入的类型来构造的那个类型进行初始化（有且只有一个时）**。`string` 类存在形式为 `string(const char*)` 的构造函数（不精确地说），所以上面的构造能够正确进行。
 * 跟 `tuple` 相似，`variant` 上可以使用 `get` 函数模板，其模板参数可以是代表序号的**数字**，也可以是**类型**。如果编译时可以确定序号或类型不合法，在编译时就会出错。如果序号或类型合法，但运行时发现 variant 里存储的并不是该类对象，则会得到一个异常 `bad_variant_access`。
@@ -4761,7 +4761,7 @@ cout << get<string>(obj) << endl;
 
 `optional` 可以作为**一种代替异常的方式：在原本该抛异常的地方，我们可以改而返回一个空的 optional 对象**。当然，此时只知道没有返回一个合法的对象，而不知道为什么没有返回合法对象了。可以考虑改用一个 `variant`，但此时需要给错误类型一个独特的类型才行，因为这是 variant 模板的要求。比如：
 
-```cpp
+{% highlight cpp %}
 enum class error_code {
   success,
   operation_failure,
@@ -4771,7 +4771,7 @@ enum class error_code {
 
 variant<Obj, error_code>
   get_object(…);
-```
+{% endhighlight %}
 
 这当然是一种可行的错误处理方式：我们可以判断返回值的 `index()`，来决定是否发生了错误。但这种方式不那么直截了当，也要求实现对允许的错误类型作出规定。
 
@@ -4793,7 +4793,7 @@ refer：
 
 众所周知，C 和 C++（甚至推而广之到大部分的常用编程语言）里的数值类型是有精度限制的。比如，`INT_MIN`，最小的整数。很多情况下，使用目前这些类型是够用的（最高一般是 64 位整数和 80 位浮点数）。但也有很多情况，这些标准的类型远远不能满足需要。这时你就需要一个**高精度的数值类型**了。
 
-```cpp
+{% highlight cpp %}
 #include <iomanip>
 #include <iostream>
 #include <boost/multiprecision/cpp_int.hpp>
@@ -4816,7 +4816,7 @@ int main()
   cout << hex << result << endl;
   cout << dec << result << endl;
 }
-```
+{% endhighlight %}
 
 可以看到，cpp_int 可以通过自定义字面量（后缀 `_cppi`；只能十六进制）来初始化，可以通过一个普通整数来初始化，也可以通过字符串来初始化（并可以使用 0x 和 0 前缀来选择十六进制和八进制）。拿它可以正常地进行加减乘除操作，也可以通过 IO 流来输入输出。
 
@@ -4841,7 +4841,7 @@ Boost 的网站把 Boost 描述成为经过同行评审的、可移植的 C++ �
 
 TypeIndex 是一个很轻量级的库，它不需要链接，解决的也是使用模板时的一个常见问题，如何精确地知道**一个表达式或变量的类型**。
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <typeinfo>
 #include <utility>
@@ -4885,7 +4885,7 @@ int main()
             (it))>()
        << endl;
 }
-```
+{% endhighlight %}
 
 * `typeid` 是标准 C++ 的关键字，可以应用到变量或类型上，返回一个 `std::type_info`。我们可以用它的 `name` 成员函数把结果转换成一个字符串，**但标准不保证这个字符串的可读性和唯一性**。
 * `type_id` 是 Boost 提供的函数模板，必须提供类型作为模板参数——所以对于表达式和变量我们需要使用 `decltype`。结果可以直接输出到 IO 流上。
@@ -4893,7 +4893,7 @@ int main()
 
 另外一个例子：
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <typeinfo>
 #include <boost/type_index.hpp>
@@ -4936,16 +4936,16 @@ int main()
   CHECK_TYPE_ID(*ptr, circle);
   delete ptr;
 }
-```
+{% endhighlight %}
 
 输出：
 
-```
+{% highlight text %}
 typeid(*ptr) is NOT shape
 typeid(*ptr) is circle
 type_id(*ptr) is shape
 type_id(*ptr) is NOT circle
-```
+{% endhighlight %}
 
 ## Boost.Core
 
@@ -4960,7 +4960,7 @@ Core 里面提供了一些通用的工具，这些工具常常被 Boost 的其�
 
 `boost::core::demangle` 能够用来把 `typeid` 返回的内部名称“反粉碎”（demangle）成**可读的形式**。
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <typeinfo>
 #include <utility>
@@ -4991,20 +4991,20 @@ int main()
             typeid(it).name())
        << endl;
 }
-```
+{% endhighlight %}
 
 ### boost::noncopyable
 
 `boost::noncopyable` 提供了一种非常简单也很直白的把类声明成**不可拷贝的方式**。
 
-```cpp
+{% highlight cpp %}
 #include <boost/core/noncopyable.hpp>
 
 class shape_wrapper
   : private boost::noncopyable {
   …
 };
-```
+{% endhighlight %}
 
 你当然也可以自己把拷贝构造和拷贝赋值函数声明成 `= delete`，不过，上面的写法是不是可读性更佳？
 
@@ -5012,26 +5012,26 @@ class shape_wrapper
 
 在通用的代码如何对一个不知道类型的对象执行交换操作？
 
-```cpp
+{% highlight cpp %}
 {
   using std::swap;
   swap(lhs, rhs);
 }
-```
+{% endhighlight %}
 
 即，我们需要（在某个小作用域里）引入 `std::swap`，然后让编译器在“看得到” `std::swap` 的情况下去编译 swap 指令。根据 ADL，如果在被交换的对象所属类型的名空间下有 swap 函数，那个函数会被优先使用，否则，编译器会选择通用的 `std::swap`。似乎有点小啰嗦。使用 Boost 的话，你可以一行搞定：
 
-```cpp
+{% highlight cpp %}
 #include <boost/core/swap.hpp>
 
 boost::swap(lhs, rhs);
-```
+{% endhighlight %}
 
 ### Boost.Conversion
 
 Conversion 同样是一个不需要链接的轻量级的库。它解决了标准 C++ 里的另一个问题，标准类型之间的转换不够方便。在 C++11 之前，这个问题尤为严重。在 C++11 里，标准引入了一系列的函数，已经可以满足常用类型之间的转换。但使用 Boost.Conversion 里的 lexical_cast 更不需要去查阅方法名称或动脑子去努力记忆。
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -5073,15 +5073,15 @@ int main()
     cout << e.what() << endl;
   }
 }
-```
+{% endhighlight %}
 
 输出：
 
-```42
+{% highlight 42 %}
 10.5
 bad lexical cast: source type value could not be interpreted as target
 stoi
-```
+{% endhighlight %}
 
 GCC 里 stoi 的异常输出有点太言简意赅了。而 lexical_cast 的异常输出在不同的平台上有很好的一致性。
 
@@ -5089,7 +5089,7 @@ GCC 里 stoi 的异常输出有点太言简意赅了。而 lexical_cast 的异�
 
 `RAII` 是推荐的 C++ 里管理资源的方式。不过，作为 C++ 程序员，跟 C 函数打交道也很正常。每次都写个新的 RAII 封装也有点浪费。Boost 里提供了一个简单的封装，你可以从下面的示例代码里看到它是如何使用的：
 
-```cpp
+{% highlight cpp %}
 #include <stdio.h>
 #include <boost/scope_exit.hpp>
 
@@ -5120,15 +5120,15 @@ int main()
     puts("Exception received");
   }
 }
-```
+{% endhighlight %}
 
 唯一需要说明的可能就是 `BOOST_SCOPE_EXIT` 里的那个 `&` 符号了——把它理解成 lambda 表达式的按引用捕获就对了（虽然 `BOOST_SCOPE_EXIT` 可以支持 C++98 的代码）。如果不需要捕获任何变量，`BOOST_SCOPE_EXIT` 的参数必须填为 `void`。
 
-```
+{% highlight text %}
 Faking an exception
 File is closed
 Exception received
-```
+{% endhighlight %}
 
 注意：使用这个库也只需要头文件。注意实现类似的功能在 C++11 里相当容易，但由于 ScopeExit 可以支持 C++98 的代码，因而它的实现还是相当复杂的。
 
@@ -5145,7 +5145,7 @@ Exception received
 
 `Program_options` 正是解决这个问题的。这个代码有点老了，不过还挺实用；懒得去找特别的处理库时，至少这个伸手可用。使用这个库需要链接 `boost_program_options` 库。
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #include <string>
 #include <stdlib.h>
@@ -5206,7 +5206,7 @@ int main(int argc, char* argv[])
     exit(1);
   }
 }
-```
+{% endhighlight %}
 
 * `options_description` 是基本的选项描述对象的类型，构造时我们给出对选项的基本描述。
 * `options_description` 对象的 `add_options` 成员函数会返回一个函数对象，然后我们直接用括号就可以添加一系列的选项。
@@ -5225,7 +5225,7 @@ int main(int argc, char* argv[])
 
 ## Boost.Test
 
-```cpp
+{% highlight cpp %}
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include <stdexcept>
@@ -5256,7 +5256,7 @@ BOOST_AUTO_TEST_CASE(my_test)
 BOOST_AUTO_TEST_CASE(null_test)
 {
 }
-```
+{% endhighlight %}
 
 * 在包含单元测试的头文件之前定义了 `BOOST_TEST_MAIN`。**如果编译时用到了多个源文件，只有一个应该定义该宏**。多文件测试的时候，一般会考虑把这个定义这个宏加包含放在一个单独的文件里（只有两行）。
 * 用 `BOOST_AUTO_TEST_CASE` 来定义**一个测试用例**。一个测试用例里应当有**多个测试语句**（如 `BOOST_CHECK`）。
@@ -5293,7 +5293,7 @@ BOOST_AUTO_TEST_CASE(null_test)
 * 可选使用 `BDD（Behavior-Driven Development）`风格的分节形式
 * 测试失败可选直接进入调试器（Windows 和 macOS 上）
 
-```cpp
+{% highlight cpp %}
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include <stdexcept>
@@ -5322,7 +5322,7 @@ TEST_CASE("My first test", "[my]")
 TEST_CASE("A null test", "[null]")
 {
 }
-```
+{% endhighlight %}
 
 **什么是 [BDD (Behavior-driven development) 风格的测试](https://en.wikipedia.org/wiki/Behavior-driven_development) ？**
 
@@ -5335,7 +5335,7 @@ BDD 风格的测试一般采用这样的结构：
 
 假设测试一个容器，那代码就应该是这个样子的：
 
-```cpp
+{% highlight cpp %}
 SCENARIO("Int container can be accessed and modified",
          "[container]")
 {
@@ -5372,7 +5372,7 @@ SCENARIO("Int container can be accessed and modified",
     }
   }
 }
-```
+{% endhighlight %}
 
 Catch2 是一个很现代、很好用的测试框架。它的宏更简单，一个 CHECK 可以替代 Boost.Test 中的 BOOST_TEST 和 BOOST_CHECK，也没有 BOOST_TEST 在某些情况下不能用、必须换用 BOOST_CHECK 的问题。对于一个新项目，使用 Catch2 应该是件更简单、更容易上手的事——尤其如果你在 Windows 上开发的话。
 
@@ -5407,7 +5407,7 @@ Easylogging++ 有很多的配置项会影响编译结果，常用的可配置项
 
 例子：
 
-```cpp
+{% highlight cpp %}
 #include "easylogging++.h"
 INITIALIZE_EASYLOGGINGPP
 
@@ -5415,15 +5415,15 @@ int main()
 {
   LOG(INFO) << "My first info log";
 }
-```
+{% endhighlight %}
 
 g++ -std=c++17 test.cpp easylogging++.cc
 
 运行生成的可执行程序，就可以看到结果输出到**终端**和 **myeasylog.log** 文件里，包含了日期、时间、级别、日志名称和日志信息，形如：
 
-```
+{% highlight text %}
 2020-01-25 20:47:50,990 INFO [default] My first info log
-```
+{% endhighlight %}
 
 `INITIALIZE_EASYLOGGINGPP` 展开后（可以用编译器的 `-E` 参数查看宏展开后的结果）是定义了 `Easylogging++` 使用到的**全局对象**，而 `LOG(INFO)` 则是 Info 级别的日志记录器，同时传递了文件名、行号、函数名等日志需要的信息。
 
@@ -5436,7 +5436,7 @@ g++ -std=c++17 test.cpp easylogging++.cc
 
 Easylogging++ 库自己支持配置文件，推荐使用一个专门的配置文件，并让 Easylogging++ 自己来加载配置文件。
 
-```
+{% highlight text %}
 * GLOBAL:
    FORMAT               =  "%datetime{\%Y-%M-%d %H:%m:%s.%g} %levshort %msg"
    FILENAME             =  "test.log"
@@ -5450,14 +5450,14 @@ Easylogging++ 库自己支持配置文件，推荐使用一个专门的配置文
    FORMAT               = "%datetime{\%Y-%M-%d %H:%m:%s.%g} %levshort [%fbase:%line] %msg"
    TO_FILE              =  true
    TO_STANDARD_OUTPUT   =  false    ## 调试日志不输出到标准输出
-```
+{% endhighlight %}
 
 * 第一节是全局（global）配置，配置了适用于所有级别的日志选项
 * 第二节是专门用于调试（debug）级别的配置（你当然也可以自己配置 fatal、error、warning 等其他级别）
 
 假设这个配置文件的名字是 `log.conf`，在代码中可以这样使用：
 
-```cpp
+{% highlight cpp %}
 #include "easylogging++.h"
 INITIALIZE_EASYLOGGINGPP
 
@@ -5470,16 +5470,16 @@ int main()
   LOG(DEBUG) << "A debug message";
   LOG(INFO) << "An info message";
 }
-```
+{% endhighlight %}
 
 注意编译命令行上应当加上 `-DELPP_NO_DEFAULT_LOG_FILE`，否则 Easylogging++ 仍然会生成缺省的日志文件。
 
 运行生成的可执行程序，会在终端上看到一条信息，但在日志文件里则可以看到两条信息。如下所示：
 
-```
+{% highlight text %}
 2020-01-26 12:54:58.986739 D [test.cpp:11] A debug message
 2020-01-26 12:54:58.987444 I An info message
-```
+{% endhighlight %}
 
 推荐在编译时定义宏 `ELPP_DEBUG_ASSERT_FAILURE`，这样能在找不到配置文件时直接终止程序，而不是继续往下执行、在终端上以缺省的方式输出日志了。
 
@@ -5487,7 +5487,7 @@ int main()
 
 Easylogging++ 可以用来在日志中**记录程序执行的性能数据**。这个功能还是很方便的。下面的代码展示了用于性能跟踪的三个宏的用法：
 
-```cpp
+{% highlight cpp %}
 #include <chrono>
 #include <thread>
 #include "easylogging++.h"
@@ -5519,7 +5519,7 @@ int main()
     reconfigureAllLoggers(conf);
   bar();
 }
-```
+{% endhighlight %}
 
 * `TIMED_FUNC` 接受一个参数，是用于性能跟踪的对象的名字。它能自动产生函数的名称。示例中的 `TIMED_FUNC` 和 `TIMED_SCOPE` 的作用是完全相同的。
 * `TIMED_SCOPE` 接受两个参数，分别是用于性能跟踪的对象的名字，以及用于记录的名字。如果你不喜欢 `TIMED_FUNC` 生成的函数名字，可以用 `TIMED_SCOPE` 来代替。
@@ -5527,7 +5527,7 @@ int main()
 
 在编译含有上面三个宏的代码时，需要定义宏 `ELPP_FEATURE_PERFORMANCE_TRACKING`。你一般也应该定义 `ELPP_PERFORMANCE_MICROSECONDS`，来获取微秒级的精度。下面是定义了上面两个宏编译的程序的某次执行的结果：
 
-```
+{% highlight text %}
 2020-01-26 15:00:11.99736 W A warning message
 2020-01-26 15:00:11.99748 I Executed [void foo()] in [110 us]
 2020-01-26 15:00:11.99749 W A warning message
@@ -5536,7 +5536,7 @@ int main()
 2020-01-26 15:00:11.99751 I Executed [void foo()] in [4 us]
 2020-01-26 15:00:11.99774 I Executed [a block] in [232 us]
 2020-01-26 15:00:11.99776 I Executed [void bar()] in [398 us]
-```
+{% endhighlight %}
 
 > 注意：
 > 1. 由于 Easylogging++ 本身有一定开销，且开销有一定的不确定性，这种方式**只适合颗粒度要求比较粗的性能跟踪**。
@@ -5548,7 +5548,7 @@ int main()
 
 在 GCC 和 Clang 下，通过定义宏 `ELPP_FEATURE_CRASH_LOG` 可以启用崩溃日志。此时，**当程序崩溃时，Easylogging++ 会自动在日志中记录程序的调用栈信息**。通过记录下的信息，再利用 `addr2line` 这样的工具，就能知道是程序的哪一行引发了崩溃。
 
-```cpp
+{% highlight cpp %}
 #include "easylogging++.h"
 INITIALIZE_EASYLOGGINGPP
 
@@ -5566,38 +5566,38 @@ int main()
     reconfigureAllLoggers(conf);
   boom();
 }
-```
+{% endhighlight %}
 
 注意：使用 macOS 的需要特别注意一下：由于缺省方式产生的可执行文件是位置独立的，系统每次加载程序会在不同的地址，导致无法通过地址定位到程序行。在编译命令行尾部加上 -Wl,-no_pie 可以解决这个问题。
 
 
 ## spdlog
 
-```cpp
+{% highlight cpp %}
 #include "spdlog/spdlog.h"
 
 int main()
 {
   spdlog::info("My first info log");
 }
-```
+{% endhighlight %}
 
 从代码中已经注意到，spdlog 不是使用 IO 流风格的输出了。它采用跟 Python 里的 str.format 一样的方式，使用大括号——可选使用序号和格式化要求——来对参数进行格式化。
 
-```cpp
+{% highlight cpp %}
   spdlog::warn(
     "Message with arg {}", 42);
   spdlog::error(
     "{0:d}, {0:x}, {0:o}, {0:b}",
     42);
-```
+{% endhighlight %}
 
 输出：
 
-```
+{% highlight text %}
 [2020-01-26 17:20:08.355] [warning] Message with arg 42
 [2020-01-26 17:20:08.355] [error] 42, 2a, 52, 101010
-```
+{% endhighlight %}
 
 事实上，这就是 C++20 的 format 的风格了——spdlog 就是使用了一个 [format 的库](https://github.com/fmtlib/fmt)实现 fmt。
 
@@ -5605,7 +5605,7 @@ int main()
 
 在 spdlog 里，要输出文件得打开**专门的文件日志记录器**。
 
-```cpp
+{% highlight cpp %}
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
 
@@ -5620,18 +5620,18 @@ int main()
   spdlog::info("Into file: {1} {0}",
                "world", "hello");
 }
-```
+{% endhighlight %}
 执行之后，终端上没有任何输出，但 test.log 文件里就会增加如下的内容：
 
-```
+{% highlight text %}
 [2020-01-26 17:47:37.864] [basic_logger] [info] Into file: hello world
-```
+{% endhighlight %}
 
 ### 日志文件切
 
 在 Easylogging++ 里实现日志文件切换是需要写代码的，而且完善的多文件切换代码需要写上几十行代码才能实现。这项工作在 spdlog 则是超级简单的，因为 spdlog 直接提供了一个实现该功能的日志槽。把上面的例子改造成带日志文件切换只需要修改两处：
 
-```cpp
+{% highlight cpp %}
 #include "spdlog/sinks/rotating_file_sink.h"
 // 替换 basic_file_sink.h
 …
@@ -5640,7 +5640,7 @@ int main()
     "test.log", 1048576 * 5, 3);
   // 替换 basic_file_sink_mt，文件大
   // 小为 5MB，一共保留 3 个日志文件
-```
+{% endhighlight %}
 
 
 
@@ -5674,9 +5674,9 @@ Clang 目前在 macOS 下是默认的 C/C++ 编译器。在 Linux 和 Windows �
 
 要想使用最新版本的 Clang，最方便的方式是使用 Homebrew 安装 llvm：
 
-```
+{% highlight text %}
 brew install llvm
-```
+{% endhighlight %}
 
 安装完之后，新的 clang 和 clang++ 工具在 `/usr/local/opt/llvm/bin` 目录下，和系统原有的命令不会发生冲突。你如果需要使用新的工具的话，需要改变路径的顺序，或者自己创建命令的别名（alias）。
 
@@ -5697,9 +5697,9 @@ Clang 有着非常模块化的设计，容易被其他工具复用其代码分�
 
 Clang 项目也提供了其他一些工具，包括代码的静态检查工具 [Clang-Tidy](https://clang.llvm.org/extra/clang-tidy/) 。这是一个比较全面的工具，它除了会提示你危险的用法，也会告诉你如何去现代化你的代码。默认情况下，Clang-Tidy 只做基本的分析。你也可以告诉它你想现代化你的代码和提高代码的可读性：
 
-```
+{% highlight text %}
 clang-tidy --checks='clang-analyzer-*,modernize-*,readability-*' test.cpp
-```
+{% endhighlight %}
 
 ### Cppcheck
 
@@ -5711,12 +5711,12 @@ Clang-Tidy 还是一个比较“重”的工具。它需要有一定的配置，
 
 [Valgrind](https://valgrind.org/) 算是一个老牌工具了。它是一个非侵入式的排错工具。根据 Valgrind 的文档，它会导致可执行文件的速度减慢 20 至 30 倍。但它可以在不改变可执行文件的情况下，只要求你在编译时增加产生调试信息的命令行参数（`-g`），即可查出内存相关的错误。
 
-```cpp
+{% highlight cpp %}
 int main()
 {
   char* ptr = new char[20];
 }
-```
+{% endhighlight %}
 
 在 Linux 上使用 `g++ -g test.cpp` 编译之后，然后使用 `valgrind --leak-check=full ./a.out` 检查运行结果，得到的输出会如下所示：
 
@@ -5728,9 +5728,9 @@ int main()
 
 在 [nvwa](https://github.com/adah1972/nvwa/) 项目里，我也包含了一个很小的内存泄漏检查工具。它的最大优点是小巧，并且对程序运行性能影响极小；缺点主要是不及 Valgrind 易用和强大，只能检查 new 导致的内存泄漏，并需要侵入式地对项目做修改。
 
-```
+{% highlight text %}
 c++ test.cpp \../nvwa/nvwa/debug_new.cpp
-```
+{% endhighlight %}
 
 ## 网页工具
 
@@ -5764,11 +5764,11 @@ c++ test.cpp \../nvwa/nvwa/debug_new.cpp
 
 另外，在 .vimrc 里加了下面几句来集成 clang-format：
 
-```
+{% highlight text %}
 " Key mappings to use clang-format
 noremap <silent> <Tab> :pyxf /usr/local/opt/llvm/share/clang/clang-format.py<CR>
 inoremap <silent> <C-F> <ESC>:pyxf /usr/local/opt/llvm/share/clang/clang-format.py<CR>
-```
+{% endhighlight %}
 
 ## 第三方库管理工具
 
@@ -5783,7 +5783,7 @@ inoremap <silent> <C-F> <ESC>:pyxf /usr/local/opt/llvm/share/clang/clang-format.
 
 ## const引用减少拷贝
 
-```cpp
+{% highlight cpp %}
 #include <cstdio>
 #include <iostream>
 #include <vector>
@@ -5809,11 +5809,11 @@ int main()
         const vector<string>& res = func();
         print(res);
 }
-```
+{% endhighlight %}
 
 ## 字符串分割
 
-```cpp
+{% highlight cpp %}
 #include <cstdio>
 #include <iostream>
 #include <vector>
@@ -5902,7 +5902,7 @@ size: 1 capacity: 10
 ||
 |||
 */
-```
+{% endhighlight %}
 
 [range-for](https://zh.cppreference.com/w/cpp/language/range-for)
 
@@ -5918,7 +5918,7 @@ size: 1 capacity: 10
 
 ## DateTime and UnixTime
 
-```cpp
+{% highlight cpp %}
 #define _XOPEN_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
@@ -5941,9 +5941,9 @@ int main()
 
         return 0;
 }
-```
+{% endhighlight %}
 
-```cpp
+{% highlight cpp %}
 int datetime_to_unixtime(std::string &end_time, time_t &expired_time, std::string &errinfo)
 {
     struct tm tm = {0};
@@ -5975,7 +5975,7 @@ int get_unixtime(time_t &unixtime, std::string &datetime)
 
     return 0;
 }
-```
+{% endhighlight %}
 
 
 refer:
@@ -5989,7 +5989,7 @@ refer:
 
 [How do I write a regular expression that matches an IPv4 dotted address?](https://devblogs.microsoft.com/oldnewthing/20060522-08/?p=31113)
 
-```cpp
+{% highlight cpp %}
 #include <boost/regex.hpp>
 
 /*
@@ -6030,13 +6030,13 @@ void test_regex_ip()
 		match();
 	}
 }
-```
+{% endhighlight %}
 
 ## Unit Test
 
 [参考](https://github.com/idealvin/co/blob/master/base/time.h)
 
-```cpp
+{% highlight cpp %}
 #include "test.h"
 
 std::string ss;
@@ -6044,9 +6044,9 @@ std::string ss;
 def_test(100000);
 def_case(ss = "");
 def_case(ss = std::to_string(12345678));
-```
+{% endhighlight %}
 
-```cpp
+{% highlight cpp %}
 // test.h
 
 #include "base/def.h"
@@ -6067,7 +6067,7 @@ def_case(ss = std::to_string(12345678));
         _us = _t.us(); \
         CLOG << #func << ":\t" << (_us * 1.0 / N) << " us"; \
     } while (0)
-```
+{% endhighlight %}
 
 ## Log
 
@@ -6079,7 +6079,7 @@ def_case(ss = std::to_string(12345678));
 
 GCC为内联汇编提供特殊结构，其格式如下。`汇编程序模板`由`汇编指令`组成。`输入操作数`是充当指令输入操作数使用的C表达式。`输出操作数`是将对其执行汇编指令输出的C表达式。内联汇编的重要性体现在它能够灵活操作，而且可以使其输出通过C变量显示出来。因为它具有这种能力，所以"asm"可以用作汇编指令和包含它的C程序之间的接口。**简单内联汇编只包括指令，而扩展内联汇编包括操作数**。
 
-```asm
+{% highlight asm %}
 asm ( assembler template
 
 : output operands               (optional)
@@ -6090,7 +6090,7 @@ asm ( assembler template
     (optional)
 
 );
-```
+{% endhighlight %}
 
 * [Linux中x86的内联汇编](https://www.ibm.com/developerworks/cn/linux/sdk/assemble/inline/index.html)
 * [x86 Assembly Guide](http://www.cs.virginia.edu/~evans/cs216/guides/x86.html)
@@ -6115,7 +6115,7 @@ C++ REST SDK（也写作 [cpprestsdk](https://github.com/microsoft/cpprestsdk))�
 >
 > 答案：使用 C++ REST SDK 的话，只需要五十多行有效代码（即使是适配到目前的窄小的手机屏幕上）。
 
-```cpp
+{% highlight cpp %}
 #include <iostream>
 #ifdef _WIN32
 #include <fcntl.h>
@@ -6200,7 +6200,7 @@ int main(int argc, char* argv[])
     return 1;
   }
 }
-```
+{% endhighlight %}
 
 * 根据平台来定义 `tcout`，确保多语言的文字能够正确输出。
 * 定义了 get_headers，来从 http_response 中取出头部的字符串表示。
@@ -6220,21 +6220,21 @@ int main(int argc, char* argv[])
 
 * Windows MSVC：
 
-```
+{% highlight text %}
 cl /EHsc /std:c++17 test.cpp cpprest.lib zlib.lib libeay32.lib ssleay32.lib winhttp.lib httpapi.lib bcrypt.lib crypt32.lib advapi32.lib gdi32.lib user32.lib
-```
+{% endhighlight %}
 
 * Linux GCC：
 
-```
+{% highlight text %}
 g++ -std=c++17 -pthread test.cpp -lcpprest -lcrypto -lssl -lboost_thread -lboost_chrono -lboost_system
-```
+{% endhighlight %}
 
 * macOS Clang：
 
-```
+{% highlight text %}
 clang++ -std=c++17 test.cpp -lcpprest -lcrypto -lssl -lboost_thread-mt -lboost_chrono-mt
-```
+{% endhighlight %}
 
 
 

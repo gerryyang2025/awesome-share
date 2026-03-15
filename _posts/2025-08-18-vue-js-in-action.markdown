@@ -28,7 +28,7 @@ tags:
 
 Here is a minimal example:
 
-```js
+{% highlight js %}
 import { createApp, ref } from 'vue'
 
 createApp({
@@ -38,15 +38,15 @@ createApp({
     }
   }
 }).mount('#app')
-```
+{% endhighlight %}
 
-```html
+{% highlight html %}
 <div id="app">
   <button @click="count++">
     Count is: {{ count }}
   </button>
 </div>
-```
+{% endhighlight %}
 
 The above example demonstrates the **two core features** of `Vue`:
 
@@ -82,7 +82,7 @@ Despite the flexibility, the core knowledge about how Vue works is shared across
 
 In most build-tool-enabled Vue projects, we author Vue components using an HTML-like file format called **Single-File Component** (also known as `*.vue` files, abbreviated as **SFC**). A Vue SFC, as the name suggests, encapsulates the component's **logic** (`JavaScript`), **template** (`HTML`), and **styles** (`CSS`) in a single file. Here's the previous example, written in **SFC format**:
 
-```vue
+{% highlight vue %}
 <script setup>
 import { ref } from 'vue'
 const count = ref(0)
@@ -97,7 +97,7 @@ button {
   font-weight: bold;
 }
 </style>
-```
+{% endhighlight %}
 
 [测试代码](https://play.vuejs.org/#eNp9Uc1OAjEQfpWmFzQgmOgJF6ISDnpQox57gd3ZpdBtm3YKmM2+u9MuIAfDrfP99Zu24U/WDrcB+JhnPnfSIvOAwU6FlrU1DlnDHJSsZaUzNeuRtCd0brRHlpugkU0if3V7LXQ26hLISwNCbdUCgSbGsmVANJo95krmm4ngydvvCz6dpRTpx6xpDpFtm406A5mz0VkSjR5/FDCfGwsFIYfgJt5SGo03O5DVCsdsaVTxIHSbekXPlA84kk+XshquvdG0c7LFNrWVCty7RUmrCU5lIhO5hVJm95owdAEGRzxfQb75B1/7fcQE/3DgwW1B8BOHC1cBdvT86w32dD6RtSmCIvUF8hO8USF27GTPQRdU+0yX2r6kn5O6+vbzPYL2x6Vi0ahsk15w+s3ZhdX/6t4N75OP3pO3v13Gvqs=)
 
@@ -113,7 +113,7 @@ Vue components can be authored in two different API styles: **Options API** and 
 
 With **Options API**, we define a component's logic using an object of options such as `data`, `methods`, and `mounted`. Properties defined by options are exposed on `this` inside functions, which points to the component instance:
 
-```vue
+{% highlight vue %}
 <script>
 export default {
   // Properties returned from data() become reactive state
@@ -144,7 +144,7 @@ export default {
 <template>
   <button @click="increment">Count is: {{ count }}</button>
 </template>
-```
+{% endhighlight %}
 
 [测试代码](https://play.vuejs.org/#eNp9Us1O3DAQfpWR1QMIlFRqT6sUtUUc4AAIOPqAcWYTs44d2eNl0SrvzjjZZDkgpEjx/Pj7mfFe/Ov7YptQrEQVdTA9XUiHu94HghrXKlmCvXQAZQkBlSazRYikCHOyVqROTqcG4Dql4OYIQPvkaAU/p3jIv+FcugPaOjlG8y4CtYqgSxl0ggblaqBgmgYDpJ5ZMOZbHVLr67iaKYzTATt0dNQAjGZiMVKfnX3NbM0a9bu2CK33mwk592N9xNEszFssrG9Onp9aZC5DRtnJFJgIP/ZHpqF4Ph1JpOOvKpdJckDY9ZYdcARQvSQi7+CvtkZv/kixWJDi4vIAzf72B55hqMrpCl+vygVLnAuKrHFtmuI1esfrG4VLoX3XG4vhrh+HK8UyLSmUtf7tZsxRSMgTmfK6Rb35Iv8adzknxX3AiGGLUiw1UqFBVp3LV4+3uOPzUux8nSx3f1N8QJ5vyhqntv/J1Sz7U9+o9rrLT9G45ile7QhdnE1lofNecze/4ctvrB/l/ip+z6sSwwfUxv9s)
 
@@ -155,7 +155,7 @@ With **Composition API**, we define a component's logic using imported API funct
 
 Here is the same component, with the exact same template, but using Composition API and `<script setup>` instead:
 
-```vue
+{% highlight vue %}
 <script setup>
 import { ref, onMounted } from 'vue'
 
@@ -176,7 +176,7 @@ onMounted(() => {
 <template>
   <button @click="increment">Count is: {{ count }}</button>
 </template>
-```
+{% endhighlight %}
 
 [测试代码](https://play.vuejs.org/#eNp9kk9r3DAQxb/KIArZkMUutKfgXdqGHFroH9ocdYgrj73KypKQRtstxt+9I9vr5hByMFjz3hv9NNIgPnpfnBKKW1FFFbQniEjJ76XVvXeBYICA7Rac/eqSJWxghDa4Hq44dSWttGXJjlqRPiFEqgmlVc5GApUDsMv5zdvrxdomy1bWgQ41QZ9yYs5BbRugoLsOAyTfcClKewmAtipgj5Y21zBIC3P/4lSbhDc30o7LDka3qP4qg3Bw7sgdVvQNJ3f7S9hGZ7Awrts8PhyQ22vStVmodYQ3w7MNxuKRTzDyV5XznHhCvCDsvWFQXgFUvxMRk35QRqvjTooVWYr93dL3FoZh2WQcq3KOcLwq115iKygyYKu74ik6y5czMUuhXO+1wfDdTzOUgrtlJWu1Me7Pl6lGIeH2UlcHVMcX6k/xnGtS/AgYMZxQilWjOnTI1Fm+//UNz/y/ir1rkmH3K+JP5OGmzDjbPiXbMPYz30T7eXpi2nYP8f5MaOPlUBk0O8fJLwW/tbtXjv4f913xfsrxXYnxH60a++E=)
 
@@ -228,9 +228,9 @@ In this section we will introduce how to scaffold a Vue [Single Page Application
 
 Make sure you have an up-to-date version of `Node.js` installed and your current working directory is the one where you intend to create a project. Run the following command in your command line (without the `$` sign):
 
-```bash
+{% highlight bash %}
 npm create vue@latest
-```
+{% endhighlight %}
 
 This command will install and execute [create-vue](https://github.com/vuejs/create-vue), the official Vue project scaffolding tool. You will be presented with prompts for several optional features such as `TypeScript` and testing support:
 
@@ -238,11 +238,11 @@ This command will install and execute [create-vue](https://github.com/vuejs/crea
 
 If you are unsure about an option, simply choose **No** by hitting enter for now. Once the project is created, follow the instructions to install dependencies and start the dev server:
 
-```bash
+{% highlight bash %}
 cd <your-project-name>
 npm install
 npm run dev
-```
+{% endhighlight %}
 
 **You should now have your first Vue project running!** Note that the example components in the generated project are written using the [Composition API](https://vuejs.org/guide/introduction#composition-api) and `<script setup>`, rather than the [Options API](https://vuejs.org/guide/introduction#options-api). **Here are some additional tips**:
 
@@ -257,9 +257,9 @@ npm run dev
 
 When you are ready to ship your app to **production**, run the following:
 
-```bash
+{% highlight bash %}
 npm run build
-```
+{% endhighlight %}
 
 This will create a production-ready build of your app in the project's `./dist` directory. Check out the [Production Deployment Guide](https://vuejs.org/guide/best-practices/production-deployment.html) to learn more about shipping your app to production.
 
@@ -276,13 +276,13 @@ This will create a production-ready build of your app in the project's `./dist` 
 
 Every **Vue application** starts by **creating a new application instance** with the [createApp](https://vuejs.org/api/application.html#createapp) function:
 
-```js
+{% highlight js %}
 import { createApp } from 'vue'
 
 const app = createApp({
   /* root component options */
 })
-```
+{% endhighlight %}
 
 ## The Root Component
 
@@ -290,17 +290,17 @@ The object we are passing into `createApp` is in fact a component. Every app req
 
 If you are using **Single-File Components**, we typically import the root component from another file:
 
-```js
+{% highlight js %}
 import { createApp } from 'vue'
 // import the root component App from a single-file component.
 import App from './App.vue'
 
 const app = createApp(App)
-```
+{% endhighlight %}
 
 While many examples in this guide only need a single component, **most real applications are organized into a tree of nested, reusable components**. For example, a Todo application's component tree might look like this:
 
-```
+{% highlight text %}
 App (root component)
 ├─ TodoList
 │  └─ TodoItem
@@ -309,7 +309,7 @@ App (root component)
 └─ TodoFooter
    ├─ TodoClearButton
    └─ TodoStatistics
-```
+{% endhighlight %}
 
 In later sections of the guide, we will discuss how to define and compose multiple components together. **Before that, we will focus on what happens inside a single component**.
 
@@ -318,13 +318,13 @@ In later sections of the guide, we will discuss how to define and compose multip
 
 An application instance won't render anything until its `.mount()` method is called. It expects a "container" argument, which can either be an actual DOM element or a selector string:
 
-```html
+{% highlight html %}
 <div id="app"></div>
-```
+{% endhighlight %}
 
-```js
+{% highlight js %}
 app.mount('#app')
-```
+{% endhighlight %}
 
 The content of the app's root component will be rendered inside the container element. The container element itself is not considered part of the app.
 
@@ -335,13 +335,13 @@ The `.mount()` method should always be called after all app configurations and a
 
 The template for the root component is usually part of the component itself, but it is also possible to provide the template separately by writing it directly inside the mount container:
 
-```html
+{% highlight html %}
 <div id="app">
   <button @click="count++">{{ count }}</button>
 </div>
-```
+{% endhighlight %}
 
-```js
+{% highlight js %}
 import { createApp } from 'vue'
 
 const app = createApp({
@@ -353,7 +353,7 @@ const app = createApp({
 })
 
 app.mount('#app')
-```
+{% endhighlight %}
 
 Vue will automatically use the container's `innerHTML` as the template if the root component does not already have a `template` option.
 
@@ -365,17 +365,17 @@ In-DOM templates are often used in applications that are [using Vue without a bu
 
 The application instance exposes a `.config` object that allows us to configure a few app-level options, for example, defining an app-level error handler that captures errors from all descendant components:
 
-```js
+{% highlight js %}
 app.config.errorHandler = (err) => {
   /* handle error */
 }
-```
+{% endhighlight %}
 
 The application instance also provides a few methods for registering app-scoped assets. For example, registering a component:
 
-```js
+{% highlight js %}
 app.component('TodoDeleteButton', TodoDeleteButton)
-```
+{% endhighlight %}
 
 This makes the `TodoDeleteButton` available for use anywhere in our app. We will discuss registration for components and other types of assets in later sections of the guide. You can also browse the full list of application instance APIs in its [API reference](https://vuejs.org/api/application.html).
 
@@ -386,7 +386,7 @@ Make sure to apply all app configurations before mounting the app!
 
 You are not limited to a single application instance on the same page. The `createApp` API allows multiple Vue applications to co-exist on the same page, each with its own scope for configuration and global assets:
 
-```js
+{% highlight js %}
 const app1 = createApp({
   /* ... */
 })
@@ -396,7 +396,7 @@ const app2 = createApp({
   /* ... */
 })
 app2.mount('#container-2')
-```
+{% endhighlight %}
 
 If you are using Vue to enhance server-rendered HTML and only need Vue to control specific parts of a large page, avoid mounting a single Vue application instance on the entire page. Instead, create multiple small application instances and mount them on the elements they are responsible for.
 
