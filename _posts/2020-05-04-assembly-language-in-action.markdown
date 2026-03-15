@@ -430,28 +430,28 @@ Assembly is a low level language where we tell the computer exactly which instru
 
 `Nasm` is one of the most popular assemblers out there. It has great support for x64 and works in multiple platforms. To install nasm in Ubuntu, you can do:
 
-{% endhighlight %}
-sudo apt-get install nasm
 {% highlight text %}
+sudo apt-get install nasm
+{% endhighlight %}
 
 You can verify it installed correctly:
 
-{% endhighlight %}
+```
 $ nasm -v
 NASM version 2.13.02
-{% highlight text %}
+```
 
 # Assembling a program
 
 The general format for assembling a program is:
 
-{% endhighlight %}
-nasm -f <format> -o <output file> <source file>
 {% highlight text %}
+nasm -f <format> -o <output file> <source file>
+{% endhighlight %}
 
 The `format` is the platform for which the program will be assembled (windows, linux, etc). To see the list of supported formats you can use:
 
-{% endhighlight %}
+{% highlight text %}
 # For a list of valid output formats, use -hf
 $ nasm -hf
 
@@ -477,32 +477,32 @@ valid output formats for -f are (`*' denotes default):
     elf       ELF (short name for ELF32)
     macho     MACHO (short name for MACHO32)
     win       WIN (short name for WIN32)
-{% highlight text %}
+{% endhighlight %}
 
 Since I’m using Linux, I’ll use something like this to assemble my programs:
 
-{% endhighlight %}
-nasm -f elf64 -o example.o example.asm
 {% highlight text %}
+nasm -f elf64 -o example.o example.asm
+{% endhighlight %}
 
 **There is one more step before our program is ready to run. We need to link it**. Linking a program is helpful to combine many object files together and is necessary to create the executable we need. For linking a program, I’ll use GNU linker (`ld`):
 
-{% endhighlight %}
-ld -o <executable name> <object file>
 {% highlight text %}
+ld -o <executable name> <object file>
+{% endhighlight %}
 
 We can try these steps with an empty file and see what happens:
 
-{% endhighlight %}
+{% highlight text %}
 touch example.asm
 nasm -f elf64 -o example.o example.asm
 ld -o example example.o
-{% highlight text %}
+{% endhighlight %}
 
 If you run those commands, you will notice that the assembly step finishes successfully, but there is an error in the linking step:
 
 
-{% endhighlight %}
+{% highlight text %}
 $ touch example.asm
 $ nasm -f elf64 -o example.o example.asm
 $ hexdump example.o
@@ -531,6 +531,7 @@ $ hexdump example.o
 0000180 0000 0000 0000 0000 0000 0000 0000 0000
 0000190 6500 6178 706d 656c 612e 6d73 0000 0000
 00001a0
+{% endhighlight %}
 
 $ ld -o example example.o
 ld: warning: cannot find entry symbol _start; not setting start address
@@ -591,26 +592,27 @@ $ ./example
 **Adding an instruction** to our program fixes this problem:
 
 {% endhighlight %}
+{% highlight text %}
 section .text
   global _start
 _start:
   mov rax, 1
-{% highlight text %}
+{% endhighlight %}
 
 But we get a segmentation fault:
 
-{% endhighlight %}
+{% highlight text %}
 $ nasm -f elf64 -o example.o example.asm
 $ ld -o example example.o
 $ ./example
 Segmentation fault (core dumped)
-{% highlight text %}
+{% endhighlight %}
 
 **The reason we get a segmentation fault is that the program doesn’t end correctly**. In higher level programming languages, the runtime (the compiler) takes care of this. In assembly, this needs to be done by the programmer. To do this, we need to use **syscall 60** (`sys_exit`). The interface for `sys_exit` is:
 
-{% endhighlight %}
-rdi int error_code
 {% highlight text %}
+rdi int error_code
+{% endhighlight %}
 
 What this means is that is takes a single int argument in the `rdi` register. This argument is the exit code for the program. A successful program should finish with code `0`.
 
