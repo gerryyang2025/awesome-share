@@ -361,6 +361,7 @@ DeepSeek-R1-Distill-14B: `ollama run deepseek-r1:14b`
 系列模型清单：
 
 {% highlight text %}
+DeepSeek-V3
 DeepSeek-R1
 DeepSeek-R1-Distill-Qwen-1.5B
 DeepSeek-R1-Distill-Qwen-7B
@@ -368,7 +369,7 @@ DeepSeek-R1-Distill-Llama-8B
 DeepSeek-R1-Distill-Qwen-14B
 DeepSeek-R1-Distill-Qwen-32B
 DeepSeek-R1-Distill-Llama-70B
-{% highlight text %}
+{% endhighlight %}
 
 # Tools
 
@@ -613,4 +614,3 @@ ima.copilot (简称 ima) 是一款由腾讯混元大模型提供技术支持的�
 
 
 
-{% endhighlight %}
