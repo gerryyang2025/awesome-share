@@ -1772,14 +1772,14 @@ Joe: I'm going to invent a flying bike! People can go anywhere with it. (乔：�
 
 ## Unit 11
 
-# 题目：Chinese festivals (中国的节日)
-# 场景：郭老师正在和同学们讨论中国传统的节日。大家分享了关于春节（Spring Festival）的习俗，包括节日的日期、传统食物、庆祝活动以及红包等文化元素。
-# 重点句型：
+* 题目：Chinese festivals (中国的节日)
+* 场景：郭老师正在和同学们讨论中国传统的节日。大家分享了关于春节（Spring Festival）的习俗，包括节日的日期、传统食物、庆祝活动以及红包等文化元素。
+* 重点句型：
   - When's the Spring Festival? (春节在什么时候？)
   - It's an important Chinese festival. (它是一个重要的中国节日。)
   - Families have a big dinner together. (家人们聚在一起吃大餐。)
   - People also watch fireworks at night. (人们也在晚上看烟花。)
-# 知识点：
+* 知识点：
   - 核心词汇：`festival` (节日), `important` (重要的), `call` (叫做), `dumpling` (饺子), `relative` (亲戚), `firework` (烟火), `monster` (怪物), `village` (村庄), `mooncake` (月饼)
   - 重点短语：`red packet` (红包), `Chinese New Year's Eve` (除夕), `at the end of` (在……的最后), `visit friends and relatives` (拜访亲戚朋友)
   - 文化常识：了解“年”兽的故事（年兽害怕红色和巨大的响声）；了解中秋节吃月饼、重阳节登高和吃重阳糕的习俗
