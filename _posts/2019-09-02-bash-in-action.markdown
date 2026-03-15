@@ -13,7 +13,7 @@ tags:
 
 # `~/.bashrc` 常用配置
 
-```bash
+{% highlight bash %}
 # .bashrc
 
 # Source global definitions
@@ -45,16 +45,7 @@ alias ll='ls -rtlh'
   ! ${BASH_COMPLETION_VERSINFO:-} &&
   -f /usr/share/bash-completion/bash_completion ]] &&
     . /usr/share/bash-completion/bash_completion
-
-
-
-
-
-
-```
-
-
-
+{% endhighlight %}
 
 ## Bash 自动补全功能
 
@@ -69,19 +60,19 @@ alias ll='ls -rtlh'
 
 Step1: 建议通过软件源安装 bash-completion，也可通过[源码构建](https://github.com/scop/bash-completion/releases)安装
 
-```bash
+{% highlight bash %}
 sudo yum install bash-completion
-```
+{% endhighlight %}
 
 Step2: 在 `~/.bashrc` 配置使用 bash-completion
 
-```bash
+{% highlight bash %}
 # Use bash-completion, if available, and avoid double-sourcing
 [[ $PS1 &&
   ! ${BASH_COMPLETION_VERSINFO:-} &&
   -f /usr/share/bash-completion/bash_completion ]] &&
     . /usr/share/bash-completion/bash_completion
-```
+{% endhighlight %}
 
 用法解释：
 
@@ -115,18 +106,18 @@ Step2: 在 `~/.bashrc` 配置使用 bash-completion
 
 检查 bash-completion 是否已加载：如果输出类似 2 或 2 11 的数字，表示已加载；如果输出为空，表示未加载。
 
-```bash
+{% highlight bash %}
 # 查看 BASH_COMPLETION_VERSINFO 变量
 echo $BASH_COMPLETION_VERSINFO
 
 # 或使用更详细的方式
 echo "bash-completion 版本: ${BASH_COMPLETION_VERSINFO[@]}"
-```
+{% endhighlight %}
 
 
 检查 complete 命令设置：
 
-```bash
+{% highlight bash %}
 # 查看已注册的补全数量
 complete -p | wc -l
 
@@ -137,14 +128,14 @@ complete -p | head -10
 complete -p ls      # 查看 ls 的补全设置
 complete -p git     # 查看 git 的补全设置
 complete -p ssh     # 查看 ssh 的补全设置
-```
+{% endhighlight %}
 
 ![bash_complete2](/assets/images/202512/bash_complete2.png)
 
 
 ### complete 基本用法
 
-```
+{% highlight text %}
 $ complete --help
 complete: complete [-abcdefgjksuv] [-pr] [-DEI] [-o option] [-A action] [-G globpat] [-W wordlist] [-F function] [-C command] [-X filterpat] [-P prefix] [-S suffix] [name ...]
     Specify how arguments are to be completed by Readline.
@@ -170,9 +161,9 @@ complete: complete [-abcdefgjksuv] [-pr] [-DEI] [-o option] [-A action] [-G glob
 
     Exit Status:
     Returns success unless an invalid option is supplied or an error occurs.
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 用户按 Tab 键
     ↓
 Bash 检查当前命令是否有自定义补全
@@ -183,7 +174,7 @@ Bash 检查当前命令是否有自定义补全
 补全函数设置 COMPREPLY 数组
     ↓
 Bash 显示 COMPREPLY 中的建议
-```
+{% endhighlight %}
 
 补全函数的关键变量：
 
@@ -217,7 +208,7 @@ Bash 显示 COMPREPLY 中的建议
 
 保存补全脚本到 `~/.bash_completion`
 
-```bash
+{% highlight bash %}
 # 将补全函数添加到 ~/.bashrc 或 ~/.bash_completion
 cat >> ~/.bash_completion << 'EOF'
 
@@ -234,28 +225,28 @@ EOF
 
 # 重新加载配置
 source ~/.bash_completion
-```
+{% endhighlight %}
 
 测试命令：
 
-```bash
+{% highlight bash %}
 # 先定义 mycmd（如果不存在）
 alias mycmd='echo "Running mycmd with:"'
 
 # 现在测试：
 # 1. 输入 mycmd，然后按 Tab 两次
 # 2. 输入 mycmd a，然后按 Tab
-```
+{% endhighlight %}
 
 检查 mycmd 命令的补全函数是否已经注册：
 
-```bash
+{% highlight bash %}
 # 检查是否已注册
 complete -p | grep mycmd
 
 # 如果没有输出，重新加载
 source ~/.bash_completion.sh
-```
+{% endhighlight %}
 
 
 
@@ -286,10 +277,10 @@ https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Shell-Parameter
 
 **The length in characters of the expanded value of parameter is substituted**. If parameter is `*` or `@`, the value substituted is the number of positional parameters. If parameter is an array name subscripted by `*` or `@`, the value substituted is the number of elements in the array. If parameter is an indexed array name subscripted by a negative number, that number is interpreted as relative to one greater than the maximum index of parameter, so negative indices count back from the end of the array, and an index of -1 references the last element.
 
-```bash
+{% highlight bash %}
 myvar="some string"
 echo ${#myvar}    # 11
-```
+{% endhighlight %}
 
 * https://stackoverflow.com/questions/17368067/length-of-string-in-bash
 
@@ -301,7 +292,7 @@ echo ${#myvar}    # 11
 
 ## [What is the difference between ${var}, "$var", and "${var}" in the Bash shell?](https://stackoverflow.com/questions/18135451/what-is-the-difference-between-var-var-and-var-in-the-bash-shell)
 
-```bash
+{% highlight bash %}
 # define a array
 declare -a groups
 
@@ -326,7 +317,7 @@ done
 #for group in ${groups}; do
 #    echo $group
 #done
-```
+{% endhighlight %}
 
 Question:
 
@@ -338,50 +329,50 @@ Answers:
 
 In most cases, `$var` and `${var}` are the same:
 
-```bash
+{% highlight bash %}
 var=foo
 echo $var
 # foo
 echo ${var}
 # foo
-```
+{% endhighlight %}
 
 The braces are only needed to resolve **ambiguity** in expressions:
 
-```bash
+{% highlight bash %}
 var=foo
 echo $varbar
 # Prints nothing because there is no variable 'varbar'
 echo ${var}bar
 # foobar
-```
+{% endhighlight %}
 
 > Quotes (`$var` vs. `"$var"` vs. `"${var}"`)
 
 When you add **double quotes** around a variable, you tell the shell to **treat it as a single word**, even if it contains **whitespaces**:
 
-```bash
+{% highlight bash %}
 var="foo bar"
 for i in "$var"; do # Expands to 'for i in "foo bar"; do...'
     echo $i         #   so only runs the loop once
 done
 # foo bar
-```
+{% endhighlight %}
 
 Contrast that behavior with the following:
 
-```bash
+{% highlight bash %}
 var="foo bar"
 for i in $var; do # Expands to 'for i in foo bar; do...'
     echo $i       #   so runs the loop twice, once for each argument
 done
 # foo
 # bar
-```
+{% endhighlight %}
 
 As with `$var` vs. `${var}`, the braces are only needed for **disambiguation(消除模棱两可情况)**, for example:
 
-```bash
+{% highlight bash %}
 var="foo bar"
 for i in "$varbar"; do # Expands to 'for i in ""; do...' since there is no
     echo $i            #   variable named 'varbar', so loop runs once and
@@ -392,7 +383,7 @@ for i in "${var}bar"; do # Expands to 'for i in "foo barbar"; do...'
     echo $i              #   so runs the loop once
 done
 # foo barbar
-```
+{% endhighlight %}
 
 Note that `"${var}bar"` in the second example above could also be written `"${var}"bar`, in which case you don't need the braces anymore, i.e. `"$var"bar`. **However, if you have a lot of quotes in your string these alternative forms can get hard to read** (and therefore hard to maintain). [This page](http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_03_03.html) provides a good introduction to quoting in Bash.
 
@@ -404,29 +395,29 @@ Now for your array. According to the [bash manual](http://linux.die.net/man/1/ba
 
 In other words, if you don't supply an index with [], you get the first element of the array:
 
-```bash
+{% highlight bash %}
 foo=(a b c)
 echo $foo
 # a
-```
+{% endhighlight %}
 
 Which is exactly the same as
 
-```bash
+{% highlight bash %}
 foo=(a b c)
 echo ${foo}
 # a
-```
+{% endhighlight %}
 
 To get all the elements of an array, you need to use `@` as the index, e.g. `${foo[@]}`. The braces are required with arrays because without them, the shell would expand the `$foo` part first, giving the first element of the array followed by a literal `[@]`:
 
-```bash
+{% highlight bash %}
 foo=(a b c)
 echo ${foo[@]}
 # a b c
 echo $foo[@]
 # a[@]
-```
+{% endhighlight %}
 
 [This page](http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_10_02.html) is a good introduction to arrays in Bash.
 
@@ -434,18 +425,18 @@ echo $foo[@]
 
 You didn't ask about this but it's a subtle difference that's good to know about. If the elements in your array could contain whitespace, you need to use double quotes so that each element is treated as a separate "word:"
 
-```bash
+{% highlight bash %}
 foo=("the first" "the second")
 for i in "${foo[@]}"; do # Expands to 'for i in "the first" "the second"; do...'
     echo $i              #   so the loop runs twice
 done
 # the first
 # the second
-```
+{% endhighlight %}
 
 Contrast this with the behavior without double quotes:
 
-```bash
+{% highlight bash %}
 foo=("the first" "the second")
 for i in ${foo[@]}; do # Expands to 'for i in the first the second; do...'
     echo $i            #   so the loop runs four times!
@@ -454,7 +445,7 @@ done
 # first
 # the
 # second
-```
+{% endhighlight %}
 
 
 refer:
@@ -468,34 +459,34 @@ refer:
 
 You can use [Marcus's answer (* wildcards)](https://stackoverflow.com/a/229585/3755692) outside a case statement, too, if you use double brackets:
 
-```bash
+{% highlight bash %}
 string='My long string'
 if [[ $string == *"My long"* ]]; then
   echo "It's there!"
 fi
-```
+{% endhighlight %}
 
 Note that spaces in the needle string need to be placed between **double quotes**, and the `*` wildcards should be outside. Also note that a simple comparison operator is used (i.e. `==`), not the regex operator `=~`.
 
 If you prefer the regex approach:
 
-```bash
+{% highlight bash %}
 string='My string';
 
 if [[ $string =~ "My" ]]; then
    echo "It's there!"
 fi
-```
+{% endhighlight %}
 
 I am not sure about using an if statement, but you can get a similar effect with a case statement:
 
-```bash
+{% highlight bash %}
 case "$string" in
   *foo*)
     # Do stuff
     ;;
 esac
-```
+{% endhighlight %}
 
 ## [How to portability use "${@:2}"?](https://stackoverflow.com/questions/56822216/how-to-portability-use-2)
 
@@ -504,7 +495,7 @@ Neither `${@:2}` nor `${*:2}` is portable, and many shells will reject both as i
 At this point, the first argument is in "$first" and the positional parameters are shifted down one.
 
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 if [[ $# -eq 1 ]]; then
@@ -519,7 +510,7 @@ first="${1}"
 shift
 echo The arguments after the first are:
 for x; do echo "$x"; done
-```
+{% endhighlight %}
 
 * https://linuxize.com/post/bash-printf-command/
 
@@ -529,26 +520,26 @@ for x; do echo "$x"; done
 
 # Shell Parameter Expansion (Default value)
 
-```bash
+{% highlight bash %}
 if [ -z "${VARIABLE}" ]; then
     FOO='default'
 else
     FOO=${VARIABLE}
 fi
-```
+{% endhighlight %}
 
 To get the assigned value, or default if it's missing:
 
-```bash
+{% highlight bash %}
 FOO="${VARIABLE:-default}"  # If variable not set or null, use default.
 # If VARIABLE was unset or null, it still is after this (no assignment done).
-```
+{% endhighlight %}
 
 Or to assign default to VARIABLE at the same time:
 
-```bash
+{% highlight bash %}
 FOO="${VARIABLE:=default}"  # If variable not set or null, set it to default.
-```
+{% endhighlight %}
 
 refer:
 
@@ -560,11 +551,11 @@ refer:
 
 The main difference is that a login shell executes your profile when it starts. From the man page:
 
-```
+{% highlight text %}
 When bash is invoked as an interactive login shell, or as a non-interactive shell with the --login option, it first reads and executes commands from the file /etc/profile, if that file exists. After reading that file, it looks for ~/.bash_profile, ~/.bash_login, and ~/.profile, in that order, and reads and executes commands from the first one that exists and is readable. The --noprofile option may be used when the shell is started to inhibit this behavior.
 
 When a login shell exits, bash reads and executes commands from the file ~/.bash_logout, if it exists.
-```
+{% endhighlight %}
 
 https://stackoverflow.com/questions/25677790/bin-bash-login-vs-bin-bash
 
@@ -572,17 +563,17 @@ https://stackoverflow.com/questions/25677790/bin-bash-login-vs-bin-bash
 
 For bash, use the `printf` command with alignment flags.
 
-```bash
+{% highlight bash %}
 echo "Usage: $0 [option] [value]"
 printf "%-16s %-64s\n" -h 查看帮助
 printf "%-16s %-64s\n" -h xxxx
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 Usage: main.sh [option] [value]
 -h               查看帮助
 -h               xxxx
-```
+{% endhighlight %}
 
 * %s %c %d %f 都是格式替代符，％s 输出一个字符串，％d 整型输出，％c 输出一个字符，％f 输出实数，以小数形式输出
 * %-10s 指一个宽度为 10 个字符（- 表示左对齐，没有则表示右对齐），任何字符都会被显示在 10 个字符宽的字符内，如果不足则自动以空格填充，超过也会将内容全部显示出来
@@ -594,7 +585,7 @@ Usage: main.sh [option] [value]
 
 # PreCheck
 
-```bash
+{% highlight bash %}
 CURTIME="date +'%Y-%m-%d %H:%M:%S'"
 NOW="echo [\`$CURTIME\`][PID:$$]"
 
@@ -639,28 +630,28 @@ fi
 
 set -x
 a=$1
-```
+{% endhighlight %}
 
 # The ‘ls’ command – how to show seconds
 
-```bash
+{% highlight bash %}
 # show also the seconds (and not only seconds but also microseconds)
 $ ls --full-time
 $ ls -l --time-style=full-iso
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ ls -l core_worldsvr_1632113278.5873
 -rw------- 1 user00 users 794185728 Sep 20 12:47 core_worldsvr_1632113278.5873
 $ ls -l core_worldsvr_1632113278.5873 --full-time
 -rw------- 1 user00 users 794185728 2021-09-20 12:47:59.224668459 +0800 core_worldsvr_1632113278.5873
 $ ls -l core_worldsvr_1632113278.5873 --time-style=full-iso
 -rw------- 1 user00 users 794185728 2021-09-20 12:47:59.224668459 +0800 core_worldsvr_1632113278.5873
-```
+{% endhighlight %}
 
 # CPU Monitor
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 dir_head_prefix="./datacpu"
@@ -765,7 +756,7 @@ do
 
 	now=`date +%s`
 done
-```
+{% endhighlight %}
 
 # Make sure only one instance to run
 
@@ -773,7 +764,7 @@ A solution that does not require additional tools would be prefered.
 
 1. Use a lock directory. Directory creation is atomic under linux and unix and *BSD and a lot of other OSes.
 
-```bash
+{% highlight bash %}
 if mkdir $LOCKDIR
 then
     # Do important, exclusive stuff
@@ -787,22 +778,22 @@ else
     # Handle error condition
     ...
 fi
-```
+{% endhighlight %}
 
 2. `pidof -o %PPID -x $0` gets the PID of the existing script if its already running or exits with error code 1 if no other script is running
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # Check if another instance of script is running
 pidof -o %PPID -x $0 >/dev/null && echo "ERROR: Script $0 already running" && exit 1
-```
+{% endhighlight %}
 
 * [How to make sure only one instance of a bash script runs?](https://unix.stackexchange.com/questions/48505/how-to-make-sure-only-one-instance-of-a-bash-script-runs)
 
 # Add User
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 if [ $# -ne 1 ]
@@ -829,16 +820,16 @@ echo ${USER_NAME}:${PWD} | chpasswd
 usermod -aG wheel ${USER_NAME}
 
 chown -R ${USER_NAME}:${USER_GROUP_NAME}  ${USER_HOME}
-```
+{% endhighlight %}
 
 # 1>&2 / 2>&1
 
-```bash
+{% highlight bash %}
 if test $# -ne 1; then
     echo "Usage: `basename $0 .sh` <process-id>" 1>&2
     exit 1
 fi
-```
+{% endhighlight %}
 
 * There are 3 file descriptors, `stdin`, `stdout` and `stderr` (std=standard).
 * `1` represents `stdout` and `2` `stderr`
@@ -862,7 +853,7 @@ fi
 * `${string%substring}` Deletes **shortest** match of `$substring` from **back** of `$string`.
 * `${string%%substring}` Deletes **longest** match of `$substring` from **back** of `$string`.
 
-```bash
+{% highlight bash %}
 stringZ=abcABC123ABCabc
 #       |----|          shortest
 #       |----------|    longest
@@ -906,7 +897,7 @@ echo ${stringZ%b*c}      # abcABC123ABCa
 
 echo ${stringZ%%b*c}     # a
 # Strip out longest match between 'b' and 'c', from back of $stringZ.
-```
+{% endhighlight %}
 
 Refer: https://tldp.org/LDP/abs/html/string-manipulation.html
 
@@ -915,39 +906,39 @@ Refer: https://tldp.org/LDP/abs/html/string-manipulation.html
 
 The simplest way to concatenate two or more string variables is to write them one after another:
 
-```bash
+{% highlight bash %}
 VAR1="Hello,"
 VAR2=" World"
 VAR3="$VAR1$VAR2"
 echo "$VAR3"
-```
+{% endhighlight %}
 
 You can also concatenate one or more variable with literal strings. In the example above variable `VAR1` is enclosed in curly braces to protect the variable name from surrounding characters. When the variable is followed by another valid variable-name character you must enclose it in curly braces `${VAR1}`.
 
-```bash
+{% highlight bash %}
 VAR1="Hello, "
 VAR2="${VAR1}World"
 echo "$VAR2"
-```
+{% endhighlight %}
 
 Another way of concatenating strings in bash is by appending variables or literal strings to a variable using the `+=` operator:
 
-```bash
+{% highlight bash %}
 VAR1="Hello, "
 VAR1+=" World"
 echo "$VAR1"
-```
+{% endhighlight %}
 
 The following example is using the `+=` operator to concatenate strings in bash for loop :
 
-```bash
+{% highlight bash %}
 VAR=""
 for ELEMENT in 'Hydrogen' 'Helium' 'Lithium' 'Beryllium'; do
   VAR+="${ELEMENT} "
 done
 
 echo "$VAR"
-```
+{% endhighlight %}
 
 * https://linuxize.com/post/bash-concatenate-strings/
 
@@ -967,7 +958,7 @@ echo "$VAR"
 
 示例：
 
-```bash
+{% highlight bash %}
 if [[ $1 = "start" ]]; then
   # string compare
   # 等于 = (plain sh) / == (only bash)
@@ -986,37 +977,37 @@ fi
 if [ "$fname" = "a.txt" ] || [ "$fname" = "c.txt" ]
 
 [[ "string1" == "string2" ]] && echo "Equal" || echo "Not equal"
-```
+{% endhighlight %}
 
 ## Check if a String Contains a Substring
 
 There are multiple ways to check if a string contains a substring. One approach is to use surround the substring with asterisk symbols `*` which means match all characters.
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 VAR='GNU/Linux is an operating system'
 if [[ $VAR == *"Linux"* ]]; then
   echo "It's there."
 fi
-```
+{% endhighlight %}
 
 Another option is to use the regex operator `=~` as shown below. The period followed by an asterisk `.*` matches zero or more occurrences any character except a newline character.
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 VAR='GNU/Linux is an operating system'
 if [[ $VAR =~ .*Linux.* ]]; then
   echo "It's there."
 fi
-```
+{% endhighlight %}
 
 ## Comparing Strings with the Case Operator
 
 Instead of using the `test` operators you can also use the `case` statement to compare strings:
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 VAR="Arch Linux"
@@ -1031,13 +1022,13 @@ case $VAR in
     echo -n "Red Hat"
     ;;
 esac
-```
+{% endhighlight %}
 
 ## Lexicographic Comparison
 
 Lexicographical comparison is an operation where two strings are compared alphabetically by comparing the characters in a string sequentially from left to right. This kind of comparison is rarely used. The following scripts compare two strings lexicographically:
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 VAR1="Linuxize"
@@ -1050,11 +1041,11 @@ elif [[ "$VAR1" < "$VAR2" ]]; then
 else
     echo "Strings are equal"
 fi
-```
+{% endhighlight %}
 
 ## Compare Digital
 
-```bash
+{% highlight bash %}
 if [[ $# -eq 0 ]]; then
   # digital compare
   # -eq / -lt / -le / -gt / -ge / -ne
@@ -1065,11 +1056,11 @@ if [[ $? -ne 0 ]];then
   echo "run.sh failed"
   exit 1
 fi
-```
+{% endhighlight %}
 
 ## Others
 
-```bash
+{% highlight bash %}
 num=4; if (test $num -gt 5); then echo "yes"; else echo "no"; fi
 
 file="/etc/passwd"; if [ -e $file ]; then echo "whew"; else echo "uh-oh"; fi
@@ -1077,7 +1068,7 @@ file="/etc/passwd"; if [ -e $file ]; then echo "whew"; else echo "uh-oh"; fi
 if [[ -f "proc.pid" ]]; then
   pid=`cat proc.pid`
 fi
-```
+{% endhighlight %}
 
 * [Is double square brackets [[ ]] preferable over single square brackets [ ] in Bash?](https://stackoverflow.com/questions/669452/is-double-square-brackets-preferable-over-single-square-brackets-in-ba)
 * [Bash test builtin command](https://www.computerhope.com/unix/bash/test.htm)
@@ -1087,22 +1078,22 @@ fi
 
 # ForceStopAll
 
-```bash
+{% highlight bash %}
 ps aux | grep `pwd` | grep -v grep | awk '{print $2}' | xargs kill -9
-```
+{% endhighlight %}
 
 # Color
 
-```bash
+{% highlight bash %}
 function PrintColor {
         echo -e "\e[1;31m$@\e[0m"
 }
 PrintColor "Oops!"
-```
+{% endhighlight %}
 
 定义常用变量
 
-```bash
+{% highlight bash %}
 ColorRedBeg="\e[1;31m"
 ColorGreenBeg="\e[1;32m"
 ColorYellowBeg="\e[1;33m"
@@ -1118,9 +1109,9 @@ function Usage()
     printf "%-16s\n" "选项说明:"
     printf "$ColorGreenBeg%-32s %-64s\n$ColorEnd" "-h" "查看帮助"
 }
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # prints colored text
@@ -1149,14 +1140,14 @@ print_style "This is a yellow text " "warning";
 print_style "This is a light blue with a \t tab " "info";
 print_style "This is a red text with a \n new line " "danger";
 print_style "This has no color";
-```
+{% endhighlight %}
 
 * https://stackoverflow.com/questions/5412761/using-colors-with-printf
 
 
 # CurrentPath
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 echo $0                            # 脚本名
@@ -1164,11 +1155,11 @@ echo $(dirname $0)                 # 获取当前脚本的相对路径
 echo $(readlink -f $0)             # readlink 是显示符号链接所指向的位置，如果 $0 不是符号链接，就显示文件本身的绝对路径
 echo $(dirname $(readlink -f $0))  # 获取当前脚本的绝对路径
 
-```
+{% endhighlight %}
 
 执行：
 
-```
+{% highlight text %}
 $sh dirname.sh
 dirname.sh
 .
@@ -1181,11 +1172,11 @@ bash/dirname.sh
 bash
 /data/home/gerryyang/test/bash/dirname.sh
 /data/home/gerryyang/test/bash
-```
+{% endhighlight %}
 
 # Function
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 function quit {
    exit
@@ -1196,11 +1187,11 @@ function hello {
 hello
 quit
 echo foo
-```
+{% endhighlight %}
 
 Functions with parameters sample
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 function quit {
    exit
@@ -1212,19 +1203,19 @@ e Hello
 e World
 quit
 echo foo
-```
+{% endhighlight %}
 
 * https://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-8.html
 * [How to Return a String from Bash Functions](https://linuxhint.com/return-string-bash-functions/)
 
 # Chmod
 
-```
+{% highlight text %}
 #!/bin/bash
 
 find ../ -type f |  grep -E "*\.sh" | xargs chmod +x
 find ../ -type f |  grep -E "*\.sh" | xargs dos2unix
-```
+{% endhighlight %}
 
 
 # Bash Tips
@@ -1233,7 +1224,7 @@ find ../ -type f |  grep -E "*\.sh" | xargs dos2unix
 
 通过指定日志级别控制日志输出。
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 _log() {
@@ -1244,37 +1235,37 @@ _log() {
 
 _log "do something..."
 echo "Hello $USER"
-```
+{% endhighlight %}
 
 执行：
 
-```
+{% highlight text %}
 $ sh ./test.sh
 Hello gerryyang
 
 $ _DEBUG=true sh ./test.sh
 do something...
 Hello gerryyang
-```
+{% endhighlight %}
 
 
 ## Debug
 
-```bash
+{% highlight bash %}
 set -e  # exit immediately on error
 set -x  # display all commands
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 echo "Hello $USER,"
 echo "Today is $(date +'%Y-%m-%d')"
-```
+{% endhighlight %}
 
 执行或调试：
 
-```
+{% highlight text %}
 sh ./test.sh
 Hello gerryyang,
 Today is 2020-08-03
@@ -1285,33 +1276,33 @@ Hello gerryyang,
 ++ date +%Y-%m-%d
 + echo 'Today is 2020-08-03'
 Today is 2020-08-03
-```
+{% endhighlight %}
 
 输出行号，需设置 `export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '`
 
-```
+{% highlight text %}
 $ sh -x ./test.sh
 +./test.sh:3:: echo 'Hello gerryyang,'
 Hello gerryyang,
 ++./test.sh:4:: date +%Y-%m-%d
 +./test.sh:4:: echo 'Today is 2020-08-03'
 Today is 2020-08-03
-```
+{% endhighlight %}
 
 调试部份的脚本：
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 echo "Hello $USER,"
 set -x
 echo "Today is $(date +'%Y-%m-%d')"
 set +x
-```
+{% endhighlight %}
 
 调试：
 
-```
+{% highlight text %}
 $ sh -x./test.sh
 +./test.sh:3:: echo 'Hello gerryyang,'
 Hello gerryyang,
@@ -1320,18 +1311,18 @@ Hello gerryyang,
 +./test.sh:5:: echo 'Today is 2020-08-03'
 Today is 2020-08-03
 +./test.sh:6:: set +x
-```
+{% endhighlight %}
 
 可以不用`-x`调试选项：
 
-```
+{% highlight text %}
 $ sh ./test.sh
 Hello gerryyang,
 ++./test.sh:5:: date +%Y-%m-%d
 +./test.sh:5:: echo 'Today is 2020-08-03'
 Today is 2020-08-03
 +./test.sh:6:: set +x
-```
+{% endhighlight %}
 
 如果需要更强大的功能，可以使用[BASH Debugger](http://bashdb.sourceforge.net/)。
 
@@ -1350,7 +1341,7 @@ Today is 2020-08-03
 * `$?`  上个命令的退出状态，或函数的返回值。
 * `$$`  当前Shell进程ID。对于 Shell 脚本，就是这些脚本所在的进程ID。
 
-```bash
+{% highlight bash %}
 #! /bin/bash
 
 echo "File Name: $0"
@@ -1359,11 +1350,11 @@ echo "First Parameter : $2"
 echo "Quoted Values: $@"
 echo "Quoted Values: $*"
 echo "Total Number of Parameters : $#"
-```
+{% endhighlight %}
 
 执行：
 
-```
+{% highlight text %}
 $./test.sh Zara Ali
 File Name : ./test.sh
 First Parameter : Zara
@@ -1371,12 +1362,12 @@ Second Parameter : Ali
 Quoted Values: Zara Ali
 Quoted Values: Zara Ali
 Total Number of Parameters : 2
-```
+{% endhighlight %}
 
 `$*` 和 `$@` 用法测试：
 
 
-```bash
+{% highlight bash %}
 #! /bin/bash
 
 echo "\$*=" $*
@@ -1408,7 +1399,7 @@ for var in "$@"
 do
     echo "$var"
 done
-```
+{% endhighlight %}
 
 ## BASH_SOURCE 变量
 
@@ -1420,9 +1411,9 @@ An array variable whose members are the source filenames where the corresponding
 
 ### 常见用法：获取当前脚本所在目录
 
-```bash
+{% highlight bash %}
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-```
+{% endhighlight %}
 
 ### `${BASH_SOURCE[0]}` 与 `$0` 的区别
 
@@ -1434,12 +1425,12 @@ The following example illustrates this:
 
 Script `foo`:
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 echo "[$0] vs. [${BASH_SOURCE[0]}]"
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ bash ./foo
 [./foo] vs. [./foo]
 
@@ -1448,7 +1439,7 @@ $ ./foo
 
 $ . ./foo
 [bash] vs. [./foo]
-```
+{% endhighlight %}
 
 `$0` is part of the POSIX shell specification, whereas `BASH_SOURCE`, as the name suggests, is Bash-specific.
 
@@ -1481,7 +1472,7 @@ If a given function was invoked directly from the top-level scope in the script 
 
 ### 测试脚本
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 # test_bash_source.sh
 
@@ -1524,11 +1515,11 @@ function func2() {
 
 # 调用函数1
 func1
-```
+{% endhighlight %}
 
 输出结果：
 
-```
+{% highlight text %}
 $ ./test_bash_source.sh
 === 脚本级别 ===
 当前脚本: ./test_bash_source.sh
@@ -1552,7 +1543,7 @@ FUNCNAME[2]: main
 层级 0: 函数=func2, 文件=./test_bash_source.sh
 层级 1: 函数=func1, 文件=./test_bash_source.sh
 层级 2: 函数=main, 文件=./test_bash_source.sh
-```
+{% endhighlight %}
 
 
 
@@ -1565,14 +1556,14 @@ An array variable containing the names of all shell functions currently in the e
 This variable can be used with `BASH_LINENO` and `BASH_SOURCE`. Each element of `FUNCNAME` has corresponding elements in `BASH_LINENO` and `BASH_SOURCE` to describe the call stack. For instance, `${FUNCNAME[$i]}` was called from the file `${BASH_SOURCE[$i+1]}` at line number `${BASH_LINENO[$i]}`. The caller builtin displays the current call stack using this information.
 
 
-```bash
+{% highlight bash %}
 make()
 {
     echo "$FUNCNAME: do nothing"
 }
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 # 获取脚本所在目录（最常用）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -1587,7 +1578,7 @@ if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
 else
     echo "脚本被直接执行"
 fi
-```
+{% endhighlight %}
 
 
 ## argument
@@ -1602,20 +1593,20 @@ Arguments are accessed inside a script using the variables $1, $2, $3, etc., whe
 
 If you have a variable number of arguments, you can use the "$@" variable, which is an array of all the input parameters. This means you can use a for-loop to iteratively process each one.
 
-```
+{% highlight text %}
 #!/bin/bash
 
 for FILE1 in "$@"
 do
  wc $FILE1
 done
-```
+{% endhighlight %}
 
 如果是固定个数的参数，可以通过$1，$2，等来获取参数，而如果参数个数不固定，可以通过`$@`来遍历获取每个参数。
 
 * 参数选项
 
-```
+{% highlight text %}
 #!/bin/bash
 
 while getopts u:d:p:f: option
@@ -1628,15 +1619,15 @@ do
  f) FORMAT=$OPTARG;;
  esac
 done
-```
+{% endhighlight %}
 
 如果flag后面带有冒号，那么代表此flag需要带有value。相反，如果没有冒号，则此flag可以不需要value。也就是，如果指定了某个flag需要带有value，但是没有传value，就会报类似`No arg for -u option`这样的错误。
 
 The basic syntax of getopts is (see: man bash):
 
-```bash
+{% highlight bash %}
 getopts OPTSTRING VARNAME [ARGS...]
-```
+{% endhighlight %}
 
 where:
 
@@ -1655,7 +1646,7 @@ Notes: In other words, colon in front of options allows you handle the errors in
 
 So the code can be:
 
-```bash
+{% highlight bash %}
 #!/usr/bin/env bash
 usage() { echo "$0 usage:" && grep " .)\ #" $0; exit 0; }
 [ $# -eq 0 ] && usage
@@ -1676,11 +1667,11 @@ while getopts ":hs:p:" arg; do
       ;;
   esac
 done
-```
+{% endhighlight %}
 
 Example usage:
 
-```
+{% highlight text %}
 $ ./foo.sh
 ./foo.sh usage:
     p) # Specify p value.
@@ -1692,7 +1683,7 @@ p is any_string
 $ ./foo.sh -s 90 -p any_string
 Strength is 90.
 p is any_string
-```
+{% endhighlight %}
 
 See: [Small getopts tutorial](http://wiki.bash-hackers.org/howto/getopts_tutorial) at Bash Hackers Wiki
 
@@ -1701,7 +1692,7 @@ See: [Small getopts tutorial](http://wiki.bash-hackers.org/howto/getopts_tutoria
 
 ## pushd/popd
 
-```bash
+{% highlight bash %}
 pushd () {
     command pushd "$@" > /dev/null
 }
@@ -1709,13 +1700,13 @@ pushd () {
 popd () {
     command popd "$@" > /dev/null
 }
-```
+{% endhighlight %}
 
 * https://stackoverflow.com/questions/25288194/dont-display-pushd-popd-stack-across-several-bash-scripts-quiet-pushd-popd
 
 ## group argument
 
-```
+{% highlight text %}
 #!/bin/bash
 
 func() {
@@ -1724,16 +1715,17 @@ func() {
 
 INFO="a b c"
 func $INFO
-```
+{% endhighlight %}
 
 output:
 
-```a
-```
+{% highlight a %}
+
+{% endhighlight %}
 
 如果需要将参数作为一个group传递，需要`Enclose the variable in double quotes to preserve white spaces`。
 
-```
+{% highlight text %}
 #!/bin/bash
 
 func() {
@@ -1742,13 +1734,13 @@ func() {
 
 INFO="a b c"
 func "$INFO"   # 注意使用双引号
-```
+{% endhighlight %}
 
 output:
 
-```
+{% highlight text %}
 a b c
-```
+{% endhighlight %}
 
 refer:
 
@@ -1758,15 +1750,15 @@ refer:
 
 ## Loop
 
-```
+{% highlight text %}
 #!/bin/bash
 for i in {1..5}
 do
    echo "$i"
 done
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 #!/bin/bash
 START=1
 END=5
@@ -1780,16 +1772,16 @@ done
 
 echo
 echo "Boom!"
-```
+{% endhighlight %}
 
 output:
 
-```countdown
+{% highlight countdown %}
 1 2 3 4 5
 Boom!
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 #!/bin/bash
 START=1
 END=5
@@ -1800,9 +1792,9 @@ do
     echo "$i"
     ((i = i + 1))
 done
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 #!/bin/bash
 START=1
 END=5
@@ -1810,9 +1802,9 @@ for i in $(eval echo "{$START..$END}")
 do
 	echo "$i"
 done
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 #!/bin/bash
 
 ## define an array ##
@@ -1824,23 +1816,23 @@ do
   echo "${m}"
   # do something on $m #
 done
-```
+{% endhighlight %}
 
 output:
 
-```dell
+{% highlight dell %}
 HP
 Oracle
-```
+{% endhighlight %}
 
 How can I read from variable with while read line? See [§3.6.7 "Here Strings" in the Bash Reference Manual](http://www.gnu.org/software/bash/manual/bashref.html#Here-Strings).
 
-```bash
+{% highlight bash %}
 GIT_DIFF=$(git diff --cached --name-status)
 while read ST FILE; do
 echo $ST "," $FILE
 done <<< $GIT_DIFF
-```
+{% endhighlight %}
 
 refer:
 
@@ -1849,7 +1841,7 @@ refer:
 
 ## Array
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 LIST="a,b,c"
@@ -1871,11 +1863,11 @@ my_array=(foo bar)
 echo "${my_array[@]}"
 my_array[2]=newone
 echo "${my_array[@]}"
-```
+{% endhighlight %}
 
 输出：
 
-```
+{% highlight text %}
 a b c
 a b c
 a
@@ -1884,7 +1876,7 @@ c
 a b c
 foo bar
 foo bar newone
-```
+{% endhighlight %}
 
 * https://linuxconfig.org/how-to-use-arrays-in-bash-script
 
@@ -1893,15 +1885,15 @@ foo bar newone
 
 In Bash, you can use the `test` command to check whether a file exists and determine the type of the file.
 
-```bash
+{% highlight bash %}
 test EXPRESSION
 [ EXPRESSION ]
 [[ EXPRESSION ]]
-```
+{% endhighlight %}
 
 > If you want your script to be portable you should prefer using the old test `[` command which is available on all POSIX shells. The new upgraded version of the test command `[[` (double brackets) is supported on most modern systems using Bash, Zsh, and Ksh as a default shell.
 
-```bash
+{% highlight bash %}
 FILE=/etc/resolv.conf
 if test -f "$FILE"; then
     echo "$FILE exist"
@@ -1951,13 +1943,13 @@ fi
 
 [[ -f /etc/resolv.conf && -f /etc/hosts ]] && echo "both files exist"
 
-```
+{% endhighlight %}
 
 > Always use double quotes to avoid issues when dealing with files containing whitespace in their names.
 
 **File test operators**
 
-```
+{% highlight text %}
 -b FILE - True if the FILE exists and is a block special file.
 -c FILE - True if the FILE exists and is a special character file.
 -d FILE - True if the FILE exists and is a directory.
@@ -1976,7 +1968,7 @@ fi
 -u FILE - True if the exists and set-user-id (suid) flag is set.
 -w FILE - True if the FILE exists and is writable.
 -x FILE - True if the FILE exists and is executable.
-```
+{% endhighlight %}
 
 * https://stackoverflow.com/questions/669452/are-double-square-brackets-preferable-over-single-square-brackets-in-b
 
@@ -1986,10 +1978,10 @@ If parameter not set, use default.
 
 > ${parameter-default}, ${parameter:-default}
 
-```bash
+{% highlight bash %}
 GDB=${GDB:-/usr/bin/gdb}
 echo $GDB # /usr/bin/gdb
-```
+{% endhighlight %}
 
 * https://tldp.org/LDP/abs/html/parameter-substitution.html
 * https://stackoverflow.com/questions/4437573/bash-assign-default-value
@@ -2000,42 +1992,42 @@ The `cat <<EOF` syntax is very useful when working with multi-line text in Bash,
 
 * Assign multi-line string to a shell variable
 
-```bash
+{% highlight bash %}
 sql=$(cat <<EOF
 SELECT foo, bar FROM db
 WHERE foo='baz'
 EOF
 )
 echo $sql
-```
+{% endhighlight %}
 
 *  Pass multi-line string to a file in Bash
 
-```bash
+{% highlight bash %}
 cat <<EOF > print.sh
 > #!/bin/bash
 > echo \$PWD
 > echo $PWD
 > EOF
-```
+{% endhighlight %}
 
 The `print.sh` file now contains:
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 echo $PWD
 echo /home/user
-```
+{% endhighlight %}
 
 * Pass multi-line string to a pipe in Bash
 
-```bash
+{% highlight bash %}
 cat <<EOF | grep 'b' | tee b.txt
 foo
 bar
 baz
 EOF
-```
+{% endhighlight %}
 
 The b.txt file contains bar and baz lines. The same output is printed to stdout.
 
@@ -2051,7 +2043,7 @@ The b.txt file contains bar and baz lines. The same output is printed to stdout.
 
 Use `command` to **bypass** "normal function lookup".
 
-```
+{% highlight text %}
 command [-pVv] command [arg ...]
 
 Run command with args suppressing the normal shell function lookup. Only builtin commands or commands found in the PATH are executed.
@@ -2065,20 +2057,20 @@ The `-V` option produces a more  verbose description.
 If the `-V` or `-v` option is supplied, the exit status is 0 if command was found, and 1 if not.
 
 If neither option is supplied and an error occurred or command cannot be found, the exit status is 127. Otherwise, the exit status of the command builtin is the exit status of command.
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 function CheckCmdExists()
 {
   command -v "$1" >/dev/null 2>&1
 }
-```
+{% endhighlight %}
 
 * https://askubuntu.com/questions/512770/what-is-the-bash-command-command
 
 ## eval
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 f()
@@ -2093,12 +2085,12 @@ if [[ $? -ne 0 ]]; then
 else
     printf "ok: %s\n" "${OUTPUT}"
 fi
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $./eval.sh
 error: abc
-```
+{% endhighlight %}
 
 
 `eval` is part of POSIX. It's an interface which can be a shell built-in.
@@ -2109,7 +2101,7 @@ It's described in the "POSIX Programmer's Manual": http://www.unix.com/man-page/
 
 It will take an argument and construct a command of it, which will then be executed by the shell. This is the example from the manpage:
 
-```bash
+{% highlight bash %}
 foo=10 x=foo
 y='$'$x
 echo $y
@@ -2118,7 +2110,7 @@ eval y='$'$x
 echo $y
 10
 
-```
+{% endhighlight %}
 
 1. In the first line you define `$foo` with the value `'10'` and `$x` with the value `'foo'`.
 2. Now define `$y`, which consists of the string `'$foo'`. The dollar sign must be escaped with `'$'`.
@@ -2135,7 +2127,7 @@ https://unix.stackexchange.com/questions/23111/what-is-the-eval-command-in-bash
 
 Bash 执行脚本的时候，例如，` bash script.sh` 会创建一个新的 Shell，script.sh 是在一个新的 Shell 里面执行。这个 Shell 就是脚本的执行环境，Bash 默认给定了这个环境的各种参数。set 命令用来修改 Shell 环境的运行参数，也就是可以定制环境。一共有十几个参数可以定制，[官方手册](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html)有完整清单。如果命令行下不带任何参数，直接运行set，会显示所有的环境变量和 Shell 函数。
 
-```bash
+{% highlight bash %}
 # 遇到不存在的变量不会忽略，而是报错并不再执行后续语句
 set -u
 
@@ -2151,19 +2143,19 @@ set -e
 # 所谓管道命令，就是多个子命令通过管道运算符（|）组合成为一个大的命令。Bash 会把最后一个子命令的返回值，作为整个命令的返回值。也就是说，只要最后一个子命令不失败，管道命令总是会执行成功，因此它后面命令依然会执行，set -e就失效了
 # set -o pipefail用来解决这种情况，只要一个子命令失败，整个管道命令就失败，脚本就会终止执行
 set -o pipefail
-```
+{% endhighlight %}
 
 通常的错误处理方法：对比 `set -e`
 
-```bash
+{% highlight bash %}
 # 只要command有非零返回值，脚本就会停止执行
 command || exit 1
 
 # 如果两个命令有继承关系，只有第一个命令成功了，才能继续执行第二个命令
 command1 && command2
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 # 写法一
 command || { echo "command failed"; exit 1; }
 
@@ -2179,11 +2171,11 @@ if [ "$?" -ne 0 ]; then
     echo "command failed";
     exit 1;
 fi
-```
+{% endhighlight %}
 
 总结：set命令的上面这四个参数，一般都放在一起使用。
 
-```bash
+{% highlight bash %}
 # 这两种写法建议放在所有 Bash 脚本的头部
 # 另一种办法是在执行 Bash 脚本的时候，从命令行传入这些参数: bash -euxo pipefail script.sh
 
@@ -2193,18 +2185,18 @@ set -euxo pipefail
 # 写法二
 set -eux
 set -o pipefail
-```
+{% endhighlight %}
 
 * http://www.ruanyifeng.com/blog/2017/11/bash-set.html
 * https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
 
 ## cp
 
-```bash
+{% highlight bash %}
 # copy file preserving directory path
 mkdir test
 cp --parents `find . -name "*.gcno"` test
-```
+{% endhighlight %}
 
 [How to copy file preserving directory path in Linux?](https://serverfault.com/questions/180853/how-to-copy-file-preserving-directory-path-in-linux)
 
@@ -2216,21 +2208,21 @@ cp --parents `find . -name "*.gcno"` test
 2. 使用 `! -name "*.cpp"` 参数，排除以 ".cpp" 结尾的文件。
 3. 对于找到的每个符合条件的文件，使用 `-exec rm {} \;` 参数执行 `rm` 命令以删除文件。
 
-```bash
+{% highlight bash %}
 find . -type f -name "test[0-9]*" ! -name "*.cpp" -exec rm {} \;
-```
+{% endhighlight %}
 
 在删除文件之前，可以先检查哪些文件将被删除，只需将 `rm` 命令替换为 `echo` 命令：
 
-```bash
+{% highlight bash %}
 find . -type f -name "test[0-9]*" ! -name "*.cpp" -exec echo {} \;
-```
+{% endhighlight %}
 
 ### 根据大小查找文件
 
-```bash
+{% highlight bash %}
 find /media/d/ -type f -size +50M ! \( -name "*deb" -o -name "*vmdk" \)
-```
+{% endhighlight %}
 
 > ! expression : Negation of a primary; the unary NOT operator.
 >
@@ -2242,7 +2234,7 @@ find /media/d/ -type f -size +50M ! \( -name "*deb" -o -name "*vmdk" \)
 
 删除某个目录下的 coredump 文件：
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 CORE_FILES=`find /data/home/gerryyang -type f -size +50M -name "*core*"`
@@ -2251,7 +2243,7 @@ if [[ -n $CORE_FILES ]]; then
 else
   echo "no find core files"
 fi
-```
+{% endhighlight %}
 
 * https://unix.stackexchange.com/questions/50612/how-to-combine-2-name-conditions-in-find
 * https://pubs.opengroup.org/onlinepubs/009695399/utilities/find.html
@@ -2277,9 +2269,9 @@ The awk utility shall interpret each input record as a sequence of fields where,
 
 ### Summing values of a column using awk command
 
-```bash
+{% highlight bash %}
 awk '{s+=$1;}END{print s}'
-```
+{% endhighlight %}
 
 https://stackoverflow.com/questions/28445020/summing-values-of-a-column-using-awk-command
 
@@ -2291,9 +2283,9 @@ https://blog.csdn.net/delphiwcdj/category_859397.html?spm=1001.2014.3001.5482
 
 ## cut
 
-```bash
+{% highlight bash %}
 cut -d "delimiter" -f (field number) file.txt
-```
+{% endhighlight %}
 
 https://www.geeksforgeeks.org/cut-command-linux-examples/
 
@@ -2302,7 +2294,7 @@ https://www.geeksforgeeks.org/cut-command-linux-examples/
 
 The sed utility is a stream editor that shall read one or more text files, make editing changes according to a script of editing commands, and write the results to standard output. The script shall be obtained from either the script operand string or a combination of the option-arguments from the -e script and -f script_file options.
 
-```
+{% highlight text %}
 $ cat tmp
 foo
 123
@@ -2318,15 +2310,15 @@ bar
 123
 bar
 456
-```
+{% endhighlight %}
 
 ### 获取文件某行的内容
 
 从输入文件 file 中提取第 100 行并将其输出到标准输出。在读取到第 100 行之前的所有行上，d 命令会删除它们，这样它们就不会被输出。当 sed 读取到第 100 行时，它会停止处理并退出
 
-```bash
+{% highlight bash %}
 sed '100q;d' file
-```
+{% endhighlight %}
 
 * 100q: 当读取到第 100 行时，立即退出。q 代表 "quit"（退出），100 是行号。这意味着 sed 将在读取第 100 行之后停止处理。
 * ;: 分号用于在同一个命令序列中分隔多个命令。
@@ -2340,7 +2332,7 @@ sed '100q;d' file
 
 这个脚本定义了三个测试函数 `foo`、`bar` 和 `baz`，然后使用 `declare -F` 命令和 `awk` 命令来获取所有的函数名。在执行 `declare -F` 命令时，它会列出所有已定义的函数名和函数定义的位置。使用 `awk` 命令可以提取函数名并将其输出。最后，它遍历所有的函数名并输出它们。
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # 定义几个测试函数
@@ -2366,18 +2358,18 @@ function_names=$(declare -F | awk '{print $NF}')
 for name in $function_names; do
         echo $name
 done
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $./declare.sh
 declare -f bar declare -f baz declare -f foo
 bar
 baz
 foo
-```
+{% endhighlight %}
 
 
-```
+{% highlight text %}
 $ bash -c "help declare"
 declare: declare [-aAfFgilrtux] [-p] [name[=value] ...]
     Set variable values and attributes.
@@ -2413,20 +2405,20 @@ declare: declare [-aAfFgilrtux] [-p] [name[=value] ...]
 
     Exit Status:
     Returns success unless an invalid option is supplied or an error occurs.
-```
+{% endhighlight %}
 
 Refer: https://linuxhint.com/bash_declare_command/
 
 ## wait
 
-```
+{% highlight text %}
 wait [n ...]
     Wait for each specified process and return its termination status. Each n may be a process ID or a job specification; if a job spec is given, all processes in that job's pipeline
     are waited for. If n is not given, all currently active child processes are waited for, and the return status is zero. If n specifies a non-existent process or job, the return
     status is 127. Otherwise, the return status is the exit status of the last process or job waited for.
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 CNT=$1
@@ -2441,7 +2433,7 @@ done
 
 wait
 echo "done"
-```
+{% endhighlight %}
 
 * https://linuxhint.com/bash-wait-command-linux/
 
@@ -2450,12 +2442,12 @@ echo "done"
 * 如果进行16进制计算，仅支持大写十六进制数字
 * 需要先设置`obase`，再设置`ibase`
 
-```bash
+{% highlight bash %}
 $echo "ibase=16;91A2A80-91A29B0" | bc
 208
 $echo "obase=16;ibase=16;91A2A80-91A29B0" | bc
 D0
-```
+{% endhighlight %}
 
 * https://www.geeksforgeeks.org/bc-command-linux-examples/
 
@@ -2465,7 +2457,7 @@ D0
 
 I have came across this script:
 
-```bash
+{% highlight bash %}
 #! /bin/bash
 
 if (( $# < 3 )); then
@@ -2484,7 +2476,7 @@ for file in $@; do
     mv $file.tmp $file
   fi
 done
-```
+{% endhighlight %}
 
 What is the meaning of the lines where they use shift? I presume the script should be used with at least arguments so...?
 
@@ -2500,7 +2492,7 @@ Answers:
 
 将一个文件按指定行数拆分成多个文件。
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 input_file="CSMsg.pb.cc"
@@ -2515,9 +2507,9 @@ split -l $max_lines_per_file --numeric-suffixes=1 --suffix-length=$(echo -n $tot
 for file in "$output_prefix"*; do
   mv "$file" "$file.cc"
 done
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 $ ls -lSh
 总用量 3.5M
 -rw-r--r-- 1 gerryyang users 1.4M 1月   2 16:55 CSMsg.pb.cc
@@ -2527,7 +2519,7 @@ $ ls -lSh
 -rw-r--r-- 1 gerryyang users 363K 1月   2 17:09 split_file_CSMsg.pb.2.cc
 -rw-r--r-- 1 gerryyang users 219K 1月   2 17:09 split_file_CSMsg.pb.4.cc
 -rwxr-xr-x 1 gerryyang users  409 1月   2 17:01 test.sh
-```
+{% endhighlight %}
 
 * `input_file="CSMsg.pb.cc"`：指定要拆分的输入文件名。
 * `output_prefix="split_file_CSMsg.pb."`：指定拆分后的输出文件的前缀。
@@ -2547,9 +2539,9 @@ $ ls -lSh
 
 对文件大小进行逆序排序，可以使用 ls 命令结合 sort 命令。以下命令将按照文件大小逆序排列所有以 .o 结尾的文件。
 
-```bash
+{% highlight bash %}
 ls -l *.o | sort -k5,5 -n -r | head
-```
+{% endhighlight %}
 
 `sort -k 5,5 -n -r`：使用 sort 命令按照第 5 列（即文件大小）进行逆序排序。`-k 5,5` 表示按照第 5 列排序，`-n` 表示按照数值排序，`-r` 表示逆序排序。这里的两个数字 `5,5` 分别表示键的开始位置和结束位置，也就是说，只关注第 5 列。如果写的是 `5,6`，那就表示关注第 5 列和第 6 列，这两列的内容会被拼接在一起作为排序的关键字。
 
@@ -2560,30 +2552,30 @@ ls -l *.o | sort -k5,5 -n -r | head
 
 * 方法 1：先排序再用 uniq。
 
-```bash
+{% highlight bash %}
 sort your_file.txt | uniq | wc -l
-```
+{% endhighlight %}
 
 * 方法 2：直接使用 sort -u（更高效）
 
-```bash
+{% highlight bash %}
 # sort -u：直接去重并排序，比 sort | uniq 更高效
 sort -u your_file.txt | wc -l
-```
+{% endhighlight %}
 
 * 方法 3：使用 awk（不依赖排序）
 
-```bash
+{% highlight bash %}
 # !seen[$0]++：仅当行第一次出现时，seen[$0] 为 0（即 !0 为真），然后 count++
 # END {print count}：最后打印不重复的行数
 awk '!seen[$0]++ {count++} END {print count}' your_file.txt
-```
+{% endhighlight %}
 
 > 总结：如果你的文件很大，推荐 `awk` 方法，因为它不需要排序，速度更快。如果文件较小，`sort -u` 是最简洁的方式。
 
 完整的脚本：
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 if [ $# -ne 1 ]; then
@@ -2609,7 +2601,7 @@ echo "Number of unique lines (sort -u): $unique_lines"
 # 方法 3: awk (不依赖排序)
 unique_lines=$(awk '!seen[$0]++ {count++} END {print count}' "$filename")
 echo "Number of unique lines (awk): $unique_lines"
-```
+{% endhighlight %}
 
 
 uniq 是 Linux/Unix 系统中用于**过滤或统计连续重复行**的命令，通常需要**先排序（sort）**才能正确去重。
@@ -2617,7 +2609,7 @@ uniq 是 Linux/Unix 系统中用于**过滤或统计连续重复行**的命令�
 > 注意：**`uniq file.txt` 直接对未排序的文件去重结果是可能不准确的。因为 uniq 只处理连续重复行，未排序的文件可能漏掉非连续的重复行。**。
 
 
-```bash
+{% highlight bash %}
 # 先排序（sort），再用 uniq 去重（仅保留不重复的行）
 sort file.txt | uniq
 
@@ -2655,7 +2647,7 @@ sort file.txt | uniq -cd
 
 # 去重并保存到新文件
 sort file.txt | uniq > unique_lines.txt
-```
+{% endhighlight %}
 
 
 > 注意：uniq 命令的 -u（--unique）选项 和 不带 -u 时的区别。
@@ -2664,7 +2656,7 @@ sort file.txt | uniq > unique_lines.txt
 
 例如：apple 和 orange 是重复的，只输出一次。banana 和 grape 是唯一的，仍然输出。
 
-```
+{% highlight text %}
 $ cat file.txt
 apple
 apple
@@ -2678,23 +2670,23 @@ apple
 banana
 grape
 orange
-```
+{% endhighlight %}
 
 `uniq -u` 仅输出完全没有重复的行（即 唯一行，仅出现 1 次的行）。所有重复的行（即使只出现 2 次）都会被过滤掉。
 
 例如：apple 和 orange 是重复的，不输出。banana 和 grape 是唯一的，输出。
 
-```
+{% highlight text %}
 $ sort file.txt | uniq -u
 banana
 grape
-```
+{% endhighlight %}
 
 
 
 # Bash Snippet
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 set -e
@@ -2759,7 +2751,7 @@ wait $TESTSVR_PID 2>/dev/null || true
 print_success "Test completed successfully!"
 print_status "Check the following files for detailed output:"
 print_status "  - TestSvr logs: $TEST_DIR/testsvr.log"
-```
+{% endhighlight %}
 
 
 
@@ -2770,38 +2762,38 @@ print_status "  - TestSvr logs: $TEST_DIR/testsvr.log"
 
 将最小版本和当前版本通过管道传给 sort，使用 version sort 模式 (`-V`) 检查当前版本是否 >= 最小版本（当且仅当 `go_version >= MIN_GO_VERSION` 时，`sort -C` 返回 true）
 
-```bash
+{% highlight bash %}
 # 检查 Golang 版本
 local go_version=$(go version | awk '{print $3}' | sed 's/go//')
 if ! printf '%s\n%s' "$MIN_GO_VERSION" "$go_version" | sort -V -C ; then
     echo "❌ Golang version must be >= ${MIN_GO_VERSION}"
     exit 1
 fi
-```
+{% endhighlight %}
 
-```bash
+{% highlight bash %}
 $ printf "1.23.0\n1.23.5" | sort -V -C
 $ echo $?
 0
 $ printf "1.25.0\n1.23.5" | sort -V -C
 $ echo $?
 1
-```
+{% endhighlight %}
 
 ## parallel 统计当前目录下包含的文件数量
 
-```bash
+{% highlight bash %}
 ls | parallel 'echo -n {}" "; find {} -type f | wc -l'
-```
+{% endhighlight %}
 
 
 ## trap (在接收到指定信号时执行特定操作)
 
 `trap` 是一个 shell 命令，用于在接收到指定信号时执行特定操作。它的语法如下：
 
-```bash
+{% highlight bash %}
 trap COMMAND SIGNALS
-```
+{% endhighlight %}
 
 其中 COMMAND 是在接收到指定信号时要执行的命令，SIGNALS 是一个或多个要捕获的信号。
 
@@ -2811,7 +2803,7 @@ trap COMMAND SIGNALS
 
 * 捕获 SIGINT 信号（通常由 Ctrl+C 产生）并执行自定义操作：
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 trap "echo 'Caught SIGINT signal. Exiting...'; exit 1" INT
@@ -2820,13 +2812,13 @@ echo "Press Ctrl+C to exit..."
 while true; do
     sleep 1
 done
-```
+{% endhighlight %}
 
 在这个示例中，当脚本接收到 SIGINT 信号时，它将打印一条消息并退出。
 
 * 在脚本退出时执行清理操作：
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 function cleanup {
@@ -2841,7 +2833,7 @@ touch /tmp/some_temp_file
 
 echo "Press Ctrl+C to exit or wait for 10 seconds..."
 sleep 10
-```
+{% endhighlight %}
 
 在这个示例中，定义了一个名为 `cleanup` 的函数，用于在脚本退出时删除临时文件。使用 `trap cleanup EXIT` 在脚本退出时调用 `cleanup` 函数。
 
@@ -2850,22 +2842,22 @@ sleep 10
 
 ## 检查是否是 root 用户
 
-```bash
+{% highlight bash %}
 # Check if the user has root privileges
 if [ "$(id -u)" != "0" ]; then
   echo "This script must be run as root" 1>&2
   exit 1
 fi
-```
+{% endhighlight %}
 
 ## 获取当前 CPU 数量
 
-```bash
+{% highlight bash %}
 # Get the number of CPU cores
 num_cores=$(nproc)
-```
+{% endhighlight %}
 
-```
+{% highlight text %}
 nproc --help
 Usage: nproc [OPTION]...
 Print the number of processing units available to the current process,
@@ -2879,11 +2871,11 @@ which may be less than the number of online processors
 GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
 Full documentation at: <https://www.gnu.org/software/coreutils/nproc>
 or available locally via: info '(coreutils) nproc invocation'
-```
+{% endhighlight %}
 
 ## 根据大小查找文件
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # Check input arguments
@@ -2906,11 +2898,11 @@ fi
 
 # Find files larger than the specified size
 find "$1" -type f -size +"$2"k
-```
+{% endhighlight %}
 
 ## pstack
 
-```bash
+{% highlight bash %}
 #!/bin/sh
 
 if test $# -ne 1; then
@@ -2954,22 +2946,22 @@ EOF
     -e 's/^\((gdb) \)*//' \
     -e '/^#/p' \
     -e '/^Thread/p'
-```
+{% endhighlight %}
 
 ## shopt (功能选项的开启和关闭)
 
 * 在非交互式模式下 alias 扩展功能默认是关闭的
 * shopt 是 shell 的内置命令，可以控制 shell 功能选项的开启和关闭，从而控制 shell 的行为
 
-```bash
+{% highlight bash %}
 shopt -s opt_name        # Enable (set) opt_name.
 shopt -u opt_name        # Disable (unset) opt_name.
 shopt opt_name           # Show current status of opt_name.
-```
+{% endhighlight %}
 
 测试：
 
-```bash
+{% highlight bash %}
 #!/bin/bash --login
 
 alias echo_hello="echo Hello"  # 命令别名
@@ -2980,39 +2972,39 @@ echo_hello                # 执行失败
 shopt -s expand_aliases   # 用 shopt 开启 expand_aliases
 shopt expand_aliases
 echo_hello                # 执行成功
-```
+{% endhighlight %}
 
 执行结果：
 
-```
+{% highlight text %}
 $./shopt.sh
 expand_aliases  off
 ./shopt.sh:行5: echo_hello: 未找到命令
 expand_aliases  on
 Hello
-```
+{% endhighlight %}
 
 ## date
 
 `time_t` 若使用 int 存储，最高位为符号位，因此实际存储大小为 31bit，则可以表示到`2038年 01月 19日 星期二 11:14:07 CST`这个时间。
 
-```bash
+{% highlight bash %}
 $date -d@`echo $((16#7FFFFFFF))`
 2038年 01月 19日 星期二 11:14:07 CST
-```
+{% endhighlight %}
 
 然而，当前时间为：1661223697，其十六进制的最高为是 `01`
 
-```bash
+{% highlight bash %}
 $date +%s
 1661223697
-```
+{% endhighlight %}
 
 因此，在当前时间到`2038年 01月 19日 星期二 11:14:07 CST`这个时间段内，最高两位都是`01`，因此可以将 `time_t` 压缩为 30bit 存储。
 
 常用命令：
 
-```bash
+{% highlight bash %}
 # 1. 获取上一个月时间，例如，201211
 
 date -d last-month +%Y%m
@@ -3042,11 +3034,11 @@ date -d "2010-07-20 10:25:30" +%s
 date -u +'%Y-%m-%dT%H:%M:%SZ'   # 2025-03-13T02:18:22Z (for UTC)
 date +'%Y-%m-%dT%H:%M:%SZ'      # 2025-03-13T10:18:22Z
 date -Is                        # 2025-03-13T10:21:28+08:00
-```
+{% endhighlight %}
 
 ## ps
 
-```bash
+{% highlight bash %}
 # -e 此参数的效果和 -A 参数相同，-A 显示所有进程
 # -o 用户自定义格式
 # lstart 启动时间
@@ -3054,13 +3046,13 @@ date -Is                        # 2025-03-13T10:21:28+08:00
 
 $ ps -eo pid,lstart,etime | grep `pidof friendsvr`
 17697 Tue Dec  7 12:17:52 2021    08:07:21
-```
+{% endhighlight %}
 
 ## 计算某个目录下所有文件（包括子目录中的文件）的哈希值
 
-```bash
+{% highlight bash %}
 find your_dir -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum
-```
+{% endhighlight %}
 
 # Q&A
 
@@ -3072,7 +3064,7 @@ find your_dir -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum
 
 由于创建子进程造成了 i=`expr $i + 1` 执行效率低。
 
-```bash
+{% highlight bash %}
 # 执行 100 万次大约需要 884 秒
 i=`expr $i + 1`
 
@@ -3081,7 +3073,7 @@ i=$(($i+1))
 
 # 执行 100 万次大约需要 18 秒
 let i+=1
-```
+{% endhighlight %}
 
 
 
@@ -3093,16 +3085,16 @@ The `#!` syntax is used in scripts to indicate an interpreter for execution unde
 
 The syntax is:
 
-```bash
+{% highlight bash %}
 #!/path/to/interpreter [arguments]
 #!/path/to/interpreter -arg1 -arg2
-```
+{% endhighlight %}
 
 Most Linux shell and perl / python script starts with the following line. Bash or sh example:
 
-```bash
+{% highlight bash %}
 #!/bin/bash
-```
+{% endhighlight %}
 
 Starting a Script With `#!`
 
@@ -3120,11 +3112,11 @@ Starting a Script With `#!`
 
 I've seen some strange things. I tried to convert hex to dec with bash Shell. I used very very simple command.
 
-```bash
+{% highlight bash %}
 $ g_receiverBeforeToken=1158e460913d00000
 $ echo $((16#$g_receiverBeforeToken))
 1553255926290448384
-```
+{% endhighlight %}
 
 As you guys know, this result should be '20000000000000000000'. When I put in any other hex number, it was correct. But only 1553255926290448384 was weird.
 
@@ -3132,7 +3124,7 @@ Answers:
 
 It's not just that number, it's any number over `7fffffffffffffff`, because it's using **64-bit** integers and that's the largest one. **16-digit** numbers over that wrap around and become negative.
 
-```bash
+{% highlight bash %}
 $ echo $((16#7fffffffffffffff))
 9223372036854775807
 $ echo $((16#7fffffffffffffff + 1))
@@ -3146,7 +3138,7 @@ $ echo $((16#ffffffffffffffff + 1))
 0
 $ echo $((16#10000000000000000))
 0
-```
+{% endhighlight %}
 
 ## nohup
 
@@ -3158,35 +3150,35 @@ When you run nohup command without ‘&’ then it returns to shell command prom
 
 The output of the nohup command will write in nohup.out the file if any redirecting filename is not mentioned in nohup command.
 
-```bash
+{% highlight bash %}
 nohup bash sleep1.sh
 cat nohup.out
-```
+{% endhighlight %}
 
 You can execute the command in the following way to redirect the output to the output.txt file. Check the output of output.txt.
 
-```bash
+{% highlight bash %}
 nohup bash sleep2.sh > output.txt
 cat output.txt
-```
+{% endhighlight %}
 
 * Using nohup command with ‘&’
 
 When nohup command use with ‘&’ then it doesn’t return to shell command prompt after running the command in the background. But if you want you can return to shell command prompt by typing ‘fg’
 
-```bash
+{% highlight bash %}
 nohup bash sleep1.sh &
 fg
-```
+{% endhighlight %}
 
 * Using nohup command to run multiple commands in the background
 
 You can run multiple commands in the background by using nohup command. In the following command, mkdir and ls command are executed in the background by using nohup and bash commands. You can get the output of the commands by checking output.txt file.
 
-```bash
+{% highlight bash %}
 nohup bash -c 'mkdir myDir && ls'> output.txt
 cat output.txt
-```
+{% endhighlight %}
 
 * Start any process in the background by using nohup
 
@@ -3202,13 +3194,13 @@ https://linuxhint.com/nohup_command_linux/
 
 `pgrep` looks through the currently running processes and lists the process IDs which match the selection criteria to stdout. All the criteria have to match. For example,
 
-```
+{% highlight text %}
 pgrep -u root sshd
-```
+{% endhighlight %}
 
 will only list the processes called `sshd` AND owned by `root`.
 
-```
+{% highlight text %}
 $pgrep unittestsvr
 4110947
 4110948
@@ -3216,7 +3208,7 @@ $pgrep unittestsvr
 $pgrep -a unittestsvr
 4110947 /data/home/gerryyang/JLib_Run/bin/unittestsvr/unittestsvr --id=60.59.59.1 --bus-key=3233 --svr-id-mask=7.8.8.9
 4110948 /data/home/gerryyang/JLib_Run/bin/unittestsvr/unittestsvr --id=60.59.59.2 --bus-key=3233 --svr-id-mask=7.8.8.9
-```
+{% endhighlight %}
 
 # [Bash Builtin Commands](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#index-mapfile)
 
@@ -3228,7 +3220,7 @@ $pgrep -a unittestsvr
 
 egrep "fast|rest" info1.txt
 
-```
+{% highlight text %}
 <total type="fast" count="0" size="0"/>
 <total type="rest" count="122591" size="1770769518"/>
 <total type="fast" count="7" size="384"/>
@@ -3261,13 +3253,13 @@ egrep "fast|rest" info1.txt
 <total type="rest" count="78" size="16150669"/>
 <total type="fast" count="2467" size="97440"/>
 <total type="rest" count="138771" size="1941991636"/>
-```
+{% endhighlight %}
 
 调用 malloc_trim 后 malloc_info 的信息如下：
 
 egrep "fast|rest" info2.txt
 
-```
+{% highlight text %}
 <total type="fast" count="0" size="0"/>
 <total type="rest" count="122591" size="1770769518"/>
 <total type="fast" count="0" size="0"/>
@@ -3300,11 +3292,11 @@ egrep "fast|rest" info2.txt
 <total type="rest" count="75" size="16151962"/>
 <total type="fast" count="29" size="1248"/>
 <total type="rest" count="136926" size="1942008447"/>
-```
+{% endhighlight %}
 
 通过如下脚本计算前后两个 size 之合的变化：
 
-```bash
+{% highlight bash %}
 #!/bin/bash
 
 # 检查是否提供了文件名参数
@@ -3326,7 +3318,7 @@ done
 
 # 输出结果
 echo "Total size: $total_size"
-```
+{% endhighlight %}
 
 
 

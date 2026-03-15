@@ -93,6 +93,17 @@ tags: [prompt, LLM, tutorial]
 - **Tag page**: `/tags/prompt/` lists all posts with tag `prompt`.
 - **Multiple tags**: Use a list, e.g. `tags: [Go, Kubernetes, tutorial]`. Tags have been added to all posts via `tools/add_tags_to_posts.rb`; see **[tools/README.md](tools/README.md)** for usage and options.
 
+### Code blocks: prefer `{% highlight %}`
+
+To avoid code blocks rendering as a single line (a known issue with the theme/compress pipeline), use Jekyll’s **`{% highlight %}`** tag instead of Markdown fenced blocks (`` ``` ``).
+
+- **Syntax**: `{% highlight lang %}` … `{% endhighlight %}` (e.g. `{% highlight bash %}`, `{% highlight yaml %}`, `{% highlight go %}`).
+- **Line breaks**: Content between the tags is output as-is, so line breaks and formatting are preserved.
+- **Rouge**: Syntax highlighting uses Rouge; supported language names match [Rouge lexers](https://github.com/rouge-ruby/rouge/wiki/List-of-supported-languages-and-lexers) (e.g. `bash`, `yaml`, `go`, `python`, `json`).
+- **Liquid in code**: If the snippet contains `{{` or `{%`, wrap the block in `{% raw %}…{% endraw %}` or escape so Liquid does not interpret it.
+- **Converting posts**: To convert existing `` ```lang … ``` `` blocks in a post to `{% highlight %}`, run:  
+  `ruby tools/convert_fenced_to_highlight.rb _posts/YYYY-MM-DD-post-name.markdown`
+
 ### Common deployment issue (Ruby too old)
 
 If your server is using Ruby 2.x (e.g. Ruby 2.5), `bundle install` / `./optools start` will fail for Chirpy/Jekyll 4.x. The `optools` script can attempt an automatic fix (rbenv + Ruby 3.2) on Ubuntu; otherwise upgrade Ruby manually, then run `bundle install`.

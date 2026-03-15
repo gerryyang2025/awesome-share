@@ -41,3 +41,17 @@ ruby tools/add_tags_to_posts.rb --force
 - 已有 `tags` 且未加 `--force` 时，该文章会被跳过。
 - 使用 `--force` 会**覆盖**当前 front matter 中的 `tags`，按上述规则重新生成。
 - 生成后可在站点 **Tags** 页或 `/tags/` 查看效果；单 tag 页面路径为 `/tags/<tag名>/`（依赖 `jekyll-archives`）。
+
+## convert_fenced_to_highlight.rb
+
+将文章中的 **Markdown 围栏代码块**（`` ```lang … ``` ``）批量替换为 Jekyll 的 **`{% highlight lang %}…{% endhighlight %}`**，以保证代码块换行与高亮正常显示（避免主题/压缩导致单行显示）。
+
+### 运行方式
+
+在仓库根目录执行：
+
+```bash
+ruby tools/convert_fenced_to_highlight.rb _posts/YYYY-MM-DD-文章名.markdown
+```
+
+仅支持单文件；转换后原文件会被覆盖，建议先提交或备份。
