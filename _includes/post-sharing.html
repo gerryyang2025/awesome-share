@@ -1,0 +1,58 @@
+{% capture title %}{{ page.title }} - {{ site.title }}{% endcapture %}
+{% assign title = title | uri_escape %}
+{% assign base = site.share_base_url | default: site.url %}
+{% if base != empty %}
+  {% assign url_raw = page.url | prepend: base %}
+{% else %}
+  {% assign url_raw = page.url | absolute_url %}
+{% endif %}
+{% assign url = url_raw | url_encode %}
+
+{{ site.data.locales[include.lang].post.share }}
+
+{% for share in site.data.share.platforms -%}
+  {%- capture tooltip -%}
+    data-bs-toggle="tooltip" data-bs-placement="top" title="{{ share.type }}" aria-label="{{ share.type }}"
+  {%- endcapture -%}
+
+  {% if share.type == 'Mastodon' %}
+    {% continue %}
+  {% endif %}
+
+  {% if share.type == 'Copy link' or share.type == '复制链接' %}
+    <a href="#" class="share-copy-link" role="button" data-copy-url="{{ url_raw }}" {{ tooltip }}>
+      <i class="{{ share.icon | default: 'fas fa-link' }}"></i>
+    </a>
+  {% else %}
+    {% assign link = share.link | replace: 'TITLE', title | replace: 'URL', url %}
+    <a href="{{ link }}" target="_blank" rel="noopener noreferrer" {{ tooltip }}>
+      <i class="{{ share.icon }}"></i>
+    </a>
+  {% endif %}
+{% endfor %}
+
+<script>
+(function() {
+  document.querySelectorAll('.share-copy-link').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.preventDefault();
+      var url = this.getAttribute('data-copy-url');
+      if (!url) return;
+      var title = this.getAttribute('title') || this.getAttribute('aria-label');
+      navigator.clipboard.writeText(url).then(function() {
+        var t = title;
+        el.setAttribute('title', 'Copied!');
+        el.setAttribute('aria-label', 'Copied!');
+        if (el._bsTooltip) el._bsTooltip.setContent({ '.tooltip-inner': 'Copied!' });
+        setTimeout(function() {
+          el.setAttribute('title', t);
+          el.setAttribute('aria-label', t);
+          if (el._bsTooltip) el._bsTooltip.setContent({ '.tooltip-inner': t });
+        }, 1500);
+      }).catch(function() {
+        window.prompt('Copy this URL:', url);
+      });
+    });
+  });
+})();
+</script>
