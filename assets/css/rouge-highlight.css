@@ -1,8 +1,21 @@
-/* Rouge syntax highlighting for {% highlight %} blocks (Chirpy code blocks) */
+/* Rouge syntax highlighting for {% highlight %} and Markdown fenced code blocks */
 .figure .highlight,
 .highlight pre,
 .highlight table {
   margin: 0;
+}
+
+/* Preserve line breaks in code blocks (fixes single-line display) */
+.figure .highlight pre,
+.figure .highlight pre code,
+.highlight pre,
+.highlight pre code,
+.highlighter-rouge pre,
+.highlighter-rouge pre code,
+[class^="language-"] pre,
+[class^="language-"] pre code {
+  white-space: pre;
+  overflow-x: auto;
 }
 
 .highlight .c,
