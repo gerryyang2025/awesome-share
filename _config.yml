@@ -11,6 +11,8 @@ description: >-
 
 url: "http://gerryyang.com"
 baseurl: ""
+# Base URL for share/copy links (use production domain so shares are correct when serving locally)
+share_base_url: "http://gerryyang.com"
 
 github:
   username: gerryyang2025
