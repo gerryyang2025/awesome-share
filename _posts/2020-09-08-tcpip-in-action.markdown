@@ -104,7 +104,7 @@ Network addresses can be flat addresses which contain no information about the n
 
 ## sockaddr_in
 
-``` cpp
+```cpp
 struct sockaddr_in {
     sa_family_t    sin_family; /* address family: AF_INET */
     in_port_t      sin_port;   /* port in network byte order */
@@ -123,7 +123,7 @@ struct in_addr {
 
 The `hostent` structure is defined in `<netdb.h>` as follows:
 
-``` cpp
+```cpp
 struct hostent {
     char  *h_name;            /* official name of host */
     char **h_aliases;         /* alias list */
@@ -150,7 +150,7 @@ The members of the hostent structure are:
 
 The `addrinfo` structure used by `getaddrinfo()` contains the following fields:
 
-``` cpp
+```cpp
 struct addrinfo {
     int              ai_flags;
     int              ai_family;
@@ -268,7 +268,7 @@ An application can use `select(2)`, `poll(2)`, or `epoll(7)` to determine when m
 
 select, pselect, FD_CLR, FD_ISSET, FD_SET, FD_ZERO - synchronous I/O multiplexing
 
-``` cpp
+```cpp
 int select(int nfds,
             fd_set *restrict readfds,
             fd_set *restrict writefds,
@@ -282,9 +282,7 @@ WARNING: `select()` can monitor only file descriptors numbers that are less than
 
 `select()` allows a program to monitor multiple file descriptors, waiting until one or more of the file descriptors become "ready" for some class of I/O operation (e.g., input possible).  A file descriptor is considered ready if it is possible to perform a corresponding I/O operation (e.g., `read(2)`, or a sufficiently small `write(2)`) without blocking.
 
-```
-nfds
-
+```nfds
 This argument should be set to the highest-numbered file descriptor in any of the three sets, plus 1.  The indicated file descriptors in each set are checked, up to this limit (but see BUGS).
 
 BUGS
@@ -296,7 +294,7 @@ POSIX allows an implementation to define an upper limit, advertised via the cons
 
 ## poll
 
-``` cpp
+```cpp
 #include <poll.h>
 
 int poll(struct pollfd *fds, nfds_t nfds, int timeout);
@@ -306,7 +304,7 @@ int poll(struct pollfd *fds, nfds_t nfds, int timeout);
 
 The set of file descriptors to be monitored is specified in the `fds` argument, which is **an array of structures** of the following form:
 
-``` cpp
+```cpp
 struct pollfd {
     int   fd;         /* file descriptor */
     short events;     /* requested events */
@@ -331,7 +329,7 @@ getsockopt() and setsockopt() manipulate options for the socket referred to by t
 
 ## getaddrinfo
 
-``` cpp
+```cpp
 int getaddrinfo(const char *restrict node,
                 const char *restrict service,
                 const struct addrinfo *restrict hints,
@@ -350,7 +348,7 @@ TL;DR it runs through `/etc/nsswitch.conf`, and uses whatever modules are listed
 
 https://wandbox.org/permlink/lLxsF1NqXamWodoF
 
-``` cpp
+```cpp
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -384,7 +382,7 @@ google.com is at: 172.217.163.46
 
 ## gethostbyname
 
-``` cpp
+```cpp
 #include <stdio.h>
 #include <netdb.h>
 
@@ -411,7 +409,7 @@ localhost
 
 ## getpeername
 
-``` cpp
+```cpp
 #include <sys/socket.h>
 
 int getpeername(int sockfd, struct sockaddr *restrict addr,
@@ -443,13 +441,13 @@ Now `EPOLLET` indicates **edge-triggered wait**, meaning your desired event woul
 
 ## epoll_ctl
 
-``` cpp
+```cpp
 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
 ```
 
 The `event` argument describes the object linked to the file descriptor `fd`.  The struct `epoll_event` is defined as:
 
-``` cpp
+```cpp
 typedef union epoll_data {
     void        *ptr;
     int          fd;
@@ -513,7 +511,7 @@ Nagle 算法主要用来预防小分组的产生。在广域网上，大量 TCP 
 
 Use `inet_ntop()` and `inet_pton()` if you need it other way around. Do not use `inet_ntoa()`, `inet_aton()` and similar as they are deprecated and don't support ipv6.
 
-``` cpp
+```cpp
 // IPv4 demo of inet_ntop() and inet_pton()
 
 struct sockaddr_in sa;

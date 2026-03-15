@@ -367,7 +367,7 @@ This is an example GELF message payload. Any Graylog-server node accepts and sto
 
 > **Hint**: New lines must be denoted with the \n escape sequence to ensure the payload is valid JSON as per [RFC 7159](https://tools.ietf.org/html/rfc7159#page-8).
 
-``` json
+```json
 {
     "version": "1.1",
     "host": "example.org",
@@ -387,7 +387,7 @@ This is an example GELF message payload. Any Graylog-server node accepts and sto
 
 Sending an example message to a GELF UDP input (running on host graylog.example.com on port 12201):
 
-``` bash
+```bash
 echo -n '{ "version": "1.1", "host": "example.org", "short_message": "A short message", "level": 5, "_some_info": "foo" }' | nc -w0 -u graylog.example.com 12201
 ```
 
@@ -395,7 +395,7 @@ echo -n '{ "version": "1.1", "host": "example.org", "short_message": "A short me
 
 Sending an example message to a GELF TCP input (running on host graylog.example.com on port 12201):
 
-``` bash
+```bash
 echo -n -e '{ "version": "1.1", "host": "example.org", "short_message": "A short message", "level": 5, "_some_info": "foo" }'"\0" | nc -w0 graylog.example.com 12201
 ```
 
@@ -403,7 +403,7 @@ echo -n -e '{ "version": "1.1", "host": "example.org", "short_message": "A short
 
 Sending an example message to a GELF input (running on https://graylog.example.com:12201/gelf):
 
-``` bash
+```bash
 curl -X POST -H 'Content-Type: application/json' -d '{ "version": "1.1", "host": "example.org", "short_message": "A short message", "level": 5, "_some_info": "foo" }' 'http://graylog.example.com:12201/gelf'
 ```
 
@@ -431,8 +431,7 @@ The search syntax is very close to the Lucene syntax. By default all message fie
 
 * Messages that include the term `ssh` :
 
-```
-ssh
+```ssh
 ```
 
 * Messages that include the term `ssh` or `login` :
@@ -565,13 +564,13 @@ All log data is stored in Elasticsearch/OpenSearch. [Elastic recommends](https:/
 
 You can find the log data for Graylog under the below directory with timestamps and levels and exception messages. This is useful for debugging or when the server won't start.
 
-``` bash
+```bash
 /var/log/graylog-server/server.log
 ```
 
 If you use the pre-build appliances, take a look into
 
-``` bash
+```bash
 /var/log/graylog/<servicename>/current
 ```
 

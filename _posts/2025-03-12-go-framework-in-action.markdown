@@ -47,7 +47,7 @@ my-project/
 
 # 环境变量配置
 
-``` bash
+```bash
 # .bashrc
 
 # golang
@@ -89,7 +89,7 @@ export GOSUMDB="xxx"
 构建脚本：
 
 
-``` bash
+```bash
 #!/bin/bash
 
 # Colors for output
@@ -358,7 +358,7 @@ TODO
 
 可以在工程的 VSCode `.vscode/settings.json` 配置中设置开启 gopls 服务，即，`"go.useLanguageServer": true`
 
-``` json
+```json
 {
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
@@ -496,7 +496,7 @@ flags:
 
 这是 `go list all` 命令的替代者，用于列出可用的 Go 包，速度比 `go list all` 更快。
 
-``` bash
+```bash
 # Go 1.12+
 go install github.com/uudashr/gopkgs/v2/cmd/gopkgs@latest
 ```
@@ -506,7 +506,7 @@ go install github.com/uudashr/gopkgs/v2/cmd/gopkgs@latest
 
 将 Go 源码中的声明提取为 JSON 的工具。
 
-``` bash
+```bash
 go get -u github.com/lukehoban/go-outline
 ```
 
@@ -541,7 +541,7 @@ golangci-lint --version
 
 * 配置管理
 
-``` go
+```go
 // 推荐使用 Viper + 环境变量
 func InitConfig() {
     viper.AutomaticEnv()
@@ -556,13 +556,13 @@ func InitConfig() {
   - 使用`errors.Wrap`保留堆栈信息
   - 定义可导出错误类型
 
-``` go
+```go
 var ErrRecordNotFound = errors.New("record not found")
 ```
 
 * 日志规范
 
-``` go
+```go
 // 推荐使用 zap 或 logrus
 logger, _ := zap.NewProduction()
 defer logger.Sync()
@@ -605,7 +605,7 @@ jobs:
 
 * 文档生成
 
-``` bash
+```bash
 # 安装 swag 工具
 go install github.com/swaggo/swag/cmd/swag@latest
 
@@ -633,7 +633,7 @@ repos:
 
 * 分布式追踪
 
-``` go
+```go
 // 使用 OpenTelemetry
 provider := otel.GetTracerProvider()
 tracer := provider.Tracer("service-name")
@@ -644,7 +644,7 @@ defer span.End()
 * 错误监控
   - 集成`Sentry`或`DataDog`
 
-``` go
+```go
 sentry.Init(sentry.ClientOptions{
     Dsn: "your-dsn",
     Release: "myapp@v1.0.0",
@@ -654,7 +654,7 @@ sentry.Init(sentry.ClientOptions{
 * 代码生成
   - 使用`go:generate`指令
 
-``` go
+```go
 //go:generate mockgen -source=repository.go -destination=mock_repository.go -package=repository
 ```
 
@@ -667,14 +667,14 @@ sentry.Init(sentry.ClientOptions{
 
 ## 初始化模块
 
-``` bash
+```bash
 go mod init my-project
 go mod tidy
 ```
 
 ## 单元测试
 
-``` bash
+```bash
 # 安装测试依赖
 go install github.com/stretchr/testify@v1.9.0
 go install github.com/stretchr/testify/mock@v1.9.0
@@ -697,7 +697,7 @@ https://github.com/spf13/viper
 
 简单示例：
 
-``` go
+```go
 // 高性能模式（零内存分配）
 logger := zap.NewExample()
 defer logger.Sync()
@@ -710,7 +710,7 @@ sugar.Debugf("Formatted message: %s", "value")
 
 在其他 package 中使用 zap 的全局实例（推荐）：
 
-``` go
+```go
 import "go.uber.org/zap"
 
 func example() {
@@ -729,7 +729,7 @@ Gin is a web framework written in Go. It features a martini-like API with perfor
 
 ## 生成 vendor 目录 (方便查看第三方源码)
 
-``` bash
+```bash
 # 在 VS Code 终端运行
 go mod vendor
 ```
@@ -739,7 +739,7 @@ go mod vendor
 
 ## 清理旧依赖缓存
 
-``` bash
+```bash
 go clean -cache
 go clean -modcache
 ```
@@ -751,7 +751,7 @@ go clean -modcache
 
 获取当前环境变量信息：
 
-``` bash
+```bash
 go env GOOS
 go env GOARCH
 ```
@@ -861,7 +861,7 @@ apt-get install -y protobuf-compiler
 
 **golangci-lint** is a fast Go linters runner. It runs linters in parallel, uses caching, supports YAML configuration, integrates with all major IDEs, and includes over a hundred linters.
 
-``` bash
+```bash
 # binary will be $(go env GOPATH)/bin/golangci-lint
 curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.7
 

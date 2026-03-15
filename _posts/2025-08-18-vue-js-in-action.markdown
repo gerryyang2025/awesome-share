@@ -28,7 +28,7 @@ tags:
 
 Here is a minimal example:
 
-``` js
+```js
 import { createApp, ref } from 'vue'
 
 createApp({
@@ -40,7 +40,7 @@ createApp({
 }).mount('#app')
 ```
 
-``` html
+```html
 <div id="app">
   <button @click="count++">
     Count is: {{ count }}
@@ -82,7 +82,7 @@ Despite the flexibility, the core knowledge about how Vue works is shared across
 
 In most build-tool-enabled Vue projects, we author Vue components using an HTML-like file format called **Single-File Component** (also known as `*.vue` files, abbreviated as **SFC**). A Vue SFC, as the name suggests, encapsulates the component's **logic** (`JavaScript`), **template** (`HTML`), and **styles** (`CSS`) in a single file. Here's the previous example, written in **SFC format**:
 
-``` vue
+```vue
 <script setup>
 import { ref } from 'vue'
 const count = ref(0)
@@ -113,7 +113,7 @@ Vue components can be authored in two different API styles: **Options API** and 
 
 With **Options API**, we define a component's logic using an object of options such as `data`, `methods`, and `mounted`. Properties defined by options are exposed on `this` inside functions, which points to the component instance:
 
-``` vue
+```vue
 <script>
 export default {
   // Properties returned from data() become reactive state
@@ -155,7 +155,7 @@ With **Composition API**, we define a component's logic using imported API funct
 
 Here is the same component, with the exact same template, but using Composition API and `<script setup>` instead:
 
-``` vue
+```vue
 <script setup>
 import { ref, onMounted } from 'vue'
 
@@ -228,7 +228,7 @@ In this section we will introduce how to scaffold a Vue [Single Page Application
 
 Make sure you have an up-to-date version of `Node.js` installed and your current working directory is the one where you intend to create a project. Run the following command in your command line (without the `$` sign):
 
-``` bash
+```bash
 npm create vue@latest
 ```
 
@@ -238,7 +238,7 @@ This command will install and execute [create-vue](https://github.com/vuejs/crea
 
 If you are unsure about an option, simply choose **No** by hitting enter for now. Once the project is created, follow the instructions to install dependencies and start the dev server:
 
-``` bash
+```bash
 cd <your-project-name>
 npm install
 npm run dev
@@ -257,7 +257,7 @@ npm run dev
 
 When you are ready to ship your app to **production**, run the following:
 
-``` bash
+```bash
 npm run build
 ```
 
@@ -276,7 +276,7 @@ This will create a production-ready build of your app in the project's `./dist` 
 
 Every **Vue application** starts by **creating a new application instance** with the [createApp](https://vuejs.org/api/application.html#createapp) function:
 
-``` js
+```js
 import { createApp } from 'vue'
 
 const app = createApp({
@@ -290,7 +290,7 @@ The object we are passing into `createApp` is in fact a component. Every app req
 
 If you are using **Single-File Components**, we typically import the root component from another file:
 
-``` js
+```js
 import { createApp } from 'vue'
 // import the root component App from a single-file component.
 import App from './App.vue'
@@ -318,11 +318,11 @@ In later sections of the guide, we will discuss how to define and compose multip
 
 An application instance won't render anything until its `.mount()` method is called. It expects a "container" argument, which can either be an actual DOM element or a selector string:
 
-``` html
+```html
 <div id="app"></div>
 ```
 
-``` js
+```js
 app.mount('#app')
 ```
 
@@ -335,13 +335,13 @@ The `.mount()` method should always be called after all app configurations and a
 
 The template for the root component is usually part of the component itself, but it is also possible to provide the template separately by writing it directly inside the mount container:
 
-``` html
+```html
 <div id="app">
   <button @click="count++">{{ count }}</button>
 </div>
 ```
 
-``` js
+```js
 import { createApp } from 'vue'
 
 const app = createApp({
@@ -365,7 +365,7 @@ In-DOM templates are often used in applications that are [using Vue without a bu
 
 The application instance exposes a `.config` object that allows us to configure a few app-level options, for example, defining an app-level error handler that captures errors from all descendant components:
 
-``` js
+```js
 app.config.errorHandler = (err) => {
   /* handle error */
 }
@@ -373,7 +373,7 @@ app.config.errorHandler = (err) => {
 
 The application instance also provides a few methods for registering app-scoped assets. For example, registering a component:
 
-``` js
+```js
 app.component('TodoDeleteButton', TodoDeleteButton)
 ```
 
@@ -386,7 +386,7 @@ Make sure to apply all app configurations before mounting the app!
 
 You are not limited to a single application instance on the same page. The `createApp` API allows multiple Vue applications to co-exist on the same page, each with its own scope for configuration and global assets:
 
-``` js
+```js
 const app1 = createApp({
   /* ... */
 })

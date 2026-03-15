@@ -33,7 +33,7 @@ What exactly does putting `extern "C"` into `C++` code do?
 
 For example:
 
-``` cpp
+```cpp
 extern "C" {
    void foo();
 }
@@ -60,7 +60,7 @@ Since `C++` has overloading of function names and `C` does not, **the C++ compil
 
 Just so you know, you can specify extern "C" linkage to each individual declaration/definition explicitly or use a block to group a sequence of declarations/definitions to have a certain linkage:
 
-``` c
+```c
 extern "C" void foo(int);
 extern "C"
 {
@@ -84,7 +84,7 @@ If you care about the technicalities, they are listed in section 7.5 of the C++0
 
 You'll very often see code in C headers like so:
 
-``` cpp
+```cpp
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -100,7 +100,7 @@ What this accomplishes is that **it allows you to use that C header file with yo
 
 Although, I have also seen C++ code such as:
 
-``` cpp
+```cpp
 extern "C" {
 #include "legacy_C_header.h"
 }
@@ -113,7 +113,7 @@ Not sure which way is better, but I have seen both.
 
 ## Answer3: Decompile a g++ generated binary to see what is going on
 
-``` cpp
+```cpp
 // main.cpp
 
 void f() {}
@@ -160,7 +160,7 @@ So you will need `extern "C"` both when calling:
 
 It becomes obvious that any C++ feature that requires name mangling will not work inside `extern C`:
 
-``` cpp
+```cpp
 extern "C" {
     // Overloading.
     // error: declaration of C function ‘void f(int)’ conflicts with
@@ -179,7 +179,7 @@ For the sake of completeness and for the newbs out there, see also: [How to use 
 
 Calling C from C++ is pretty easy: each C function only has one possible non-mangled symbol, so no extra work is required.
 
-``` cpp
+```cpp
 // main.cpp
 
 #include <cassert>
@@ -191,7 +191,7 @@ int main() {
 }
 ```
 
-``` cpp
+```cpp
 // c.h
 
 #ifndef C_H
@@ -210,7 +210,7 @@ int f();
 #endif
 ```
 
-``` cpp
+```cpp
 // c.c
 
 #include "c.h"
@@ -243,7 +243,7 @@ Calling C++ from C is a bit harder: we have to manually create non-mangled versi
 
 Here we illustrate how to expose C++ function overloads to C.
 
-``` cpp
+```cpp
 // main.c
 
 #include <assert.h>
@@ -257,7 +257,7 @@ int main(void) {
 }
 ```
 
-``` cpp
+```cpp
 // cpp.h
 
 #ifndef CPP_H
@@ -278,7 +278,7 @@ int f_float(float i);
 #endif
 ```
 
-``` cpp
+```cpp
 // cpp.cpp
 
 #include "cpp.h"

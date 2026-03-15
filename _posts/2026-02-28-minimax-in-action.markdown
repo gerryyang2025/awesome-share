@@ -47,7 +47,7 @@ MiniMax-M2.1 & MiniMax-M2.1-lightning 兼容 OpenAI 和 Anthropic 接口协议�
 
 在 `.bashrc` 添加下面命令：
 
-``` bash
+```bash
 unset ANTHROPIC_AUTH_TOKEN
 unset ANTHROPIC_BASE_URL
 ```
@@ -84,7 +84,7 @@ unset ANTHROPIC_BASE_URL
 
 macOS:
 
-``` bash
+```bash
 brew tap farion1231/ccswitch
 brew install --cask cc-switch
 brew upgrade --cask cc-switch
@@ -170,7 +170,7 @@ https://platform.minimaxi.com/user-center/payment/balance
 
 新建一个 `claude-minimax` 脚本，将从 MiniMax M2 官网获取的[接口参数](https://platform.minimaxi.com/docs/api-reference/text-anthropic-api)填入。
 
-``` bash
+```bash
 #!/usr/bin/env bash
 # Claude Code CLI wrapper for MiniMax API
 # Usage: ./claude-minimax [claude arguments]
@@ -200,7 +200,7 @@ exec "$CLAUDE_BIN" "$@"
 
 完成后，可以测试一下，看看能否正常运行。
 
-``` bash
+```bash
 $ claude-minimax --version
 ```
 
@@ -316,7 +316,7 @@ OpenClaw（原 Clawdbot） 是一个开源的 AI 助手，完全本地化，可�
 
 如果 openclaw 的初始配置引导没有出现模型配置，则可以通过以下命令再次进行 openclaw 配置：
 
-``` bash
+```bash
 openclaw configure
 ```
 

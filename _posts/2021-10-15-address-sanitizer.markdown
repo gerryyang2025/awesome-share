@@ -31,7 +31,7 @@ Typical slowdown introduced by AddressSanitizer is `2x`. 性能指标可参考�
 
 Simply **compile** and **link** your program with `-fsanitize=address` flag. The AddressSanitizer run-time library should be linked to the final executable, so make sure to use `clang` (not `ld`) for the final link step. When linking shared libraries, the AddressSanitizer run-time is not linked, so `-Wl,-z,defs` may cause link errors (don’t use it with AddressSanitizer). To get a reasonable performance add `-O1` or higher. To get nicer stack traces in error messages add `-fno-omit-frame-pointer`. To get perfect stack traces you may need to disable inlining (just use `-O1`) and tail call elimination (`-fno-optimize-sibling-calls`).
 
-``` cpp
+```cpp
 // cat example_UseAfterFree.cc
 int main(int argc, char **argv) {
   int *array = new int[100];
@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 
 or:
 
-``` bash
+```bash
 # Compile
 % clang++ -O1 -g -fsanitize=address -fno-omit-frame-pointer -c example_UseAfterFree.cc
 
@@ -141,7 +141,7 @@ See also:
 In order to use `AddressSanitizer` you will need to compile and link your program using `clang` with the `-fsanitize=address` switch. To get a reasonable performance add `-O1` or higher. To get nicer stack traces in error messages add `-fno-omit-frame-pointer`. Note: [Clang 3.1 release uses another flag syntax](http://llvm.org/releases/3.1/tools/clang/docs/AddressSanitizer.html).
 
 
-``` cpp
+```cpp
 % cat tests/use-after-free.c
 #include <stdlib.h>
 int main() {
@@ -258,7 +258,7 @@ ASAN_OPTIONS=verbosity=1:malloc_context_size=20 ./a.out
 
 but you could also embed default flags in the source code by implementing `__asan_default_options` function:
 
-``` cpp
+```cpp
 const char *__asan_default_options() {
   return "verbosity=1:malloc_context_size=20";
 }
@@ -599,7 +599,7 @@ In some cases a particular function should be ignored (not instrumented) by `Add
 
 To ignore certain functions, one can use the `no_sanitize_address` attribute supported by Clang (3.3+) and GCC (4.8+). You can define the following macro:
 
-``` cpp
+```cpp
 #if defined(__clang__) || defined (__GNUC__)
 # define ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
 #else
@@ -635,7 +635,7 @@ fun:*MyFooBar*
 
 `Stack-use-after-return` bug appears when a stack object is used after the function where this object is defined has returned. Example (see also [AddressSanitizerExampleUseAfterReturn](https://github.com/google/sanitizers/wiki/AddressSanitizerExampleUseAfterReturn)):
 
-``` cpp
+```cpp
 // RUN: clang -O -g -fsanitize=address %t && ./a.out
 // By default, AddressSanitizer does not try to detect
 // stack-use-after-return bugs.
@@ -710,7 +710,7 @@ Once a function has returned, its stack memory is reused by the next call instru
 
 Before:
 
-``` cpp
+```cpp
 void foo() {
   int local;
   escape_addr(&local);
@@ -719,7 +719,7 @@ void foo() {
 
 After:
 
-``` cpp
+```cpp
 void foo() {
   char redzone1[32];
   int local;
@@ -845,7 +845,7 @@ interceptor_via_lib:NameOfTheLibraryToSuppress
 
 例子：
 
-``` bash
+```bash
 -----------------------------------------------------
 Suppressions used:
   count      bytes template
@@ -887,7 +887,7 @@ ASan（AddressSanitizer）输出的 "Suppressions" 部分提供了有关在程�
 
 In some cases one may need to execute different code depending on whether AddressSanitizer is enabled. `__has_feature` can be used for this purpose.
 
-``` cpp
+```cpp
 #if defined(__has_feature)
 #  if __has_feature(address_sanitizer)
 // code that builds only under AddressSanitizer
@@ -907,7 +907,7 @@ AddressSanitizer supports `src` and `fun` entity types in [Sanitizer special cas
 
 You may use an `init` category to suppress reports about initialization-order problems happening in certain source files or with certain global variables.
 
-``` bash
+```bash
 # Suppress error reports for code in a file or in a function:
 src:bad_file.cpp
 # Ignore all functions with names containing MyFooBar:
@@ -968,7 +968,7 @@ Section names are regular expressions written in square brackets that denote whi
 Entries contain an entity type, followed by a colon and a regular expression, specifying the names of the entities, optionally followed by an equals sign and a tool-specific category, e.g. `fun:*ExampleFunc=example_category`. The meaning of `*` in regular expression for entity names is different - it is treated as in shell wildcarding. Two generic entity types are `src` and `fun`, which allow users to specify source files and functions, respectively. Some sanitizer tools may introduce custom entity types and categories - refer to tool-specific docs.
 
 
-``` bash
+```bash
 # Lines starting with # are ignored.
 # Turn off checks for the source file (use absolute path or path relative
 # to the current working directory):
@@ -1005,7 +1005,7 @@ fun:*BadCfiCall
 
 Memory leak reports produced by [LeakSanitizer](https://clang.llvm.org/docs/LeakSanitizer.html) (if it is run as a part of AddressSanitizer) can be suppressed by a separate file passed as
 
-``` bash
+```bash
 LSAN_OPTIONS=suppressions=MyLSan.supp
 ```
 
@@ -1105,7 +1105,7 @@ See also: [design document](https://github.com/google/sanitizers/wiki/AddressSan
 
 To use `LSan`, simply build your program with `AddressSanitizer`:
 
-``` cpp
+```cpp
 $ cat memory-leak.c
 #include <stdlib.h>
 
@@ -1202,7 +1202,7 @@ SUMMARY: AddressSanitizer: 5 byte(s) leaked in 1 allocation(s).
 
 ### stl 容器添加内容
 
-``` cpp
+```cpp
 #include <vector>
 #include <iostream>
 
@@ -1223,7 +1223,7 @@ int main(int argc, char **argv)
 
 ### shared_ptr 循环引用
 
-``` cpp
+```cpp
 #include <iostream>
 #include <memory>
 
@@ -1325,7 +1325,7 @@ LSan can be used in 3 ways.
 
 The most common way to use `LSan` is `clang -fsanitize=address` (or `gcc -fsanitize=address`). For LSan-supported targets (`#define CAN_SANITIZE_LEAKS 1`), the AddressSanitizer (`ASan`) runtime enables `LSan` by default.
 
-``` cpp
+```cpp
 #include <stdlib.h>
 int main()
 {
@@ -1355,7 +1355,7 @@ int main()
 
 Here is an example of a data race that can lead to crashes and memory corruptions:
 
-``` cpp
+```cpp
 #include <pthread.h>
 #include <stdio.h>
 #include <string>
@@ -1399,7 +1399,7 @@ Simply compile your program with `-fsanitize=thread` and link it with `-fsanitiz
 
 When you run the program, `TSan` will print a report if it finds a data race. Here is an example:
 
-``` cpp
+```cpp
 $ cat simple_race.cc
 #include <pthread.h>
 #include <stdio.h>
@@ -1490,13 +1490,13 @@ The run-time library replaces the `malloc` and `free` functions. The memory arou
 
 Before:
 
-``` cpp
+```cpp
 *address = ...;  // or: ... = *address;
 ```
 
 After:
 
-``` cpp
+```cpp
 if (IsPoisoned(address)) {
   ReportError(address, kAccessSize, kIsWrite);
 }
@@ -1516,7 +1516,7 @@ These 2 classes of memory should be organized in such a way that computing the s
 
 The **instrumentation(插桩)** performed by the compiler:
 
-``` cpp
+```cpp
 shadow_address = MemToShadow(address);
 if (ShadowIsPoisoned(shadow_address)) {
   ReportError(address, kAccessSize, kIsWrite);
@@ -1535,7 +1535,7 @@ There are only **`9` different values** for **any aligned `8` bytes** of the app
 
 The instrumentation looks like this:
 
-``` cpp
+```cpp
 byte *shadow_address = MemToShadow(address);
 byte shadow_value = *shadow_address;
 if (shadow_value) {
@@ -1546,7 +1546,7 @@ if (shadow_value) {
 ```
 
 
-``` cpp
+```cpp
 // Check the cases where we access first k bytes of the qword
 // and these k bytes are unpoisoned.
 bool SlowPathCheck(shadow_value, address, kAccessSize) {
@@ -1625,7 +1625,7 @@ In order to catch **stack buffer overflow**, `AddressSanitizer` instruments the 
 
 Original code:
 
-``` cpp
+```cpp
 void foo() {
   char a[8];
   ...
@@ -1635,7 +1635,7 @@ void foo() {
 
 Instrumented code:
 
-``` cpp
+```cpp
 void foo() {
   char redzone1[32];  // 32-byte aligned
   char a[8];          // 32-byte aligned
@@ -1689,7 +1689,7 @@ void foo() {
 
 The current compact mapping will not catch unaligned partially out-of-bound accesses:
 
-``` cpp
+```cpp
 int *x = new int[2]; // 8 bytes: [0,7].
 int *u = (int*)((char*)x + 6);
 *u = 1;  // Access to range [6-9]
@@ -1736,7 +1736,7 @@ The option cannot be combined with `-fsanitize=thread` or `-fsanitize=hwaddress`
 
 测试代码：
 
-``` cpp
+```cpp
 #include <stdlib.h>
 
 void f(void)
@@ -1784,7 +1784,7 @@ ENDIF()
 
 启动选项：
 
-``` bash
+```bash
 #!/bin/bash
 
 # ASAN_OPTIONS=detect_odr_violation=0 不检查 ODR 错误
@@ -1835,7 +1835,7 @@ A: Yes it can, AddressSanitizer has recently got `continue-after-error` mode. Th
 
 LeakSanitizer 的检测结果，默认是在程序退出前输出的，因此对于后台服务可以在代码里定期调用接口输出。
 
-``` cpp
+```cpp
 #include <thread>
 #include "sanitizer/lsan_interface.h"
 
@@ -1853,7 +1853,7 @@ int main(int argc, char** argv)
 }
 ```
 
-``` cpp
+```cpp
   // Check for leaks now. Returns zero if no leaks have been found or if leak
   // detection is disabled, non-zero otherwise.
   // This function may be called repeatedly, e.g. to periodically check a
@@ -1926,7 +1926,7 @@ It means that you contains at least one serious bug, that under certain circumst
 3. **解决方案**
     + 在使用协程或手动切换栈时，需显式通知 ASan 栈的变化：通过接口 `__sanitizer_start_switch_fiber` 和 `__sanitizer_finish_switch_fiber` 明确标记栈切换的边界。
 
-``` cpp
+```cpp
 // 切换前：保存旧栈，准备新栈
 __sanitizer_start_switch_fiber(&old_fake_stack, new_stack_base, new_stack_size);
 swapcontext(&old_ctx, &new_ctx);
@@ -2005,7 +2005,7 @@ ASan 在栈内存管理中使用 `__asan_poison_memory_region` 的典型场景�
 触发条件：变量离开作用域（如函数返回、代码块结束）
 目的：检测 Use-after-Scope 错误（悬空指针访问已释放的栈内存）
 
-``` cpp
+```cpp
 void func() {
   {
     int x[10]; // 栈变量
@@ -2020,7 +2020,7 @@ void func() {
 触发条件：栈帧初始化时
 目的：检测缓冲区溢出（如 `buffer[32]` 访问会触及红区）
 
-``` cpp
+```cpp
 void func() {
   char buffer[32];
   // 编译器自动插入红区：
@@ -2034,7 +2034,7 @@ void func() {
 触发条件：[alloca](https://man7.org/linux/man-pages/man3/alloca.3.html) 分配的动态栈内存释放时
 目的：检测动态栈内存的越界访问
 
-``` cpp
+```cpp
 void func(int n) {
   char *buf = (char*)alloca(n);
   // ASan 调用 __asan_poison_memory_region 标记未初始化区域
@@ -2047,7 +2047,7 @@ void func(int n) {
 触发条件：编译器优化导致栈内存复用
 目的：防止残留数据被错误访问
 
-``` cpp
+```cpp
 void func() {
   int a[100];
   // a 使用结束后...
@@ -2065,7 +2065,7 @@ void func() {
 
 例如，对于以下代码，ASan 会在 `x` 离开作用域时标记其内存为中毒状态，后续通过 `ptr` 的访问将被拦截。
 
-``` cpp
+```cpp
 void test() {
   int *ptr;
   {
@@ -2083,7 +2083,7 @@ A user may **poison**/**unpoison** a region of memory manually. Use this feature
 
 From `compiler-rt/include/sanitizer/asan_interface.h`:
 
-``` cpp
+```cpp
   // Marks memory region [addr, addr+size) as unaddressable.
   // This memory must be previously allocated by the user program. Accessing
   // addresses in this region from instrumented code is forbidden until
@@ -2161,7 +2161,7 @@ WRITE of size 4 at 0x7fffeb7a9820 thread T0
 
 Here is a simple test case:
 
-``` cpp
+```cpp
 #include <exception>
 #include <iostream>
 #include <boost/coroutine/coroutine.hpp>
@@ -2231,7 +2231,7 @@ You could use `Boost.Coroutine2` instead in order to get ASAN working (re-build 
 ### 参考：[boost Coroutine resume 代码](https://github.com/boostorg/context/blob/master/include/boost/context/continuation_ucontext.hpp#L130)
 
 
-``` cpp
+```cpp
 activation_record * resume() {
         from = current();
         // store `this` in static, thread local pointer
@@ -2298,7 +2298,7 @@ And when we try to jump to new(target) coroutine by executing swapcontext(), we 
 
 Here introduce two function provided by ASAN to manage the `fake_stack`:
 
-``` cpp
+```cpp
 // Fiber annotation interface.
 // Before switching to a different stack, one must call
 // __sanitizer_start_switch_fiber with a pointer to the bottom of the
@@ -2337,7 +2337,7 @@ void __sanitizer_finish_switch_fiber(void *fake_stack_save,
 
 示例场景：
 
-``` cpp
+```cpp
 // 切换到新纤程前
 void* saved_fake_stack = nullptr;
 __sanitizer_start_switch_fiber(&saved_fake_stack, new_stack_bottom, new_stack_size);
@@ -2355,7 +2355,7 @@ perform_context_switch_to_new_stack();
 
 示例场景：
 
-``` cpp
+```cpp
 // 在新栈上运行后
 const void* old_stack_bottom;
 size_t old_stack_size;
@@ -2371,7 +2371,7 @@ __sanitizer_finish_switch_fiber(saved_fake_stack, &old_stack_bottom, &old_stack_
 
 永久退出纤程：
 
-``` cpp
+```cpp
 // 结束当前纤程，不再返回
 __sanitizer_start_switch_fiber(nullptr, new_stack_bottom, new_stack_size);
 perform_context_switch_to_new_stack();
@@ -2381,7 +2381,7 @@ __sanitizer_finish_switch_fiber(nullptr, nullptr, nullptr);
 
 禁用 `stack-use-after-return` 检测：(参考：[AddressSanitizerUseAfterReturn](https://github.com/google/sanitizers/wiki/AddressSanitizerUseAfterReturn))
 
-``` cpp
+```cpp
 // 所有调用均传递 nullptr，伪栈机制完全禁用
 __sanitizer_start_switch_fiber(nullptr, new_stack_bottom, new_stack_size);
 perform_switch();
@@ -2412,7 +2412,7 @@ From the source code, we can see that, `__sanitizer_start_switch_fiber` will ass
 This is how I handle swapcontext() issue:
 
 
-``` cpp
+```cpp
 //vthctx: Context of main fiber/coroutine
 //vth:  Context of fiber/coroutine A
 
@@ -2467,7 +2467,7 @@ ASAN only cares about tracking the stack swapping, so as long as you wrap the st
 
 源码参考：sanitizer/include/common_interface_defs.h
 
-``` cpp
+```cpp
 /// Notify ASan that a fiber switch has started (required only if implementing
 /// your own fiber library).
 ///
@@ -2591,7 +2591,7 @@ cc_test(
 
 单元测试代码：
 
-``` cpp
+```cpp
 #include "unittest/utils/Utils.h"
 #include "gtest/gtest.h"
 #include <stddef.h>

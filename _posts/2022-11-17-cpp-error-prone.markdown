@@ -18,8 +18,7 @@ tags:
 
 有符号类型与无符号类型比较，导致隐式提升为无符号类型，计算结果与正常期望不符。
 
-``` cpp
-
+```cpp
 auto a = (uint32_t(0) < -1);
 std::cout << std::boolalpha << a << std::endl;  // true
 ```
@@ -58,7 +57,7 @@ The GNU C preprocessor recognizes several `pragmas` in addition to the compiler 
 
 示例代码：https://wandbox.org/permlink/U4CUnRy09abxOSHy
 
-``` cpp
+```cpp
 #include <iostream>
 #include <stdint.h>
 
@@ -101,7 +100,7 @@ int main()
 
 在循环比较判断中，出现 unsigned 类型隐士转换，无符号变量出现 wraparound，导致死循环。
 
-``` cpp
+```cpp
 uint32 uFieldNumFromCfg = 256;
 
 for (uint8 i = 0; i < uFieldNumFromCfg; ++i)
@@ -113,7 +112,7 @@ for (uint8 i = 0; i < uFieldNumFromCfg; ++i)
 类似的问题：https://stackoverflow.com/questions/48272745/how-to-generate-a-warning-on-type-conversion-like-int32-int64
 
 
-``` cpp
+```cpp
 auto x = uint8_t(0);
 auto y = uint32_t(1);
 //x = y;               // gcc -Werror=conversion
@@ -148,7 +147,7 @@ Because this behavior is well defined, it doesn't make sense for the compiler to
 
 In the case of the example:
 
-``` cpp
+```cpp
 long x = 2147483647U * 3U;
 ```
 
@@ -162,7 +161,7 @@ The multiplication is done on unsigned types, so the mathematical result 64424
 
 Noncompliant Code Example:
 
-``` cpp
+```cpp
 void func(unsigned int ui_a, unsigned int ui_b) {
   unsigned int usum = ui_a + ui_b;
   /* ... */
@@ -176,7 +175,7 @@ Compliant Solution (Precondition Test):
 This compliant solution performs a precondition test of the operands of the addition to guarantee there is no possibility of unsigned wrap.
 
 
-``` cpp
+```cpp
 #include <limits.h>
 
 void func(unsigned int ui_a, unsigned int ui_b) {
@@ -195,7 +194,7 @@ Compliant Solution (Postcondition Test):
 
 This compliant solution performs a postcondition test to ensure that the result of the unsigned addition operation usum is not less than the first operand.
 
-``` cpp
+```cpp
 void func(unsigned int ui_a, unsigned int ui_b) {
   unsigned int usum = ui_a + ui_b;
   if (usum < ui_a) {
@@ -213,7 +212,7 @@ Order of evaluation of any part of any expression, including order of evaluation
 
 > There is no concept of left-to-right or right-to-left evaluation in C++.
 
-``` cpp
+```cpp
 #include <cstdio>
 
 int a() { return std::puts("a"); }
@@ -231,8 +230,7 @@ int main()
 
 Possible output:
 
-```
-b
+```b
 c
 a
 c
@@ -244,7 +242,7 @@ b
 
 * If a side effect on a memory location is unsequenced relative to another side effect on the same memory location, [the behavior is undefined](https://en.cppreference.com/w/cpp/language/ub).
 
-``` cpp
+```cpp
 i = ++i + 2;       // well-defined
 i = i++ + 2;       // undefined behavior until C++17
 f(i = -2, i = -2); // undefined behavior until C++17
@@ -254,7 +252,7 @@ i = ++i + i++;     // undefined behavior
 
 * If a side effect on a memory location is unsequenced relative to a value computation using the value of any object in the same memory location, [the behavior is undefined](https://en.cppreference.com/w/cpp/language/ub).
 
-``` cpp
+```cpp
 cout << i << i++; // undefined behavior until C++17
 a[i] = i++;       // undefined behavior until C++17
 n = ++i + i;      // undefined behavior
@@ -263,7 +261,7 @@ n = ++i + i;      // undefined behavior
 ## 业务代码中遇到的错误场景
 
 
-``` cpp
+```cpp
 #include <iostream>
 
 const char* f(const char* s)
@@ -332,7 +330,7 @@ int main()
 
 修改为：
 
-``` cpp
+```cpp
 #include <iostream>
 #include <string>
 

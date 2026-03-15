@@ -33,7 +33,7 @@ MySQL online DDL(Data Definition Language)主要解决的问题是，满足在�
 
 ## MySQL 5.7 online DDL
 
-``` sql
+```sql
 ALTER TABLE testdb.testtable ADD COLUMN _new_column
 ALGORITHM = inplace,LOCK = default;
 ```

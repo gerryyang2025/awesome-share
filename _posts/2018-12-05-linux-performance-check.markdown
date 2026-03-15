@@ -111,7 +111,7 @@ Refer：
 
 可以通过top或者从文件`/proc/cpuinfo`中获取cpu的信息。**在实际生产环境中，当平均负载高于CPU数量70%(并不绝对)的时候，就应该排查负载高的问题了。**
 
-``` bash
+```bash
 grep 'model name' /proc/cpuinfo | wc -l
 ```
 
@@ -840,7 +840,7 @@ VFS内部通过**目录项，索引节点，逻辑块，以及超级块**等数�
 **文件系统I/O**
 
 
-``` c
+```c
 int open(const char *pathname, int flags, mode_t mode);
 ssize_t read(int fd, void *buf, size_t count);
 ssize_t write(int fd, const void *buf, size_t count);

@@ -141,7 +141,7 @@ Major uses of `jemalloc` include:
 
 Building and installing a packaged release of `jemalloc` can be as simple as typing the following while in the root directory of the source tree:
 
-``` bash
+```bash
 ./configure
 make
 make install
@@ -149,7 +149,7 @@ make install
 
 You can uninstall the installed build artifacts like this:
 
-``` bash
+```bash
 make uninstall
 ```
 
@@ -166,7 +166,7 @@ Print a definitive list of options.
 
 Set the base directory in which to install. For example:
 
-``` bash
+```bash
   ./configure --prefix=/usr/local
 ```
 
@@ -202,7 +202,7 @@ Note that mangling happens prior to application of the prefix specified by `--wi
 
 Prefix all public APIs with . For example, if is `"prefix_"`, API changes like the following occur:
 
-``` cpp
+```cpp
 malloc()         --> prefix_malloc()
 malloc_conf      --> prefix_malloc_conf
 /etc/malloc.conf --> /etc/prefix_malloc.conf
@@ -230,7 +230,7 @@ Append to the base name of all installed files, such that multiple versions of j
 
 Embed `<malloc_conf>` as a run-time options string that is processed prior to the malloc_conf global variable, the `/etc/malloc.conf` symlink, and the `MALLOC_CONF` environment variable. For example, to change the default decay time to 30 seconds:
 
-``` bash
+```bash
 --with-malloc-conf=decay_ms:30000
 ```
 
@@ -371,8 +371,7 @@ install_doc
 
 To clean up build results to varying degrees, use the following make targets:
 
-```
-clean
+```clean
 distclean
 relclean
 ```
@@ -385,7 +384,7 @@ relclean
 
 在运行应用程序之前，在 shell 中设置 `MALLOC_CONF` 环境变量。
 
-``` bash
+```bash
 export MALLOC_CONF="retain:true,dirty_decay_ms:25000,muzzy_decay_ms:30000" && ./demo
 ```
 

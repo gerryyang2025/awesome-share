@@ -173,7 +173,7 @@ to set your account's default identity.
 Omit --global to set the identity only in this repository.
 ```
 
-``` bash
+```bash
 # Sets the some repo name for git to use when you commit
 git config --local user.name "your_name"
 
@@ -189,7 +189,7 @@ git config --global user.email "your_email@example.com"
 
 注意上面的设置是对`全局`生效的，若想对`某个repo`使用不同的username或email可以通过下面方法进行设置：
 
-``` bash
+```bash
 # Changes the working directory to the repository you need to switch info for
 cd my_other_repo
 
@@ -202,7 +202,7 @@ git config --local user.email "differentemail@email.com"
 
 查看配置：
 
-``` bash
+```bash
 git config --list [--local | --global | --system]
 ```
 
@@ -221,14 +221,14 @@ git config --list [--local | --global | --system]
 
 * 把已有的项目代码纳入Git管理
 
-``` bash
+```bash
 $ cd your_project
 $ git init
 ```
 
 * 新建的项目直接使用Git管理
 
-``` bash
+```bash
 $ cd 某个文件夹
 $ git init your_project   # 会在当前路径下创建your_project目录
 $ cd your_project
@@ -260,7 +260,7 @@ A [gitignore](https://git-scm.com/docs/gitignore) file specifies intentionally u
 
 在实际的项目中，比如，临时文件，编译过程文件(例如C/C++编译过程中的`.o`文件)等，是不需要进行代码管理的(即不用提交)。可以在仓库的根目录下创建一个名为`.gitignore`的文件，并配置当前项目需要忽略的文件列表。
 
-``` bash
+```bash
 *.[oa]
 *~
 ```
@@ -270,7 +270,7 @@ A [gitignore](https://git-scm.com/docs/gitignore) file specifies intentionally u
 
 如果忘记添加`.gitignore`文件，不小心将一些不需要的日志文件添加到了暂存区(staging area)，可以这么撤销：
 
-``` bash
+```bash
 git rm --cached *.log
 ```
 
@@ -283,7 +283,7 @@ git rm --cached *.log
 
 [Clear .gitignore cache](https://gist.github.com/ainsofs/2b80771a5582b7528d9e)
 
-``` bash
+```bash
 # remove specific file from git cache
 git rm --cached filename
 
@@ -395,7 +395,7 @@ git restore <file>
 ```
 
 * 文件被修改了，但未执行git add操作(working tree内撤销)
-``` bash
+```bash
 git checkout <fileName>
 git checkout .
 ```
@@ -407,7 +407,7 @@ git status --porcelain | awk '{if ($1=="T") print $2}' | xargs git checkout
 ```
 
 * 同时对多个文件执行了`git add`操作，但本次只想提交其中一部分文件(这种情况是把一个文件修改了add到暂存区了但又想重新放回工作区)
-``` bash
+```bash
 git add *
 git status
 # 取消暂存
@@ -416,7 +416,7 @@ git reset HEAD
 ```
 
 * 文件执行了`git add`操作，但想撤销对其的修改(index内回滚)
-``` bash
+```bash
 # 1. 取消暂存
 git reset HEAD <fileName>
 # 2. 撤销修改
@@ -424,19 +424,19 @@ git checkout <fileName>
 ```
 
 * 修改的文件已被`git commit`，但想再次修改不再产生新的commit
-``` bash
+```bash
 # 修改最后一次提交
 git add sample.txt
 git commit --amend -m"说明"
 ```
 
 * 版本已经commit，但是需要回退，会将提交记录和代码全部回滚
-``` bash
+```bash
 git reset --hard <commit-id>
 ```
 
 * 将`HEAD`理解为当前分支的别名，`HEAD`表示当前版本，上一个版本就`HEAD^`，上上一个版本就是`HEAD^^`，当然往上100个版本写100个^比较容易数不过来，所以写成`HEAD~100`
-``` bash
+```bash
 git reset --hard HEAD^
 ```
 
@@ -459,7 +459,7 @@ refer: [Git撤销&回滚操作]
 
 若不小心把错误的代码merge到主干了怎么办？到项目根目录，执行如下操作：
 
-``` bash
+```bash
 git checkout master          # 切换到master
 git pull                     # 拉取最新代码
 git log -l 5                 # 查看想退回到版本号并copy下来，后面到数字可以自己设置。或者使用git reflog
@@ -707,7 +707,7 @@ Some people refer to Git’s branching model as its “killer feature,” and it
 
 ## 查看和设置Git配置
 
-``` bash
+```bash
 # 查看当前Git配置
 git config --list
 
@@ -719,7 +719,7 @@ git config --local user.email "your_email@example.com"
 ## 创建代码仓库
 
 
-``` bash
+```bash
 # 初始化并生成.git子目录存放Git仓库的配置文件
 git init
 
@@ -746,7 +746,7 @@ git push -u origin master
 
 从远程主机克隆一个版本库，使用`git clone`命令。该命令会在本地主机生成一个目录，与远程主机的版本库同名。如果要指定不同的目录名，可以将目录名作为`git clone`命令的第二个参数。`git clone`支持多种协议，除了HTTP(s)以外，还支持SSH、Git、本地文件协议等。通常来说，Git协议下载速度最快，SSH协议用于需要用户认证的场合。各种协议优劣的详细讨论请参考[官方文档](http://git-scm.com/book/en/Git-on-the-Server-The-Protocols)。
 
-``` bash
+```bash
 # 克隆一个版本库
 git clone <版本库的网址>
 
@@ -772,7 +772,7 @@ git clone rsync://example.com/path/to/repo.git/
 
 使用 `git clone --mirror` 完整克隆原仓库的镜像（包含所有分支、标签和提交历史），然后修改远程地址并推送到新仓库。
 
-``` bash
+```bash
 # 1. 克隆原仓库的镜像
 git clone --mirror https://git.woa.com/gerryyang/abc.git
 cd abc.git  # 进入克隆生成的目录
@@ -804,7 +804,7 @@ git clone https://git.woa.com/jlib/jlib_mesh.git
 
 为了便于管理，Git要求每个远程主机都必须指定一个`主机名`。`git remote`命令就用于管理主机名。不带选项的时候，git remote命令列出所有远程主机。使用`-v`选项，可以参看远程主机的网址。克隆版本库的时候，所使用的远程主机自动被Git命名为origin。如果想用其他的主机名，需要用git clone命令的`-o`选项指定。`git remote show`命令加上`主机名`，可以查看该主机的详细信息。
 
-``` bash
+```bash
 # 命令列出所有远程主机
 $ git remote
 origin
@@ -873,7 +873,7 @@ git sparse-checkout add lay1/lay2
 
 一旦远程主机的版本库有了更新（Git术语叫做commit），需要将这些更新取回本地，这时就要用到`git fetch`命令。`git fetch`命令通常用来查看其他人的进程，因为它取回的代码对你本地的开发代码没有影响。取回远程主机的更新以后，可以在它的基础上，使用`git checkout`命令创建一个新的分支。
 
-``` bash
+```bash
 # 将某个远程主机的更新，全部取回本地
 $ git fetch <远程主机名>
 
@@ -900,7 +900,7 @@ $ git rebase origin/master
 
 `git pull`命令的作用是，取回远程主机某个分支的更新，再与本地的指定分支合并。它的完整格式稍稍有点复杂。
 
-``` bash
+```bash
 $ git pull <远程主机名> <远程分支名>:<本地分支名>
 
 # 取回origin主机的next分支，与本地的master分支合并
@@ -919,7 +919,7 @@ $ git merge origin/next
 `git push`命令用于将本地分支的更新，推送到远程主机。它的格式与git pull命令相仿。注意，分支推送顺序的写法是`<来源地>:<目的地>`，所以`git pull`是`<远程分支>:<本地分支>`，而`git push`是`<本地分支>:<远程分支>`。如果省略远程分支名，则表示将本地分支推送与之存在"追踪关系"的远程分支（通常两者同名），如果该远程分支不存在，则会被新建。
 
 
-``` bash
+```bash
 $ git push <远程主机名> <本地分支名>:<远程分支名>
 
 # 将本地的master分支推送到origin主机的master分支。如果后者不存在，则会被新建
@@ -1082,7 +1082,7 @@ $cat .git-blame-ignore-revs
 ## 查看历史提交信息 - git log
 
 
-``` bash
+```bash
 # 查看最近2次的提交统计信息
 git log --stat -2
 
@@ -1136,7 +1136,7 @@ Git最核心的特性就是，创建新分支操作几乎能在瞬间完成，�
 
 这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。而在Git中，任何规模的项目都能在瞬间创建新分支。
 
-``` bash
+```bash
 # 更新远程分支信息
 git remote update origin --prune
 
@@ -1215,7 +1215,7 @@ URL: git@github.com:gerryyang/mac-utils.git
 
 修改分支的名字：
 
-``` bash
+```bash
 # Rename the local branch to the new name
 git branch -m <old_name> <new_name>
 
@@ -1283,7 +1283,7 @@ $ git merge experiment
 
 当前你在开发feature1分支，开发了一半，还要2天才能开发完成，这时候又不想提交。这时突然来了个bug，你必须今天就得修复bug，修复完了后才继续开发需求，怎么办？这里就使用到了暂存的功能。
 
-``` bash
+```bash
 # 先把所有的修改暂存起来，这时候你的所有改动都好像消失了一样，但其实是被暂存起来了
 git stash
 # 新建bugfix分支去修复bug
@@ -1314,7 +1314,7 @@ git stash push -m welcome_cart app/views/cart/welcome.thtml
 克隆一个含有子模块的项目。当你在克隆这样的项目时，默认会包含该子模块目录，但其中还没有任何文件。你必须运行两个命令：`git submodule init` 用来初始化本地配置文件，而 `git submodule update` 则从该项目中抓取所有数据并检出父项目中列出的合适的提交。现在子目录是处在和之前提交时相同的状态了。不过还有更简单一点的方式。 如果给 `git clone` 命令传递 `--recurse-submodules` 选项，它就会自动初始化并更新仓库中的每一个子模块， 包括可能存在的嵌套子模块。如果你已经克隆了项目但忘记了 `--recurse-submodules`，那么可以运行 `git submodule update --init` 将 `git submodule init` 和 `git submodule update` 合并成一步。如果还要初始化、抓取并检出任何嵌套的子模块， 请使用简明的 `git submodule update --init --recursive`。
 
 
-``` bash
+```bash
 # 含有子模块项目的clone
 git clone --recurse-submodule --remote-submodules git@github.com:gerryyang/mac-utils.git mac-utils
 
@@ -1332,7 +1332,7 @@ git submodule sync
 
 * 删除子模块的引用：在父仓库中删除子模块的引用，即删除 `.gitmodules` 文件中对应子模块的配置信息和子模块目录下的 `.git` 目录。
 
-``` bash
+```bash
 git submodule deinit -f <submodule-path>
 git rm -f <submodule-path>
 rm -rf .git/modules/<submodule-path>
@@ -1340,7 +1340,7 @@ rm -rf .git/modules/<submodule-path>
 
 * 删除子模块的代码：在子模块目录中删除代码，并提交删除操作。
 
-``` bash
+```bash
 rm -rf <submodule-path>
 git commit -m "Remove submodule <submodule-path>"
 ```
@@ -1359,7 +1359,7 @@ git commit -m "Remove submodule <submodule-path>"
 
 ## 取消某次提交 git revert
 
-``` bash
+```bash
 git revert [--[no-]edit] [-n] [-m parent-number] [-s] [-S[<keyid>]] <commit>…​
 git revert (--continue | --skip | --abort | --quit)
 ```
@@ -1382,7 +1382,7 @@ Revert the changes done by commits from the fifth last commit in master (include
 
 ## 将指定的提交应用于其他分支 git cherry-pick
 
-``` bash
+```bash
 git cherry-pick [--edit] [-n] [-m <parent-number>] [-s] [-x] [--ff] [-S[<keyid>]] <commit>…​
 git cherry-pick (--continue | --skip | --abort | --quit)
 
@@ -1407,26 +1407,26 @@ git cherry-pick A^..B -x   # merge 从 A 到 B 的所有 commit，加不加  ^  
 
 Cherry pick 也支持转移另一个代码库的提交，方法是先将该库加为远程仓库。
 
-``` bash
+```bash
 # 添加了一个远程仓库target
 git remote add target git://gitUrl
 ```
 
 然后，将远程代码抓取到本地：
 
-``` bash
+```bash
 git fetch target
 ```
 
 接着，检查一下要从远程仓库转移的提交，获取它的哈希值：
 
-``` bash
+```bash
 git log target/master
 ```
 
 最后，使用git cherry-pick命令转移提交：
 
-``` bash
+```bash
 git cherry-pick <commitHash>
 ```
 
@@ -1445,7 +1445,7 @@ Using sparse-checkout with an existing repository
 
 To restrict your working directory to a set of directories, run the following commands:
 
-``` bash
+```bash
 git sparse-checkout init --cone
 git sparse-checkout set <dir1> <dir2> ...
 ```
@@ -1492,7 +1492,7 @@ Git LFS 全名 Git Large File Storage，是 Github 带头在 2015 年推出的�
 
 * 下载安装：https://github.com/git-lfs/git-lfs/releases
 
-``` bash
+```bash
 #!/bin/bash
 
 # Download Git LFS v3.4.0
@@ -1524,7 +1524,7 @@ echo "Git LFS installation successful"
 
 * 初始化仓库
 
-``` bash
+```bash
 git lfs install
 ```
 
@@ -1533,7 +1533,7 @@ git lfs install
 
 例如，添加目录下所有的.psd 和.a 文件，使其被 LFS 托管
 
-``` bash
+```bash
 git lfs track "*.psd"
 git lfs track "*.a"
 ```
@@ -1546,7 +1546,7 @@ git lfs track "*.a"
 
 如果自己的相关工作不涉及到被 Git LFS 所管理的文件的话，可以选择只获取 Git 仓库自身的内容，而完全跳过 LFS 对象的获取。
 
-``` bash
+```bash
 GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/gerryyang/mac-utils.git
 
 # 或
@@ -1559,7 +1559,7 @@ git -c filter.lfs.smudge= -c filter.lfs.required=false clone https://github.com/
 
 如果起初获取代码时，没有一并获取 LFS 对象，而随后又需要这些被 LFS 管理的文件时，可以单独执行 LFS 命令来获取并签出 LFS 对象：
 
-``` bash
+```bash
 git lfs fetch
 git lfs checkout
 
@@ -1571,7 +1571,7 @@ git lfs pull
 
 * 查看已跟踪的 lfs 对象
 
-``` bash
+```bash
 git lfs ls-files
 ```
 
@@ -1588,7 +1588,7 @@ git bisect 是一个很有用的命令，用来查找哪一次代码提交引入
 
 Lists the contents of a given tree object, like what "/bin/ls -a" does in the current working directory.
 
-``` bash
+```bash
 # 列出 Git 仓库中所有文件的大小，并按照文件大小排序
 git ls-tree -r -t -l HEAD | sort -k 4 -n
 
@@ -1642,7 +1642,7 @@ Rewrite branches
 ## git rev-parse
 
 
-``` bash
+```bash
 # 获取当前 HEAD 提交的哈希值
 git rev-parse HEAD
 
@@ -1657,7 +1657,7 @@ git rev-parse --abbrev-ref=strict HEAD
 ## git tag
 
 
-``` bash
+```bash
 # 切换到要打 tag 的分支
 git checkout <branch-name>
 
@@ -1702,7 +1702,7 @@ git-describe - Give an object a human readable name based on an available ref
 
 I can find the current git branch name by doing either of these:
 
-``` bash
+```bash
 $ git describe --contains --all HEAD
 feature/apollo
 
@@ -1748,7 +1748,7 @@ commit-msg.sample      post-update.sample         pre-commit.sample      prepare
 
 通过`.git/hooks/pre-commit`可以在commit前执行自定义操作。通过`ln -s pre-commit ${PROJECT_ROOT}/.git/hooks/pre-commit`指定自定义 pre-commit 的脚本，之后 commit 时自动触发 pre-commit 脚本执行，如存在错误则会报错终止 commit，修复完毕后重新发起 commit 即可。以下是`pre-commit.sample`示例：
 
-``` bash
+```bash
 #!/bin/sh
 #
 # An example hook script to verify what is about to be committed.
@@ -1802,7 +1802,7 @@ exec git diff-index --check --cached $against --
 
 实际使用的例子：
 
-``` bash
+```bash
 #!/bin/bash
 
 << COMMENT
@@ -1960,10 +1960,7 @@ Run
 
 ```
 git config --global credential.helper store
-```
-
-then
-
+```then
 ```
 git pull
 ```
@@ -1991,7 +1988,7 @@ refer: [Git 工具 - 凭证存储](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%
 
 使用`ssh认证方式`可以实现免密提交，通过`ssh-keygen`可以生成ssh认证所需的`公钥`和`私钥`。执行`ssh-keygen`后直接回车，不用填写东西，之后会让你输入密码(根据安全性选择是否需要此密码，可以直接回车)，然后就生成一个`.ssh`目录，目录里会生成两个(默认)文件：`id_rsa`和`id_rsa.pub`。
 
-``` bash
+```bash
 cd $HOME/.ssh
 ssh-keygen -t rsa -C <email>               # 默认生成 id_rsa 私钥文件和 id_rsa.pub 公钥文件
 ssh-keygen -t rsa -C <email> -f <id_rsa>   # -C "公钥文件中的备注"  -f 指定生成的私钥文件名
@@ -2022,7 +2019,7 @@ ssh-keygen -t rsa -C <email> -f <id_rsa>   # -C "公钥文件中的备注"  -f �
 
 测试是否生效，如果ok以后执行`git push`时就不用再输入用户名和密码验证了。
 
-``` bash
+```bash
  ssh -vT git@github.com
 ```
 
@@ -2208,7 +2205,7 @@ More: https://github.com/git-tips/tips
 
 ##  添加常用的 alias
 
-``` bash
+```bash
 git config --global alias.st status
 git config --global alias.co checkout
 git config --global alias.ci commit
@@ -2217,7 +2214,7 @@ git config --global alias.br branch
 
 ## Reset author, after author has been changed in the global config
 
-``` bash
+```bash
 git commit --amend --reset-author --no-edit
 ```
 
@@ -2413,7 +2410,7 @@ Remember, after you rewrite the history, whether you use the BFG or filter-branc
 
 Antony Stubbs 提供了一个可以查找 git 大文件的 bash 脚本 [git_find_big.sh](https://stubbisms.wordpress.com/2009/07/10/git-script-to-show-largest-pack-objects-and-trim-your-waist-line/)
 
-``` bash
+```bash
 #!/bin/bash
 #set -x
 
@@ -2468,7 +2465,7 @@ size    pack   SHA                                       location
 
 获得大文件信息后，通过 `git filter-branch` 删除大文件：
 
-``` bash
+```bash
 git filter-branch --force --prune-empty --index-filter 'git rm -rf --cached --ignore-unmatch $file' --tag-name-filter cat -- --all
 ```
 
@@ -2478,7 +2475,7 @@ git filter-branch --force --prune-empty --index-filter 'git rm -rf --cached --ig
 
 结合上面 `git_find_big.sh` 的输出 `file.txt`，将删除逻辑封装成 `git_strip.sh` 脚本
 
-``` bash
+```bash
 #!/bin/bash
 
 while read -r path; do
@@ -2494,7 +2491,7 @@ echo "done"
 
 再通过 `git_gc_data.sh` 进行数据回收：
 
-``` bash
+```bash
 #!/bin/bash
 
 # Prune all of the reflog references from now on back (unless you're explicitly only operating on one branch).
@@ -2508,7 +2505,7 @@ echo "done"
 
 最后推送到远端仓库：
 
-``` bash
+```bash
 # Push all your changes back to the Bitbucket repository.
 git push --all --force
 
@@ -2520,7 +2517,7 @@ git push --tags --force
 
 Steps to clear out the history of a git/github repository
 
-``` bash
+```bash
 # Remove the history from
 rm -rf .git
 

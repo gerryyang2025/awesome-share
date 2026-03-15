@@ -56,7 +56,7 @@ https://clocks.brianmoore.com/
 
 请从英语五年级下册 pdf 中最后的单词列表中解析出 unit1 单元的单词，补充例句和记忆方法，并按照下面的格式输出。
 
-``` md
+```md
 # 英语五年级上册
 
 ## Unit 1
@@ -84,7 +84,7 @@ Title:What subjects do you like? Category:学科类
 
 请从 pdf 中解析 unit1 课文内容并生成对话文本，同时对每个对话添加中文翻译，并总结这个单元的重要句型和知识点。最后按照下面格式输出 ``` markdown xxx ``` 包裹的文本格式。
 
-``` markdown
+```markdown
 ## Unit 1
 
 * 题目：Friends (好朋友的共同点)

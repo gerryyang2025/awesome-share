@@ -99,7 +99,7 @@ JavaScript之后的ECMAScript 6（简称ES6）版本，大幅增强了Unicode支
 
 > Java如何准确判断码点个数？
 
-``` java
+```java
 import java.io.*;
 public class Test {
 
@@ -287,8 +287,7 @@ Would be encoded as...
 
 28个字符（总长度膨胀了33%）
 
-```
-RGFuJ3MgVG9vbHMgYXJlIGNvb2wh
+```rgfuj3mgvg9vbhmgyxjlignvb2wh
 ```
 
 ## What is Base64 encoding?

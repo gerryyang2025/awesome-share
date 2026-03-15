@@ -31,14 +31,14 @@ tags:
 
 The portable way to get **epsilon** in C++ is:
 
-``` cpp
+```cpp
 #include <limits>
 std::numeric_limits<double>::epsilon()
 ```
 
 Then the comparison function becomes:
 
-``` cpp
+```cpp
 #include <cmath>
 #include <limits>
 
@@ -55,7 +55,7 @@ bool AreSame(double a, double b) {
 
 在`C/C++`中：
 
-``` cpp
+```cpp
 double a = 12.03;
 double b = 22;
 long long c = a * b * 100000000L;
@@ -102,7 +102,7 @@ refer:
 
 > The cpp_dec_float back-end is used in conjunction with number: It acts as an entirely C++ (header only and dependency free) floating-point number type that is a drop-in replacement for the native C++ floating-point types, but with much greater precision.
 
-``` cpp
+```cpp
 #include <iostream>
 #include <iomanip>
 #include <boost/multiprecision/cpp_dec_float.hpp>
@@ -168,7 +168,7 @@ EXPONENT_DNUM [+-]?(({LNUM} | {DNUM}) [eE][+-]? {LNUM})
 
 Java中float的精度为6-7位有效数字。double的精度为15-16位。在Java中，通常用到金钱计算的地方要用`BigDecimal`，因为正常的浮点数计算会出现精度丢失的问题。
 
-``` java
+```java
 System.out.println(0.05 + 0.01);  // 0.060000000000000005
 System.out.println(1.0 - 0.42);   // 0.5800000000000001
 System.out.println(4.015 * 100);  // 401.49999999999994
@@ -177,7 +177,7 @@ System.out.println(123.3 / 100);  // 1.2329999999999999
 
 `BigDecimal`使用方法：
 
-``` java
+```java
 // 构造函数
 BigDecimal(int);       // 创建一个具有参数，所指定整数值的对象
 BigDecimal(double);    // 创建一个具有参数，所指定双精度值的对象
@@ -200,7 +200,7 @@ intValue();            // 将BigDecimal对象中的值以整数返回
 
 源码说明：
 
-``` java
+```java
     /* The results of this constructor can be somewhat unpredictable.
      * One might assume that writing {@codenew BigDecimal(0.1)} in
      * Java creates a {@code BigDecimal} which is exactly equal to
@@ -230,7 +230,7 @@ public BigDecimal(double val) {
 
 例子：
 
-``` java
+```java
 import java.math.BigDecimal;
 
 public class Main {

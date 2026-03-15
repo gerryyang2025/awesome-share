@@ -95,12 +95,7 @@ heapster-v1.5.0-76c9b966c-4dh9p                   4/4     Running   0          5
 kubernetes-dashboard-574589d477-vbs6s             1/1     Running   0          1h
 monitoring-influxdb-grafana-v4-5bbb9b766d-8x8bz   2/2     Running   0          52m
 traefik-ingress-controller-n2gt6                  1/1     Running   0          1h
-```
-
-
----
-
-
+```---
 [15 years of experience of running production workloads at Google]: https://queue.acm.org/detail.cfm?id=2898444
 
 [k8s官网]: https://kubernetes.io/

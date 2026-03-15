@@ -25,7 +25,7 @@ Try the [online playground](https://ast-grep.github.io/playground.html) for a ta
 
 `ast-grep` is a code tool for structural search and replace. It is like syntax-aware `grep`/`sed`! You can write code [patterns](https://ast-grep.github.io/guide/pattern-syntax.html) to locate and modify code, based on AST, in thousands of files, [interactively](https://ast-grep.github.io/guide/tooling-overview.html#interactive-mode).
 
-``` bash
+```bash
 ast-grep -p '$A && $A()' -r '$A?.()'
 ```
 
@@ -36,7 +36,7 @@ ast-grep -p '$A && $A()' -r '$A?.()'
 
 `ast-grep` is a versatile and flexible tool for [linting](https://ast-grep.github.io/guide/scan-project.html) code with AST patterns. You can easily add new customized rules with [intuitive syntax](https://ast-grep.github.io/guide/rule-config.html) and enjoy pretty error reporting out of box.
 
-``` bash
+```bash
 ast-grep scan
 ```
 
@@ -47,7 +47,7 @@ ast-grep scan
 
 `ast-grep` also provides [node-js binding](https://ast-grep.github.io/guide/api-usage/js-api.html) to access syntax trees programmatically. You can use jQuery like [utility methods](https://ast-grep.github.io/reference/api.html#napi) to traverse syntax tree nodes. Node API also has opt-in [type safety](https://ast-grep.github.io/blog/typed-napi.html).
 
-``` bash
+```bash
 npm install @ast-grep/napi
 ```
 
@@ -68,7 +68,7 @@ Our task is to rewrite old defensive code that checks nullable nested method cal
 
 First, install `ast-grep`. It is distributed by [npm](https://www.npmjs.com/package/@ast-grep/cli), [cargo](https://crates.io/crates/ast-grep), [homebrew](https://formulae.brew.sh/formula/ast-grep) and [macports](https://ports.macports.org/port/ast-grep/). You can also build it [from source](https://github.com/ast-grep/ast-grep#installation).
 
-``` bash
+```bash
 # install via pip
 $ pip install ast-grep-cli
 
@@ -118,7 +118,7 @@ Options:
 
 Optionally, you can grab `TypeScript` source code if you want to follow the tutorial. Or you can apply the magic to your own code.
 
-``` bash
+```bash
 git clone https://github.com/microsoft/TypeScript --depth 1
 ```
 
@@ -128,13 +128,13 @@ Then search the occurrence of looking up a method from a nested structure. `ast-
 
 For example, the following pattern code
 
-``` js
+```js
 obj.val && obj.val()
 ```
 
 will match all the following code, regardless of white spaces or new lines.
 
-``` js
+```js
 obj.val && obj.val() // verbatim match, of course
 obj.val    &&     obj.val() // this matches, too
 
@@ -147,13 +147,13 @@ Matching based exactly on AST is cool, but we certainly want to use flexible pat
 
 We can write this pattern to find all property checking code.
 
-``` js
+```js
 $PROP && $PROP()
 ```
 
 It is a valid `ast-grep` pattern! We can use it in command line! Use `pattern` argument to specify our target. Optionally, we can use `lang` to tell `ast-grep` our target code language.
 
-``` bash
+```bash
 # Full Command
 ast-grep --pattern '$PROP && $PROP()' --lang ts TypeScript/src
 
@@ -174,7 +174,7 @@ ast-grep -p '$PROP && $PROP()' TypeScript/src
 
 Cool? Now we can use this pattern to refactor TypeScript source!
 
-``` bash
+```bash
 # pattern and language argument support short form
 ast-grep -p '$PROP && $PROP()' \
    --rewrite '$PROP?.()' \
@@ -200,7 +200,7 @@ In this guide we will walk through ast-grep's pattern syntax. The example will b
 
 `ast-grep` uses pattern code to construct AST tree and match that against target code. The pattern code can search through the full syntax tree, so pattern can also match nested expression. For example, the pattern `a + 1` can match all the following code.
 
-``` js
+```js
 const b = a + 1
 
 funcCall(a + 1)
@@ -241,7 +241,7 @@ Think it as REGEX dot `.`, except it is not textual.
 
 The pattern `console.log($GREETING)` will match all the following.
 
-``` js
+```js
 function tryAstGrep() {
   console.log('Hello World')
 }
@@ -253,7 +253,7 @@ const multiLineExpression =
 
 But it will not match these.
 
-``` js
+```js
 // console.log(123) in comment is not matched
 'console.log(123) in string' // is not matched as well
 console.log() // mismatch argument
@@ -272,7 +272,7 @@ We can use `$$$` to match **zero or more AST nodes**, including function argumen
 
 For example, `console.log($$$)` can match
 
-``` js
+```js
 console.log()                       // matches zero AST node
 console.log('hello world')          // matches one node
 console.log('debug: ', key, value)  // matches multiple nodes
@@ -283,7 +283,7 @@ console.log(...args)                // it also matches spread
 
 `function $FUNC($$$ARGS) { $$$ }` will match
 
-``` js
+```js
 function foo(bar) {
   return bar
 }
@@ -304,7 +304,7 @@ Meta variable is also similar to [capture group](https://developer.mozilla.org/e
 
 For example, the pattern `$A == $A` will have the following result.
 
-``` js
+```js
 // will match these patterns
 a == a
 1 + 1 == 1 + 1
@@ -317,7 +317,7 @@ a == b
 
 You can also suppress meta variable capturing. All meta variables with name starting with underscore `_` will not be captured.
 
-``` js
+```js
 // Given this pattern
 
 $_FUNC($_FUNC)
@@ -402,11 +402,11 @@ The `scan` subcommand of ast-grep CLI can run one rule at a time.
 To do so, you need to save the rule above in a file on the disk, say `no-await-in-promise-all.yml`. Then you can run the following command to scan your codebase. In the example below, we are scanning a `test.ts` file.
 
 
-``` bash
+```bash
 ast-grep scan --rule no-await-in-promise-all.yml test.ts
 ```
 
-``` ts
+```ts
 await Promise.all([
   await foo(),
 ])
@@ -416,7 +416,7 @@ await Promise.all([
 
 You can also run the rule directly from the command line without saving the rule to a file. The `--inline-rules` option is useful for ad-hoc search or calling `ast-grep` from another program.
 
-``` bash
+```bash
 ast-grep scan --inline-rules '
 id: no-await-in-promise-all
 language: TypeScript
@@ -461,7 +461,7 @@ rule:
   matches: 'utility-rule'
 ```
 
-``` ts
+```ts
 interface RuleObject {
   // atomic rule
   pattern?: string | Pattern
@@ -646,7 +646,7 @@ For the definition of **named** and **unnamed** nodes, please refer to the [core
 For example, the following pattern `function $A() {}` will match both plain function and async function in JavaScript. See [playground](https://ast-grep.github.io/playground.html#eyJtb2RlIjoiUGF0Y2giLCJsYW5nIjoiamF2YXNjcmlwdCIsInF1ZXJ5IjoiZnVuY3Rpb24gJEEoKSB7fSIsInJld3JpdGUiOiJEZWJ1Zy5hc3NlcnQiLCJjb25maWciOiJydWxlOlxuICBwYXR0ZXJuOiBcbiAgICBjb250ZXh0OiAneyAkTTogKCQkJEEpID0+ICRNQVRDSCB9J1xuICAgIHNlbGVjdG9yOiBwYWlyXG4iLCJzb3VyY2UiOiJmdW5jdGlvbiBhKCkge31cbmFzeW5jIGZ1bmN0aW9uIGEoKSB7fSJ9)
 
 
-``` js
+```js
 // function $A() {}
 function foo() {}    // matched
 async function bar() {} // matched
@@ -690,7 +690,7 @@ rule:
 
 It will match the following code successfully ([playground link](https://ast-grep.github.io/playground.html#eyJtb2RlIjoiQ29uZmlnIiwibGFuZyI6ImphdmFzY3JpcHQiLCJxdWVyeSI6ImEgPSAxMjMiLCJyZXdyaXRlIjoibG9nZ2VyLmxvZygkTUFUQ0gpIiwiY29uZmlnIjoiIyBDb25maWd1cmUgUnVsZSBpbiBZQU1MXG5ydWxlOlxuICBraW5kOiBmaWVsZF9kZWZpbml0aW9uIiwic291cmNlIjoiY2xhc3MgVGVzdCB7XG4gIGEgPSAxMjNcbn0ifQ==)).
 
-``` js
+```js
 class Test {
   a = 123 // match this line
 }
@@ -769,7 +769,7 @@ rule:
 
 It will match the following code:
 
-``` js
+```js
 const arr = [ 1, 2, 3, ]
             //   |- match this number
 ```
@@ -805,7 +805,7 @@ The above example will match an AST node having the first three characters of th
 
 Suppose we want to write a rule which finds functions without a return type. For example, this code would trigger an error:
 
-``` ts
+```ts
 const foo = () => {
 	return 1;
 }

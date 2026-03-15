@@ -57,7 +57,7 @@ C++ 的挑战在于缺乏原生反射支持，需通过 `RTTI`、宏、模板或
 
 示例代码 (TODO: 有编译错误 )
 
-``` cpp
+```cpp
 #include <print>
 #include <string>
 #include <experimental/meta>
@@ -95,7 +95,7 @@ int main() {
 可以用 `typeid` 直接来获取对象的实际类型，例如：
 
 
-``` cpp
+```cpp
 #include <iostream>
 #include <typeinfo>
 #include <boost/core/demangle.hpp>
@@ -126,8 +126,7 @@ int main()
 
 在 GCC 下的输出：
 
-```
-6circle
+```6circle
 circle
 is circle
 ```

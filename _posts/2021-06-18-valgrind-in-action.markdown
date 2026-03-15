@@ -31,7 +31,7 @@ Compile your program with `-g` to include debugging information so that Memcheck
 
 If you're running Linux and you don't have a copy already, you can get Valgrind from the [Valgrind download page](https://www.valgrind.org/downloads/current.html).
 
-``` cpp
+```cpp
 #include <stdlib.h>
 void f(void)
 {

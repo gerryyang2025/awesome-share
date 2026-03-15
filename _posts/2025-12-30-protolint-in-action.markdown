@@ -130,7 +130,7 @@ protolint lint -fix -auto_disable=next .
 * Via Homebrew
   + `protolint` can be installed for Mac or Linux using Homebrew via the [yoheimuta/protolint](https://github.com/yoheimuta/homebrew-protolint) tap.
 
-``` bash
+```bash
 brew tap yoheimuta/protolint
 brew install protolint
 ```
@@ -152,14 +152,14 @@ brew install protolint
 * From Source
   + The binary can be installed from source if Go is available. However, I recommend using one of the pre-built binaries instead because it doesn't include the version info.
 
-``` bash
+```bash
 go install github.com/yoheimuta/protolint/cmd/protolint@latest
 ```
 
 * Within `JavaScript` / `TypeScript`
   + You can use protolint using your nodejs package manager like `npm` or `yarn`.
 
-``` bash
+```bash
 $ npm install protolint --save-dev
 ```
 
@@ -177,7 +177,7 @@ This will add a reference to a development dependency to your local `package.jso
 
 `protolint` does not require configuration by default, for the majority of projects it should work out of the box.
 
-``` bash
+```bash
 protolint lint example.proto example2.proto # file mode, specify multiple specific files
 protolint lint .                            # directory mode, search for all .proto files recursively
 protolint .                                 # same as "protolint lint ."
@@ -233,7 +233,7 @@ repos:
 
 You can also use `protolint` from Go code. See [Go Documentation](https://pkg.go.dev/github.com/yoheimuta/protolint/lib) and [lib/lint_test.go](https://github.com/yoheimuta/protolint/blob/master/lib/lint_test.go) in detail.
 
-``` go
+```go
 import (
     "bytes"
 

@@ -74,7 +74,7 @@ tags:
 
 例子：栈展开
 
-``` cpp
+```cpp
 #include <cstdio>
 
 class obj {
@@ -117,7 +117,7 @@ exception
 
 测试代码：
 
-``` cpp
+```cpp
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -199,7 +199,7 @@ RAII(Resource Acquisition Is Initialization, pronounced as "R, A, double I")，�
 
 > Resource acquisition is initialization (RAII) is a programming idiom used in several object-oriented languages to describe a particular language behavior. In RAII, holding a resource is a class invariant, and is tied to object lifetime: resource allocation (or acquisition) is done during object creation (specifically initialization), by the constructor, while resource deallocation (release) is done during object destruction (specifically finalization), by the destructor. In other words, resource acquisition must succeed for initialization to succeed. Thus the resource is guaranteed to be held between when initialization finishes and finalization starts (holding the resources is a class invariant), and to be held only when the object is alive. Thus if there are no object leaks, there are no resource leaks.
 
-``` cpp
+```cpp
 void foo()
 {
     bar* ptr = new bar();
@@ -218,7 +218,7 @@ void foo()
 
 方法1（不推荐）：
 
-``` cpp
+```cpp
 #include <iostream>       // std::cout
 #include <thread>         // std::thread
 #include <mutex>          // std::mutex
@@ -253,7 +253,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 方法2（推荐）：
 
-``` cpp
+```cpp
 #include <iostream>
 #include <map>
 #include <string>
@@ -296,7 +296,7 @@ http://foo => fake content
 
 方法3（推荐）：
 
-``` cpp
+```cpp
 #include <thread>
 #include <mutex>
 #include <iostream>
@@ -384,7 +384,7 @@ C++标准里定义了**表达式的值类别**（注意，区别术语`值类型
 * 在C++11之前，**右值**可以绑定到**常左值引用（const lvalue reference）**的参数，如，`const T&`，但不可以绑定到**非常左值引用（non-const lvalue reference）**，如，`T&`。
 * 从C++11开始，新增了一种**右值引用（T&&）**，通过不同的引用类型进行重载，从而可以实现不同的行为，比如，性能优化。
 
-``` cpp
+```cpp
 smart_ptr<shape> ptr1{new circle()};
 smart_ptr<shape> ptr2 = std::move(ptr1);
 ```
@@ -404,7 +404,7 @@ More: [Value categories](https://en.cppreference.com/w/cpp/language/value_catego
 
 [GotW #88: A Candidate For the “Most Important const”](https://herbsutter.com/2008/01/01/gotw-88-a-candidate-for-the-most-important-const/)提出了一个问题：
 
-``` cpp
+```cpp
 // Is the following code legal C++?
 string f() { return "abc"; }
 
@@ -416,7 +416,7 @@ void g() {
 
 如果把`const`去掉呢？
 
-``` cpp
+```cpp
 // What if we take out the const… is Example 2 still legal C++?
 string f() { return "abc"; }
 
@@ -428,7 +428,7 @@ void g() {
 
 另一个例子，当引用生命周期结束时，对象是如何析构的？
 
-``` cpp
+```cpp
 Derived factory(); // construct a Derived object
 
 void g() {
@@ -438,7 +438,7 @@ void g() {
 ```
 
 
-``` cpp
+```cpp
 // When the reference goes out of scope, which destructor gets called?
 
 #include <iostream>
@@ -493,7 +493,7 @@ end
 
 测试：
 
-``` cpp
+```cpp
 #include <cstdio>
 
 class shape {
@@ -547,7 +547,7 @@ something else
 
 修改代码，将prvalue绑定到引用（const T& 或者 T&&）后，临时对象的生命周期则会和引用对象的生命周期一致：
 
-``` cpp
+```cpp
 int main()
 {
         puts("main()");
@@ -570,7 +570,7 @@ something else
 
 如果改为xvalue，则此规则无效。注意，有效变量r指向的对象已经不存在了，对r解引用是一个**未定义行为**。
 
-``` cpp
+```cpp
 #include <utility>
 int main()
 {
@@ -597,7 +597,7 @@ something else
 
 当一个临时对象的地址被赋给一个 const 指针时，临时对象的生命周期并不会被延长。当临时对象的生命周期结束时，const 指针将成为悬空指针。
 
-``` cpp
+```cpp
 const std::string *p = &std::string("hello");  // 指针 p 指向一个临时对象
 std::cout << *p;  // 未定义行为，因为 p 是一个悬空指针
 ```
@@ -613,7 +613,7 @@ std::cout << *p;  // 未定义行为，因为 p 是一个悬空指针
 
 在使用容器类的情况下，移动更有意义。例如：
 
-``` cpp
+```cpp
 string result = string("Hello, ") + name + ".";
 ```
 
@@ -628,7 +628,7 @@ string result = string("Hello, ") + name + ".";
 
 因此，建议的写法是：
 
-``` cpp
+```cpp
 // 只会调用构造函数一次和 string::operator+= 两次，没有任何临时对象需要生成和析构
 string result = "Hello, ";
 result += name;
@@ -663,7 +663,7 @@ result += ".";
 
 例子：
 
-``` cpp
+```cpp
 #include <iostream>  // std::cout/endl
 #include <utility>   // std::move
 
@@ -752,7 +752,7 @@ Obj(Obj&&)
 因为在 T 是模板参数时，T&& 的作用主要是保持值类别进行转发，它有个名字就叫“转发引用”（forwarding reference）。因为既可以是左值引用，也可以是右值引用，它也曾经被叫做“万能引用”（universal reference）。
 
 
-``` cpp
+```cpp
 template <typename T>
 void bar(T&& s)
 {
@@ -762,7 +762,7 @@ void bar(T&& s)
 
 测试代码：https://gcc.godbolt.org/z/sYfcnoj7M
 
-``` cpp
+```cpp
 #include <type_traits>
 #include <iostream>
 #include <string>
@@ -805,7 +805,7 @@ XType is reference &&
 
 智能指针本质上就是RAII资源管理功能的自然展现。
 
-``` cpp
+```cpp
 class shape_wrapper {
 public:
         explicit shape_wrapper(shape* ptr = nullptr) : m_ptr(ptr) {}
@@ -828,7 +828,7 @@ private:
 
 要让这个类能够包装任意类型的指针，需要把它变成一个模板类。在使用的时候将`shape_wrapper`改成`smart_ptr<shape>`。
 
-``` cpp
+```cpp
 template <typename T>
 class smart_ptr {
 public:
@@ -844,7 +844,7 @@ private:
 
 然后添加一些成员函数（解引用操作符`*`, 箭头操作符`->`, 布尔表达式），从而可以用类似内置的指针方式使用其对象。
 
-``` cpp
+```cpp
 template <typename T>
 class smart_ptr {
 public:
@@ -867,7 +867,7 @@ private:
 
 需要关心如何定义其`行为`。考虑如果允许拷贝，则会存在多次内存释放的问题，因此需要禁止拷贝。
 
-``` cpp
+```cpp
 #define DISALLOW_COPY_AND_ASSIGN(Type) \
     Type(const Type&) = delete; \
     Type& operator=(const Type&) = delete
@@ -904,7 +904,7 @@ private:
 1. 用临时对象是为了把要转移的赋值对象控制权去除，同时在转移后把被赋值对象的资源释放掉
 2. 此处赋值构造函数的用法，是一种惯用法（[参考: What is the copy-and-swap idiom?](https://stackoverflow.com/questions/3279543/what-is-the-copy-and-swap-idiom)），保证了**强异常安全性**。赋值分为拷贝构造和交换两步，异常只可能在第一步发生，而第一步如果发生异常的话，this对象完全不受任何影响。无论拷贝构造成功与否，结果都是明确的两种状态，而不会发生因为赋值破坏了当前对象的场景。
 
-``` cpp
+```cpp
 template <typename T>
 class smart_ptr {
 public:
@@ -974,7 +974,7 @@ private:
 
 一个对象只能被单个`unique_ptr`所拥有；`shared_ptr`允许多个智能指针同时拥有一个对象，当它们全部都失效时（共享计数），这个对象也同时会被删除。以下实现一个类似标准[shared_ptr](https://en.cppreference.com/w/cpp/memory/shared_ptr)的智能指针，但是还缺少部分功能。
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <iostream>
 #include <utility>  // std::swap
@@ -1173,7 +1173,7 @@ sptr1 is empty
 
 关于`shared_ptr`的一个使用例子：
 
-``` cpp
+```cpp
 #include <iostream>
 #include <memory>
 #include <thread>
@@ -1273,7 +1273,7 @@ string 当然是为了存放字符串，和简单的 C 字符串不同：
 * 如果需要在函数内修改字符串内容、但不影响调用者的该字符串，使用 string 作为参数类型（自动拷贝）
 * 如果需要改变调用者的字符串内容，使用 string& 作为参数类型（通常不推荐）
 
-``` cpp
+```cpp
 string name;
 cout << "What's your name? ";
 getline(cin, name);
@@ -1313,7 +1313,7 @@ vector 允许下面的操作（不完全列表）：
 
 例子：Obj1 和 Obj2 的定义只差了一个`noexcept`，但这个小小的差异就导致了 vector **是否会移动对象**，这点非常重要。
 
-``` cpp
+```cpp
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -1405,7 +1405,7 @@ list 的内存布局如下图所示：
 * 虽然 list 提供了任意位置插入新元素的灵活性，但由于每个元素的内存空间都是单独分配、不连续，它的遍历性能比 vector 和 deque 都要低。这在很大程度上抵消了它在插入和删除操作时不需要移动元素的理论性能优势。如果你不太需要遍历容器、又需要在中间频繁插入或删除元素，可以考虑使用 list。
 * 因为某些标准算法在 list 上会导致问题，list 提供了成员函数作为替代，比如：merge，remove，remove_if，reverse，sort，unique。
 
-``` cpp
+```cpp
 list lst{1, 7, 2, 8, 3};
 vector vec{1, 7, 2, 8, 3};
 
@@ -1440,7 +1440,7 @@ queue 缺省用 deque 来实现。它的接口跟 deque 比，有如下改变：
 
 鉴于 queue 不提供 begin 和 end 方法，无法无损遍历：
 
-``` cpp
+```cpp
 #include <iostream>
 #include <queue>
 
@@ -1473,7 +1473,7 @@ stack 缺省也是用 deque 来实现，但它的概念和 vector 更相似。�
 
 ![stack_mem](/assets/images/201911/stack_mem.png)
 
-``` cpp
+```cpp
 #include <iostream>
 #include <stack>
 
@@ -1497,7 +1497,7 @@ int main()
 
 首先来讨论一下两个重要的函数对象，`less` 和 `hash`。在标准库里，通用的 `less` 大致是这样定义的：
 
-``` cpp
+```cpp
 template <class T>
 struct less
   : binary_function<T, T, bool> {
@@ -1516,7 +1516,7 @@ struct less
 
 例如，int类型的特化：
 
-``` cpp
+```cpp
 template <class T> struct hash;
 
 template <>
@@ -1532,7 +1532,7 @@ struct hash<int>
 
 更复杂的类型，如指针或者 string 的特化。**要点是，对于每个类，类的作者都可以提供 hash 的特化，使得对于不同的对象值，函数调用运算符都能得到尽可能均匀分布的不同数值**。
 
-``` cpp
+```cpp
 #include <algorithm>   // std::sort
 #include <functional>  // std::less/greater/hash
 #include <iostream>    // std::cout/endl
@@ -1605,7 +1605,7 @@ priority_queue 也是一个**容器适配器**。但是，它用到了**比较�
 * 它和 stack 相似，支持 push、pop、top 等有限的操作，但容器内的顺序既不是后进先出，也不是先进先出，**而是（部分）排序的结果**。
 * 在使用缺省的 less 作为其 Compare 模板参数时，最大的数值会出现在容器的“顶部”。如果需要最小的数值出现在容器顶部，则可以传递 greater 作为其 Compare 模板参数。
 
-``` cpp
+```cpp
 #include <functional>  // std::greater
 #include <iostream>    // std::cout/endl
 #include <memory>      // std::pair
@@ -1663,7 +1663,7 @@ unordered_set，unordered_map，unordered_multiset，unordered_multimap
 
 这些容器和关联容器非常相似，**主要的区别就在于它们是“无序”的。这些容器不要求提供一个排序的函数对象，而要求一个可以计算哈希值的函数对象**。你当然可以在声明容器对象时手动提供这样一个函数对象类型，但更常见的情况是，我们使用标准的 hash 函数对象及其特化。
 
-``` cpp
+```cpp
 #include <complex>        // std::complex
 #include <iostream>       // std::cout/endl
 #include <unordered_map>  // std::unordered_map
@@ -1721,14 +1721,14 @@ int main()
 
 获得数组的长度：
 
-``` cpp
+```cpp
 #define ARRAY_LEN(a) \
   (sizeof(a) / sizeof((a)[0]))
 ```
 
 C++17 直接提供了一个 `size` 方法，可以用于提供数组长度，并且在数组退化成指针的情况下会直接失败：
 
-``` cpp
+```cpp
 #include <iostream>  // std::cout/endl
 #include <iterator>  // std::size
 
@@ -1755,7 +1755,7 @@ int main()
 * 对于字符串数组，当然应该考虑 string。
 * 如果数组大小固定（C 的数组在 C++ 里本来就是大小固定的）并且较小的话，应该考虑 array。array 保留了 C 数组在栈上分配的特点，同时，提供了 begin、end、size 等通用成员函数。
 
-``` cpp
+```cpp
 #include <array>     // std::array
 #include <iostream>  // std::cout/endl
 #include <map>       // std::map
@@ -1782,7 +1782,7 @@ int main()
 
 我们可能有大量需要判断错误的代码，零散分布在代码各处。
 
-``` cpp
+```cpp
   matrix c;
 
   //  不清零的话，错误处理和资源清理会更复杂
@@ -1840,7 +1840,7 @@ error_exit:
 
 GCC/Clang 下的 `-fexceptions`（缺省开启）。用 GCC，加上 `-fno-exceptions` 命令行参数，对于下面这样的小程序，也能看到产生的可执行文件的大小的变化。
 
-``` cpp
+```cpp
 #include <vector>
 int main()
 {
@@ -1862,7 +1862,7 @@ int main()
 
 **异常是渗透在 C++ 中的标准错误处理方式。标准库的错误处理方式就是异常**。其中不仅包括运行时错误，甚至包括一些逻辑错误。比如，在说容器的时候，在能使用 [] 运算符的地方，C++ 的标准容器也提供了 at 成员函数，能够在下标不存在的时候抛出异常，作为一种额外的帮助调试的手段。
 
-``` cpp
+```cpp
 vector<int> v{1, 2, 3};
 int a = v[0];
 int b = v.at(0)
@@ -1907,7 +1907,7 @@ catch (const out_of_range& e) {
 
 如果一个类型像输入迭代器，但 `*i` 只能作为左值来写而不能读，那它就是个**输出迭代器（output iterator）**。
 
-``` cpp
+```cpp
 #include <algorithm>  // std::copy
 #include <iterator>   // std::back_inserter
 #include <vector>     // std::vector
@@ -1928,7 +1928,7 @@ copy(v2.begin(), v2.end(), ostream_iterator<int>(cout, " "));
 
 总结：
 
-``` cpp
+```cpp
 cout << *it  // 输入迭代器，就是读
 *it = 42     // 输出迭代器，就是写
 ```
@@ -1937,7 +1937,7 @@ cout << *it  // 输入迭代器，就是读
 
 通过自定义的输入迭代器。它的功能本身很简单，就是把一个输入流（istream）的内容一行行读进来。配上 C++11 引入的基于范围的 for 循环的语法，我们可以把遍历输入流的代码以一种自然、非过程式的方式写出来。
 
-``` cpp
+```cpp
 for (const string& line : istream_line_reader(is)) {
   //  示例循环体中仅进行简单输出
   cout << line << endl;
@@ -1946,7 +1946,7 @@ for (const string& line : istream_line_reader(is)) {
 
 对比一下以传统的方式写的 C++ 代码，其中需要照顾不少细节：(从 is 读入输入行的逻辑，在前面的代码里一个语句就全部搞定了，在这儿用了 5 个语句)
 
-``` cpp
+```cpp
 string line;
 for (;;) {
   getline(is, line);
@@ -1959,7 +1959,7 @@ for (;;) {
 
 基于范围的 for 循环这个语法。虽然这可以说是个语法糖，但它对提高代码的可读性真的非常重要。如果不用这个语法糖的话，简洁性上的优势就小多了。我们直接把这个循环改写成等价的普通 for 循环的样子。
 
-``` cpp
+```cpp
 {
   // auto&& 是用一个“万能”引用捕获一个对象，左值和右值都可以。C++ 的生命期延长规则，保证了引用有效期间，istream_line_reader 这个“临时”对象一直存在。没有生命期延长的话，临时对象在当前语句执行结束后即销毁
   auto&& r = istream_line_reader(is);
@@ -1978,7 +1978,7 @@ for (;;) {
 
 C++ 里有些固定的类型要求规范。对于一个迭代器，我们需要定义下面的类型：
 
-``` cpp
+```cpp
 class istream_line_reader {
 public:
   class iterator {  //  实现  InputIterator
@@ -2006,7 +2006,7 @@ public:
 
 让 `++` 负责读取，`*` 负责返回读取的内容。这个 iterator 类需要有一个数据成员指向输入流，一个数据成员来存放读取的结果。
 
-``` cpp
+```cpp
 class istream_line_reader {
 public:
   class iterator {
@@ -2063,7 +2063,7 @@ public:
 
 对于迭代器之间的比较，则主要考虑文件有没有读到尾部的情况，简单定义为：
 
-``` cpp
+```cpp
     bool operator==(const iterator& rhs) const noexcept
     {
       return stream_ == rhs.stream_;
@@ -2077,7 +2077,7 @@ public:
 
 有了这个 iterator 的定义后，istream_line_reader 的定义就简单得很了：
 
-``` cpp
+```cpp
 class istream_line_reader {
 public:
   class iterator {…};
@@ -2111,7 +2111,7 @@ private:
 
 注意以上实现存在一定的使用限制，不能多次调用begin。
 
-``` cpp
+```cpp
 #include <fstream>
 #include <iostream>
 #include "istream_line_reader.h"
@@ -2157,7 +2157,7 @@ for (auto it = v.begin(), end = v.end();
 
 不使用自动类型推断时，**如果容器类型未知的话，还需要加上 typename**：
 
-``` cpp
+```cpp
 template <typename T>
 void foo(const T& container)
 {
@@ -2185,13 +2185,13 @@ void foo(const T& container)
 
 decltype(expr) 既可以是值类型，也可以是引用类型。
 
-``` cpp
+```cpp
 decltype(expr) a = expr;
 ```
 
 这种写法明显不能让人满意，特别是表达式很长的情况（而且，任何代码重复都是潜在的问题）。为此，C++14 引入了 `decltype(auto)` 语法。对于上面的情况，只需要像下面这样写就行了。
 
-``` cpp
+```cpp
 decltype(auto) a = expr;
 ```
 这种代码主要用在通用的转发函数模板中：你可能根本不知道你调用的函数是不是会返回一个引用。这时使用这种语法就会方便很多。
@@ -2200,7 +2200,7 @@ decltype(auto) a = expr;
 
 后置返回值类型声明。通常，在返回类型比较复杂、特别是返回类型跟参数类型有某种推导关系时会使用这种语法。
 
-``` cpp
+```cpp
 auto foo(参数) ->  返回值类型声明
 {
   //  函数体
@@ -2210,20 +2210,20 @@ auto foo(参数) ->  返回值类型声明
 ### 类模板的模板参数推导
 
 因为函数模板有模板参数推导，使得调用者不必手工指定参数类型；但 C++17 之前的类模板却**没有这个功能，也因而催生了像 make_pair 这样的工具函数**：
-``` cpp
+```cpp
 pair pr{1, 42};            // 一般不这样写
 auto pr = make_pair(1, 42);// 一般这样写
 ```
 
 在进入了 C++17 的世界后，这类函数变得不必要了。现在可以直接写：
 
-``` cpp
+```cpp
 pair pr{1, 42};
 ```
 
 这种自动推导机制，可以是编译器根据构造函数来自动生成：
 
-``` cpp
+```cpp
 template <typename T>
 struct MyObj {
   MyObj(T value);
@@ -2238,7 +2238,7 @@ MyObj obj2{"hello"};
 
 ### 结构化绑定
 
-``` cpp
+```cpp
 multimap<string, int>::iterator lower, upper;
 std::tie(lower, upper) = mmp.equal_range("four");
 ```
@@ -2246,7 +2246,7 @@ std::tie(lower, upper) = mmp.equal_range("four");
 返回值是个 pair，希望用两个变量来接收数值，就不得不声明了两个变量，然后使用 tie 来接收结果。在 C++11/14 里，这里是没法使用 auto 的。好在 C++17 引入了一个新语法，解决了这个问题。可以把上面的代码简化为：
 
 
-``` cpp
+```cpp
 auto [lower, upper] = mmp.equal_range("four");
 ```
 
@@ -2254,13 +2254,13 @@ auto [lower, upper] = mmp.equal_range("four");
 
 在 C++98 里，标准容器比起 C 风格数组至少有一个明显的劣势：不能在代码里方便地初始化容器的内容。比如，对于数组可以写：
 
-``` cpp
+```cpp
 int a[] = {1, 2, 3, 4, 5};
 ```
 
 而对于 vector 却得写：
 
-``` cpp
+```cpp
 vector<int> v;
 v.push(1);
 v.push(2);
@@ -2268,7 +2268,7 @@ v.push(2);
 
 于是，C++ 标准委员会引入了**列表初始化**，允许以更简单的方式来初始化对象。现在初始化容器也可以和初始化数组一样简单了：
 
-``` cpp
+```cpp
 vector<int> v{1, 2, 3, 4, 5};
 ```
 
@@ -2278,7 +2278,7 @@ vector<int> v{1, 2, 3, 4, 5};
 
 几乎可以在所有初始化对象的地方使用大括号而不是小括号。
 
-``` cpp
+```cpp
 Obj getObj()
 {
   return {1.0};
@@ -2299,7 +2299,7 @@ Obj getObj()
 
 使用数据成员的默认初始化的话，可以这么写：
 
-``` cpp
+```cpp
 class Complex {
 public:
   Complex() {}
@@ -2330,7 +2330,7 @@ private:
 
 C++11 引入了自定义字面量，可以使用 `operator""` 后缀，来将用户提供的字面量转换成实际的类型。
 
-``` cpp
+```cpp
 #include <chrono>
 #include <complex>
 #include <iostream>
@@ -2355,7 +2355,7 @@ int main()
 
 如何在自己的类里支持字面量？
 
-``` cpp
+```cpp
 struct length {
   double value;
   enum unit {
@@ -2391,7 +2391,7 @@ length operator+(length lhs,
 
 可以手写 `length(1.0, length::metre)` 这样的表达式，但估计大部分开发人员都不愿意这么做，而更希望是 `1.0_m + 10.0_cm`。要允许这个表达式，只需要提供下面的运算符即可：
 
-``` cpp
+```cpp
 length operator"" _m(long double v)
 {
   return length(v, length::metre);
@@ -2407,7 +2407,7 @@ length operator"" _cm(long double v)
 
 从 C++14 开始，对于二进制也有了直接的字面量：
 
-``` cpp
+```cpp
 unsigned mask = 0b111000000;
 ```
 
@@ -2426,7 +2426,7 @@ unsigned mask = 0b111000000;
 
 例子：
 
-``` cpp
+```cpp
 unsigned mask = 0b111'000'000;
 long r_earth_equatorial = 6'378'137;
 double pi = 3.14159'26535'89793;
@@ -2439,14 +2439,14 @@ C++98 的 assert 允许在**运行时**检查一个函数的前置条件是否�
 
 C++11 直接从语言层面提供了静态断言机制，不仅能输出更好的信息，而且适用性也更好，可以直接放在类的定义中。
 
-``` cpp
+```cpp
 static_assert(编译期条件表达式,
                可选输出信息);
 ```
 
 例如：
 
-``` cpp
+```cpp
 static_assert((alignment & (alignment - 1)) == 0,
   "Alignment must be power of two");
 ```
@@ -2471,8 +2471,7 @@ static_assert((alignment & (alignment - 1)) == 0,
 
 * 如果正常情况不需要复制行为、只是想防止其他开发人员误操作时，可以简单地在类的定义中加入：
 
-``` cpp
-
+```cpp
 class shape_wrapper {
   …
   shape_wrapper(
@@ -2500,7 +2499,7 @@ final 还有一个作用是标志某个类或结构不可被派生。同样，�
 
 例子：
 
-``` cpp
+```cpp
 class A {
 public:
   virtual void foo();
@@ -2541,7 +2540,7 @@ class D : public C {
 
 一种常见的做法是，接口的调用者负责分配一个对象所需的内存并负责其生命周期，接口负责生成或修改该对象。这种做法意味着对象可以默认构造（甚至只是一个结构），代码一般使用错误码而非异常。例如：
 
-``` cpp
+```cpp
 MyObj obj;
 ec = initialize(&obj);
 // …
@@ -2557,7 +2556,7 @@ ec = initialize(&obj);
 * 一个用来返回的对象，通常应当是**可移动构造 / 赋值的**，一般也同时是**可拷贝构造 / 赋值的**。
 * 如果这样一个对象同时又可以**默认构造**，我们就称其为**一个半正则（semiregular）的对象**。如果可能的话，应当尽量让我们的类满足**半正则**这个要求。
 
-``` cpp
+```cpp
 class matrix {
 public:
   //  普通构造
@@ -2576,7 +2575,7 @@ public:
 
 在**没有返回值优化**的情况下 C++ 是怎样返回对象的？
 
-``` cpp
+```cpp
 matrix operator*(const matrix& lhs,
                  const matrix& rhs)
 {
@@ -2597,7 +2596,7 @@ matrix operator*(const matrix& lhs,
 
 ### 返回值优化（拷贝消除）
 
-``` cpp
+```cpp
 #include <iostream>
 
 using namespace std;
@@ -2633,7 +2632,7 @@ Destroy A
 
 把代码稍稍改一下：
 
-``` cpp
+```cpp
 A getA_named()
 {
   A a;
@@ -2659,7 +2658,7 @@ Destroy A
 
 继续变形一下：
 
-``` cpp
+```cpp
 #include <stdlib.h>
 
 A getA_duang()
@@ -2693,7 +2692,7 @@ Destroy A
 
 关于返回值优化的实验我们就做到这里。下一步，我们试验一下把移动构造函数删除：
 
-``` cpp
+```cpp
 A(A&&) = delete;
 ```
 
@@ -2783,7 +2782,7 @@ UTF-8：U+0020 映射为 0x20，U+6C49 映射为 0xE6 B1 89，而 U+1F600 会映
 
 **在面向对象的开发里，最基本的一个特性就是“多态” —— 用相同的代码得到不同结果**。以 shape 类为例，它可能会定义一些通用的功能，然后在子类里进行实现或覆盖：
 
-``` cpp
+```cpp
 class shape {
 public:
   …
@@ -2819,7 +2818,7 @@ public:
 
 #### 定义模板函数
 
-``` cpp
+```cpp
 // 求最大公约数的辗转相除法
 template <typename E>
 E my_gcd(E a, E b)
@@ -2857,7 +2856,7 @@ E my_gcd(E a, E b)
 
 特化的例子：
 
-``` cpp
+```cpp
 template <typename E>
 E my_mod(const E& lhs,
          const E& rhs)
@@ -2882,7 +2881,7 @@ cln::cl_I my_mod<cln::cl_I>(
 
 展示**特化的更好的例子**是 C++11 之前的**静态断言**。使用特化技巧可以大致实现 `static_assert` 的功能：
 
-``` cpp
+```cpp
 template <bool>
 struct compile_time_error;
 template <>
@@ -2920,7 +2919,7 @@ struct compile_time_error<true> {};
 可以用 `typeid` 直接来获取对象的实际类型，例如：
 
 
-``` cpp
+```cpp
 #include <iostream>
 #include <typeinfo>
 #include <boost/core/demangle.hpp>
@@ -2951,8 +2950,7 @@ int main()
 
 在 GCC 下的输出：
 
-```
-6circle
+```6circle
 circle
 is circle
 ```
@@ -2969,7 +2967,7 @@ is circle
 
 ### 计算阶乘
 
-``` cpp
+```cpp
 template <int n>
 struct factorial {
   static const int value =
@@ -3009,7 +3007,7 @@ fatal error: template instantiation depth exceeds maximum of 900 (use -ftemplate
 
 通用的解决方案是使用 `static_assert`，确保参数永远不会是负数。
 
-``` cpp
+```cpp
 template <int n>
 struct factorial {
   static_assert(
@@ -3033,7 +3031,7 @@ error: static assertion failed: Arg must be non-negative
 
 再看一个例子，下面的模板可以代表**条件语句**：
 
-``` cpp
+```cpp
 template <bool cond,
           typename Then,
           typename Else>
@@ -3058,7 +3056,7 @@ struct If<false, Then, Else> {
 
 下面的函数和模板是基本等价的：
 
-``` cpp
+```cpp
 int foo(int n)
 {
   if (n == 2 || n == 3 || n == 5) {
@@ -3084,7 +3082,7 @@ struct Foo {
 
 另一个例子，**循环**：
 
-``` cpp
+```cpp
 template <bool condition,
           typename Body>
 struct WhileLoop;
@@ -3122,7 +3120,7 @@ struct While {
 
 下面这个模板可以通用地代表一个整数常数：
 
-``` cpp
+```cpp
 template <class T, T v>
 struct integral_constant {
   static const T value = v;
@@ -3134,7 +3132,7 @@ struct integral_constant {
 * integral_constant 模板同时包含了整数的**类型**和**数值**，而通过这个类型的 value 成员我们又可以重新取回这个数值。
 * 有了这个模板的帮忙，我们就可以进行一些更通用的计算了。
 
-``` cpp
+```cpp
 template <int result, int n>
 struct SumLoop {
   static const bool cond_value =
@@ -3160,7 +3158,7 @@ struct Sum {
 
 C++ 标准库在 `<type_traits>` 头文件里定义了很多**工具类模板**，**用来提取某个类型（type）在某方面的特点（trait）** [refer: cppreference.com, “Standard library header ”](https://en.cppreference.com/w/cpp/header/type_traits)。
 
-``` cpp
+```cpp
 typedef std::integral_constant<
   bool, true> true_type;
 typedef std::integral_constant<
@@ -3195,7 +3193,7 @@ private:
 
 另外一些模板，可以用来做一些类型的转换。以一个常见的模板 remove_const 为例（用来去除类型里的 const 修饰）:
 
-``` cpp
+```cpp
 template <class T>
 struct remove_const {
   typedef T type;
@@ -3213,7 +3211,7 @@ struct remove_const<const T> {
 
 从概念本源来看，map 和 reduce 都来自**函数式编程**。
 
-``` cpp
+```cpp
 template <
   template <typename, typename>
   class OutContainer = vector,
@@ -3244,7 +3242,7 @@ auto fmap(F&& f, R&& inputs)
 
 下面的代码可以验证其功能：
 
-``` cpp
+```cpp
 vector<int> v{1, 2, 3, 4, 5};
 int add_1(int x)
 {
@@ -3257,7 +3255,7 @@ auto result = fmap(add_1, v);
 
 完整代码：使用 C++17、GCC 7编译
 
-``` cpp
+```cpp
 #include <iostream>
 #include <vector>
 #include <type_traits>
@@ -3313,7 +3311,7 @@ int main()
 * 如果没有找到最佳匹配，或者找到多个匹配程度相当的函数，则编译器需要报错
 
 例子：
-``` cpp
+```cpp
 #include <stdio.h>
 
 struct Test {
@@ -3341,8 +3339,7 @@ int main()
 
 输出为：
 
-```
-1
+```1
 2
 ```
 
@@ -3364,7 +3361,7 @@ int main()
 
 下面这个模板，就可以检测一个类是否有一个名叫 reserve、参数类型为 size_t 的成员函数：
 
-``` cpp
+```cpp
 template <typename T>
 struct has_reserve {
 
@@ -3400,7 +3397,7 @@ C++11 开始，标准库里有了一个叫 `enable_if` 的模板（定义在 `<t
 
 假设有一个函数，用来往一个容器尾部追加元素。我们希望原型是这个样子的：
 
-``` cpp
+```cpp
 template <typename C, typename T>
 void append(C& container, T* ptr,
             size_t size);
@@ -3408,7 +3405,7 @@ void append(C& container, T* ptr,
 
 显然，container 有没有 `reserve` 成员函数，是对性能有影响的——如果有的话，我们通常应该预留好内存空间，以免产生不必要的对象移动甚至拷贝操作。利用 `enable_if` 和上面的 `has_reserve` 模板，我们就可以这么写：
 
-``` cpp
+```cpp
 // 有 reserve 的 append 版本
 template <typename C, typename T>
 enable_if_t<has_reserve<C>::value,
@@ -3447,7 +3444,7 @@ append(C& container, T* ptr,
 
 如果只需要在某个操作有效的情况下启用某个函数，而不需要考虑相反的情况的话。
 
-``` cpp
+```cpp
 template <typename C, typename T>
 auto append(C& container, T* ptr,
             size_t size)
@@ -3474,7 +3471,7 @@ auto append(C& container, T* ptr,
 
 void_t 是 C++17 新引入的一个模板。它的定义简单得令人吃惊：
 
-``` cpp
+```cpp
 template <typename...>
 using void_t = void;
 ```
@@ -3488,7 +3485,7 @@ using void_t = void;
 * 一个 constexpr 变量是一个编译时完全确定的常数。
 * 一个 constexpr 函数至少对于某一组实参可以在编译期间产生一个编译期常数。
 
-``` cpp
+```cpp
 #include <array>
 
 constexpr int sqr(int n)
@@ -3506,7 +3503,7 @@ int main()
 
 以阶乘函数为例：
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <stdexcept>
 
@@ -3564,7 +3561,7 @@ constexpr.cpp:23:32: error: constexpr evaluation depth exceeds maximum of 512 (u
 
 初学 `constexpr` 时，一个很可能有的困惑是，它跟 `const` 用法上的区别到底是什么？产生这种困惑是正常的，毕竟 `const` 是个重载了很多不同含义的关键字。`const` 的原本和基础的含义，自然是表示**它修饰的内容不会变化**，如：
 
-``` cpp
+```cpp
 const int n = 1:
 n = 2;  //  出错！
 ```
@@ -3577,7 +3574,7 @@ n = 2;  //  出错！
 
 一个 constexpr 变量仍然是 const 常类型。需要注意的是，就像 const char* 类型是指向常量的指针、自身不是 const 常量一样，**下面这个表达式里的 const 也是不能缺少的**：
 
-``` cpp
+```cpp
 constexpr int a = 42;
 constexpr const int& b = a;
 ```
@@ -3593,7 +3590,7 @@ constexpr 表示 b 是一个编译期常量，const 表示这个引用是常量�
 
 下面定义了一个简单的加 n 的**函数对象类**：
 
-``` cpp
+```cpp
 struct adder {
   adder(int n) : n_(n) {}
   int operator()(int x) const
@@ -3612,7 +3609,7 @@ int res = add_2(5);       // 2 + 5 = 7
 
 除非用一个**引用模板参数**来捕捉函数类型，传递给一个函数的**函数实参**会退化成为一个**函数指针**。不管是**函数指针**还是**函数引用**，都可以当成**函数对象**来用。
 
-``` cpp
+```cpp
 #include <cstdio>
 
 template <typename T>
@@ -3653,7 +3650,7 @@ add_2(int x)
 
 ### Lambda 表达式
 
-``` cpp
+```cpp
 auto add_2 = [](int x) {
   return x + 2;
 };
@@ -3667,7 +3664,7 @@ auto add_2 = [](int x) {
 
 定义一个通用的 adder：
 
-``` cpp
+```cpp
 auto adder = [](int n) {
   return [n](int x) {
     return x + n;
@@ -3679,7 +3676,7 @@ auto seven = adder(2)(5);
 
 不过，最常见的情况是，写匿名函数就是希望不需要起名字。以前面的把所有容器元素值加 2 的操作为例，使用匿名函数可以得到更简洁可读的代码：
 
-``` cpp
+```cpp
 transform(v.begin(), v.end(),
           v.begin(),
           [](int x) {
@@ -3689,14 +3686,14 @@ transform(v.begin(), v.end(),
 
 一个 lambda 表达式除了没有名字之外，还有一个特点是你可以**立即进行求值**。一个 lambda 表达式默认就是 constexpr 函数。
 
-``` cpp
+```cpp
 // 9
 [](int x) { return x * x; }(3)
 ```
 
 另外一种用途是**解决多重初始化路径**的问题。假设有这样的代码：
 
-``` cpp
+```cpp
 Obj obj;
 switch (init_mode) {
 
@@ -3713,7 +3710,7 @@ case init_mode2;
 
 这样的代码，实际上是调用了默认构造函数、带参数的构造函数和（移动）赋值函数：既可能有性能损失，也对 Obj 提出了**有默认构造函数的额外要求**。对于这样的代码，有一种重构意见是把这样的代码分离成独立的函数。**不过，有时候更直截了当的做法是用一个 lambda 表达式来进行改造，既可以提升性能（不需要默认函数或拷贝 / 移动），又让初始化部分显得更清晰**：
 
-``` cpp
+```cpp
 auto obj = [init_mode]() {
   switch (init_mode) {
 
@@ -3754,7 +3751,7 @@ lambda 表达式中变量捕获的细节：
 
 按引用捕获：按引用捕获 v1 和 v2，因为需要修改它们的内容。
 
-``` cpp
+```cpp
 vector<int> v1;
 vector<int> v2;
 …
@@ -3770,7 +3767,7 @@ push_data(3);
 
 按值捕获外围对象：
 
-``` cpp
+```cpp
 #include <chrono>
 #include <iostream>
 #include <sstream>
@@ -3840,7 +3837,7 @@ Done work 37 (No. 1) in thread 139984678594304
 
 在 lambda 表达式的定义过程中是没法写 `template` 关键字的。
 
-``` cpp
+```cpp
 template <typename T1,
           typename T2>
 auto sum(T1 x, T2 y)
@@ -3851,7 +3848,7 @@ auto sum(T1 x, T2 y)
 
 跟上面的函数等价的 lambda 表达式是：
 
-``` cpp
+```cpp
 auto sum = [](auto x, auto y)
 {
   return x + y;
@@ -3860,7 +3857,7 @@ auto sum = [](auto x, auto y)
 
 你可能要问，这么写有什么用呢？问得好。简单来说，答案是**可组合性**。上面这个 sum，就跟标准库里的 plus 模板一样，**是可以传递给其他接受函数对象的函数的**，而 + 本身则不行。
 
-``` cpp
+```cpp
 #include <array>    // std::array
 #include <iostream> // std::cout/endl
 #include <numeric>  // std::accumulate
@@ -3883,7 +3880,7 @@ int main()
 
 每一个 lambda 表达式都是一个单独的类型，所以只能使用 auto 或模板参数来接收结果。在很多情况下，我们需要使用一个更方便的通用类型来接收，这时我们就可以使用 function 模板。function 模板的参数就是函数的类型，一个函数对象放到 function 里之后，外界可以观察到的就只剩下它的参数、返回值类型和执行效果了。**注意 function 对象的创建还是比较耗资源的，所以请你只在用 auto 等方法解决不了问题的时候使用这个模板**。
 
-``` cpp
+```cpp
 map<string, function<int(int, int)>>
   op_dict{
     {"+",
@@ -3941,7 +3938,7 @@ C++ 里以 algorithm（算法）名义提供的很多函数都是高阶函数。
 
 启用 C++17 的并行执行策略（[refer: cppreference.com, “Standard library header <execution>”](https://en.cppreference.com/w/cpp/header/execution)），就能自动获得在多核环境下的性能提升：
 
-``` cpp
+```cpp
 int count_lines(const char** begin,
                 const char** end)
 {
@@ -3977,7 +3974,7 @@ refer: [Functional Programming in C++. Manning, 2019](https://www.manning.com/bo
 
 以标准库里的 `make_unique` 为例，它的定义差不多是下面这个样子：
 
-``` cpp
+```cpp
 template <typename T,
           typename... Args>
 inline unique_ptr<T>
@@ -3999,13 +3996,13 @@ make_unique(Args&&... args)
 
 例如，如果需要在堆上传递一个 vector，假设希望初始构造的大小为 100，每个元素都是 1：
 
-``` cpp
+```cpp
 make_unique<vector<int>>(100, 1)
 ```
 
 模板实例化之后，会得到相当于下面的代码：
 
-``` cpp
+```cpp
 template <>
 inline unique_ptr<vector<int>>
 make_unique(int&& arg1, int&& arg2)
@@ -4021,7 +4018,7 @@ make_unique(int&& arg1, int&& arg2)
 
 也可以用可变模板来实现编译期递归。
 
-``` cpp
+```cpp
 template <typename T>
 constexpr auto sum(T x)
 {
@@ -4041,7 +4038,7 @@ constexpr auto sum(T1 x, T2 y,
 
 要使用上面这个模板，就可以写出像下面这样的函数调用：
 
-``` cpp
+```cpp
 auto result = sum(1, 2, 3.5, x);
 ```
 
@@ -4060,7 +4057,7 @@ sum(6.5 + x)
 
 在 C++ 里，要通用地**用一个变量来表达多个值**，那就得看**多元组 `tuple` 模板**了。tuple 算是 C++98 里的 pair 类型的一般化，可以表达任意多个固定数量、固定类型的值的组合。
 
-``` cpp
+```cpp
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -4123,7 +4120,7 @@ int main()
 
 利用 `constexpr` 函数，可以通过**编译期完成计算**：
 
-``` cpp
+```cpp
 constexpr int
 count_bits(unsigned char value)
 {
@@ -4138,7 +4135,7 @@ count_bits(unsigned char value)
 
 定义一个模板，它的参数是一个序列，在初始化时这个模板会对参数里的每一项计算比特数，并放到数组成员里。
 
-``` cpp
+```cpp
 template <size_t... V>
 struct bit_count_t {
   unsigned char
@@ -4217,7 +4214,7 @@ I am thread A
 
 thread 不能在析构时自动 join 有点不那么自然，这可以算是一个缺陷吧。在 C++20 的 [jthread](https://en.cppreference.com/w/cpp/thread/jthread) 到来之前，我们只能自己小小封装一下了。
 
-``` cpp
+```cpp
 class scoped_thread {
 public:
   template <typename... Arg>
@@ -4281,7 +4278,7 @@ int main()
 
 比较传统的做法是使用**信号量**或者**条件变量**。
 
-``` cpp
+```cpp
 #include <chrono>
 #include <condition_variable>
 #include <functional>
@@ -4328,7 +4325,7 @@ int main()
 
 更简单的方法是，把上面的代码直接翻译成使用 [async](https://en.cppreference.com/w/cpp/thread/async)（它会返回一个 `future`）：
 
-``` cpp
+```cpp
 #include <chrono>
 #include <future>
 #include <iostream>
@@ -4366,7 +4363,7 @@ int main()
 
 上面用 async 函数生成了未来量，但这不是唯一的方式。另外有一种常用的方式是 [promise](https://zh.cppreference.com/w/cpp/thread/promise)，我称之为**“承诺量”**。用 promise 该怎么写：
 
-``` cpp
+```cpp
 #include <chrono>
 #include <future>
 #include <iostream>
@@ -4421,21 +4418,21 @@ C++98 的年代里，开发者们已经了解了线程的概念，但 C++ 的标
 
 例子，假设有**两个全局变量**：
 
-``` cpp
+```cpp
 int x = 0;
 int y = 0;
 ```
 
 然后在一个线程里执行：
 
-``` cpp
+```cpp
 x = 1;
 y = 2;
 ```
 
 在另一个线程里执行：
 
-``` cpp
+```cpp
 if (y == 2) {
   x = 3;
   y = 4;
@@ -4457,7 +4454,7 @@ if (y == 2) {
 
 在**多线程**可能对**同一个单件进行初始化**的情况下，有一个**双重检查锁定**的技巧，可基本示意如下：
 
-``` cpp
+```cpp
 // 头文件
 class singleton {
 public:
@@ -4508,7 +4505,7 @@ singleton* singleton::instance()
 
 在**线程 1** 需要使用释放语义：
 
-``` cpp
+```cpp
 atomic<int> y;
 
 x = 1;
@@ -4517,7 +4514,7 @@ y.store(2, memory_order_release); // 释放，写操作
 
 在**线程 2** 对 y 的读取应当使用获得语义，但存储只需要松散内存序即可：
 
-``` cpp
+```cpp
 if (y.load(memory_order_acquire) == 2) { // 获得，读操作
   x = 3;
   y.store(4, memory_order_relaxed);
@@ -4569,7 +4566,7 @@ C++11 在 头文件中引入了 [atomic](https://en.cppreference.com/w/cpp/atomi
 
 由于我们并不需要 `++` 之后计数值影响其他行为，在 add_count 中执行简单的 ++、使用顺序一致性语义略有浪费。更好的做法是将其实现成：
 
-``` cpp
+```cpp
 #include <atomic>
 
 std::atomic_long count_;// atomic_long 是 atomic<long> 的类型别名
@@ -4601,7 +4598,7 @@ count_.fetch_add(
 
 实现一个真正**安全的双重检查锁定**：
 
-``` cpp
+```cpp
 // 头文件
 class singleton {
 public:
@@ -4649,7 +4646,7 @@ singleton* singleton::instance()
 
 标准库里 queue 有下面这样的接口：
 
-``` cpp
+```cpp
 template <typename T>
 class queue {
 public:
@@ -4665,7 +4662,7 @@ public:
 
 事实上，上面这样的接口是不可能做到并发安全的。并发安全的接口大概长下面这个样子：
 
-``` cpp
+```cpp
 template <typename T>
 class queue {
 public:
@@ -4727,7 +4724,7 @@ C++17 引入的 [optional 模板](https://en.cppreference.com/w/cpp/utility/opti
 
 在没有 `variant` 类型之前，你要达到类似的目的，恐怕会使用一种叫做**带标签的联合（tagged union）**的数据结构。比如，下面就是一个可能的数据结构定义：
 
-``` cpp
+```cpp
 struct FloatIntChar {
   enum {
     Float,
@@ -4747,7 +4744,7 @@ struct FloatIntChar {
 
 所以，**目前的主流建议是，应该避免使用“裸” union 了。替换为 `variant`**。
 
-``` cpp
+```cpp
 variant<string, int, char> obj{"Hello world"};
 cout << get<string>(obj) << endl;
 ```
@@ -4764,7 +4761,7 @@ cout << get<string>(obj) << endl;
 
 `optional` 可以作为**一种代替异常的方式：在原本该抛异常的地方，我们可以改而返回一个空的 optional 对象**。当然，此时只知道没有返回一个合法的对象，而不知道为什么没有返回合法对象了。可以考虑改用一个 `variant`，但此时需要给错误类型一个独特的类型才行，因为这是 variant 模板的要求。比如：
 
-``` cpp
+```cpp
 enum class error_code {
   success,
   operation_failure,
@@ -4796,7 +4793,7 @@ refer：
 
 众所周知，C 和 C++（甚至推而广之到大部分的常用编程语言）里的数值类型是有精度限制的。比如，`INT_MIN`，最小的整数。很多情况下，使用目前这些类型是够用的（最高一般是 64 位整数和 80 位浮点数）。但也有很多情况，这些标准的类型远远不能满足需要。这时你就需要一个**高精度的数值类型**了。
 
-``` cpp
+```cpp
 #include <iomanip>
 #include <iostream>
 #include <boost/multiprecision/cpp_int.hpp>
@@ -4844,7 +4841,7 @@ Boost 的网站把 Boost 描述成为经过同行评审的、可移植的 C++ �
 
 TypeIndex 是一个很轻量级的库，它不需要链接，解决的也是使用模板时的一个常见问题，如何精确地知道**一个表达式或变量的类型**。
 
-``` cpp
+```cpp
 #include <iostream>
 #include <typeinfo>
 #include <utility>
@@ -4896,7 +4893,7 @@ int main()
 
 另外一个例子：
 
-``` cpp
+```cpp
 #include <iostream>
 #include <typeinfo>
 #include <boost/type_index.hpp>
@@ -4963,7 +4960,7 @@ Core 里面提供了一些通用的工具，这些工具常常被 Boost 的其�
 
 `boost::core::demangle` 能够用来把 `typeid` 返回的内部名称“反粉碎”（demangle）成**可读的形式**。
 
-``` cpp
+```cpp
 #include <iostream>
 #include <typeinfo>
 #include <utility>
@@ -5000,7 +4997,7 @@ int main()
 
 `boost::noncopyable` 提供了一种非常简单也很直白的把类声明成**不可拷贝的方式**。
 
-``` cpp
+```cpp
 #include <boost/core/noncopyable.hpp>
 
 class shape_wrapper
@@ -5015,7 +5012,7 @@ class shape_wrapper
 
 在通用的代码如何对一个不知道类型的对象执行交换操作？
 
-``` cpp
+```cpp
 {
   using std::swap;
   swap(lhs, rhs);
@@ -5024,7 +5021,7 @@ class shape_wrapper
 
 即，我们需要（在某个小作用域里）引入 `std::swap`，然后让编译器在“看得到” `std::swap` 的情况下去编译 swap 指令。根据 ADL，如果在被交换的对象所属类型的名空间下有 swap 函数，那个函数会被优先使用，否则，编译器会选择通用的 `std::swap`。似乎有点小啰嗦。使用 Boost 的话，你可以一行搞定：
 
-``` cpp
+```cpp
 #include <boost/core/swap.hpp>
 
 boost::swap(lhs, rhs);
@@ -5034,7 +5031,7 @@ boost::swap(lhs, rhs);
 
 Conversion 同样是一个不需要链接的轻量级的库。它解决了标准 C++ 里的另一个问题，标准类型之间的转换不够方便。在 C++11 之前，这个问题尤为严重。在 C++11 里，标准引入了一系列的函数，已经可以满足常用类型之间的转换。但使用 Boost.Conversion 里的 lexical_cast 更不需要去查阅方法名称或动脑子去努力记忆。
 
-``` cpp
+```cpp
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -5080,8 +5077,7 @@ int main()
 
 输出：
 
-```
-42
+```42
 10.5
 bad lexical cast: source type value could not be interpreted as target
 stoi
@@ -5149,7 +5145,7 @@ Exception received
 
 `Program_options` 正是解决这个问题的。这个代码有点老了，不过还挺实用；懒得去找特别的处理库时，至少这个伸手可用。使用这个库需要链接 `boost_program_options` 库。
 
-``` cpp
+```cpp
 #include <iostream>
 #include <string>
 #include <stdlib.h>
@@ -5229,7 +5225,7 @@ int main(int argc, char* argv[])
 
 ## Boost.Test
 
-``` cpp
+```cpp
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include <stdexcept>
@@ -5297,7 +5293,7 @@ BOOST_AUTO_TEST_CASE(null_test)
 * 可选使用 `BDD（Behavior-Driven Development）`风格的分节形式
 * 测试失败可选直接进入调试器（Windows 和 macOS 上）
 
-``` cpp
+```cpp
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include <stdexcept>
@@ -5339,7 +5335,7 @@ BDD 风格的测试一般采用这样的结构：
 
 假设测试一个容器，那代码就应该是这个样子的：
 
-``` cpp
+```cpp
 SCENARIO("Int container can be accessed and modified",
          "[container]")
 {
@@ -5411,7 +5407,7 @@ Easylogging++ 有很多的配置项会影响编译结果，常用的可配置项
 
 例子：
 
-``` cpp
+```cpp
 #include "easylogging++.h"
 INITIALIZE_EASYLOGGINGPP
 
@@ -5461,7 +5457,7 @@ Easylogging++ 库自己支持配置文件，推荐使用一个专门的配置文
 
 假设这个配置文件的名字是 `log.conf`，在代码中可以这样使用：
 
-``` cpp
+```cpp
 #include "easylogging++.h"
 INITIALIZE_EASYLOGGINGPP
 
@@ -5491,7 +5487,7 @@ int main()
 
 Easylogging++ 可以用来在日志中**记录程序执行的性能数据**。这个功能还是很方便的。下面的代码展示了用于性能跟踪的三个宏的用法：
 
-``` cpp
+```cpp
 #include <chrono>
 #include <thread>
 #include "easylogging++.h"
@@ -5552,7 +5548,7 @@ int main()
 
 在 GCC 和 Clang 下，通过定义宏 `ELPP_FEATURE_CRASH_LOG` 可以启用崩溃日志。此时，**当程序崩溃时，Easylogging++ 会自动在日志中记录程序的调用栈信息**。通过记录下的信息，再利用 `addr2line` 这样的工具，就能知道是程序的哪一行引发了崩溃。
 
-``` cpp
+```cpp
 #include "easylogging++.h"
 INITIALIZE_EASYLOGGINGPP
 
@@ -5577,7 +5573,7 @@ int main()
 
 ## spdlog
 
-``` cpp
+```cpp
 #include "spdlog/spdlog.h"
 
 int main()
@@ -5588,7 +5584,7 @@ int main()
 
 从代码中已经注意到，spdlog 不是使用 IO 流风格的输出了。它采用跟 Python 里的 str.format 一样的方式，使用大括号——可选使用序号和格式化要求——来对参数进行格式化。
 
-``` cpp
+```cpp
   spdlog::warn(
     "Message with arg {}", 42);
   spdlog::error(
@@ -5609,7 +5605,7 @@ int main()
 
 在 spdlog 里，要输出文件得打开**专门的文件日志记录器**。
 
-``` cpp
+```cpp
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
 
@@ -5635,7 +5631,7 @@ int main()
 
 在 Easylogging++ 里实现日志文件切换是需要写代码的，而且完善的多文件切换代码需要写上几十行代码才能实现。这项工作在 spdlog 则是超级简单的，因为 spdlog 直接提供了一个实现该功能的日志槽。把上面的例子改造成带日志文件切换只需要修改两处：
 
-``` cpp
+```cpp
 #include "spdlog/sinks/rotating_file_sink.h"
 // 替换 basic_file_sink.h
 …
@@ -5715,7 +5711,7 @@ Clang-Tidy 还是一个比较“重”的工具。它需要有一定的配置，
 
 [Valgrind](https://valgrind.org/) 算是一个老牌工具了。它是一个非侵入式的排错工具。根据 Valgrind 的文档，它会导致可执行文件的速度减慢 20 至 30 倍。但它可以在不改变可执行文件的情况下，只要求你在编译时增加产生调试信息的命令行参数（`-g`），即可查出内存相关的错误。
 
-``` cpp
+```cpp
 int main()
 {
   char* ptr = new char[20];
@@ -5787,7 +5783,7 @@ inoremap <silent> <C-F> <ESC>:pyxf /usr/local/opt/llvm/share/clang/clang-format.
 
 ## const引用减少拷贝
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <iostream>
 #include <vector>
@@ -5817,7 +5813,7 @@ int main()
 
 ## 字符串分割
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <iostream>
 #include <vector>
@@ -5922,7 +5918,7 @@ size: 1 capacity: 10
 
 ## DateTime and UnixTime
 
-``` cpp
+```cpp
 #define _XOPEN_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
@@ -5947,7 +5943,7 @@ int main()
 }
 ```
 
-``` cpp
+```cpp
 int datetime_to_unixtime(std::string &end_time, time_t &expired_time, std::string &errinfo)
 {
     struct tm tm = {0};
@@ -5993,7 +5989,7 @@ refer:
 
 [How do I write a regular expression that matches an IPv4 dotted address?](https://devblogs.microsoft.com/oldnewthing/20060522-08/?p=31113)
 
-``` cpp
+```cpp
 #include <boost/regex.hpp>
 
 /*
@@ -6040,7 +6036,7 @@ void test_regex_ip()
 
 [参考](https://github.com/idealvin/co/blob/master/base/time.h)
 
-``` cpp
+```cpp
 #include "test.h"
 
 std::string ss;
@@ -6050,7 +6046,7 @@ def_case(ss = "");
 def_case(ss = std::to_string(12345678));
 ```
 
-``` cpp
+```cpp
 // test.h
 
 #include "base/def.h"
@@ -6083,7 +6079,7 @@ def_case(ss = std::to_string(12345678));
 
 GCC为内联汇编提供特殊结构，其格式如下。`汇编程序模板`由`汇编指令`组成。`输入操作数`是充当指令输入操作数使用的C表达式。`输出操作数`是将对其执行汇编指令输出的C表达式。内联汇编的重要性体现在它能够灵活操作，而且可以使其输出通过C变量显示出来。因为它具有这种能力，所以"asm"可以用作汇编指令和包含它的C程序之间的接口。**简单内联汇编只包括指令，而扩展内联汇编包括操作数**。
 
-``` asm
+```asm
 asm ( assembler template
 
 : output operands               (optional)
@@ -6119,7 +6115,7 @@ C++ REST SDK（也写作 [cpprestsdk](https://github.com/microsoft/cpprestsdk))�
 >
 > 答案：使用 C++ REST SDK 的话，只需要五十多行有效代码（即使是适配到目前的窄小的手机屏幕上）。
 
-``` cpp
+```cpp
 #include <iostream>
 #ifdef _WIN32
 #include <fcntl.h>

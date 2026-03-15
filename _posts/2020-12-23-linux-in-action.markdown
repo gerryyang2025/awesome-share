@@ -23,7 +23,7 @@ tags:
 * *nix 允许多个文件名指向同一个 inode 号码 (`stat file` 可查看连接数)，即 hard-link；相反 soft-link 不会增加 Links 数目，只会增加新的 inode。
 * 当 filename 包含特殊字符，无法正常 rm 时，可以通过先找到文件的 inode 号码再对其进行 delete。例如：
 
-``` bash
+```bash
 rm -rfi `find -inum 1805121`
 ```
 
@@ -36,7 +36,7 @@ rm -rfi `find -inum 1805121`
 
 The proc filesystem is a pseudo-filesystem which provides an interface to kernel data structures.  It is commonly mounted at `/proc`. Typically, it is mounted automatically by the system, but it can also be mounted manually using a command such as:
 
-``` bash
+```bash
 mount -t proc proc /proc
 ```
 Most of the files in the proc filesystem are read-only, but some files are writable, allowing kernel variables to be changed.
@@ -418,7 +418,7 @@ https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar
 | SIGSTOP | 19 | 暂停
 
 
-``` bash
+```bash
 $ kill -l
  1) SIGHUP       2) SIGINT       3) SIGQUIT      4) SIGILL       5) SIGTRAP
  2) SIGABRT      7) SIGBUS       8) SIGFPE       9) SIGKILL     10) SIGUSR1
@@ -439,8 +439,7 @@ $ kill -l
 
 场景1: 终止浏览器进程
 
-``` bash
-
+```bash
 # kill - 知道具体 PID
 ps aux | grep chrome
 kill 8842 8843 8844
@@ -456,7 +455,7 @@ killall google-chrome-stable
 
 场景2: 安全地终止进程
 
-``` bash
+```bash
 # kill - 需要精确知道 PID，最安全
 kill 1234
 
@@ -471,7 +470,7 @@ killall -i firefox
 
 场景3: 批量操作
 
-``` bash
+```bash
 # 杀死所有 Python 相关进程
 pkill -f "python"
 
@@ -488,7 +487,7 @@ killall -HUP nginx
 场景4: 其他
 
 
-``` bash
+```bash
 > pgrep firefox
 6316
 6565
@@ -504,19 +503,19 @@ ps ax | grep <snippet> | grep -v grep | awk '{print $1}' | xargs kill
 
 `kill -STOP` 命令用于发送一个 STOP 信号给指定的进程。STOP 信号（也称为 SIGSTOP）会导致进程暂停执行，即进程会被挂起（suspended）并停止运行。在收到 STOP 信号后，进程不会继续执行任何操作，直到收到一个 CONT（继续）信号（即 SIGCONT）。
 
-``` bash
+```bash
 kill -STOP <process_id>
 ```
 
 发送 STOP 信号的一个常见用途是暂停一个正在运行的进程，以便在稍后恢复其执行。例如，可能希望暂停一个 CPU 密集型任务，以便在系统负载较低时继续运行。为了恢复暂停的进程，可以使用 `kill -CONT` 命令发送一个 CONT 信号：
 
-``` bash
+```bash
 kill -CONT <process_id>
 ```
 
 ### kill 使用示例
 
-``` bash
+```bash
 # 基本语法
 kill [信号] <PID>
 
@@ -536,7 +535,7 @@ kill $$                      # $$ 表示当前shell的PID
 
 ### pkill 使用示例
 
-``` bash
+```bash
 # 1. 杀死所有 Firefox 进程
 pkill firefox
 
@@ -566,7 +565,7 @@ pkill -g process_group_id
 
 ### killall 使用示例
 
-``` bash
+```bash
 # 1. 杀死所有指定进程
 killall firefox
 
@@ -646,7 +645,7 @@ This version of `ps` accepts several kinds of options:
 
 EXAMPLES
 
-``` bash
+```bash
 # To see every process on the system using standard syntax:
 ps -ef
 
@@ -814,7 +813,7 @@ cpu一行指的是总的CPU信息，cpu0、cpu1、cpu2、cpu3几行指的是CPU�
 
 根据这些信息，就可以计算出CPU使用率。CPU使用率采集算法如下（以CPU0为例）：
 
-``` bash
+```bash
 # 得到cpu0的信息
 cat /proc/stat | grep 'cpu0'
 
@@ -960,7 +959,7 @@ Regarding process-wide sums:
 
 * **RSS** can be (approximately) obtained by summing the `Rss`: entries in smaps
 
-``` bash
+```bash
 # 单位 kB
 awk '/Rss:/{ sum += $2 } END { print sum }' /proc/$pid/smaps
 ```
@@ -1447,7 +1446,7 @@ On a multithreaded application – the signal handler execute in one of the thre
 
 测试程序：
 
-``` cpp
+```cpp
 #include<stdio.h>
 #include<unistd.h>
 #include<pthread.h>
@@ -1527,8 +1526,7 @@ int main()
 
 Compile and run the app, you will see periodic output for each thread:
 
-```
-thread1
+```thread1
 thread2
 thread3
 thread1
@@ -1545,8 +1543,7 @@ Now send a signal to the process using the kill command:
 
 The kernel choose one thread and run the signal handler in its context. In my case thread 1 selected so the output for 10 times is:
 
-```
-signal
+```signal
 thread2
 thread3
 signal
@@ -1561,7 +1558,7 @@ This behaviour can be problematic in case the selected thread is an important ta
 
 We can’t choose the selected thread but we can do a little trick to hack the system to choose the thread we want. The trick is to block the signal on all threads except one thread – the one we want  to run the signal in:
 
-``` cpp
+```cpp
 #include<stdio.h>
 #include<unistd.h>
 #include<pthread.h>
@@ -1655,8 +1652,7 @@ We block the signal on threads 1,2 so the system will deliver the signal to thre
 
 Run the app, send the signal with kill command. The output:
 
-```
-signal
+```signal
 thread1
 thread2
 signal
@@ -1673,7 +1669,7 @@ Inside the kernel, each thread has a `task_struct` object defines in `sched.h`:
 
 All the signals fields are stored per thread. Actually , there is no structure for the process , all the threads on the same process points to the same memory and files tables so the kernel need to choose a thread to deliver the signal to:
 
-``` cpp
+```cpp
 struct task_struct {
 #ifdef CONFIG_THREAD_INFO_IN_TASK
 	/*
@@ -1707,7 +1703,7 @@ struct task_struct {
 
 Another option is to use `pthread_kill(3)` to send a signal directly to a thread. This can be done only in the same process. For example:
 
-``` cpp
+```cpp
 #include<stdio.h>
 #include<unistd.h>
 #include<pthread.h>
@@ -1792,8 +1788,7 @@ int main()
 
 We start with creating 3 threads, then we send a signal to thread 1, wait for the signal handler to finish then send signals both to threads 2 and 3 , they will run the signal handler at the same time so in this case we will see :
 
-```
-signal
+```signal
 signal
 thread1
 ...
@@ -1806,7 +1801,7 @@ thread1
 
 ## clock_getres/clock_gettime/clock_settime
 
-``` cpp
+```cpp
 #include <time.h>
 
 int clock_getres(clockid_t clk_id, struct timespec *res);
@@ -1820,7 +1815,7 @@ The functions `clock_gettime()` and `clock_settime()` retrieve and set the time 
 
 The `res` and `tp` arguments are `timespec` structs, as specified in `<time.h>`:
 
-``` cpp
+```cpp
 struct timespec {
         time_t   tv_sec;        /* seconds */
         long     tv_nsec;       /* nanoseconds */
@@ -1833,7 +1828,7 @@ The `clk_id` argument is the identifier of the particular clock on which to act.
 
 ## pthread_setname_np
 
-``` cpp
+```cpp
 #define _GNU_SOURCE             /* See feature_test_macros(7) */
 #include <pthread.h>
 
@@ -1849,7 +1844,7 @@ By default, all the threads created using `pthread_create()` inherit the program
 
 ## pthread_kill
 
-``` cpp
+```cpp
 #include <signal.h>
 int pthread_kill(pthread_t thread, int sig);
 ```
@@ -1861,7 +1856,7 @@ POSIX.1-2008 recommends that if an implementation detects the use of a thread ID
 
 ## malloc_trim
 
-``` cpp
+```cpp
 #include <malloc.h>
 int malloc_trim(size_t pad);
 ```
@@ -1872,7 +1867,7 @@ The `pad` argument specifies **the amount of free space to leave untrimmed at th
 
 ## madvise
 
-``` cpp
+```cpp
 #include <sys/mman.h>
 int madvise(void *addr, size_t length, int advice);
 ```
@@ -1882,7 +1877,7 @@ The [madvise()](https://man7.org/linux/man-pages/man2/madvise.2.html) system cal
 
 ## [std::thread::hardware_concurrency](https://en.cppreference.com/w/cpp/thread/thread/hardware_concurrency.html)
 
-``` cpp
+```cpp
 // Returns the number of concurrent threads supported by the implementation. The value should be considered only a hint.
 static unsigned int hardware_concurrency() noexcept; // (since C++11)
 ```
@@ -1905,7 +1900,7 @@ The returned value typically corresponds to the number of logical CPU cores, inc
 It is important to note that the value returned by `hardware_concurrency()` **is a hint and not a strict guarantee**. The actual number of threads that can run truly in parallel can be influenced by various factors, including operating system scheduling, other running processes, and the nature of the workload.
 
 
-``` cpp
+```cpp
 #include <iostream>
 #include <thread>
 
@@ -1950,7 +1945,7 @@ More: man top
 
 ### 循环记录某个进程的 CPU 使用率符合某个条件时，输出这个进程所有线程的堆栈信息
 
-``` bash
+```bash
 #!/bin/bash
 
 # @brief 循环记录某个进程的 cpu 使用率符合某个条件时，输出这个进程所有线程的堆栈信息
@@ -1986,7 +1981,7 @@ done
 
 ### 监控某个进程每隔 N 秒刷新一次，共刷新 M 次，并将输出重定向到 top.log 文件中
 
-``` bash
+```bash
 #!/bin/bash
 
 top -Hp 3668452 -d 0.5 -n 3 -b > top.log
@@ -2052,7 +2047,7 @@ ltrace —— A library call tracer （跟踪进程调用库函数的情况）
 
 使用示例：
 
-``` cpp
+```cpp
 #include<stdio.h>
 #include<stdlib.h>
 
@@ -2076,7 +2071,7 @@ Error!
 
 执行该程序报错是因为程序试图打开一般用户没有读权限的 /etc/shadow 文件，但是通过错误消息无法得知这一点。真实的程序也会有错误信息内容不明确、所有地方都显示同样的错误信息的情况，甚至可能什么都不显示。这种情况下，就很难确定错误发生在源代码的什么地方（通过日志信息可以知道最上层调用出错的地方），因此也无法用 GDB 设置断点，此时可以使用 strace 来进一步定位错误。
 
-``` bash
+```bash
 $ strace ./st1
 
 execve("./st1", ["./st1"], [/* 59 vars */]) = 0
@@ -2120,7 +2115,7 @@ Process 22259 detached
 
 Print the instruction pointer at the time of the system call. 给 strace 添加 -i 选项即可显示程序在哪个地址进行了系统调用，可以将该地址作为断点使用，然后使用 GDB 进一步定位问题。各行开头 `[]` 中的数字就是执行系统调用的代码的地址。在 GDB 中可以指定该地址并显示 `backstrace`，例如：`b *0xb7e44d2a`
 
-``` bash
+```bash
 $ strace -i ./st1
 
 [b7e44d2a] execve("./st1", ["./st1"], [/* 59 vars */]) = 0
@@ -2160,7 +2155,7 @@ Attach to the process with the process ID pid and begin tracing. The trace may b
 
 此选项主要用于查看运行中的进程（如守护进程）的行为。将上面的程序做一下修改：
 
-``` cpp
+```cpp
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
@@ -2198,7 +2193,7 @@ ps ux | grep st1
 
 使用 -p 选项跟踪当前正在运行的程序，按 Ctrl-C 键来结束程序。
 
-``` bash
+```bash
 $ strace -p 17673
 
 Process 17673 attached - interrupt to quit
@@ -2250,7 +2245,7 @@ Write the trace output to the file filename rather than to **stderr**. Use filen
 
 `-ff`: If the `-o` filename option is in effect, each processes trace is written to filename.pid where pid is the numeric process id of each process.
 
-``` bash
+```bash
 $ strace -o output.log ./st1
 $ cat output.log
 execve("./st1", ["./st1"], [/* 59 vars */]) = 0
@@ -2261,7 +2256,7 @@ access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
 
 > 注意：strace 的输出为标准错误输出，因此可以像下面这样将显示内容输出到标准输出上，通过管道再传给 grep、less 等。
 
-``` bash
+```bash
 $ strace ./st1 2>&1 | grep open
 
 open("/etc/ld.so.cache", O_RDONLY)      = 3
@@ -2319,7 +2314,7 @@ Note that some shells use the exclamation point for history expansion even insid
 
 只记录 open 的系统调用：
 
-``` cpp
+```cpp
 $ strace -e trace=open ./st1
 
 open("/etc/ld.so.cache", O_RDONLY)      = 3
@@ -2339,7 +2334,7 @@ Error!
 
 例如：
 
-``` bash
+```bash
 strace -s 1024 ./st1
 ```
 
@@ -2349,7 +2344,7 @@ strace -s 1024 ./st1
 
 我们换个角度思考：Unix 下有没有什么命令可以获取进程打开了哪些文件？使用 lsof 命令即可以知道程序打开了哪些文件，也可以了解一个文件被哪个进程打开。（平时工作中很常用，例如，使用 lsof -p PID 来查找某个进程存放的位置）
 
-``` cpp
+```cpp
 #include<stdio.h>
 #include<unistd.h>
 #include<sys/types.h>
@@ -2398,7 +2393,7 @@ lr-x------ 1 gerryyang users 64 2012-03-23 14:14 3 -> /data/home/gerryyang/test/
 
 用 strace 跟踪 lsof 的运行，输出结果保存在 lsof.strace 中。然后通过对 lsof.strace 内容的分析，从而了解到其实现原理是：lsof 利用了 /proc/pid/fd 目录。Linux 内核会为每一个进程在 /proc 建立一个以其 pid 为名的目录用来保存进程的相关信息，而其子目录 fd 保存的是该进程打开的所有文件的 fd。进入 /proc/pid/fd 目录下，发现每一个 fd 文件都是符号链接，而此链接就指向被该进程打开的一个文件。只要用 readlink() 系统调用就可以获取某个 fd 对应的文件了。
 
-``` cpp
+```cpp
 #include<stdio.h>
 #include<string.h>
 #include<sys/types.h>
@@ -2442,7 +2437,7 @@ gcc -Wall -g -o GetPathByFd GetPathByFd.c
 
 ltrace - A library call tracer
 
-``` bash
+```bash
 $ ltrace ./st1
 
 __libc_start_main(0x8048494, 1, 0xbfe4a204, 0x8048500, 0x80484f0 <unfinished ...>
@@ -2540,7 +2535,7 @@ A backtrace is a list of the function calls that are currently active in a threa
 
 The header file `execinfo.h` declares three functions that obtain and manipulate backtraces of the current thread.
 
-``` cpp
+```cpp
 int backtrace (void **buffer, int size)
 ```
 
@@ -2550,7 +2545,7 @@ The pointers placed in buffer are actually return addresses obtained by inspecti
 
 **Note that certain compiler optimizations may interfere with obtaining a valid backtrace**. `Function inlining` causes the inlined function to not have a stack frame; `tail call optimization` replaces one stack frame with another; `frame pointer elimination` will stop backtrace from interpreting the stack contents correctly.
 
-``` cpp
+```cpp
 char ** backtrace_symbols (void *const *buffer, int size)
 ```
 
@@ -2564,7 +2559,7 @@ The return value of `backtrace_symbols` is a pointer obtained via the `malloc` f
 
 The return value is `NULL` if sufficient memory for the strings cannot be obtained.
 
-``` cpp
+```cpp
 void backtrace_symbols_fd (void *const *buffer, int size, int fd)
 ```
 
@@ -2572,7 +2567,7 @@ The `backtrace_symbols_fd` function performs the same translation as the functio
 
 The following program illustrates the use of these functions. Note that the array to contain the return addresses returned by `backtrace` is allocated on the **stack**. Therefore code like this can be used in situations where the memory handling via `malloc` does not work anymore (in which case the `backtrace_symbols` has to be replaced by a `backtrace_symbols_fd` call as well). The number of return addresses is normally not very large. Even complicated programs rather seldom have a nesting level of more than, say, 50 and with 200 possible entries probably all programs should be covered.
 
-``` cpp
+```cpp
 #include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -2613,7 +2608,7 @@ int main()
 测试代码：
 
 
-``` cpp
+```cpp
 #include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -2731,7 +2726,7 @@ The definition of the macro assert depends on another macro, `NDEBUG`, which is 
 * If `NDEBUG` is defined as a macro name at the point in the source code where `<cassert>` is included, then assert does nothing.
 * If `NDEBUG` is not defined, then assert checks if its argument (which must have scalar type) compares equal to zero. If it does, assert outputs implementation-specific diagnostic information on the standard error output and calls `std::abort`. The diagnostic information is required to include the text of expression, as well as the values of the standard macros `__FILE__`, `__LINE__`, and the standard variable `__func__` (since C++11).
 
-``` cpp
+```cpp
 #include <iostream>
 // uncomment to disable assert()
 // #define NDEBUG
@@ -2755,7 +2750,7 @@ Aborted
 */
 ```
 
-``` cpp
+```cpp
 #include <stdio.h>
 #include <exception>
 #include <cassert>
@@ -2816,7 +2811,7 @@ apt-get install binutils
 
 https://linux.die.net/man/1/addr2line
 
-``` bash
+```bash
 $ addr2line -h
 Usage: addr2line [option(s)] [addr(s)]
  Convert addresses into line number/file name pairs.
@@ -2845,7 +2840,7 @@ Report bugs to <http://bugzilla.redhat.com/bugzilla/>
 测试代码：
 
 
-``` cpp
+```cpp
 // backtrace.c
 #include <execinfo.h>
 #include <stdio.h>
@@ -3119,7 +3114,7 @@ devtoolset-8的配置文件路径：/opt/rh/devtoolset-8/root/usr/include/c++/8/
 devtoolset-9的配置文件路径：/opt/rh/devtoolset-9/root/usr/include/c++/9/x86_64-redhat-linux/bits/c++config.h
 ```
 
-``` cpp
+```cpp
 # define _GLIBCXX_USE_DUAL_ABI 1  // 将此值从0改为1
 
 #if ! _GLIBCXX_USE_DUAL_ABI
@@ -3176,13 +3171,13 @@ Options:
 
 `nfsiostat` 是一个用于监视 NFS（Network File System）I/O 性能的命令行工具。它可以显示 NFS 客户端和服务器上的 I/O 统计信息，包括读写操作的数量、传输速率和延迟等。
 
-``` bash
+```bash
 sudo yum install nfs-utils
 ```
 
 显示 NFS 客户端上的 I/O 统计信息，包括读写操作的数量、传输速率和延迟等。
 
-``` bash
+```bash
 $nfsiostat
 
 9.134.56.11:/data1/share/tlinux mounted on /tools:
@@ -3228,62 +3223,62 @@ tcpdump - dump traffic on a network
 
 (1) 捕获指定源地址和目的地址及端口
 
-``` bash
+```bash
 tcpdump -Xns0 -i eth1 src 172.27.198.179 and dst 10.130.73.95 and dst port 30007 -c10
 ```
 
 (2) 捕获不区分源地址和目的地址
 
-``` bash
+```bash
 tcpdump -Xns0 -i eth1 host 172.27.198.179 and 10.130.73.95 and  port 30007 -c10
 ```
 
 (3) 只捕获本机指定端口的数据包
 
-``` bash
+```bash
 tcpdump -Xns0 -i eth1 port 30007
 ```
 
 (4) 捕获所有172.27.198.179的主机收到的和发出的所有的数据包
 
-``` bash
+```bash
 tcpdump host 172.27.198.179
 ```
 
 (5) 捕获（在任意网卡）指定地址和端口的数据包
 
-``` bash
+```bash
 tcpdump -i any -Xns0  host 172.27.198.179 and port 30007 -c 10
 ```
 
 (6) 捕获主机172.27.198.179和主机172.27.198.169或10.130.73.95的数据包，注意在命令行中适用括号时，一定要转义
 
-``` bash
+```bash
 tcpdump host 172.27.198.179 and \ (172.27.198.169 or 10.130.73.95\) and port 30007 -c10
 ```
 
 (7) 捕获主机172.27.198.179除了和主机10.130.73.95之外所有主机通信的IP数据包，注意!后面要有一个空格
 
-``` bash
+```bash
 tcpdump ip host 172.27.198.179 and ! 10.130.73.95
 ```
 
 (8) 捕获主机172.27.198.179接收或发出的telnet数据包
 
-``` bash
+```bash
 tcpdump tcp port 23 and host 172.27.198.179
 ```
 
 (9) 将捕获的数据包保存在文件中，进行后续分析
 
-``` bash
+```bash
 tcpdump -Xns0 host 172.27.198.179 -w 179.cap
 tcpdump -r 179.cap
 ```
 
 (10) 只显示具体的协议，不显示包体内容
 
-``` bash
+```bash
 # -S 打印 TCP 数据包的顺序号时，使用绝对的顺序号，而不是相对的顺序号
 # -nn 表示不进行端口到名称的转换
 # -vvv 表示产生尽可能详细的协议输出
@@ -3295,7 +3290,7 @@ tcpdump -S -nn -vvv -i lo port 6888
 
 (11) 将 tcpdump 的输出保存到文件，记录 3 分钟的数据
 
-``` bash
+```bash
 tcpdump -Xns0 -iany port 4318 -w output.pcap &
 sleep 30
 
@@ -3307,7 +3302,7 @@ kill $!
 
 方法1: 使用 tcpdump 查看
 
-``` bash
+```bash
 # -r file
 #    Read packets from file (which was created with the -w option or by other tools that write pcap or pcap-ng files).  Standard input is used if file is ``-''.
 tcpdump -r output.pcap
@@ -3323,7 +3318,7 @@ A terminal UI for tshark, inspired by Wireshark
 
 https://github.com/gcla/termshark
 
-``` bash
+```bash
 # 安装依赖
 yum install wireshark
 ```
@@ -3349,19 +3344,19 @@ yum install wireshark
 
 在本地启动一个监听 TCP 端口 `8080` 的 `netcat` 服务，并将接收到的数据输出到终端
 
-``` bash
+```bash
 nc -l 8080
 ```
 
 在本地计算机上启动一个监听 TCP 端口 `8080` 的 `netcat` 服务，并将接收到的数据保存到名为 `received_data.txt` 的文件
 
-``` bash
+```bash
 nc -l 8080 > received_data.txt
 ```
 
 返回指定的应答内容
 
-``` bash
+```bash
 #!/bin/bash
 nc -l 8080 < response.txt
 ```
@@ -3377,13 +3372,13 @@ Content-Length: 29
 
 连接到名为 `remote.host.com` 的远程主机上的 TCP 端口 `8080`，并向其发送字符串 `"Hello, World!"`
 
-``` bash
+```bash
 echo "Hello, World!" | nc remote.host.com 8080
 ```
 
 将连接到名为 `remote.host.com` 的远程主机上的 TCP 端口 `8080`，并从名为 `data_to_send.txt` 的文件中读取数据并将其发送到远程主机
 
-``` bash
+```bash
 nc remote.host.com 8080 < data_to_send.txt
 ```
 
@@ -3392,7 +3387,7 @@ nc remote.host.com 8080 < data_to_send.txt
 
 列出系统中已安装的所有动态库及其版本信息
 
-``` bash
+```bash
 ldconfig -p
 ```
 
@@ -3421,7 +3416,7 @@ Done.
 
 ### 按文件层级拷贝文件
 
-``` bash
+```bash
 # 将 /a/b/file.txt 文件保持目录层级复制到 tmp 目录下
 mkdir -p tmp
 rsync -avz --relative ./a/b/file.txt tmp
@@ -3436,7 +3431,7 @@ rsync -avz --relative ./a/b/file.txt tmp
 
 可以使用 rsync 命令来实现这个需求。rsync 是一个在本地和远程之间进行文件和目录同步的工具，可以根据文件的修改时间和内容来决定是否拷贝。
 
-``` bash
+```bash
 #!/bin/bash
 
 # 源目录
@@ -3502,7 +3497,7 @@ $ echo $?
 
 当使用`command -v`查询一个命令时，如果该命令存在于系统中，它会输出该命令的路径；如果命令不存在，它不会输出任何内容。
 
-``` bash
+```bash
 # Check if Bazelisk is already installed
 if command -v bazel &> /dev/null; then
     echo "Bazelisk is already installed, version: $(bazel --version)"
@@ -3528,7 +3523,7 @@ LD_DEBUG=libs LD_DEBUG_OUTPUT=log ./bin
 
 在 Linux 中可以通过 `errno` 命令来查看错误码对应的错误信息，在 centos 系统中可以通过下面方式安装。
 
-``` bash
+```bash
 yum install moreutils
 ```
 
@@ -3677,7 +3672,7 @@ ENOTSUP 95 Operation not supported
 
 C标准 定义了两个函数，用于打印出错信息：
 
-``` cpp
+```cpp
 char *strerror(int errnum);
 void perror(const char *s);
 ```
@@ -3687,7 +3682,7 @@ void perror(const char *s);
 
 下面代码用于显示 errno 对应的错误信息：
 
-``` cpp
+```cpp
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -3777,7 +3772,7 @@ second setsockopt() worked
 
 ## nproc
 
-``` bash
+```bash
 # 显示当前进程可用的CPU数量
 nproc
 
@@ -3811,14 +3806,14 @@ GNU parallel can work similar to `xargs -n1`.
 
 To compress all html files using `gzip` run:
 
-``` bash
+```bash
 find . -name '*.html' | parallel gzip --best
 ```
 > Reading arguments from command line
 
 GNU `parallel` can take the arguments from command line instead of `stdin` (standard input). To compress all html files in the current dir using `gzip` run:
 
-``` bash
+```bash
 parallel gzip --best ::: *.html
 ```
 
@@ -3828,13 +3823,13 @@ If there is no command given to GNU parallel, then the arguments are treated as 
 
 To run `gzip foo` and `bzip2 bar` in parallel run:
 
-``` bash
+```bash
 parallel ::: "gzip foo" "bzip2 bar"
 ```
 
 or:
 
-``` bash
+```bash
 (echo "gzip foo"; echo "bzip2 bar") | parallel
 ```
 
@@ -3848,13 +3843,13 @@ bash: /bin/mv: Argument list too long
 
 because there are too many files. You can instead do:
 
-``` bash
+```bash
 ls | grep -E '\.log$' | parallel mv {} destdir
 ```
 
 This will run mv for each file. It can be done faster if mv gets as many arguments that will fit on the line:
 
-``` bash
+```bash
 ls | grep -E '\.log$' | parallel -m mv {} destdir
 ```
 
@@ -3862,12 +3857,12 @@ ls | grep -E '\.log$' | parallel -m mv {} destdir
 
 A job can consist of several commands. This will print the number of files in each directory:
 
-``` bash
+```bash
 # 查看当前目录的文件个数，不包括子目录
 ls | parallel --no-notice 'echo -n {}" "; ls {}|wc -l'
 ```
 
-``` bash
+```bash
 # 查看当前目录的文件个数，包括子目录
 ls | parallel --no-notice 'echo -n {}" "; find {} -type f |wc -l'
 ```
@@ -3876,7 +3871,7 @@ ls | parallel --no-notice 'echo -n {}" "; find {} -type f |wc -l'
 
 To test a program with different parameters:
 
-``` bash
+```bash
 tester() {
   if (eval "$@") >&/dev/null; then
     perl -e 'printf "\033[30;102m[ OK ]\033[0m @ARGV\n"' "$@"
@@ -3896,7 +3891,7 @@ If `my_program` fails a red FAIL will be printed followed by the failing command
 
 Log rotation renames a logfile to an extension with a higher number: log.1 becomes log.2, log.2 becomes log.3, and so on. The oldest log is removed. To avoid overwriting files the process starts backwards from the high number to the low number. This will keep 10 old versions of the log:
 
-``` bash
+```bash
 seq 9 -1 1 | parallel -j1 mv log.{} log.'{= $_++ =}'
 mv log log.1
 ```
@@ -3905,7 +3900,7 @@ mv log log.1
 
 `prips` can generate IP-addresses from CIDR notation. With GNU `parallel` you can build a simple network scanner to see which addresses respond to `ping`:
 
-``` bash
+```bash
 prips 130.229.16.0/20 | \
   parallel --timeout 2 -j0 \
     'ping -c 1 {} >/dev/null && echo {}' 2>/dev/null
@@ -3917,7 +3912,7 @@ prips 130.229.16.0/20 | \
 
 例如：
 
-``` bash
+```bash
 ls | parallel --no-notice 'echo -n {}" "; find {} -type f | wc -l'
 ```
 
@@ -4101,7 +4096,7 @@ atop -r atop_20230827
 方法1: 调整 atop 配置。如果可能，可以调整 atop 的配置，减少采样频率或者采样的信息量，以减少进程记账文件的大小。
 方法2: 监控文件大小。可以创建一个简单的脚本，定期检查 atop.acct 文件的大小。如果文件大小超过预设的阈值，可以清空文件。例如：实现下面的脚本 check_atop_acct.sh，并通过 cron 定时执行此脚本。
 
-``` bash
+```bash
 #!/bin/bash
 FILE="/var/cache/atop.d/atop.acct"
 MAX_SIZE=$((200 * 1024 * 1024)) # 设定最大文件大小为 200 MiB
@@ -4201,7 +4196,7 @@ Options:
 
 `.gz` is a gzipped file and is not related to `tar`. To unzip a gzipped file you use the `gunzip` command.
 
-``` bash
+```bash
 gunzip filename.vw.gz
 ```
 
@@ -4347,7 +4342,7 @@ This is not a comprehensive list of all utilities that existed in the various hi
 
 ## ls 根据文件大小倒序排序
 
-``` bash
+```bash
 ls -lSh
 ```
 
@@ -4388,7 +4383,7 @@ I haven't done development on Windows, but perhaps you could get further details
 
 I received a `SIGTRAP` from my debugger and found out that the cause was due to a missing return value.
 
-``` cpp
+```cpp
 string getName() { printf("Name!");};
 ```
 

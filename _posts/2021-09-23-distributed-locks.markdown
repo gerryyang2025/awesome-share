@@ -67,7 +67,7 @@ We need to use a fencing token which is incremented each time a microservice acq
 * 优点：实现简单。
 * 缺点：不会自动释放锁，性能受数据库限制。
 
-``` cpp
+```cpp
 // 获取锁
 int lock() {
     return sql.exec("insert into t_dlm(f_oid, f_remark) values('1', 'task1')");
@@ -148,7 +148,7 @@ Redis的主从同步（replication）是异步进行的，如果向master发送�
 
 因此，**一个客户端设置的锁，必须由自己解开**。客户端需要先使用`GET`命令确认锁是不是自己设置的，然后再使用`DEL`解锁。在Redis中通常需要用Lua脚本来实现自锁自解：
 
-``` lua
+```lua
 if redis.call("get", KEYS[1]) == ARGV[1] then
     return redis.call("del", KEYS[1])
 else
@@ -160,7 +160,7 @@ end
 
 当客户端发现在锁的租期内无法完成操作时，就需要延长锁的持有时间，进行续租（renew）。同解锁一样，客户端应该只能续租自己持有的锁。在Redis中可使用如下Lua脚本来实现续租：
 
-``` lua
+```lua
 if redis.call("get", KEYS[1]) == ARGV[1] then
     return redis.call("expire", KEYS[1], ARGV[2])
 else

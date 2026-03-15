@@ -87,7 +87,7 @@ refer: [深入探索C++17：资源管理新机制与 std::pmr 命名空间, 详�
 
 突破标准的性能取舍，示例：尺寸无关删除 (`Sized Delete`)
 
-``` cpp
+```cpp
 // 标准行为：需查询对象尺寸
 delete ptr;
 
@@ -110,7 +110,7 @@ operator delete(ptr, size); // 非标准但高效
 
 可观测性增强：
 
-``` cpp
+```cpp
 // 通过 MallocExtension 获取内部指标
 auto metrics = tcmalloc::MallocExtension::GetProperties();
 cout << "堆内存: "
@@ -624,7 +624,7 @@ application with frame pointers (via 'gcc -fno-omit-frame-pointer
 
 Once you've verified you have TCMalloc installed correctly, you can compile and run the [tcmalloc-hello](https://github.com/google/tcmalloc/blob/master/tcmalloc/testing/hello_main.cc) sample binary to see how TCMalloc is linked into a sample binary. This tiny project features proper configuration and a simple `hello_main` to demonstrate how TCMalloc works.
 
-``` cpp
+```cpp
 #include <iostream>
 #include <memory>
 #include <string>
@@ -875,7 +875,7 @@ See more: https://github.com/google/tcmalloc/blob/master/docs/stats.md
 
 # 测试代码
 
-``` cpp
+```cpp
 #include <iostream>
 #include <chrono>
 #include <cstdlib>
@@ -950,7 +950,7 @@ The primary goal of this project is to define a portable and efficient C program
 
 使用 `LD_PRELOAD` 运行程序：在运行程序时，设置 `LD_PRELOAD` 环境变量以加载 `libtcmalloc.so`
 
-``` bash
+```bash
 LD_PRELOAD=/path/to/libtcmalloc.so your_program
 ```
 
@@ -1065,7 +1065,7 @@ The size of the **per-cpu caches** is controlled by `tcmalloc::MallocExtension::
 
 缓存大小控制 API:
 
-``` cpp
+```cpp
 // 设置单个 CPU 核的缓存上限（单位：字节）
 tcmalloc::MallocExtension::SetMaxPerCpuCacheSize(size_t size);
 
@@ -1079,14 +1079,14 @@ Releasing memory held by unuable CPU caches is handled by `tcmalloc::MallocExten
 
 后台自动回收：
 
-``` cpp
+```cpp
 // 触发后台回收（定期自动调用，无需手动执行）
 tcmalloc::MallocExtension::ProcessBackgroundActions();
 ```
 
 In contrast `tcmalloc::MallocExtension::SetMaxTotalThreadCacheBytes` controls the total size of all thread caches in the application.
 
-``` cpp
+```cpp
 // 设置所有线程缓存的总大小上限（单位：字节）
 tcmalloc::MallocExtension::SetMaxTotalThreadCacheBytes(size_t size);
 ```
@@ -1115,14 +1115,14 @@ tcmalloc::MallocExtension::SetMaxTotalThreadCacheBytes(size_t size);
 
 3. 扩容缓存的条件
 
-``` python
+```python
 if (应用内存 > 1GiB and TCMalloc CPU耗时占比高) or (突发高频分配场景):
     适当增加 MaxPerCpuCacheSize  # 建议每次增加 25%
 ```
 
 4. 缩容缓存的条件
 
-``` python
+```python
 if (内存敏感型应用) and (监控显示缓存利用率 < 60%):
     逐步减小 MaxPerCpuCacheSize  # 优先尝试降低 15-20%
 ```
@@ -1145,7 +1145,7 @@ if (内存敏感型应用) and (监控显示缓存利用率 < 60%):
 
 主动释放内存 API：
 
-``` cpp
+```cpp
 // 请求 TCMalloc 向操作系统释放指定字节数的内存
 tcmalloc::MallocExtension::ReleaseMemoryToSystem(size_t n);
 ```
@@ -1163,7 +1163,7 @@ Using a background thread running `tcmalloc::MallocExtension::ProcessBackgroundA
 
 后台自动释放机制：
 
-``` cpp
+```cpp
 // 后台线程定期执行内存回收（默认启用）
 tcmalloc::MallocExtension::ProcessBackgroundActions();
 ```
@@ -1343,7 +1343,7 @@ cpp_throw_oom异常表示内存分配失败，但这并不一定意味着物理�
 
 在tcmalloc的源代码中，`allocate_full_cpp_throw_oom`函数的实现如下：
 
-``` cpp
+```cpp
 void TCMallocImplementation::allocate_full_cpp_throw_oom(size_t size) {
   if (IsCppThrowHandlerRegistered()) {
     GetCppThrowHandler()(size);
@@ -1361,7 +1361,7 @@ void TCMallocImplementation::allocate_full_cpp_throw_oom(size_t size) {
 
 `DefaultCppThrowHandler`函数的实现如下：
 
-``` cpp
+```cpp
 ABSL_ATTRIBUTE_NORETURN void DefaultCppThrowHandler(size_t size) {
   // Check if we should call the new_handler first.
   std::new_handler nh = std::get_new_handler();
@@ -1390,7 +1390,7 @@ ABSL_ATTRIBUTE_NORETURN void DefaultCppThrowHandler(size_t size) {
 
 在tcmalloc的源代码中，`allocate_full_malloc_oom`函数的实现如下：
 
-``` cpp
+```cpp
 void* TCMallocImplementation::allocate_full_malloc_oom(size_t size) {
   // If TCMalloc is not allowed to release memory to the system, we
   // can't really do anything here.
@@ -1423,7 +1423,7 @@ Use `TCMALLOC_STACKTRACE_METHOD` environment variable to select backtracing impl
 
 The simplest way to see the list of available backtracing options on your system is by running "TCMALLOC_STACKTRACE_METHOD_VERBOSE=t ./stacktrace_unittest."
 
-``` bash
+```bash
 $ TCMALLOC_STACKTRACE_METHOD_VERBOSE=t ./a.out
 Chosen stacktrace method is generic_fp
 Supported methods:

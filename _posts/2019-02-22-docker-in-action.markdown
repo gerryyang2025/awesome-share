@@ -57,7 +57,7 @@ Docker底层是基于成熟的`Linux Container(LXC)`技术实现。自Docker 0.9
 
 https://docs.docker.com/engine/reference/commandline/build/
 
-``` bash
+```bash
 docker build -t vieux/apache:2.0 .
 ```
 
@@ -214,7 +214,7 @@ I try to locate one specific tag for a Docker image. How can I do it on the comm
 
 Answers:
 
-``` bash
+```bash
 #!/usr/bin/bashs
 
 # docker_remote_tags.sh

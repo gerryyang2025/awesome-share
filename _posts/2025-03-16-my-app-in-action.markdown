@@ -67,7 +67,7 @@ tags:
     3. 含完整文档/案例
 + 输出格式
 
-``` json
+```json
 {
   "project_name": "",
   "description": "",
@@ -97,7 +97,7 @@ tags:
 
 + 输出样例
 
-``` markdown
+```markdown
 ## [论文标题]
 **评分**：★★★★☆ (4.2/5)
 **核心贡献**：

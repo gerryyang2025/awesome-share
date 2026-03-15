@@ -323,7 +323,7 @@ Let’s explore this with three units of work, represented as [Spans](https://op
 
 `hello` span:
 
-``` json
+```json
 {
   "name": "hello",
   "context": {
@@ -352,7 +352,7 @@ This is the root span, denoting the beginning and end of the entire operation. N
 
 `hello-greetings` span:
 
-``` json
+```json
 {
   "name": "hello-greetings",
   "context": {
@@ -388,7 +388,7 @@ This span encapsulates specific tasks, like saying greetings, and its parent is 
 
 `hello-salutations` span:
 
-``` json
+```json
 {
   "name": "hello-salutations",
   "context": {
@@ -474,7 +474,7 @@ The following section explains the differences between structured, unstructured,
 
 A structured log is a log whose textual format follows a consistent, machine-readable format. For applications, one of the most common formats is JSON:
 
-``` json
+```json
 {
   "timestamp": "2024-08-04T12:34:56.789Z",
   "level": "INFO",
@@ -519,7 +519,7 @@ and for infrastructure components, Common Log Format (CLF) is commonly used:
 
 It is also common to have different structured log formats mixed together. For example, an Extended Log Format (ELF) log can mix JSON with the whitespace-separated data in a CLF log.
 
-``` json
+```json
 192.168.1.1 - johndoe [04/Aug/2024:12:34:56 -0400] "POST /api/v1/login HTTP/1.1" 200 1234 "http://example.com" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36" {"transactionId": "abcd-efgh-ijkl-mnop", "responseTime": 150, "requestBody": {"username": "johndoe"}, "responseHeaders": {"Content-Type": "application/json"}}
 ```
 

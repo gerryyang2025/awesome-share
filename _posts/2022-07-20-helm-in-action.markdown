@@ -67,8 +67,7 @@ See the [installation guide](https://helm.sh/docs/intro/install/) for more optio
 使用 `helm create mychart` 创建一个名为 `mychart` 的示例，再使用 `tree mychart` 命令看一下 chart 的目录结构。
 
 
-```
-mychart
+```mychart
 ├── Chart.yaml
 ├── charts                      # 该目录保存其他依赖的 chart（子 chart）
 ├── templates                   # chart 配置模板，用于渲染最终的 Kubernetes YAML 文件
@@ -120,13 +119,13 @@ For more details, or for other options, see [the installation guide](https://hel
 
 Once you have Helm ready, you can add a chart repository. Check [Artifact Hub](https://artifacthub.io/packages/search?kind=0) for available Helm chart repositories.
 
-``` bash
+```bash
 $ helm repo add bitnami https://charts.bitnami.com/bitnami
 ```
 
 Once this is installed, you will be able to list the charts you can install:
 
-``` bash
+```bash
 $ helm search repo bitnami
 NAME                             	CHART VERSION	APP VERSION  	DESCRIPTION
 bitnami/bitnami-common           	0.0.9        	0.0.9        	DEPRECATED Chart with custom templates used in ...
@@ -140,7 +139,7 @@ bitnami/aspnet-core              	1.2.3        	3.1.9        	ASP.NET Core is an
 
 To install a chart, you can run the `helm install` command. Helm has several ways to find and install a chart, but the easiest is to use the bitnami charts.
 
-``` bash
+```bash
 $ helm repo update              # Make sure we get the latest list of charts
 $ helm install bitnami/mysql --generate-name
 NAME: mysql-1612624192
@@ -165,7 +164,7 @@ The `helm install` command is a very powerful command with many capabilities. To
 
 It's easy to see what has been released using Helm:
 
-``` bash
+```bash
 $ helm list
 NAME            	NAMESPACE	REVISION	UPDATED                             	STATUS  	CHART      	APP VERSION
 mysql-1612624192	default  	1       	2021-02-06 16:09:56.283059 +0100 CET	deployed	mysql-8.3.0	8.0.23
@@ -177,7 +176,7 @@ The `helm list` (or `helm ls`) function will show you a list of all deployed rel
 
 To uninstall a release, use the `helm uninstall` command:
 
-``` bash
+```bash
 $ helm uninstall mysql-1612624192
 release "mysql-1612624192" uninstalled
 ```
@@ -186,7 +185,7 @@ This will uninstall `mysql-1612624192` from Kubernetes, which will remove all re
 
 If the flag `--keep-history` is provided, release history will be kept. You will be able to request information about that release:
 
-``` bash
+```bash
 $ helm status mysql-1612624192
 Status: UNINSTALLED
 ...
@@ -198,7 +197,7 @@ Because Helm tracks your releases even after you've uninstalled them, you can au
 
 To learn more about the available Helm commands, use `helm help` or type a command followed by the `-h` flag:
 
-``` bash
+```bash
 $ helm get -h
 ```
 

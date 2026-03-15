@@ -886,7 +886,7 @@ int main()
 
 > 若为private且提供了实现，则通过friend的方式仍然可以实现复制。
 
-``` cpp
+```cpp
 #include<iostream>
 #include<string>
 
@@ -1096,7 +1096,7 @@ derived()
 >
 > *观点3*：**标准库string不含任何virtual函数，但有时程序员会错误地把它当做base class**。那么，当你在程序任意某处无意间将一个`pointer-to-specialstring`转换为一个`pointer-to-string`，然后将转换所得的那个`string指针`delete掉，则立刻被流放到"不明确行为上"。很不幸C++目前没有提供类似Java的`final classes`禁止派生的机制。
 
-``` cpp
+```cpp
 #include <iostream>
 #include <string>
 

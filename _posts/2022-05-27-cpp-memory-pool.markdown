@@ -31,7 +31,7 @@ Linux 系统在装载 `elf` 格式的程序文件时，会调用 loader 把可�
 在 64 位模式下各个区域的起始位置是什么呢？对于 AMD64 系统，内存布局采用经典内存布局，`text` 的起始地址为 `0x0000000000400000`，堆紧接着 `BSS` 段向上增长，mmap 映射
 区域开始位置一般设为 `TASK_SIZE/3`。
 
-``` c
+```c
 #define TASK_SIZE_MAX ((1UL << 47) - PAGE_SIZE)
 #define TASK_SIZE (test_thread_flag(TIF_IA32) ? \
  IA32_PAGE_OFFSET : TASK_SIZE_MAX)
@@ -74,7 +74,7 @@ Heap 操作函数主要有两个，`brk()` 为系统调用，`sbrk()` 为 C 库�
 
 `mmap()` 函数将一个文件或者其它对象映射进内存。文件被映射到多个页上，如果文件的大小不是所有页的大小之和，最后一个页不被使用的空间将会清零。`munmap` 执行相反的操作，删除特定地址区域的对象映射。
 
-``` c
+```c
 #include <sys/mman.h>
 void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
 int munmap(void *addr, size_t length);
@@ -325,7 +325,7 @@ MiniMalloc 算法，主要关注于解决静态内存分配过程中的内存布
 
 # [malloc / free / calloc / realloc / reallocarray](https://man7.org/linux/man-pages/man3/malloc.3.html) -  allocate and free dynamic memory
 
-``` c
+```c
 #include <stdlib.h>
 
 void *malloc(size_t size);
@@ -392,7 +392,7 @@ be successfully passed to `free()`.
 If the multiplication of **nmemb** and **size** would result in integer overflow, then `calloc()` returns an error. By contrast, an
 integer overflow would not be detected in the following call to `malloc()`, with the result that an incorrectly sized block of memory would be allocated:
 
-``` c
+```c
 malloc(nmemb * size);
 ```
 
@@ -413,13 +413,13 @@ Unless **ptr** is NULL, it must have been returned by an earlier call to malloc 
 
 The `reallocarray()` function changes the size of (and possibly moves) the memory block pointed to by ptr to be large enough for an array of nmemb elements, each of which is size bytes. It is equivalent to the call
 
-``` c
+```c
 realloc(ptr, nmemb * size);
 ```
 
 However, unlike that `realloc()` call, `reallocarray()` fails safely in the case where the multiplication would overflow. If such an overflow occurs, `reallocarray()` returns an error.
 
-``` c
+```c
 #include <err.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -458,7 +458,7 @@ my_mallocarray(size_t nmemb, size_t size)
 
 `mallopt()` 函数用于设置 glibc 内存分配器（ptmalloc）的参数。以下是一个简单的使用示例，展示了如何使用 `mallopt()` 设置内存分配器的参数。
 
-``` c
+```c
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -501,7 +501,7 @@ int main() {
 
 # [brk, sbrk](https://man7.org/linux/man-pages/man2/brk.2.html) - change data segment size
 
-``` c
+```c
 #include <unistd.h>
 
 int brk(void *addr);
@@ -523,7 +523,7 @@ void *sbrk(intptr_t increment);
 
 ## 代码示例
 
-``` c
+```c
 #include <stdio.h>
 #include <unistd.h>
 
@@ -565,7 +565,7 @@ Final program break: 0x1125000
 
 # [mmap](https://man7.org/linux/man-pages/man2/mmap.2.html) - map or unmap files or devices into memory
 
-``` c
+```c
 #include <sys/mman.h>
 
 void *mmap(void addr[.length], size_t length, int prot, int flags, int fd, off_t offset);
@@ -581,7 +581,7 @@ int munmap(void addr[.length], size_t length);
 
 The following program prints part of the file specified in its first command-line argument to standard output. The range of bytes to be printed is specified via offset and length values in the second and third command-line arguments. The program creates a memory mapping of the required pages of the file and then uses [write(2)](https://man7.org/linux/man-pages/man2/write.2.html) to output the desired bytes.
 
-``` c
+```c
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -659,7 +659,7 @@ main(int argc, char *argv[])
 
 `madvise()` 函数用于向内核提供关于程序如何使用内存映射区域的建议。
 
-``` c
+```c
 #include <sys/mman.h>
 
 int madvise(void addr[.length], size_t length, int advice);
@@ -701,7 +701,7 @@ The advice is indicated in the **advice** argument, which is one of the followin
 ## 代码示例
 
 
-``` c
+```c
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -784,7 +784,7 @@ hello
 
 # [malloc_info](https://man7.org/linux/man-pages/man3/malloc_info.3.html) - export malloc state to a stream
 
-``` c
+```c
 #include <malloc.h>
 
 int malloc_info(int options, FILE *stream);
@@ -813,7 +813,7 @@ On success, `malloc_info()` returns 0.  On failure, it returns -1, and `errno` i
 
 这个程序的目的是展示多线程环境下内存分配的状态，以及如何使用 `malloc_info()` 函数来查看内存分配情况。通过观察 `malloc_info()` 的输出，可以了解程序中不同线程的内存使用情况，并分析内存分配器的工作原理。这对于优化内存使用和排查内存相关问题非常有帮助。
 
-``` cpp
+```cpp
 #include <err.h>
 #include <errno.h>
 #include <malloc.h>
@@ -966,7 +966,7 @@ simultaneously allocated using [mmap(2)](https://man7.org/linux/man-pages/man2/m
 
 ## 代码示例
 
-``` c
+```c
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -1075,7 +1075,7 @@ max mmap bytes   =   10526720
 
 添加 malloc_trim 测试回收 glibc 缓存：
 
-``` c
+```c
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -1164,7 +1164,7 @@ max mmap bytes   =          0
 
 # [malloc_trim](https://man7.org/linux/man-pages/man3/malloc_trim.3.html) - release free memory from the heap
 
-``` c
+```c
 #include <malloc.h>
 
 int malloc_trim(size_t pad);
@@ -1202,7 +1202,7 @@ malloc_trim() 函数的释放原理如下：
 
 ## 代码示例
 
-``` c
+```c
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -1378,7 +1378,7 @@ malloc_info after malloc_trim():
 
 代码示例：
 
-``` cpp
+```cpp
 #include <cstdlib>
 #include <new>
 #include <limits>
@@ -1447,7 +1447,7 @@ Dealloc: 64 bytes at 0x2023c60
 
 # 问题描述
 
-``` cpp
+```cpp
 #include <iostream>
 
 class A
@@ -1505,7 +1505,7 @@ pB: 0x8fbed0
 
 ## 问题描述
 
-``` cpp
+```cpp
 class Base;
 class Derived;
 
@@ -1519,7 +1519,7 @@ MY_DELETE(Derived(b)); // ok，需要显式转换为子类类型
 
 例子：显示调用子类 MY_DELETE_IGNORE_VIRTUAL(obj2)，即，Derived(b)的形式，可以不依赖虚函数
 
-``` cpp
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -1691,7 +1691,7 @@ Recycle ptr: 0x1d72a80, size: 32
 
 此方案不可行。因为在多继承场景下，基类指针会发生偏移，无法根据子类的指针计算得到 pBase。例如：动态申请 C 的地址为 c，即 pBase == c。将 c 赋值给 b 后，b 的指针会发生偏移。若通过 MY_DELETE(b) 的方式，只能获取基类的大小，导致释放的内存空间不正确（即，传入的释放地址不正确）。
 
-``` cpp
+```cpp
     // struct C : public A, public B
     C* c = new C;
     A* a = c;
@@ -1712,7 +1712,7 @@ Recycle ptr: 0x1d72a80, size: 32
 
 通过基类指针调用子类的`Get`函数获取子类的大小和地址。
 
-``` cpp
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -1840,7 +1840,7 @@ B::VirtualDeleteInfo
 
 多继承场景：C -> A, B
 
-``` cpp
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -2000,7 +2000,7 @@ C::VirtualDeleteInfo
 
 解决方法：编译器检查。通过`SFINAE`模版推导的方式，检查类中是否定义了某个成员函数，若存在函数定义，则可以支持业务直接传父类指针进行销毁；若不存在函数定义，则忽略函数调用，由分配器底层进行校验检查。
 
-``` cpp
+```cpp
 #include <iostream>
 #include <type_traits>
 

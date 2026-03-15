@@ -62,7 +62,7 @@ A [Bazel workspace](https://docs.bazel.build/versions/main/build-ref.html#worksp
 
 First, create a directory for your workspace:
 
-``` bash
+```bash
 $ mkdir my_workspace && cd my_workspace
 ```
 
@@ -82,7 +82,7 @@ Now you’re ready to build C++ code that uses **GoogleTest**.
 
 With your Bazel workspace set up, you can now use **GoogleTest** code within your own project. As an example, create a file named `hello_test.cc` in your `my_workspace` directory with the following contents:
 
-``` cpp
+```cpp
 #include <gtest/gtest.h>
 
 // Demonstrate some basic assertions.
@@ -180,7 +180,7 @@ CMake uses a file named `CMakeLists.txt` to configure the build system for a pro
 
 First, create a directory for your project:
 
-``` bash
+```bash
 mkdir my_project && cd my_project
 ```
 
@@ -214,7 +214,7 @@ With GoogleTest declared as a dependency, you can use GoogleTest code within you
 
 As an example, create a file named `hello_test.cc` in your `my_project` directory with the following contents:
 
-``` cpp
+```cpp
 #include <gtest/gtest.h>
 
 // Demonstrate some basic assertions.
@@ -331,7 +331,7 @@ Since a failed `ASSERT_*` returns from the current function immediately, possibl
 
 To provide a custom failure message, simply stream it into the macro using the `<< operator` or a sequence of such operators. See the following example, using the [ASSERT_EQ and EXPECT_EQ macros](https://google.github.io/googletest/reference/assertions.html#EXPECT_EQ) to verify value equality:
 
-``` cpp
+```cpp
 ASSERT_EQ(x.size(), y.size()) << "Vectors x and y are of unequal length";
 
 for (int i = 0; i < x.size(); ++i) {
@@ -352,7 +352,7 @@ To create a test:
 2. In this function, along with any valid C++ statements you want to include, use the various googletest assertions to check values.
 3. The test’s result is determined by the assertions; if any assertion in the test fails (either fatally or non-fatally), or if the test crashes, the entire test fails. Otherwise, it succeeds.
 
-``` cpp
+```cpp
 TEST(TestSuiteName, TestName) {
     // ... test body ...
 }
@@ -362,13 +362,13 @@ TEST(TestSuiteName, TestName) {
 
 For example, let’s take a simple integer function:
 
-``` cpp
+```cpp
 int Factorial(int n);  // Returns the factorial of n
 ```
 
 A test suite for this function might look like:
 
-``` cpp
+```cpp
 // Tests factorial of 0.
 TEST(FactorialTest, HandlesZeroInput) {
   EXPECT_EQ(Factorial(0), 1);
@@ -402,7 +402,7 @@ To create a fixture:
 
 When using a **fixture**, use `TEST_F()` instead of `TEST()` as it **allows you to access objects and subroutines in the test fixture**:
 
-``` cpp
+```cpp
 TEST_F(TestFixtureName, TestName) {
     // ... test body ...
 }
@@ -418,7 +418,7 @@ For each test defined with `TEST_F()`, **googletest will create a fresh test fix
 
 As an example, let’s write tests for a FIFO queue class named `Queue`, which has the following interface:
 
-``` cpp
+```cpp
 template <typename E>  // E is the element type.
 class Queue {
  public:
@@ -432,7 +432,7 @@ class Queue {
 
 First, define a fixture class. By convention, you should give it the name `FooTest` where `Foo` is the class being tested.
 
-``` cpp
+```cpp
 class QueueTest : public ::testing::Test {
  protected:
   void SetUp() override {
@@ -453,7 +453,7 @@ In this case, `TearDown()` is not needed since we don’t have to clean up after
 
 Now we’ll write tests using `TEST_F()` and this fixture.
 
-``` cpp
+```cpp
 TEST_F(QueueTest, IsEmptyInitially) {
   EXPECT_EQ(q0_.size(), 0);
 }
@@ -525,7 +525,7 @@ If you write your own `main` function, it should return the value of `RUN_ALL_TE
 
 You can start from this boilerplate(样板):
 
-``` cpp
+```cpp
 #include "this/package/foo.h"
 
 #include "gtest/gtest.h"
@@ -683,7 +683,7 @@ gMock is bundled with googletest.
 
 Let’s look at an example. Suppose you are developing a graphics program that relies on a [LOGO](https://en.wikipedia.org/wiki/Logo_programming_language)-like API for drawing. **How would you test that it does the right thing? Well, you can run it and compare the screen with a golden screen snapshot, but let’s admit it: tests like this are expensive to run and fragile** (What if you just upgraded to a shiny new graphics card that has better anti-aliasing? Suddenly you have to update all your golden images.). It would be too painful if all your tests are like this. **Fortunately, you learned about [Dependency Injection(依赖注入)](https://en.wikipedia.org/wiki/Dependency_injection) and know the right thing to do: instead of having your application talk to the system API directly, wrap the API in an interface (say, Turtle) and code to that interface**:
 
-``` cpp
+```cpp
 class Turtle {
   ...
   virtual ~Turtle() {}
@@ -728,7 +728,7 @@ Using the `Turtle` interface as example, here are the simple steps you need to f
 
 After the process, you should have something like:
 
-``` cpp
+```cpp
 #include <gmock/gmock.h>  // Brings in gMock.
 
 class MockTurtle : public Turtle {
@@ -775,7 +775,7 @@ Once you have a mock class, using it is easy. The typical work flow is:
 
 Here’s an example:
 
-``` cpp
+```cpp
 #include "path/to/mock-turtle.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -819,7 +819,7 @@ You can find recipes for using gMock here. If you haven’t yet, please read [th
 
 Mock classes are defined as normal classes, using the `MOCK_METHOD` macro to generate mocked methods. The macro gets 3 or 4 parameters:
 
-``` cpp
+```cpp
 class MyMock {
  public:
   MOCK_METHOD(ReturnType, MethodName, (Args...));
@@ -847,7 +847,7 @@ Unprotected commas, i.e. commas which are not surrounded by parentheses, prevent
 
 You must always put a mock method definition (`MOCK_METHOD`) in a `public`: section of the mock class, regardless of the method being mocked being `public`, `protected`, or `private` in the base class. This allows `ON_CALL` and `EXPECT_CALL` to reference the mock function from outside of the mock class. (Yes, C++ allows a subclass to change the access level of a virtual function in the base class.) Example:
 
-``` cpp
+```cpp
 class Foo {
  public:
   ...
@@ -876,7 +876,7 @@ class MockFoo : public Foo {
 
 You can mock overloaded functions as usual. No special attention is required:
 
-``` cpp
+```cpp
 class Foo {
   ...
 
@@ -904,7 +904,7 @@ class MockFoo : public Foo {
 
 > **Note**: if you don’t mock all versions of the overloaded method, the compiler will give you a warning about some methods in the base class being hidden. To fix that, use using to bring them in scope:
 
-``` cpp
+```cpp
 class MockFoo : public Foo {
   ...
   using Foo::Add;
@@ -918,7 +918,7 @@ class MockFoo : public Foo {
 
 You can mock class templates just like any class.
 
-``` cpp
+```cpp
 template <typename Elem>
 class StackInterface {
   ...
@@ -943,7 +943,7 @@ gMock can mock non-virtual functions to be used in Hi-perf dependency injection.
 
 In this case, instead of sharing a common base class with the real class, your mock class will be unrelated to the real class, but contain methods with the same signatures. The syntax for mocking non-virtual methods is the same as mocking virtual methods (just don’t add `override`):
 
-``` cpp
+```cpp
 // A simple packet stream class.  None of its members is virtual.
 class ConcretePacketStream {
  public:
@@ -969,7 +969,7 @@ Next, you need a way to say that you want to use `ConcretePacketStream` in produ
 
 One way to do it is to templatize your code that needs to use a packet stream. More specifically, you will give your code a template type argument for the type of the packet stream. In production, you will instantiate your template with `ConcretePacketStream` as the type argument. In tests, you will instantiate the same template with `MockPacketStream`. For example, you may write:
 
-``` cpp
+```cpp
 template <class PacketStream>
 void CreateConnection(PacketStream* stream) { ... }
 
@@ -996,7 +996,7 @@ It is not possible to directly mock a free function (i.e. **a C-style function**
 
 Instead of calling a free function (say, `OpenFile`) directly, introduce an interface for it and have a concrete subclass that calls the free function:
 
-``` cpp
+```cpp
 class FileInterface {
  public:
   ...
@@ -1063,7 +1063,7 @@ gMock Cheat Sheet相比[gMock Cookbook](https://google.github.io/googletest/gmoc
 
 If you put your fixture setup code into a `SetUp` method, and it fails and issues a fatal failure (ASSERT_XXX or FAIL macros), Google Test will not run your test body. So all you have to write is
 
-``` cpp
+```cpp
 class MyTestCase : public testing::Test {
  protected:
   bool InitMyTestData() { ... }
@@ -1443,7 +1443,7 @@ gcc 的使用方式：编译选项增加 `-ftest-coverage` 和 `-fprofile-arcs`�
 
 Most likely this is a result of the build tools failing to merge current results into the existing `.gcda` coverage files. As [Dave Meehan points out here](http://davemeehan.com/technology/xcode/how-to-fix-profiler-invalid-magic-number-in-xcode-4-6-when-generate-test-coverage-files-is-enabled), there is a brute force way of dealing with this by cleaning the product build folder, but a less hard core approach is to delete the `.gcda` files from targets generating them (for me, just the test target) as part of the build process. Dave includes a sample script to be included as a build phase -- or, at the project root by hand:
 
-``` bash
+```bash
 find . -name "*.gcda" -print0 | xargs -0 rm
 ```
 

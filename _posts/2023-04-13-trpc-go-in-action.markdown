@@ -24,7 +24,7 @@ tags:
       + `option go_package = "server/api/trpc/proto";` 表示在本地目录 `server/api/trpc/proto` 下生成 `pb.go` 文件
     * 定义 `service rpc` 方法，一个 `server` 可以有多个 `service`，一般都是一个 `server` 一个 `service`
 
-``` proto
+```proto
 syntax = "proto3";
 
 package trpc.test.helloworld;
@@ -45,7 +45,7 @@ message HelloReply {
 
 * 通过命令行生成服务模型：`trpc create --protofile=helloworld.proto`（首先需要先[安装 trpc 工具](https://git.woa.com/trpc-go/trpc-go-cmdline)）
 
-``` bash
+```bash
 #!/bin/bash
 
 # 只生成协议代码
@@ -91,7 +91,7 @@ tRPC-Go 框架的拦截器，也称之为过滤器。tRPC 框架利用拦截器�
 
 ### 定义处理逻辑函数
 
-``` golang
+```golang
 func ServerFilter() filter.ServerFilter {
 	return func(ctx context.Context, req interface{}, handler filter.ServerHandleFunc) (rsp interface{}, err error) {
 
@@ -132,7 +132,7 @@ func ClientFilter() filter.ClientFilter {
 
 ### 注册到框架中
 
-``` golang
+```golang
 filter1 := ServerFilter()
 filter2 := ClientFilter()
 
@@ -159,7 +159,7 @@ client:
 
 ### 完整拦截器代码示例
 
-``` golang
+```golang
 // Package metirc is a tRPC filter used to report service metrics to monitor
 package metric
 

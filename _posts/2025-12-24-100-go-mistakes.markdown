@@ -33,7 +33,7 @@ Meanwhile, it's also open to the community. If you believe that a common Go mist
 
 **代码示例：**
 
-``` go
+```go
 package main
 
 import (
@@ -138,7 +138,7 @@ func createDefaultClient() (*http.Client, error) {
 
 在 `listing1()` 中出现了变量遮蔽问题：`:=` 操作符在 if 块内创建了新的局部变量 client，而不是修改外部的 client 变量。所以外部 client 始终是 nil。
 
-``` go
+```go
 func listing1() error {
     var client *http.Client  // 外部声明的 client 变量
     if tracing {
@@ -178,7 +178,7 @@ In general, the more nested levels a function requires, the more complex it is t
 
 When an `if` block returns, we should omit the `else` block in all cases. For example, we shouldn’t write:
 
-``` go
+```go
 if foo() {
     // ...
     return true
@@ -189,7 +189,7 @@ if foo() {
 
 Instead, we omit the `else` block like this:
 
-``` go
+```go
 if foo() {
     // ...
     return true
@@ -199,7 +199,7 @@ if foo() {
 
 We can also follow this logic with a non-happy path:
 
-``` go
+```go
 if s != "" {
     // ...
 } else {
@@ -209,7 +209,7 @@ if s != "" {
 
 Here, an empty `s` represents the non-happy path. Hence, we should flip the condition like so:
 
-``` go
+```go
 if s == "" {
     return errors.New("empty string")
 }
@@ -220,7 +220,7 @@ Writing readable code is an important challenge for every developer. Striving to
 
 **代码示例：**
 
-``` go
+```go
 package main
 
 import "errors"
@@ -296,7 +296,7 @@ We should be cautious with init functions. They can be helpful in some situation
 
 **示例1：多个 init 函数**
 
-``` go
+```go
 // main.go
 package main
 
@@ -319,7 +319,7 @@ func main() {
 }
 ```
 
-``` go
+```go
 // redis.go
 package redis
 
@@ -342,15 +342,14 @@ func Store(key, value string) error {
 
 **输出：**
 
-```
-redis
+```redis
 init 1
 init 2
 ```
 
 **示例2：数据库连接初始化**
 
-``` go
+```go
 package main
 
 import (
@@ -390,7 +389,7 @@ func createClient(dataSourceName string) (*sql.DB, error) {
 
 * init 函数错误处理受限。如果初始化失败，只能 panic，无法返回错误给调用者，程序直接崩溃
 
-``` go
+```go
 func init() {
 	// 如果初始化失败，只能 panic
 	// 无法返回错误给调用者
@@ -409,7 +408,7 @@ func initDB() error {
   + 依赖全局变量，测试相互影响
   + 需要设置环境变量，测试配置复杂
 
-``` go
+```go
 // 测试时需要：go test -env "MYSQL_DATA_SOURCE_NAME=..."
 // 或者需要模拟全局状态
 ```
@@ -419,7 +418,7 @@ func initDB() error {
   + 并发安全问题
   + 代码耦合度高
 
-``` go
+```go
 var db *sql.DB  // 全局变量
 
 func init() {
@@ -429,7 +428,7 @@ func init() {
 
 * 执行顺序不可控
 
-``` go
+```go
 // 多个包的 init 函数执行顺序
 // 由导入依赖决定，不易理解和维护
 package A: init() → package B: init() → main.init()
@@ -437,7 +436,7 @@ package A: init() → package B: init() → main.init()
 
 **init 函数的适用场景：**
 
-``` go
+```go
 package config
 
 var DefaultConfig Config
@@ -460,7 +459,7 @@ func init() {
 
 **不适合的情况：**
 
-``` go
+```go
 // 不适合：有外部依赖的初始化
 func init() {
 	// 从环境变量读取配置（可能有环境依赖）
@@ -473,7 +472,7 @@ func init() {
 
 * 使用显式初始化函数
 
-``` go
+```go
 // 更好的方式
 type App struct {
     db *sql.DB
@@ -499,7 +498,7 @@ func main() {
 
 * 依赖注入
 
-``` go
+```go
 func CreateDB(dataSourceName string) (*sql.DB, error) {
     // 可测试，可控制
 }
@@ -514,7 +513,7 @@ func main() {
 
 * 配置对象模式
 
-``` go
+```go
 type Config struct {
     DBDataSource string
     // 其他配置
@@ -566,7 +565,7 @@ Go 语言的设计哲学强调简洁和实用，不强制使用 `getter` 和 `se
 
 * 没有自动属性支持
 
-``` go
+```go
 // Java风格（自动属性）
 private String name;
 public String getName() { return name; }
@@ -580,7 +579,7 @@ type Person struct {
 
 * 访问控制通过大小写实现
 
-``` go
+```go
 // 导出字段（公开）
 type Person struct {
     Name string    // 大写开头 - 公开访问
@@ -598,7 +597,7 @@ type person struct {
 
 **适合使用的情况1：需要验证逻辑**
 
-``` go
+```go
 type BankAccount struct {
     balance float64  // 私有，需要保护
 }
@@ -631,7 +630,7 @@ func (b *BankAccount) Withdraw(amount float64) error {
 
 **适合使用的情况2：需要计算或派生值**
 
-``` go
+```go
 type Rectangle struct {
     width  float64
     height float64
@@ -649,7 +648,7 @@ func (r *Rectangle) Perimeter() float64 {
 
 **适合使用的情况3：需要延迟初始化或缓存**
 
-``` go
+```go
 type ExpensiveResource struct {
     mu     sync.RWMutex
     data   []byte
@@ -686,7 +685,7 @@ func (e *ExpensiveResource) Data() ([]byte, error) {
 
 * 简单数据传输对象（DTO）
 
-``` go
+```go
 // 直接导出字段更简洁
 type Point struct {
     X int
@@ -700,7 +699,7 @@ fmt.Printf("Point: (%d, %d)\n", p.X, p.Y)
 
 * 配置结构
 
-``` go
+```go
 type Config struct {
     Host     string
     Port     int
@@ -719,7 +718,7 @@ config := Config{
 
 * 内部辅助结构
 
-``` go
+```go
 // 只在包内使用，可以直接访问
 type internalState struct {
     counter    int
@@ -772,7 +771,7 @@ To understand what makes interfaces so powerful, we will dig into two popular on
 
 The `io.Reader` contains a single Read method:
 
-``` go
+```go
 type Reader interface {
     Read(p []byte) (n int, err error)
 }
@@ -782,7 +781,7 @@ Custom implementations of the `io.Reader` interface should accept a slice of byt
 
 On the other hand, `io.Writer` defines a single method, Write:
 
-``` go
+```go
 type Writer interface {
     Write(p []byte) (n int, err error)
 }
@@ -797,7 +796,7 @@ What is the rationale(根本原因) for having these two interfaces in the langu
 
 Let’s assume we need to implement a function that should copy the content of one file to another. We could create a specific function that would take as input two `*os.File`. Or, we can choose to create a more generic function using `io.Reader` and `io.Writer` abstractions:
 
-``` go
+```go
 func copySourceToDest(source io.Reader, dest io.Writer) error {
     // ...
 }
@@ -807,7 +806,7 @@ This function would work with `*os.File` parameters (as `*os.File` implements bo
 
 **Furthermore, writing a unit test for this function is easier** because, instead of having to handle files, we can use the strings and bytes packages that provide helpful implementations:
 
-``` go
+```go
 func TestCopySourceToDest(t *testing.T) {
     const input = "foo"
     source := strings.NewReader(input) // Creates an io.Reader
@@ -833,7 +832,7 @@ While designing interfaces, the **granularity**(粒度) (**how many methods the 
 
 Indeed, adding methods to an interface can decrease its level of reusability. `io.Reader` and `io.Writer` are powerful abstractions because they cannot get any simpler. **Furthermore, we can also combine fine-grained interfaces to create higher-level abstractions**. This is the case with `io.ReadWriter`, which combines the reader and writer behaviors:
 
-``` go
+```go
 type ReadWriter interface {
     Reader
     Writer
@@ -863,7 +862,7 @@ The first option we will discuss is to use interfaces when multiple types implem
 
 Hence, the following interface was added to the `sort` package:
 
-``` go
+```go
 type Interface interface {
     Len() int // Number of elements
     Less(i, j int) bool // Checks two elements
@@ -877,7 +876,7 @@ Throughout the `sort` package, we can find dozens of implementations. If at some
 
 Finding the right abstraction to factor out a behavior can also bring many benefits. For example, the `sort` package provides utility functions that also rely on `sort.Interface`, such as checking whether a collection is already sorted. For instance:
 
-``` go
+```go
 func IsSorted(data Interface) bool {
     n := data.Len()
     for i := n - 1; i > 0; i-- {
@@ -909,7 +908,7 @@ Another important use case is about decoupling our code from an implementation. 
 
 One benefit of decoupling can be related to unit testing. Let’s assume we want to implement a `CreateNewCustomer` method that creates a new customer and stores it. We decide to rely on the concrete implementation directly (let’s say a `mysql.Store` struct):
 
-``` go
+```go
 type CustomerService struct {
     store mysql.Store // Depends on the concrete implementation
 }
@@ -922,7 +921,7 @@ func (cs CustomerService) CreateNewCustomer(id string) error {
 
 Now, what if we want to test this method? Because `customerService` relies on the actual implementation to store a `Customer`, we are obliged to test it through integration tests, which requires spinning up a MySQL instance (unless we use an alternative technique such as [go-sqlmock](https://github.com/DATA-DOG/go-sqlmock), but this isn’t the scope of this section). **Although integration tests are helpful, that’s not always what we want to do. To give us more flexibility, we should decouple `CustomerService` from the actual implementation, which can be done via an interface like so**:
 
-``` go
+```go
 type customerStorer interface { // Creates a storage abstraction
     StoreCustomer(Customer) error
 }
@@ -948,7 +947,7 @@ func (cs CustomerService) CreateNewCustomer(id string) error {
 
 The last use case we will discuss can be pretty **counterintuitive**(违反常理的) at first sight. It’s about restricting a type to a specific behavior. Let’s imagine we implement a custom configuration package to deal with dynamic configuration. We create a specific container for int configurations via an `IntConfig` struct that also exposes two methods: `Get` and `Set`. Here’s how that code would look:
 
-``` go
+```go
 type IntConfig struct {
     // ...
 }
@@ -964,7 +963,7 @@ func (c *IntConfig) Set(value int) {
 
 Now, suppose we receive an `IntConfig` that holds some specific configuration, such as a threshold. **Yet, in our code, we are only interested in retrieving the configuration value, and we want to prevent updating it. How can we enforce that, semantically, this configuration is read-only, if we don’t want to change our configuration package?** By creating an abstraction that restricts the behavior to retrieving only a config value:
 
-``` go
+```go
 type intConfigGetter interface {
     Get() int
 }
@@ -972,7 +971,7 @@ type intConfigGetter interface {
 
 Then, in our code, we can rely on `intConfigGetter` instead of the concrete implementation:
 
-``` go
+```go
 type Foo struct {
     threshold intConfigGetter
 }
@@ -1074,7 +1073,7 @@ An interface should live on the consumer side in most cases. However, in particu
 
 示例：
 
-``` go
+```go
 // 生产者包 (producer) - 提供具体实现
 package db
 
@@ -1087,7 +1086,7 @@ func (r *MySQLUserRepository) DeleteUser(id int) error { /* ... */ }
 func (r *MySQLUserRepository) RunComplexAnalytics() (*Report, error) { /* ... */ } // 某个复杂方法
 ```
 
-``` go
+```go
 // 消费者包 (consumer) - 定义自己所需的接口
 package service
 
@@ -1150,7 +1149,7 @@ In most cases, we shouldn’t return interfaces but concrete implementations. Ot
 
 当函数返回接口时，你强制所有调用者都使用相同的抽象。这意味着：
 
-``` go
+```go
 // ❌ 不推荐：返回接口
 package db
 
@@ -1169,7 +1168,7 @@ func NewUserRepository() UserRepository {
 
 相比之下，返回具体类型：
 
-``` go
+```go
 // ✅ 推荐：返回具体类型
 package db
 
@@ -1194,7 +1193,7 @@ func (r *MySQLRepository) SpecialMySQLFeature() { /* ... */ } // 具体类型的
 
 返回接口可能导致不合理的包依赖关系：
 
-``` go
+```go
 // ❌ 问题：返回接口导致消费者依赖生产者的抽象定义
 // producer.go (生产者包)
 package producer
@@ -1224,7 +1223,7 @@ func Use() {
 
 为什么应该接受接口作为参数？-> **提高通用性和可测试性**
 
-``` go
+```go
 // ✅ 优秀实践：接受接口，返回具体类型
 package processor
 
@@ -1243,7 +1242,7 @@ func NewProcessor() *ConcreteProcessor {
 
 * 场景1：提供可选行为的场景
 
-``` go
+```go
 // 标准库的 error 接口是一个很好的例子
 // error 是一个极简接口，有明确的契约
 type error interface {
@@ -1259,7 +1258,7 @@ func Parse(input string) (Result, error) {
 
 * 场景2：工厂模式或策略模式
 
-``` go
+```go
 // 当函数的作用是创建某种策略的实现时
 type Logger interface {
     Log(message string)
@@ -1280,7 +1279,7 @@ func NewLogger(config Config) Logger {
 
 * 场景3：隐藏内部复杂的实现细节
 
-``` go
+```go
 // 当你不想暴露实现细节时
 package cache
 
@@ -1308,14 +1307,14 @@ The `any` type can be helpful if there is a genuine need for accepting or return
 
 在 `Go 1.18+` 中，any 是空接口 `interface{}` 的类型别名：
 
-``` go
+```go
 type any = interface{}
 ```
 
 这意味着 `any` 可以容纳任何类型的值，但这恰恰是它最大的危险所在。
 
 
-``` go
+```go
 package main
 
 func main() {
@@ -1355,7 +1354,7 @@ func f() {}
 
 > 失去类型安全性（最严重的问题）
 
-``` go
+```go
 // ❌ 危险的示例
 func Process(data any) {
     // 为了使用 data，我们需要类型断言
@@ -1373,7 +1372,7 @@ func main() {
 
 > 代码意图不清晰
 
-``` go
+```go
 // ❌ 不清晰：这个函数到底接受什么？
 func Store(key string, value any) error {
     // 什么类型的 value 是合法的？
@@ -1389,7 +1388,7 @@ func StoreUser(key string, value User) error
 
 类型错误应该在编译时捕获，而不是运行时：
 
-``` go
+```go
 // ❌ 错误在运行时才发现
 func Calculate(a, b any) any {
     return a.(int) + b.(int)  // 假设是 int，但不保证
@@ -1410,7 +1409,7 @@ func Calculate[T int | float64](a, b T) T {
 
 > 处理未知结构的 JSON 数据
 
-``` go
+```go
 // 这是合理的，因为 JSON 可以是任何结构
 func ParseJSON(data []byte) (map[string]any, error) {
     var result map[string]any
@@ -1423,7 +1422,7 @@ func ParseJSON(data []byte) (map[string]any, error) {
 
 > 容器数据结构
 
-``` go
+```go
 // 当实现通用容器时（尽管泛型通常是更好的选择）
 type Stack struct {
     items []any
@@ -1441,7 +1440,7 @@ type Stack[T any] struct {
 
 > 格式化和日志
 
-``` go
+```go
 // fmt 包正确使用 any
 func Printf(format string, args ...any) (n int, err error)
 
@@ -1451,7 +1450,7 @@ log.Printf("User %v logged in at %v", userID, timestamp)
 
 > 标准库中的合理使用
 
-``` go
+```go
 // encoding/json
 func Marshal(v any) ([]byte, error)
 
@@ -1468,7 +1467,7 @@ func WithValue(parent Context, key, val any) Context
 
 > 立即进行类型检查
 
-``` go
+```go
 func SafeProcess(value any) error {
     switch v := value.(type) {
     case string:
@@ -1485,7 +1484,7 @@ func SafeProcess(value any) error {
 
 > 使用类型断言的安全形式
 
-``` go
+```go
 func GetString(value any) (string, bool) {
     str, ok := value.(string)  // 安全断言，不会 panic
     return str, ok
@@ -1502,7 +1501,7 @@ func main() {
 
 > 约束 any 的使用范围
 
-``` go
+```go
 // 内部使用 any，但对外暴露类型安全的接口
 type Processor struct{}
 
@@ -1524,7 +1523,7 @@ func (p *Processor) ProcessInt(i int) {
 
 大多数滥用 any 的场景都可以用泛型更好地解决：
 
-``` go
+```go
 // ❌ 使用 any
 func FindInSlice(slice []any, target any) int {
     for i, v := range slice {
@@ -1562,7 +1561,7 @@ More: [Being confused about when to use generics](https://100go.co/9-generics/)
 
 **核心观点：依赖泛型和类型参数可以避免编写提取元素或行为的样板代码。但是，不要过早使用类型参数，只有在看到具体需要时才使用它们。否则，它们会引入不必要的抽象和复杂性。**
 
-``` go
+```go
 package main
 
 import (
@@ -1645,7 +1644,7 @@ When creating a struct, Go offers the option to embed types. But this can someti
 
 In Go, a struct field is called embedded if it’s declared without a name. For example,
 
-``` go
+```go
 type Foo struct {
     Bar // Embedded field
 }
@@ -1671,7 +1670,7 @@ Using type embedding consciously by keeping these constraints in mind can help a
 
 示例代码：
 
-``` go
+```go
 package main
 
 import (
@@ -1733,7 +1732,7 @@ func main() {
 
 类型嵌入是 Go 中结构体字段的一种特殊声明方式，**字段没有名称，只有类型**：
 
-``` go
+```go
 type Foo struct {
     Bar  // 嵌入字段，没有字段名，只有类型
 }
@@ -1749,7 +1748,7 @@ type Bar struct {
 
 * (1) 方法提升：嵌入类型的方法会被提升到外层类型，可以避免编写转发方法
 
-``` go
+```go
 type Reader interface {
     Read(p []byte) (n int, err error)
 }
@@ -1766,7 +1765,7 @@ type File struct {
 
 * (2) 接口实现：通过嵌入，外层类型自动实现了内层类型实现的接口
 
-``` go
+```go
 type MyReader struct {
     io.Reader  // 嵌入，MyReader 自动实现了 io.Reader 接口
 }
@@ -1776,7 +1775,7 @@ type MyReader struct {
 
 * (1) 意外暴露私有字段和方法
 
-``` go
+```go
 // 问题示例：意外暴露内部实现
 type Account struct {
     sync.Mutex  // 嵌入锁
@@ -1794,7 +1793,7 @@ func main() {
 
 * (2) 命名冲突和歧义
 
-``` go
+```go
 type A struct{}
 
 func (A) Process() { fmt.Println("A.Process") }
@@ -1819,7 +1818,7 @@ func main() {
 
 * (3) 接口实现冲突
 
-``` go
+```go
 type Writer interface {
     Write(data []byte) error
 }
@@ -1834,7 +1833,7 @@ type FileWriter struct {
 
 * (4) 过度提升导致 API 污染
 
-``` go
+```go
 type Config struct {
     // 嵌入过多的类型可能导致 API 过于复杂
     DatabaseConfig
@@ -1852,7 +1851,7 @@ type Config struct {
 
 * (1) 仅在需要行为提升时使用
 
-``` go
+```go
 // ✅ 正确：需要提升 io.Reader 的行为
 type BufferedReader struct {
     io.Reader  // 嵌入，为了获得 Read 方法
@@ -1872,7 +1871,7 @@ type User struct {
 
 * (2) 不要嵌入应该隐藏的类型
 
-``` go
+```go
 // ❌ 错误：暴露内部同步机制
 type SafeCounter struct {
     sync.Mutex
@@ -1894,7 +1893,7 @@ func (sc *SafeCounter) Increment() {
 
 * (3) 优先组合而非继承思维
 
-``` go
+```go
 // Go 鼓励组合而非继承
 type Server struct {
     // 明确组合各个组件
@@ -1913,7 +1912,7 @@ type Server struct {
 
 * (4) 谨慎处理接口嵌入
 
-``` go
+```go
 // ✅ 正确使用接口嵌入
 type ReadWriter interface {
     io.Reader
@@ -1948,7 +1947,7 @@ Although there are different implementations with minor variations, the main ide
 
 ![100_go_mistakes10](/assets/images/202512/100_go_mistakes10.png)
 
-``` go
+```go
 type options struct {
   port *int
 }
@@ -1999,7 +1998,7 @@ The functional options pattern provides a handy and API-friendly way to handle o
 
 * (1) 配置结构体问题
 
-``` go
+```go
 // ❌ 问题：需要传入完整配置结构体，即使很多字段是默认值
 type Config struct {
     Port    int
@@ -2022,7 +2021,7 @@ server := NewServer(":8080", Config{
 
 * (2) 多参数问题
 
-``` go
+```go
 // ❌ 问题：参数太多，难以记忆和维护
 func NewServer(addr string, port int, timeout time.Duration,
                logger Logger, maxConns int, tlsConfig *tls.Config) *Server {
@@ -2032,7 +2031,7 @@ func NewServer(addr string, port int, timeout time.Duration,
 
 * (3) 变长参数使用基础类型
 
-``` go
+```go
 // ❌ 问题：类型不安全，可读性差
 func NewServer(addr string, opts ...interface{}) *Server {
     // 需要类型断言，容易出错
@@ -2045,7 +2044,7 @@ func NewServer(addr string, opts ...interface{}) *Server {
 
 基本结构
 
-``` go
+```go
 // 1. 非导出配置结构体
 type options struct {
     port     *int
@@ -2125,7 +2124,7 @@ func NewServer(addr string, opts ...Option) (*Server, error) {
 
 使用示例
 
-``` go
+```go
 // 只设置需要的选项，顺序无关
 server1, err := NewServer("localhost")
 
@@ -2311,7 +2310,7 @@ cache/          # 提供缓存功能
 * 只导出必要的接口和函数
 * 内部实现保持私有
 
-``` go
+```go
 // 内部包结构
 package cache
 
@@ -2341,7 +2340,7 @@ func connectRedis(addr string) *redis.Client {
 
 > (5) 处理 JSON 序列化等特殊情况
 
-``` go
+```go
 type User struct {
     // 字段必须导出才能被 encoding/json 访问
     ID    int    `json:"id"`
@@ -2538,7 +2537,7 @@ Package collisions occur when a variable name collides with an existing package 
 
 > 包导入与局部变量冲突
 
-``` go
+```go
 package main
 
 import "fmt"
@@ -2552,7 +2551,7 @@ func main() {
 
 > 多包同名冲突
 
-``` go
+```go
 package main
 
 import (
@@ -2567,7 +2566,7 @@ func main() {
 
 > 包别名与标识符冲突
 
-``` go
+```go
 package main
 
 import (
@@ -2583,7 +2582,7 @@ func main() {
 
 解决方案：使用包别名
 
-``` go
+```go
 package main
 
 import (
@@ -2630,7 +2629,7 @@ Documenting our code shouldn’t be a constraint. We should take the opportunity
 
 每个包都**必须有**包级文档，通常放在包声明的上方：
 
-``` go
+```go
 // Package httputil provides HTTP utility functions, complementing the
 // more common ones in the net/http package.
 //
@@ -2650,7 +2649,7 @@ package httputil
 
 > (2) 导出函数/方法文档
 
-``` go
+```go
 // ValidateUser checks if the provided user meets all business requirements.
 // It validates the user's email format, password strength, and required fields.
 // Returns nil if validation passes, or ValidationError if any check fails.
@@ -2675,7 +2674,7 @@ func ValidateUser(user User) error {
 
 > (3) 导出类型/结构体文档
 
-``` go
+```go
 // Config holds application configuration settings.
 // This struct is safe for concurrent use after initialization.
 type Config struct {
@@ -2692,7 +2691,7 @@ type Config struct {
 
 > (4) 导出变量/常量文档
 
-``` go
+```go
 // DefaultPort is the default HTTP port used when none is specified.
 const DefaultPort = 8080
 
@@ -2705,7 +2704,7 @@ var ErrInvalidInput = errors.New("invalid input")
 
 > 工具链深度集成
 
-``` bash
+```bash
 # 查看包文档
 go doc net/http
 
@@ -2724,7 +2723,7 @@ godoc -http=:6060
 
 > (1) 标准工具
 
-``` bash
+```bash
 # 格式化文档注释
 go fmt ./...
 
@@ -2737,7 +2736,7 @@ golang.org/x/tools/go/analysis/passes/doc
 
 > (2) 生成 HTML 文档
 
-``` bash
+```bash
 # 生成包文档网站
 godoc -url /pkg/your-package > docs.html
 

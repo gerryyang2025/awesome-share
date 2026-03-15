@@ -23,14 +23,14 @@ tags:
 
 First create a new TCP socket and set the TLS ULP.
 
-``` c
+```c
 sock = socket(AF_INET, SOCK_STREAM, 0);
 setsockopt(sock, SOL_TCP, TCP_ULP, "tls", sizeof("tls"));
 ```
 
 Setting the TLS ULP allows us to set/get TLS socket options. Currently only the symmetric encryption is handled in the kernel. After the TLS handshake is complete, we have all the parameters required to move the data-path to the kernel. There is a separate socket option for moving the transmit and the receive into the kernel.
 
-``` c
+```c
 /* From linux/tls.h */
 struct tls_crypto_info {
         unsigned short version;
@@ -66,7 +66,7 @@ Transmit and receive are set separately, but the setup is the same, using either
 
 After setting the `TLS_TX` socket option all application data sent over this socket is encrypted using TLS and the parameters provided in the socket option. For example, we can send an encrypted `hello world` record as follows:
 
-``` c
+```c
 const char *msg = "hello world\n";
 send(sock, msg, strlen(msg));
 ```
@@ -75,7 +75,7 @@ send(sock, msg, strlen(msg));
 
 The `sendfile` system call will send the file’s data over TLS records of maximum length (`2^14`).
 
-``` c
+```c
 file = open(filename, O_RDONLY);
 fstat(file, &stat);
 sendfile(sock, file, &offset, stat.st_size);
@@ -90,7 +90,7 @@ The kernel will need to allocate a buffer for the encrypted data. This buffer is
 
 After setting the `TLS_RX` socket option, all recv family socket calls are decrypted using TLS parameters provided. A full TLS record must be received before decryption can happen.
 
-``` c
+```c
 char buffer[16384];
 recv(sock, buffer, 16384);
 ```
@@ -106,7 +106,7 @@ Received data is decrypted directly in to the user buffer if it is large enough,
 
 Other than application data, TLS has control messages such as **alert messages** (record type 21) and **handshake messages** (record type 22), etc. These messages can be sent over the socket by providing the TLS record type via a `CMSG`. For example the following function sends `@data` of `@length` bytes using a record of type `@record_type`.
 
-``` c
+```c
 /* send TLS control message using record_type */
 static int klts_send_ctrl_message(int sock, unsigned char record_type,
                                   void *data, size_t length)
@@ -141,7 +141,7 @@ Control message data should be provided unencrypted, and will be encrypted by th
 
 TLS control messages are passed in the userspace buffer, with `message type` passed via `cmsg`. If no `cmsg` buffer is provided, an error is returned if a control message is received. Data messages may be received without a `cmsg` buffer set.
 
-``` c
+```c
 char buffer[16384];
 char cmsg[CMSG_SPACE(sizeof(unsigned char))];
 struct msghdr msg = {0};
@@ -247,7 +247,7 @@ In modern FreeBSD and Linux distributions, **`kTLS` is usually built as a module
 
 * On FreeBSD, run these commands as the **root** user:
 
-``` bash
+```bash
 # kldload ktls_ocf.ko
 # sysctl kern.ipc.tls.enable=1
 ```
@@ -257,7 +257,7 @@ For details about the FreeBSD command options, see the man page for [ktls(4)](ht
 
 * On Linux distributions, run this command as the **root** user:
 
-``` bash
+```bash
 # modprobe tls
 ```
 
@@ -311,13 +311,13 @@ To perform the test:
 
 * Create a large file that fits completely in the disk cache:
 
-``` bash
+```bash
 truncate -s 1g /data/1G
 ```
 
 * Run this command to check the throughput; the base command is repeated multiple times for more accurate results. Pipe the output to the `ministat` utility [FreeBSD](https://www.freebsd.org/cgi/man.cgi?query=ministat) [Ubuntu](https://manpages.ubuntu.com/manpages/impish/man1/ministat.1.html) for a basic statistical analysis.
 
-``` bash
+```bash
 for i in 'seq 1 100'; do curl -k -s -o /dev/null -w '%{speed_download}\n' https://localhost/1G | ministat
 ```
 

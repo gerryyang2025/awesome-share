@@ -48,7 +48,7 @@ Go 语言支持自动内存管理，那还存在内存泄漏问题吗？
 
 在 Go 语言中，可以通过在程序中导入 `net/http/pprof` 包来启用性能分析。这个包提供了一个 HTTP 服务器，可以通过浏览器访问并查看程序的性能分析结果。在程序中导入 `net/http/pprof` 包后，可以在程序中添加一些代码来启动 HTTP 服务器，例如：
 
-``` golang
+```golang
 import (
     "net/http"
     _ "net/http/pprof"
@@ -72,7 +72,7 @@ func main() {
 
 测试代码：
 
-``` go
+```go
 package main
 
 import (
@@ -198,14 +198,14 @@ func main() {
 
 进行性能分析：
 
-``` bash
+```bash
 # 自动弹出浏览器窗口查看
 go tool pprof -http=":8080" [binary] [profile]
 ```
 
 查看内存分配：
 
-``` bash
+```bash
 go tool pprof -http=":8080" ../test2 pprof_mem_48
 Serving web UI on http://localhost:8080
 ```
@@ -228,7 +228,7 @@ Serving web UI on http://localhost:8080
 
 
 
-``` bash
+```bash
 # Linux
 sudo yum install graphviz
 

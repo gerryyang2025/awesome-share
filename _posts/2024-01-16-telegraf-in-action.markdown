@@ -49,7 +49,7 @@ This page provides directions for installing, starting, and configuring Telegraf
 
 ### [Download Telegraf](https://docs.influxdata.com/telegraf/v1/install/#download)
 
-``` bash
+```bash
 wget https://dl.influxdata.com/telegraf/releases/telegraf-1.29.2_linux_amd64.tar.gz
 tar xf telegraf-1.29.2_linux_amd64.tar.gz
 ```
@@ -74,7 +74,7 @@ Telegraf uses a host's local time in UTC to assign timestamps to data. Use the N
 
 The `telegraf config` command lets you generate a configuration file using Telegraf’s list of plugins.
 
-``` bash
+```bash
 telegraf config > telegraf.conf
 ```
 
@@ -84,7 +84,7 @@ The generated file contains settings for all available plugins–some are enable
 
 To generate a configuration file that contains settings for only specific input and output plugins, specify telegraf plugin filters–for example:
 
-``` bash
+```bash
 telegraf \
 --input-filter <pluginname>[:<pluginname>] \
 --output-filter <outputname>[:<outputname>] \
@@ -135,19 +135,19 @@ You can include multiple `--config` and `--config-dir` flags.
 
 Examples
 
-``` bash
+```bash
 # Single Telegraf configuration
 ./tools/custom_builder/custom_builder --config /etc/telegraf.conf
 ```
 
-``` bash
+```bash
 # Single Telegraf configuration and Telegraf configuration directory
 ./tools/custom_builder/custom_builder \
 --config /etc/telegraf.conf \
 --config-dir /etc/telegraf/telegraf.d
 ```
 
-``` bash
+```bash
 # Remote Telegraf configuration
 ./tools/custom_builder/custom_builder \
 --config http://url-to-remote-telegraf/telegraf.conf
@@ -176,7 +176,7 @@ The following example generates a sample configuration file with all available p
 
 * Run the following command to create a configuration file
 
-``` bash
+```bash
 telegraf --sample-config > telegraf.conf
 ```
 
@@ -194,14 +194,14 @@ telegraf --sample-config > telegraf.conf
 
 For this example, specify two inputs (`cpu` and `mem`) with the `--input-filter` flag. Specify InfluxDB as the output with the `--output-filter` flag.
 
-``` bash
+```bash
 telegraf --sample-config --input-filter cpu:mem --output-filter influxdb_v2 > telegraf.conf
 ```
 
 The resulting configuration will collect CPU and memory data and sends it to InfluxDB V2.
 
 
-``` bash
+```bash
 $ ./telegraf -config telegraf.conf -test
 2024-01-17T03:55:55Z I! Loading config: telegraf.conf
 2024-01-17T03:55:55Z I! Starting Telegraf 1.29.2 brought to you by InfluxData the makers of InfluxDB
@@ -287,7 +287,7 @@ INFLUX_PASSWORD="monkey123"
 
 In the Telegraf configuration file (`/etc/telegraf.conf`):
 
-``` bash
+```bash
 [global_tags]
   user = "${USER}"
 
@@ -301,7 +301,7 @@ In the Telegraf configuration file (`/etc/telegraf.conf`):
 
 The environment variables above add the following configuration settings to Telegraf:
 
-``` bash
+```bash
 [global_tags]
   user = "alice"
 
@@ -655,7 +655,7 @@ Telegraf contains many general purpose plugins that support parsing input data u
 
 Any input plugin containing the `data_format` option can use it to select the desired parser:
 
-``` bash
+```bash
 [[inputs.exec]]
   ## Commands array
   commands = ["/tmp/test.sh", "/usr/bin/mycollector --foo=bar"]
@@ -768,7 +768,7 @@ $ ./telegraf --usage file
 #### tail (input) + file (output)
 
 
-``` bash
+```bash
 # Stream a log file, like the tail -F command
 [[inputs.tail]]
   ## files to tail.
@@ -802,7 +802,7 @@ Telegraf 的 inputs.file 插件默认行为是每次收集间隔都会读取并�
 
 #### exec (input / output)
 
-``` bash
+```bash
 $ ./telegraf --usage exec
 
 # Read metrics from one or more commands that can output to stdout
@@ -1041,7 +1041,7 @@ $ ./telegraf --usage cpu
 
 ### agent
 
-``` bash
+```bash
 ## Default data collection interval for all inputs
 interval = "10s"
 ## Rounds collection interval to 'interval'
@@ -1056,7 +1056,7 @@ round_interval 选项决定是否将收集间隔四舍五入到最接近的 inte
 在示例中，round_interval = true 表示 Telegraf 将四舍五入收集间隔，确保始终在整数倍的 interval 时间点上收集数据。
 
 
-``` bash
+```bash
 ## Telegraf will send metrics to outputs in batches of at most
 ## metric_batch_size metrics.
 ## This controls the size of writes that Telegraf sends to output plugins.
@@ -1071,7 +1071,7 @@ metric_batch_size 选项设置了 Telegraf 在将度量值（metrics）发送到
 
 
 
-``` bash
+```bash
 ## Maximum number of unwritten metrics per output.  Increasing this value
 ## allows for longer periods of output downtime without dropping metrics at the
 ## cost of higher maximum memory usage.
@@ -1085,7 +1085,7 @@ metric_buffer_limit 用于设置可以在内存中缓存的度量值（metrics�
 metric_buffer_limit = 10000 表示 Telegraf 在内存中最多可以缓存 10000 个度量值。这个设置可以根据系统资源和需求进行调整。
 
 
-``` bash
+```bash
 ## Collection jitter is used to jitter the collection by a random amount.
 ## Each plugin will sleep for a random time within jitter before collecting.
 ## This can be used to avoid many plugins querying things like sysfs at the
@@ -1100,7 +1100,7 @@ collection_jitter 选项用于在收集度量值之前，为每个输入插件�
 如果希望降低 Telegraf 对系统性能的影响，可以考虑为 collection_jitter 设置一个较大的值。例如，如果将 collection_jitter 设置为 "5s"，则每个输入插件在每个收集间隔开始时，将等待 0 到 5 秒之间的随机时间，然后再收集数据。这样可以将插件的数据收集操作分散在整个收集间隔内，从而减轻对系统性能的影响。
 
 
-``` bash
+```bash
 ## Collection offset is used to shift the collection by the given amount.
 ## This can be be used to avoid many plugins querying constraint devices
 ## at the same time by manually scheduling them in time.
@@ -1115,7 +1115,7 @@ collection_offset 选项用于将数据收集操作在时间上平移指定的�
 
 请注意，collection_offset 与 collection_jitter 不同。collection_jitter 为每个插件添加一个随机延迟，而 collection_offset 为每个插件添加一个固定的延迟。根据需求可以选择使用这两个选项中的一个或同时使用两者。
 
-``` bash
+```bash
 ## Default flushing interval for all outputs. Maximum flush_interval will be
 ## flush_interval + flush_jitter
 flush_interval = "10s"
@@ -1133,7 +1133,7 @@ flush_jitter 选项用于在刷新间隔中添加一个随机的时间量。这�
 
 在示例中，flush_jitter = "0s" 表示没有添加任何随机延迟，这意味着 Telegraf 将在每个刷新间隔（由 flush_interval 设置）的开始时将数据发送到输出插件。如果希望降低 Telegraf 对输出目标的负载，可以考虑为 flush_jitter 设置一个较大的值。
 
-``` bash
+```bash
 ## Collected metrics are rounded to the precision specified. Precision is
 ## specified as an interval with an integer + unit (e.g. 0s, 10ms, 2us, 4s).
 ## Valid time units are "ns", "us" (or "µs"), "ms", "s".
@@ -1163,7 +1163,7 @@ InfluxDB line protocol is a text-based format for writing points to InfluxDB.
 
 ### [Line protocol syntax](https://docs.influxdata.com/influxdb/v1/write_protocols/line_protocol_reference/)
 
-``` xml
+```xml
 <measurement>[,<tag_key>=<tag_value>[,<tag_key>=<tag_value>]] <field_key>=<field_value>[,<field_key>=<field_value>] [<timestamp>]
 ```
 
@@ -1175,7 +1175,7 @@ In InfluxDB's line protocol, the newline character `\n` is used to separate diff
 
 Here is an example of how data is formatted in line protocol:
 
-``` bash
+```bash
 measurementName,tagKey=tagValue fieldKey="fieldValue" timestamp
 ```
 
@@ -1219,43 +1219,43 @@ InfluxDB line protocol informs InfluxDB of the data's `measurement`, `tag set`, 
 
 Write the field value `-1.234456e+78` as a **float** to InfluxDB
 
-``` xml
+```xml
 > INSERT mymeas value=-1.234456e+78
 ```
 
 Write a field value `1.0` as a **float** to InfluxDB
 
-``` xml
+```xml
 > INSERT mymeas value=1.0
 ```
 
 Write the field value `1` as a **float** to InfluxDB
 
-``` xml
+```xml
 > INSERT mymeas value=1
 ```
 
 Write the field value `1` as an **integer** to InfluxDB
 
-``` xml
+```xml
 > INSERT mymeas value=1i
 ```
 
 Write the field value `stringing along` as a **string** to InfluxDB
 
-``` xml
+```xml
 > INSERT mymeas value="stringing along"
 ```
 
 Write the field value `true` as a **Boolean** to InfluxDB
 
-``` xml
+```xml
 > INSERT mymeas value=true
 ```
 
 Do not quote Boolean field values. The following statement writes `true` as a **string** field value to InfluxDB:
 
-``` xml
+```xml
 > INSERT mymeas value="true"
 ```
 

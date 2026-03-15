@@ -131,7 +131,7 @@ Redis的所有配置和一些状态信息，全部记录在`struct redisServer`�
 
 ![redisServer](/assets/images/201810/redisServer.jpg)
 
-``` cpp
+```cpp
 struct redisServer {
     /* General */
     pid_t pid;                  /* Main process pid. */
@@ -151,11 +151,11 @@ struct redisServer {
 
 ### server.db
 
-``` cpp
+```cpp
 redisDb *db;
 ```
 
-``` cpp
+```cpp
 /* Redis database representation. There are multiple databases identified
  * by integers from 0 (the default database) up to the max configured
  * database. The database number is the 'id' field in the structure. */
@@ -173,11 +173,11 @@ typedef struct redisDb {
 
 ### server.commands
 
-``` cpp
+```cpp
  dict *commands;             /* Command table */
 ```
 
-``` cpp
+```cpp
 // src/dict.h
 // Hash Tables Implementation
 
@@ -203,7 +203,7 @@ typedef struct dict {
 
 记录客户端的连接。(a linked list of clients connected to the server)
 
-``` cpp
+```cpp
 list *clients;              /* List of active clients */
 ```
 
@@ -211,14 +211,14 @@ list *clients;              /* List of active clients */
 
 a special client, the master, if the instance is a replica.
 
-``` cpp
+```cpp
 client *master;     /* Client that is master for this slave */
 ```
 
 ### client
 
 
-``` cpp
+```cpp
 // src/server.h
 
 /* With multiplexing we need to take per-client state.
@@ -247,7 +247,7 @@ struct client {
 * 通过`type`字段，区分实际表示哪类对象
 * 并通过`refcount`字段实现引用计数，防止对象的多次创建
 
-``` cpp
+```cpp
 #define LRU_BITS 24
 
 typedef struct redisObject {
@@ -267,7 +267,7 @@ typedef struct redisObject {
 
 Redis server的入口`main()`函数在此文件定义，可以了解到Redis内部是如何启动的。
 
-``` cpp
+```cpp
 int main(int argc, char **argv) {
 	// ...
 
@@ -289,7 +289,7 @@ int main(int argc, char **argv) {
 1. `serverCron()` is called periodically (according to `server.hz` frequency), and performs tasks that must be performed from time to time, like checking for timedout clients.
 2. `beforeSleep()` is called every time the event loop fired, Redis served a few requests, and is returning back into the event loop.
 
-``` cpp
+```cpp
 /* This is our timer interrupt, called server.hz times per second.
  * Here is where we do a number of things that need to be done asynchronously.
  * For instance:
@@ -312,7 +312,7 @@ int main(int argc, char **argv) {
 int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData)
 ```
 
-``` cpp
+```cpp
 /* This function gets called every time Redis is entering the
  * main loop of the event driven library, that is, before to sleep
  * for ready file descriptors. */
@@ -327,7 +327,7 @@ void beforeSleep(struct aeEventLoop *eventLoop);
 * The global variable `redisCommandTable` defines all the Redis commands, specifying the name of the command, the function implementing the command, the number of arguments required, and other properties of each command.
 
 
-``` cpp
+```cpp
 /* Call() is the core of Redis execution of a command.
  *
  * The following flags can be passed:
@@ -368,7 +368,7 @@ void beforeSleep(struct aeEventLoop *eventLoop);
 void call(client *c, int flags);
 ```
 
-``` cpp
+```cpp
 /* Try to expire a few timed out keys. The algorithm used is adaptive and
  * will use few CPU cycles if there are few expiring keys, otherwise
  * it will get more aggressive to avoid that too much memory is used by
@@ -394,7 +394,7 @@ void call(client *c, int flags);
 void activeExpireCycle(int type);
 ```
 
-``` cpp
+```cpp
 /* This function is periodically called to see if there is memory to free
  * according to the current "maxmemory" settings. In case we are over the
  * memory limit, the function will try to free some memory to return back
@@ -992,7 +992,7 @@ The magic of this algorithm is that you no longer need to use an amount of memor
 
 Redis的所有命令定义：
 
-``` cpp
+```cpp
 void foobarCommand(client *c) {
     printf("%s",c->argv[1]->ptr); /* Do something with the argument. */
     addReply(c,shared.ok); /* Reply something to the client. */
@@ -1001,7 +1001,7 @@ void foobarCommand(client *c) {
 
 在`server.c`中定义了command table：
 
-``` cpp
+```cpp
 {"foobar",foobarCommand,2,"rtF",0,NULL,0,0,0,0,0},
 ```
 
@@ -1050,9 +1050,7 @@ Redis的一种事务的处理方法(思想类似，`乐观锁`)：使用`WATCH`�
 
 
 
-```
-watch
-
+```watch
 multi
 
 # 操作1
@@ -1156,7 +1154,7 @@ auto-aof-rewrite-min-size 64mb
 
 要对Redis的性能进行优化，首先需要知道各种命令的执行速度，可以通过附带的性能测试程序`redis-benchmark`测试，可以展示一些常用命令在1秒内可以执行的次数。
 
-``` bash
+```bash
 # -c 1 一个客户端, 不指定则默认为50个客户端
 # -q 简化输出结果
 redis-benchmark -c 1 -1

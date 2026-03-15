@@ -82,7 +82,7 @@ After the performance is made, you may [get information](https://curl.se/libcurl
 
 See also the [easy interface overview](https://curl.se/libcurl/c/libcurl-easy.html).
 
-``` cpp
+```cpp
 curl_easy_init()
 curl_easy_cleanup()
 curl_easy_setopt()
@@ -92,8 +92,7 @@ curl_easy_getinfo()
 
 While the above functions are the main functions to use in the easy interface, there is a series of other helpful functions too including:
 
-``` cpp
-
+```cpp
 curl_version()	// returns a pointer to the libcurl version string
 curl_getdate()	// converts a date string to time_t
 curl_mime_init()	// ... and family, to build multipart form-data posts
@@ -217,7 +216,7 @@ libz
 
 The program must initialize some of the libcurl functionality globally. That means it should be done exactly once, no matter how many times you intend to use the library. Once for your program's entire life time. This is done using
 
-``` cpp
+```cpp
 curl_global_init()
 ```
 
@@ -267,7 +266,7 @@ The callbacks CANNOT be non-static class member functions
 
 Example C++ code:
 
-``` cpp
+```cpp
 class AClass {
     static size_t write_data(void *ptr, size_t size, size_t nmemb,
                              void *ourpointer)

@@ -16,7 +16,7 @@ tags:
 
 查看当前环境 C++ 版本：
 
-``` bash
+```bash
 $ ls -l /lib64/libstdc++.so.6
 lrwxrwxrwx 1 root root 19 Aug 18  2020 /lib64/libstdc++.so.6 -> libstdc++.so.6.0.25
 $ rpm -qf /lib64/libstdc++.so.6
@@ -127,7 +127,7 @@ clang-tidy --checks='clang-analyzer-*,modernize-*,readability-*' test.cpp
 
 * [Valgrind](https://valgrind.org/) 算是一个老牌工具了。它是一个非侵入式的排错工具。根据 Valgrind 的文档，它会导致可执行文件的速度减慢 20 至 30 倍。但它可以在不改变可执行文件的情况下，只要求你在编译时增加产生调试信息的命令行参数（`-g`），即可查出内存相关的错误。
 
-``` cpp
+```cpp
 int main()
 {
   char* ptr = new char[20];
@@ -142,7 +142,7 @@ int main()
 
 * 在 [nvwa](https://github.com/adah1972/nvwa/) 项目里，我也包含了一个很小的内存泄漏检查工具。它的最大优点是小巧，并且对程序运行性能影响极小；缺点主要是不及 Valgrind 易用和强大，只能检查 new 导致的内存泄漏，并需要侵入式地对项目做修改。
 
-``` bash
+```bash
 c++ test.cpp \../nvwa/nvwa/debug_new.cpp
 ```
 

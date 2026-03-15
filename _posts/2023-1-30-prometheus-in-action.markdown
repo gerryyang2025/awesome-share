@@ -244,8 +244,7 @@ Scalar float values can be written as literal integer or floating-point numbers 
 
 Examples:
 
-```
-23
+```23
 -2.43
 3.4e-9
 0x8f
@@ -335,8 +334,7 @@ Time durations are specified as a number, followed immediately by one of the fol
 
 Here are some examples of valid time durations:
 
-```
-5h
+```5h
 1h30m
 5m
 10s

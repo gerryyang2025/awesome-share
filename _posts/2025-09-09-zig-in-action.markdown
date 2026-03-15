@@ -43,7 +43,7 @@ Incrementally improve your C/C++/Zig codebase.
 
 A minimal example printing `hello world`.
 
-``` zig
+```zig
 // hello-world.zig
 
 const std = @import("std");
@@ -63,7 +63,7 @@ hello world!
 
 All system API functions can be invoked this way, you do not need library bindings to interface them.
 
-``` zig
+```zig
 // windows-msgbox.zig
 
 const win = @import("std").os.windows;
@@ -84,7 +84,7 @@ All 0 tests passed.
 
 Using `std.heap.GeneralPurposeAllocator` you can track double frees and memory leaks.
 
-``` zig
+```zig
 // memory-leak.zig
 
 const std = @import("std");
@@ -118,7 +118,7 @@ error(gpa): memory address 0x7f5d08ea0000 leaked:
 
 Example of importing a `C` header file and linking to both `libc` and `raylib`.
 
-``` zig
+```zig
 // c-interop.zig
 
 // build with `zig build-exe c-interop.zig -lc -lraylib`
@@ -149,7 +149,7 @@ pub fn main() void {
 
 ## Test
 
-``` zig
+```zig
 // index.zig
 
 const std = @import("std");
@@ -188,7 +188,7 @@ All 1 tests passed.
 
 `Zig` is optimized for coding interviews (not really).
 
-``` zig
+```zig
 // ziggzagg.zig
 
 const std = @import("std");
@@ -236,7 +236,7 @@ info: 16
 In `Zig` types are comptime values and we use functions that return a type to implement generic algorithms and data structures. In this example we implement a simple generic queue and test its behaviour.
 
 
-``` zig
+```zig
 // generic-type.zig
 
 const std = @import("std");
@@ -308,7 +308,7 @@ All 1 tests passed.
 
 ## Using cURL from Zig (在 Zig 中使用 cURL)
 
-``` zig
+```zig
 // curl.zig
 
 // compile with `zig build-exe zig-curl-test.zig --library curl --library c $(pkg-config --cflags libcurl)`

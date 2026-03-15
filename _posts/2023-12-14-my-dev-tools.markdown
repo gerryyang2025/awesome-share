@@ -30,7 +30,7 @@ tags:
 
 ## CMake 3.20.0
 
-``` bash
+```bash
 #!/bin/bash
 
 CUR_DIR=$(dirname $(readlink -f $0))
@@ -94,7 +94,7 @@ fi
 
 ## Bazel (Bazelisk 1.17.0)
 
-``` bash
+```bash
 #!/bin/bash
 
 CUR_DIR=$(dirname $(readlink -f $0))
@@ -144,7 +144,7 @@ fi
 
 编译安装 Clang 11.0.0 并指定编译安装一些辅助工具，包括 lld, lldb, clang-tools-extra 等。安装脚本参考如下：
 
-``` bash
+```bash
 #!/bin/bash
 
 # Download the LLVM project
@@ -199,7 +199,7 @@ clang --version
 
 ## GoLang 1.20.7
 
-``` bash
+```bash
 #!/bin/bash
 
 # Download Go
@@ -229,7 +229,7 @@ fi
 
 ## Python 3.8.12
 
-``` bash
+```bash
 #!/bin/bash
 
 # Download Python
@@ -287,7 +287,7 @@ python --version
 
 ## CCache
 
-``` bash
+```bash
 yum install ccache -y
 ```
 
@@ -295,7 +295,7 @@ yum install ccache -y
 
 ## git-lfs
 
-``` bash
+```bash
 #!/bin/bash
 
 # Download Git LFS v3.4.0
@@ -329,7 +329,7 @@ echo "Git LFS installation successful"
 
 ## atop
 
-``` bash
+```bash
 yum install atop -y
 ```
 
@@ -339,31 +339,31 @@ yum install atop -y
 
 可选编译选项：
 
-``` bash
+```bash
 # 指定 ABI 编译版本
 ADD_DEFINITIONS(-D_GLIBCXX_USE_CXX11_ABI=0)
 ```
 
-``` bash
+```bash
 # 位置无关代码
 SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 ```
 
 ## libatomic
 
-``` bash
+```bash
 yum install libatomic -y
 ```
 
 ## libreadline
 
-``` bash
+```bash
 yum install readline-devel
 ```
 
 ## protobuf
 
-``` bash
+```bash
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release  -DCMAKE_INSTALL_PREFIX=/data/home/gerryyang/jlib_proj/deps_src/protobuf-3.7.1/install -DCMAKE_POSITION_INDEPENDENT_CODE=ON -Dprotobuf_BUILD_TESTS=OFF ../cmake
 
 make -j16 && make install
@@ -371,7 +371,7 @@ make -j16 && make install
 
 或者
 
-``` bash
+```bash
 ./autogen.sh -i
 ./configure --with-pic --disable-shared --prefix=/thirdparty/protobuf
 ```
@@ -382,7 +382,7 @@ https://github.com/openssl/openssl/blob/master/INSTALL.md#building-openssl
 
 https://github.com/openssl/openssl/releases/tag/OpenSSL_1_1_1k
 
-``` bash
+```bash
 ./Configure linux-x86_64-clang --prefix=/data/home/gerryyang/tools/openssl/openssl-OpenSSL_1_1_1k-install -fPIC
 make -j16 && make install
 ```
@@ -391,7 +391,7 @@ make -j16 && make install
 
 https://github.com/curl/curl
 
-``` bash
+```bash
 ./configure --prefix=/data/home/gerryyang/tools/curl/curl-7.81.0-install --with-ssl=/data/home/gerryyang/jlib_proj/JLib/thirdparty/openssl --enable-static=yes --enable-shared=no
 ```
 
@@ -400,7 +400,7 @@ https://github.com/curl/curl
 
 ## objdump
 
-``` bash
+```bash
 objdump -d -M intel /path/to/your/binary > disassembly.txt
 objdump -d -M intel -j .text /path/to/your/binary > disassembly.txt
 grep -A10 "<your_function>:" disassembly.txt
@@ -409,7 +409,7 @@ grep -A10 "<your_function>:" disassembly.txt
 
 ## gdb
 
-``` bash
+```bash
 disas /r your_function
 ```
 

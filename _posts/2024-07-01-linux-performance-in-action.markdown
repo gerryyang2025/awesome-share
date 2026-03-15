@@ -841,7 +841,7 @@ LISTEN              0                   128                                     
 
 假设有一个处理大量数据的函数：
 
-``` cpp
+```cpp
 #include <stdio.h>
 
 void process_data(int *data, size_t size) {
@@ -864,7 +864,7 @@ int main() {
 
 可以使用 `__builtin_prefetch` 对 `process_data` 函数进行优化，以预先提取关键指令并降低缓存的缺失比例：
 
-``` cpp
+```cpp
 #include <stdio.h>
 
 void process_data(int *data, size_t size) {

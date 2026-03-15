@@ -281,7 +281,7 @@ $ cat /proc/net/softnet_stat
 ## 计算丢包率
 
 
-``` bash
+```bash
 #!/bin/bash
 
 processed=$(cat /proc/net/softnet_stat | awk '{print strtonum("0x"$1)}' | awk '{sum+=$1} END {print sum}')
@@ -302,7 +302,7 @@ echo "丢包率: $(echo "scale=4; $dropped / $processed * 100" | bc)%"
 
 ## 检查网络性能问题
 
-``` bash
+```bash
 #!/bin/bash
 
 # 监控 softnet_stat 变化
@@ -312,7 +312,7 @@ awk "{printf \"CPU %2d: processed=%d dropped=%d time_squeeze=%d\\n\", NR-1, strt
 
 ## 诊断网络瓶颈
 
-``` bash
+```bash
 #!/bin/bash
 
 echo "检查各CPU网络负载:"
@@ -329,7 +329,7 @@ awk '{
 
 ## 监控脚本
 
-``` bash
+```bash
 #!/bin/bash
 
 INTERVAL=5
@@ -349,7 +349,7 @@ done
 
 ## 调优参数
 
-``` bash
+```bash
 # 如果 time_squeeze 较高，增加处理预算
 echo 300 > /proc/sys/net/core/netdev_budget
 

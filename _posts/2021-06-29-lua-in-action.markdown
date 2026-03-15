@@ -35,7 +35,7 @@ tags:
 * Lua 中连续的连字符 `--` 表示单行注释。`--[[ ]]` 表示多行注释。
 * 从 [Lua 官网](www.lua.org) 上下载解释器的源码，建议尝试从源码编译并安装。
 
-``` bash
+```bash
 # 下载 lua-5.3.6.tar.gz
 wget http://www.lua.org/ftp/lua-5.3.6.tar.gz  # released on 14 Sep 2020
 tar zxvf lua-5.3.6.tar.gz
@@ -166,7 +166,7 @@ hi
 
 ## [lua_call](https://www.lua.org/manual/5.3/manual.html#lua_call)
 
-``` cpp
+```cpp
 void lua_call (lua_State *L, int nargs, int nresults);
 ```
 
@@ -188,13 +188,13 @@ Any error inside the called function is propagated upwards (with a `longjmp`).
 
 The following example shows how the host program can do the equivalent to this Lua code:
 
-``` lua
+```lua
 a = f("how", t.x, 14)
 ```
 
 Here it is in C:
 
-``` c
+```c
 lua_getglobal(L, "f");                  /* function to be called */
 lua_pushliteral(L, "how");                       /* 1st argument */
 lua_getglobal(L, "t");                    /* table to be indexed */
@@ -211,7 +211,7 @@ Note that the code above is balanced: at its end, the stack is back to its origi
 
 ## [lua_pcall](https://www.lua.org/manual/5.3/manual.html#lua_pcall)
 
-``` cpp
+```cpp
 int lua_pcall (lua_State *L, int nargs, int nresults, int msgh);
 ```
 
@@ -234,7 +234,7 @@ The `lua_pcall` function returns one of the following constants (defined in `lua
 
 测试代码：
 
-``` lua
+```lua
 function printmsg()
         -- ok
         --print("hello world")
@@ -248,7 +248,7 @@ function errorhandle(str)
 end
 ```
 
-``` cpp
+```cpp
 #include<iostream>
 #include<string>
 
@@ -310,7 +310,7 @@ ATTEMPT TO CALL A STRING VALUE
 */
 ```
 
-``` bash
+```bash
 #!/bin/bash
 
 # lua 5.3.5
@@ -354,7 +354,7 @@ LuaBridge is a lightweight and dependency-free library for mapping data, functio
 
 下面这条语句的结果是：10992432728506384
 
-``` lua
+```lua
 print(string.format("%d", 186312419127226*59 + 49))
 ```
 
@@ -373,7 +373,7 @@ LuaJIT 版本：2.1.0-alpha
 在 LuaJIT 中，Lua number 的默认精度上限是双精度浮点数（double）。如果你想进行无精度损失的 64 位整数计算，须使用
 FFI cdata 的包装整数类型。例如，对于你这里的例子：
 
-``` lua
+```lua
 local ffi = require "ffi"
 local res = ffi.new("int64_t", 186312419127226)*59 + 49)
 print(tostring(res))
@@ -387,7 +387,7 @@ print(tostring(res))
 
 好吧，这可以进一步化简为
 
-``` lua
+```lua
 $ luajit -e 'print(186312419127226LL*59 + 49)'
 10992432728506383LL
 ```
@@ -414,7 +414,7 @@ From [Lua 5.3 reference manual](http://www.lua.org/manual/5.3/manual.html#2.1)
 ## [Using lua_checkstack?](https://stackoverflow.com/questions/63272970/using-lua-checkstack)
 
 
-``` c
+```c
 void luaL_checkstack (lua_State *L, int sz, const char *msg);
 
 // Grows the stack size to top + sz elements, raising an error if the stack cannot grow to that size. msg is an additional text to go into the error message (or NULL for no additional text).
@@ -425,7 +425,7 @@ void luaL_checkstack (lua_State *L, int sz, const char *msg);
 
 # Lua 5.3 升级注意事项
 
-``` bash
+```bash
 sudo yum install readline-devel
 ```
 

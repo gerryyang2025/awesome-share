@@ -79,7 +79,7 @@ refer: [Operation Costs in CPU Clock Cycles](http://ithare.com/infographics-oper
 
 例子1: 比较不同查找实现的执行效率。
 
-``` cpp
+```cpp
 static void VectorFind(benchmark::State& state) {
   int max = 10000;
   std::string last_v = std::to_string(max - 1);
@@ -116,7 +116,7 @@ BENCHMARK(SetFind);
 
 例子2：循环展开优化（`Loop unwinding`），使用循环展开减少分支预测的错误次数，从而提高程序执行的速度。但是代码中进行循环展开会导致代码膨胀以及可读性的下降，通常情况使用编译器优化即可。
 
-``` cpp
+```cpp
 static void test1(benchmark::State& state) {
   int sum = 0;
   for (auto _ : state) {
@@ -262,7 +262,7 @@ More:
 
 使用`enum hack`
 
-``` cpp
+```cpp
 #include <iostream>
 
 template<int a, int b>
@@ -280,7 +280,7 @@ int main()
 
 使用C++11的`constexpr`
 
-``` cpp
+```cpp
 #include <iostream>
 
 template<typename T1, typename T2>
@@ -301,7 +301,7 @@ int main()
 
 C++11之前的方法：使用`offsetof`宏获取member的偏移量，从而获取指定类型的对齐字节长度。
 
-``` cpp
+```cpp
 #include <iostream>
 
 #define ALIGNOF(type, result) do {\
@@ -340,7 +340,7 @@ int main()
 
 更好的方法：
 
-``` cpp
+```cpp
 #include <iostream>
 
 template<typename T>
@@ -368,7 +368,7 @@ int main()
 
 使用编译器的扩展功能：
 
-``` cpp
+```cpp
 #include <iostream>
 
 // GCC
@@ -390,7 +390,7 @@ int main()
 
 设置数据对齐。
 
-``` cpp
+```cpp
 #include <iostream>
 
 // GCC
@@ -408,7 +408,7 @@ int main()
 
 由于不同的编译器需要采用不同的扩展功能来控制类型的对齐字节长度，对可移植性不太友好，因此，C++11标准中新增了`alignof`和`alignas`两个关键字。
 
-``` cpp
+```cpp
 #include <iostream>
 
 // GCC
@@ -428,7 +428,7 @@ int main()
 
 也提供了一些模板方法：例如，`std::alignment_of`
 
-``` cpp
+```cpp
 #include <iostream>
 
 int main()
@@ -536,7 +536,7 @@ tinymembench v0.4.9 (simple benchmark for memory throughput and latency)
 
 ```
 
-``` cpp
+```cpp
 #include <iostream>
 #include <memory>
 #include <chrono>
@@ -599,7 +599,7 @@ int main(int argc, char *argv[])
 * https://en.cppreference.com/w/cpp/compiler_support
 * https://stackoverflow.com/questions/65083544/format-no-such-file-or-directory
 
-``` cpp
+```cpp
 // {fmt} is an open-source formatting library providing a fast and safe alternative to C stdio and C++ iostreams.
 // Format string syntax similar to Python's format.
 // https://github.com/fmtlib/fmt
@@ -631,7 +631,7 @@ int main() {
 
 This benchmark evaluates the performance of conversion from double precision IEEE-754 floating point (double) to ASCII string. The function prototype is:
 
-``` cpp
+```cpp
 void dtoa(double value, char* buffer);
 ```
 
@@ -684,7 +684,7 @@ auto f = fmt::format_int(42);
 
 [几种实现方案的测试对比](https://gcc.godbolt.org/z/9xGz6jhc8)：运行期计算，编译期计算，查表等方案。
 
-``` cpp
+```cpp
 #include <stdio.h>
 #include <iostream>
 #include <string>
@@ -997,7 +997,7 @@ GCC内置宏[__builtin_expect](https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins
 
 C++20支持了[C++ attribute: likely, unlikely](https://en.cppreference.com/w/cpp/language/attributes/likely) 分支预测的属性设置，帮助编译器实现优化。
 
-``` cpp
+```cpp
 if (a > b) [[likely]] {
   do_something();
 } else {
@@ -1018,7 +1018,7 @@ switch (x) {
 
 例如：
 
-``` cpp
+```cpp
 // long __builtin_expect (long exp, long c)
 // we do not expect to call foo, since we expect x to be zero
 if (__builtin_expect (x, 0)) {
@@ -1032,7 +1032,7 @@ if (__builtin_expect (ptr != NULL, 1)) {
 
 为了方便使用，Linux内核代码（[include/linux/compiler.h](https://github.com/torvalds/linux/blob/master/include/linux/compiler.h)）定义了两个接口。
 
-``` cpp
+```cpp
 // expect x is true
 # define likely(x)	__builtin_expect(!!(x), 1)
 // expect x is false
@@ -1046,7 +1046,7 @@ if (__builtin_expect (ptr != NULL, 1)) {
 
 程序1:
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <iostream>
 #include <unistd.h>
@@ -1070,7 +1070,7 @@ int main()
 }
 ```
 
-``` asm
+```asm
 0000000000000710 <main>:
  710:   55                      push   %rbp
  711:   53                      push   %rbx
@@ -1110,7 +1110,7 @@ int main()
 
 程序2:
 
-``` cpp
+```cpp
 #define LIKELY(x)  __builtin_expect(!!(x), 1)
 #define UNLIKELY(x)  __builtin_expect(!!(x), 0)
 
@@ -1125,7 +1125,7 @@ __attribute__ ((noinline)) int func(int a)
 }
 ```
 
-``` asm
+```asm
 0000000000000850 <_Z4funci>:
  850:   48 83 ec 08             sub    $0x8,%rsp
  854:   85 ff                   test   %edi,%edi
@@ -1146,7 +1146,7 @@ __attribute__ ((noinline)) int func(int a)
 关于性能的测试比较: 参考[文章](http://blog.man7.org/2012/10/how-much-do-builtinexpect-likely-and.html)提供的[测试程序](https://man7.org/linux/tests/gcc/builtin_expect_test.c)
 
 
-``` cpp
+```cpp
 /* builtin_expect_test.c */
 
 #include <stdio.h>
@@ -1327,7 +1327,7 @@ refer: https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-i
 
 下面的宏定义用于读取TSC的值：
 
-``` c
+```c
 #ifdef __x86_64__
 #define RDTSC() ({ unsigned int tickl, tickh; __asm__ __volatile__("rdtsc":"=a"(tickl),"=d"(tickh)); ((unsigned long long)tickh << 32)|tickl; })
 #else
@@ -1341,7 +1341,7 @@ refer: https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-i
 
 The `a` and `d` registers. This class is used for instructions that return **double word(2 * 32)** results in the `ax:dx` register pair. Single word values will be allocated either in `ax` or `dx`. For example on `i386` the following implements `rdtsc`:
 
-``` c
+```c
 unsigned long long rdtsc (void)
 {
   unsigned long long tick;
@@ -1352,7 +1352,7 @@ unsigned long long rdtsc (void)
 
 This is not correct on `x86-64` as it would allocate tick in either `ax` or `dx`. You have to use the following variant instead:
 
-``` c
+```c
 unsigned long long rdtsc (void)
 {
   unsigned int tickl, tickh;
@@ -1366,7 +1366,7 @@ unsigned long long rdtsc (void)
 
 `TSC`是一个**64位的寄存器，相当与一个计数器(It counts the number of CPU cycles since its reset)，但我们所需要的是时间，而不是计数。由于`TSC`的值是每个CPU时钟周期增加1，所以只要知道了CPU的时间频率，就可以将这个值换算成时间**。因为对精度的要求并不是很高（微秒级），我们只需要获得以兆为单位的大约值就可以了。下面的函数获得**CPU的频率**：
 
-``` cpp
+```cpp
 static inline int getcpuspeed_mhz(unsigned int wait_us)
 {
    uint64_t tsc1, tsc2;
@@ -1393,7 +1393,7 @@ CPU频率和TSC的换算公式如下：知道了**TSC的偏移**和**CPU频率**
 
 对于 Windows 比较简单，直接提供了对应的指令`__rdtsc`。
 
-``` cpp
+```cpp
 // rdtsc.cpp
 // processor: x86, x64
 #include <stdio.h>
@@ -1411,7 +1411,7 @@ int main()
 
 测试程序：
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <time.h>
 #include <sys/time.h>
@@ -1501,19 +1501,19 @@ The two system calls listed cannot use the vDSO as they normally would on any ot
 
 要使用 `-pg` 选项，请在编译和链接时都加上 `-pg`，例如：
 
-``` bash
+```bash
 gcc -pg -o my_program my_program.c
 ```
 
 然后运行程序：
 
-``` bash
+```bash
 ./my_program
 ```
 
 这将生成 `gmon.out` 文件。接下来，使用 `gprof` 分析性能数据：
 
-``` bash
+```bash
 gprof my_program gmon.out > analysis.txt
 ```
 
@@ -1526,7 +1526,7 @@ gprof my_program gmon.out > analysis.txt
 
 因为 [ntohl](https://linux.die.net/man/3/ntohl) 不支持 64位，而 [be64toh](https://linux.die.net/man/3/be64toh) 支持 64位。
 
-``` cpp
+```cpp
 // htonl, htons, ntohl, ntohs - convert values between host and network byte order
 
 #include <arpa/inet.h>
@@ -1536,7 +1536,7 @@ uint32_t ntohl(uint32_t netlong);
 uint16_t ntohs(uint16_t netshort);
 ```
 
-``` cpp
+```cpp
 // htobe16, htole16, be16toh, le16toh, htobe32, htole32, be32toh, le32toh, htobe64, htole64, be64toh, le64toh - convert values between host and big-/little-endian byte order
 
 #define _BSD_SOURCE             /* See feature_test_macros(7) */
@@ -1560,7 +1560,7 @@ uint64_t le64toh(uint64_t little_endian_64bits);
 
 下面的 `ByteOrderSwap64` 是造轮子的实现方式。
 
-``` cpp
+```cpp
 inline uint64 ByteOrderSwap64(uint64 x)
 {
     return ((((x)&0xff00000000000000ull) >> 56) | (((x)&0x00ff000000000000ull) >> 40) | (((x)&0x0000ff0000000000ull) >> 24) |
@@ -1642,7 +1642,7 @@ io_uring 正如名字中提到的 ring，其主要结构就是两个循环队列
 
 **SQ Entry** 作为保存提交操作的类型，其结构如下：
 
-``` cpp
+```cpp
 // tkernel4 version
 /*
  * IO submission data structure (Submission Queue Entry)
@@ -1677,7 +1677,7 @@ struct io_uring_sqe {
 
 **CQ Entry** 则相对简单，只有三个字段：
 
-``` cpp
+```cpp
 // tkernel4 version
 /*
  * IO completion data structure (Completion Queue Entry)
@@ -1693,7 +1693,7 @@ struct io_uring_cqe {
 
 io_uring 原生提供了 3 个系统调用：
 
-``` cpp
+```cpp
 int io_uring_setup(unsigned entries, struct io_uring_params *params);
 int io_uring_enter(unsigned int fd, unsigned int to_submit,
                    unsigned int min_complete, unsigned int flags,
@@ -1774,7 +1774,7 @@ TDR 牺牲了易用性获取了高性能，而 ProtocolBuffers 通过部分性�
 
 程序1:
 
-``` cpp
+```cpp
 #include <cstdio>
 int main()
 {
@@ -1787,7 +1787,7 @@ g++ -Os example.cc
 
 程序2:
 
-``` asm
+```asm
 section .data
   some_string dq "Hello world"
   some_string_size dq 11

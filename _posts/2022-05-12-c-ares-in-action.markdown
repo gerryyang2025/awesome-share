@@ -20,7 +20,7 @@ In C programming, the functions `getaddrinfo()` and `getnameinfo()` convert **do
 
 Internally, the functions perform resolutions using the [Domain Name System](https://en.wikipedia.org/wiki/Domain_Name_System) (**DNS**) by calling other, lower level functions, such as `gethostbyname()`.
 
-``` cpp
+```cpp
 int getaddrinfo(const char *node, const char *service,
                 const struct addrinfo *hints,
                 struct addrinfo **res);
@@ -32,7 +32,7 @@ const char *gai_strerror(int errcode);
 
 The addrinfo structure used by `getaddrinfo()` contains the following fields:
 
-``` cpp
+```cpp
 struct addrinfo {
     int              ai_flags;
     int              ai_family;
@@ -131,7 +131,7 @@ One last thing. You might think that `getaddrinfo` caches answers, so subsequent
 ## Example
 
 
-``` cpp
+```cpp
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -172,7 +172,7 @@ $./a.out
 142.251.42.238
 ```
 
-``` cpp
+```cpp
 int SelectIP(const std::string& strHostName, std::string& strIP)
 {
     char szIP[INET_ADDRSTRLEN] = {0};
@@ -200,7 +200,7 @@ int SelectIP(const std::string& strHostName, std::string& strIP)
 }
 ```
 
-``` cpp
+```cpp
 #include <stdio.h>
 #include <stdlib.h>
 #include <netdb.h>
@@ -278,7 +278,7 @@ Options to CMake are passed on the command line using "-D${OPTION}=${VALUE}". Th
 
 ## ares_gethostbyaddr
 
-``` cpp
+```cpp
 #include <time.h>
 #include <iostream>
 #include <netdb.h>
@@ -339,7 +339,7 @@ dns.google
 
 ## ares_gethostbyname
 
-``` cpp
+```cpp
 #include <time.h>
 #include <iostream>
 #include <netdb.h>
@@ -414,7 +414,7 @@ gerryyang.com
 
 ## ares_process_fd + poll
 
-``` cpp
+```cpp
 #include <sys/time.h>
 #include <sys/poll.h>
 #include <arpa/inet.h>
@@ -638,7 +638,7 @@ int main()
 
 g++ ares_gethostbyname2.cc -o ares_gethostbyname2 -I deps/c-ares-1.18.1/include deps/c-ares-1.18.1/lib/libcares.a
 
-``` bash
+```bash
 $./ares_gethostbyname2
 119.28.41.102
 ```
@@ -651,7 +651,7 @@ More: [c-ares documentation](https://c-ares.org/docs.html)
 
 ## ares_init
 
-``` cpp
+```cpp
 #include <ares.h>
 
 int ares_init(ares_channel *channelptr)
@@ -670,7 +670,7 @@ When initializing from `/etc/resolv.conf`, `ares_init(3)` reads the domain and s
 
 ## ares_gethostbyaddr
 
-``` cpp
+```cpp
 #include <ares.h>
 
 typedef void (*ares_host_callback)(void *arg, int status, int timeouts, struct hostent *hostent)
@@ -690,7 +690,7 @@ On successful completion of the query, the callback argument hostent points to a
 
 ## ares_gethostbyname
 
-``` cpp
+```cpp
 #include <ares.h>
 
 typedef void (*ares_host_callback)(void *arg, int status, int timeouts, struct hostent *hostent)
@@ -710,7 +710,7 @@ On successful completion of the query, the callback argument hostent points to a
 
 ## ares_process
 
-``` cpp
+```cpp
 #include <ares.h>
 
 void ares_process(ares_channel channel, fd_set *read_fds, fd_set *write_fds)
@@ -725,7 +725,7 @@ The `ares_process` function will invoke **callbacks** for pending queries if the
 
 The following code fragment waits for all pending queries on a `channel` to complete:
 
-``` cpp
+```cpp
 int nfds, count;
 fd_set readers, writers;
 struct timeval tv, *tvp;
@@ -751,7 +751,7 @@ while (1)
 
 ## ares_fds
 
-``` cpp
+```cpp
 #include <ares.h>
 int ares_fds(ares_channel channel, fd_set *read_fds, fd_set *write_fds)
 ```
@@ -764,7 +764,7 @@ The `ares_fds` function retrieves the set of file descriptors which the calling 
 
 ## ares_timeout
 
-``` cpp
+```cpp
 #include <ares.h>
 
 struct timeval *ares_timeout(ares_channel channel, struct timeval *maxtv, struct timeval *tv)
@@ -931,7 +931,7 @@ resolve2 : 8803496 ns
 
 ## 测试代码
 
-``` cpp
+```cpp
 #include <sys/time.h>
 #include <sys/poll.h>
 #include <arpa/inet.h>

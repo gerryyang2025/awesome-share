@@ -145,7 +145,7 @@ More: https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
 
 ### follow-fork-mode
 
-``` cpp
+```cpp
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -241,19 +241,19 @@ More: https://code.visualstudio.com/docs/editor/codebasics
 
 ## 标题显示完整的文件路径名
 
-``` json
+```json
 "window.title": "${dirty}${activeEditorLong}${separator}${rootName}${separator}${appName}"
 ```
 
 ## 自动删除文件行尾空格
 
-``` json
+```json
 "files.trimTrailingWhitespace": true
 ```
 
 ## 在explorer中设置不关心的文件
 
-``` json
+```json
 "files.exclude": {
     "*.log": true,
 }
@@ -272,7 +272,7 @@ More: https://code.visualstudio.com/docs/editor/codebasics
 
 vscode 上使用 clangd 的配置 (项目根目录 `.vscode/settings.json` )
 
-``` json
+```json
 {
     // clangd configuration for jmesh project (C++20, CMake)
     "clangd.arguments": [

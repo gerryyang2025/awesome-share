@@ -17,7 +17,7 @@ tags:
 
 ## 使用 go 关键字
 
-``` go
+```go
 func main() {
 	go func() {
 		fmt.Println("hello world1")
@@ -28,7 +28,7 @@ func main() {
 }
 ```
 
-``` go
+```go
 func main() {
 	go Announce("hello world1")
 	go Announce("hello world2")
@@ -38,7 +38,7 @@ func Announce(message string) {
 }
 ```
 
-``` go
+```go
 // 使用匿名函数传递参数
 data := "Hello, World!"
 go func(msg string) {
@@ -49,7 +49,7 @@ go func(msg string) {
 
 以下是完整的代码：
 
-``` go
+```go
 package main
 
 import (
@@ -76,7 +76,7 @@ func main() {
 
 创建一个无缓冲的 channel。请注意，当使用无缓冲的 channel 时，发送操作将阻塞，直到有协程准备好接收值。这意味着在这种情况下，发送和接收操作将同步进行。
 
-``` go
+```go
 package main
 
 import (
@@ -106,7 +106,7 @@ func main() {
 
 创建一个带缓冲的 channel。
 
-``` go
+```go
 package main
 
 import (
@@ -137,7 +137,7 @@ func main() {
 
 通过 `Add()` 方法增加等待的协程数量，`Done()` 方法标记协程完成，`Wait()` 方法阻塞直到所有协程完成。
 
-``` go
+```go
 package main
 
 import (
@@ -173,7 +173,7 @@ func main() {
 
 如果想简单获取协程返回的错误，`errgroup` 包很适合，`errgroup` 包是 Go 语言标准库中的一个实用工具，用于管理一组协程并处理它们的错误。可以使用 `errgroup.Group` 结构来跟踪和处理协程组的错误。
 
-``` go
+```go
 package main
 
 import (
@@ -212,7 +212,7 @@ func main() {
 
 `range` 操作可以在接收通道上迭代值，直到通道关闭。可以使用 `close` 函数关闭通道，以向接收方指示没有更多的值。
 
-``` go
+```go
 package main
 
 import (
@@ -238,7 +238,7 @@ func main() {
 
 ## 使用 select 语句实现多个异步操作的等待
 
-``` go
+```go
 package main
 
 import (
@@ -278,7 +278,7 @@ func main() {
 
 如果需要在异步操作中设置超时，可以使用 select 语句结合 time.After() 函数实现。
 
-``` go
+```go
 package main
 
 import (
@@ -310,7 +310,7 @@ func main() {
 
 `time.Tick()` 函数返回一个通道，定期发送时间值，可以用于执行定时操作。`time.After()` 函数返回一个通道，在指定的时间后发送一个时间值。
 
-``` go
+```go
 package main
 
 import (
@@ -341,7 +341,7 @@ func main() {
 
 当多个协程并发访问共享数据时，需要确保数据访问的安全性。`sync.Mutex` 和 `sync.RWMutex` 提供了**互斥锁**和**读写锁**，用于在访问共享资源之前进行锁定，以避免数据竞争。 `sync.RWMutex` 是一种读写锁，可以在多个协程之间提供对共享资源的并发访问控制。多个协程可以同时获取读锁，但只有一个协程可以获取写锁。
 
-``` go
+```go
 package main
 
 import (
@@ -397,7 +397,7 @@ func main() {
 
 * **sync.Mutex 的锁不可以嵌套使用**：这意味着如果你在已经获取了 sync.Mutex 锁的情况下再次尝试获取锁，将会导致死锁。在这种情况下，协程将被阻塞，无法继续执行。
 
-``` go
+```go
 var mu sync.Mutex
 mu.Lock()
 mu.Lock() // 这将导致死锁
@@ -405,7 +405,7 @@ mu.Lock() // 这将导致死锁
 
 * **sync.RWMutex 的 RLock() 可以嵌套使用**：这意味着你可以在同一个协程中多次获取读锁，但是你必须释放相同数量的读锁，才能最终释放锁。
 
-``` go
+```go
 var mu sync.RWMutex
 mu.RLock()
 mu.RLock() // 这是允许的
@@ -415,7 +415,7 @@ mu.RUnlock() // 必须释放相同数量的读锁
 
 * **sync.RWMutex 的 Lock() 不可以嵌套**：这与 sync.Mutex 的行为相同，尝试在已经获取了写锁的情况下再次获取写锁，将会导致死锁。
 
-``` go
+```go
 var mu sync.RWMutex
 mu.Lock()
 mu.Lock() // 这将导致死锁
@@ -423,7 +423,7 @@ mu.Lock() // 这将导致死锁
 
 * `sync.RWMutex` 的 `Lock()` 中不可以嵌套 `RLock()`：尝试在已经获取了写锁的情况下获取读锁，将会导致死锁。
 
-``` go
+```go
 var mu sync.RWMutex
 mu.Lock()
 mu.RLock() // 这将导致死锁
@@ -435,7 +435,7 @@ mu.RLock() // 这将导致死锁
 
 `sync.Cond` 是一个条件变量，用于在协程之间进行通信和同步。它可以在指定的条件满足之前阻塞等待，并在条件满足时唤醒等待的协程。
 
-``` go
+```go
 package main
 
 import (
@@ -473,7 +473,7 @@ func main() {
 
 `sync.Pool` 是一个对象池，用于缓存和复用临时对象，可以提高对象的分配和回收效率。
 
-``` go
+```go
 package main
 
 import (
@@ -518,7 +518,7 @@ func main() {
 
 `sync.Once` 用于确保某个操作只执行一次，无论有多少个协程尝试执行它，常用于初始化或加载资源等场景。
 
-``` go
+```go
 package main
 
 import (
@@ -577,7 +577,7 @@ func main() {
 
 可以结合使用 sync.Once 和 context.Context 来确保在多个协程之间只执行一次资源清理操作，并在取消或超时时进行清理。
 
-``` go
+```go
 package main
 
 import (
@@ -625,7 +625,7 @@ func main() {
 
 `sync.Map` 是 Go 语言标准库中提供的并发安全的映射类型，可在多个协程之间安全地进行读写操作。
 
-``` go
+```go
 package main
 
 import (
@@ -673,7 +673,7 @@ func main() {
 
 `context.Context` 用于在协程之间传递上下文信息，并可用于**取消**或**超时控制**。可以使用 `context.WithCancel()` 创建一个可取消的上下文，并使用 `context.WithTimeout()` 创建一个带有超时的上下文。
 
-``` go
+```go
 package main
 
 import (
@@ -723,7 +723,7 @@ func main() {
 
 `context.WithDeadline()` 和 `context.WithTimeout()` 函数可以用于创建带有截止时间的上下文，以限制异步任务的执行时间。
 
-``` go
+```go
 package main
 
 import (
@@ -767,7 +767,7 @@ func main() {
 
 在 main 函数中，使用 `context.WithTimeout()` 创建一个带有 3 秒超时的上下文。然后，将这个上下文传递给 `doTask` 函数，并在一个新的协程中执行该函数。这样，可以在异步任务中处理任务超时和上下文取消事件。
 
-``` go
+```go
 package main
 
 import (
@@ -819,7 +819,7 @@ func main() {
 
 `context.WithValue()` 函数可用于在上下文中传递键值对，以在协程之间共享和传递上下文相关的值。
 
-``` go
+```go
 package main
 
 import (
@@ -853,7 +853,7 @@ func main() {
 
 atomic 包提供了一组函数，用于实现原子操作，以确保在并发环境中对共享变量的读写操作是原子的。
 
-``` go
+```go
 package main
 
 import (
@@ -1044,7 +1044,7 @@ SCHED 6016ms: gomaxprocs=4 idleprocs=0 threads=26 spinningthreads=0 idlethreads=
 
 `net/http` 接收请求且开始处理的源码放在 `src/net/http/server.go` 里，先从入口函数 `ListenAndServe` 进去：
 
-``` go
+```go
 func (srv *Server) ListenAndServe() error {
 	addr := srv.Addr
 	if addr == "" {
@@ -1060,7 +1060,7 @@ func (srv *Server) ListenAndServe() error {
 
 看到最后那个 `srv.Serve` 调用了吗？没错，这个 Serve 方法里面就是实际处理 http 请求的逻辑，我们再进入这个方法内部：
 
-``` go
+```go
 // Serve 方法使服务器开始处理传入的连接
 func (srv *Server) Serve(l net.Listener) error {
 	// 循环接受来自监听器的连接
@@ -1120,7 +1120,7 @@ func (srv *Server) Serve(l net.Listener) error {
 
 ### Pool struct
 
-``` go
+```go
 type sig struct{}
 
 type f func() error
@@ -1159,7 +1159,7 @@ type Pool struct {
 
 ### 初始化 Pool 并启动定期清理过期 worker 任务
 
-``` go
+```go
 // NewPool generates a instance of ants pool
 func NewPool(size int) (*Pool, error) {
 	return NewTimingPool(size, DefaultCleanIntervalTime)
@@ -1190,7 +1190,7 @@ func NewTimingPool(size, expiry int) (*Pool, error) {
 
 `p.Submit(task f)` 实现如下，第一个 if 判断当前 Pool 是否已被关闭，若是则不再接受新任务，否则获取一个 Pool 中可用的 worker，绑定该 task 执行。
 
-``` go
+```go
 // Submit submit a task to pool
 func (p *Pool) Submit(task f) error {
 	if len(p.release) > 0 {
@@ -1212,7 +1212,7 @@ func (p *Pool) Submit(task f) error {
 
 其他部分可以依照注释理解，这里不再赘述。
 
-``` go
+```go
 // getWorker returns a available worker to run the tasks.
 func (p *Pool) getWorker() *Worker {
 
@@ -1281,7 +1281,7 @@ func (p *Pool) getWorker() *Worker {
 
 结合前面的 `p.Submit(task f)` 和 `p.getWorker()` ，提交任务到 Pool 之后，获取一个可用 worker，每新建一个 worker 实例之时都需要调用 `w.run()` 启动一个 goroutine 监听 worker 的任务列表 task ，一有任务提交进来就执行；所以，当调用 worker 的 `sendTask(task f)` 方法提交任务到 worker 的任务队列之后，马上就可以被接收并执行，当任务执行完之后，会调用 `w.pool.putWorker(w *Worker)` 方法将这个已经执行完任务的 worker 从当前任务解绑放回 Pool 中，以供下个任务可以使用，至此，一个任务从提交到完成的过程就此结束，Pool 调度将进入下一个循环。
 
-``` go
+```go
 // Worker is the actual executor who runs the tasks,
 // it starts a goroutine that accepts tasks and
 // performs function calls.
@@ -1317,7 +1317,7 @@ func (w *Worker) run() {
 
 ### Worker 回收（goroutine 复用）
 
-``` go
+```go
 // putWorker puts a worker back into free pool, recycling the goroutines.
 func (p *Pool) putWorker(worker *Worker) {
 	// 写入回收时间，亦即该worker的最后一次结束运行的时间
@@ -1330,7 +1330,7 @@ func (p *Pool) putWorker(worker *Worker) {
 
 ### 动态扩容或者缩小池容量
 
-``` go
+```go
 // ReSize change the capacity of this pool
 func (p *Pool) ReSize(size int) {
 	if size == p.Cap() {
@@ -1350,7 +1350,7 @@ func (p *Pool) ReSize(size int) {
 
 定期检查空闲 worker 队列中是否有已过期的 worker 并清理：因为采用了 LIFO 后进先出队列存放空闲 worker，所以该队列默认已经是按照 worker 的最后运行时间由远及近排序，可以方便地按顺序取出空闲队列中的每个 worker 并判断它们的最后运行时间与当前时间之差是否超过设置的过期时长，若是，则清理掉该 goroutine，释放该 worker，并且将剩下的未过期 worker 重新分配到当前 Pool 的空闲 worker 队列中，进一步节省系统资源。
 
-``` go
+```go
 // clear expired workers periodically.
 func (p *Pool) periodicallyPurge() {
 	heartbeat := time.NewTicker(p.expiryDuration)
@@ -1387,7 +1387,7 @@ func (p *Pool) periodicallyPurge() {
 
 Just imagine that your program starts a massive number of goroutines, resulting in a huge consumption of memory. To mitigate that kind of situation, all you need to do is to import `ants` package and submit all your tasks to a default pool with fixed capacity, activated when package `ants` is imported:
 
-``` go
+```go
 package main
 
 import (
@@ -1549,7 +1549,7 @@ Scheduling can be done at the kernel level or user level, and multitasking can b
 
 在 GoLang 中使用 `goroutine` (a lightweight thread managed by the Go runtime) 来实现并发程序。
 
-``` golang
+```golang
 go f(x, y, z)
 ```
 
@@ -1561,7 +1561,7 @@ Goroutines run in the same address space, so access to shared memory must be syn
 
 ## 使用示例
 
-``` golang
+```golang
 package main
 
 import (
@@ -1743,7 +1743,7 @@ BOOM!
 
 本例参考《Go语言程序设计》第七章的一个例子，并添加了一些注释。
 
-``` go
+```go
 package main
 
 import (
@@ -1928,7 +1928,7 @@ minimum size must be < maximum size
 
 > 并发编程是 go 语言的最大优势，而协程是实现这一优势的手段。只要需要在函数调用前加上关键字 go，这个函数就会以一个单位协程的形式执行。go 语言向线程派发这些函数的执行，当一个协程阻塞时，调度器会把其他协程转移到其他的线程中去执行，从而实现无等待的并行运行。协程的优势是减少资源的 context 切换提高执行效率，但缺点是不易于调试，需要调度器提供相关调试工具。
 
-``` go
+```go
 package main
 
 import (
@@ -2042,7 +2042,7 @@ func processResults(results <-chan Result) {
 }
 ```
 
-``` go
+```go
 package main
 
 import (
@@ -2246,7 +2246,7 @@ func minimum(x int, ys ...int) int {
 全局变量的优势是简单方便，不需要过多繁杂的操作，通过一个变量就可以控制所有子 goroutine 的开始和结束；缺点是功能有限，由于架构所致，该全局变量只能是多读一写，否则会出现数据同步问题，当然也可以通过给全局变量加锁来解决这个问题，但那就增加了复杂度。另外这种方式不适合用于子 goroutine 间的通信，因为全局变量可以传递的信息很小；还有就是主进程无法等待所有子 goroutine 退出，因为这种方式只能是单向通知，所以这种方法只适用于非常简单的逻辑且并发量不太大的场景，一旦逻辑稍微复杂一点，这种方法就有点捉襟见肘。
 
 
-``` go
+```go
 package main
 
 import (
@@ -2293,7 +2293,7 @@ func main() {
 4. 在等待所有 goroutine 的地方调用 `wg.Wait()` 阻塞进程，直到所有 goroutine 都完成任务调用 `wg.Done()` 注销之后，`Wait()` 方法会返回
 
 
-``` go
+```go
 package main
 
 import (
@@ -2355,7 +2355,7 @@ func main() {
 
 channel 实现集中在文件 `runtime/chan.go` 中，channel底层数据结构是这样的：
 
-``` go
+```go
 type hchan struct {
     qcount   uint           // 队列中数据个数
     dataqsiz uint           // channel 大小
@@ -2403,7 +2403,7 @@ channel 通信控制基于 CSP 模型，相比于传统的线程与锁并发模�
 
 In Go, each concurrently executing activity is called a `goroutine`.
 
-``` go
+```go
 f();      // call f() wait for it to return
 go f();   // create a new goroutine that calls f() don't wait
 ```
@@ -2516,7 +2516,7 @@ Stack-based coroutines
 
 利用 switch-case 的分支跳转特性，以及预编译的 `__LINE__` 宏，实现了一种隐式状态机，最终实现了 `yield` 语义。
 
-``` c
+```c
 // have ten successive calls to the function return the numbers 0 through 9.
 #include <stdio.h>
 
@@ -2615,7 +2615,7 @@ int main(int argc, char *argv[])
 
 早期 C 语言标准不支持嵌套函数声明（Boost.Lambda 和 C++11 的 lambda 已经支持），因此 goto 只能完成在同一个函数中的跳转。而 setjmp()/longjmp() 可以从嵌套函数中跳出。
 
-``` c
+```c
 #include <stdio.h>
 #include <stdlib.h>
 #include <setjmp.h>
@@ -2659,7 +2659,7 @@ int main(int argc, char *argv[])
 
 C library functions (`ucontext.h`)提供了四个函数（`setcontext`/`getcontext`/`makecontext`/`swapcontext`）实现上下文的控制。
 
-``` c
+```c
 typedef struct ucontext {
     unsigned long int uc_flags;
     struct ucontext   *uc_link;
@@ -2679,7 +2679,7 @@ context.uc_stack.ss_size = sizeof(stack);
 makecontext(&context, (void (*)(void)) func, 2, &context, &main_context2);
 ```
 
-``` c
+```c
 #include <stdio.h>
 #include <ucontext.h>
 #include <unistd.h>
@@ -2707,7 +2707,7 @@ Refer: [swapcontext](https://linux.die.net/man/3/swapcontext)
 
 > makecontext() and swapcontext() are provided in glibc since version 2.1.
 
-``` c
+```c
 #include <ucontext.h>
 
 void makecontext(ucontext_t *ucp, void (*func)(), int argc, ...);
@@ -2751,7 +2751,7 @@ main: exiting
 ```
 
 
-``` c
+```c
 #include <ucontext.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -2820,7 +2820,7 @@ main(int argc, char *argv[])
 
 Boost.Context must be built for the particular compiler(s) and CPU architecture(s)s being targeted. Boost.Context includes assembly code and, therefore, requires GNU AS for supported POSIX systems, MASM for Windows/x86 systems and ARMasm for Windows/arm systems.
 
-``` c
+```c
 // Each instance of fcontext_t represents a context (CPU registers and stack space). Together with its related functions jump_fcontext() and make_fcontext() it provides a execution control transfer mechanism similar interface like ucontext_t. fcontext_t and its functions are located in boost::context and the functions are declared as extern "C".
 #include <boost/context/all.hpp>
 
@@ -2856,7 +2856,7 @@ fcontext_t * make_fcontext( void * sp, std::size_t size, void(* fn)(intptr_t) );
 
 TDF 是腾讯内部的一个基于协程的自研后台开发框架，使用 ucontext，N:1 模型。
 
-``` c
+```c
 ready_list = [A, B, C]
 while (!ready_list.empty()) {
     for co in ready_list {

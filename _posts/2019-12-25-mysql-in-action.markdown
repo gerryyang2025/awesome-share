@@ -51,7 +51,7 @@ mysql> show grants\G
 
 ## 查看和设置字符集
 
-``` sql
+```sql
 SHOW CHARACTER SET;
 set names gb2312;
 set names utf8;
@@ -70,7 +70,7 @@ set names utf8;
 
 ## 查看和设置隔离级别
 
-``` sql
+```sql
 -- 查看当前会话隔离级别
 SELECT @@tx_isolation;
 
@@ -97,7 +97,7 @@ set autocommit=off 或者 start transaction
 
 ## 联合索引
 
-``` sql
+```sql
 CREATE TABLE test (
     id         INT NOT NULL,
     last_name  CHAR(30) NOT NULL,
@@ -321,7 +321,7 @@ Refer:
 ## 利用 force index 优化sql语句性能
 
 
-``` sql
+```sql
 select customer,count(1) c  
 from upv_1  force index(idx_created)  
 where created between "2015-07-06" and "2015-07-07"  
@@ -419,7 +419,7 @@ refer:
 
 If you specify an ON DUPLICATE KEY UPDATE clause and a row to be inserted would cause a duplicate value in a UNIQUE index or PRIMARY KEY, an UPDATE of the old row occurs. For example, if column a is declared as UNIQUE and contains the value 1, the following two statements have similar effect:
 
-``` sql
+```sql
 INSERT INTO t1 (a,b,c) VALUES (1,2,3)
   ON DUPLICATE KEY UPDATE c=c+1;
 
@@ -428,7 +428,7 @@ UPDATE t1 SET c=c+1 WHERE a=1;
 
 测试：
 
-``` sql
+```sql
 mysql> desc t_gerry;
 +-------+-------------+------+-----+---------+-------+
 | Field | Type        | Null | Key | Default | Extra |
@@ -554,7 +554,7 @@ refer:
 
 [Duplicate / Copy records in the same MySQL table](https://stackoverflow.com/questions/729489/duplicate-copy-records-in-the-same-mysql-table)
 
-``` sql
+```sql
 CREATE TEMPORARY TABLE tmp SELECT * FROM invoices WHERE id = 99;
 UPDATE tmp SET id=100 WHERE id = 99;
 INSERT INTO invoices SELECT * FROM tmp WHERE id = 100;
@@ -562,7 +562,7 @@ INSERT INTO invoices SELECT * FROM tmp WHERE id = 100;
 
 或者
 
-``` sql
+```sql
 create table t1 like t2;
 insert into t1 select * from t2;
 update t1 set a=xxx;
@@ -573,7 +573,7 @@ insert into t2 select * from t1;
 
 创建DB：
 
-``` bash
+```bash
 #!/bin/sh
 
 echo ""
@@ -598,7 +598,7 @@ echo "`date +%y-%m-%d-%X`: end to create"
 
 创建库表，以下为分库分表的方式：
 
-``` bash
+```bash
 #!/bin/sh
 
 echo ""
@@ -648,7 +648,7 @@ echo "`date +%y-%m-%d-%X`: end to create"
 
 更新库表：
 
-``` sql
+```sql
 ALTER TABLE t_xxx ADD Fxxx1 varchar(24) NOT NULL default ''  COMMENT 'xxx' AFTER Fxxx2;
 ```
 
@@ -657,7 +657,7 @@ ALTER TABLE t_xxx ADD Fxxx1 varchar(24) NOT NULL default ''  COMMENT 'xxx' AFTER
 
 在创建表时指定索引字段（INDEX）：
 
-``` sql
+```sql
 CREATE TABLE t_xxx (
     Fusr_id    varchar(50)    NOT NULL COMMENT 'usr id',
     Fusr_name  varchar(1024)  NOT NULL default '' COMMENT 'usr name',
@@ -668,13 +668,13 @@ CREATE TABLE t_xxx (
 
 创建表后添加索引字段：
 
-``` sql
+```sql
 alter table t_xxx add index Fusr_id_idx(Fusr_id);
 ```
 
 删除索引字段：
 
-``` sql
+```sql
 alter table t_xxx drop index Fusr_name_idx;
 ```
 
@@ -692,13 +692,13 @@ show index from t_xxx;
 
 创建唯一索引（UNIQUE INDEX）：
 
-``` sql
+```sql
 CREATE UNIQUE INDEX index_name ON table_name(index_column_1,index_column_2,...);
 ```
 
 创建唯一性限制（UNIQUE KEY）：
 
-``` sql
+```sql
 CREATE TABLE table_name(
    UNIQUE KEY(index_column_,index_column_2,...)
 );
@@ -718,7 +718,7 @@ refer:
 ## 更改字段类型
 
 
-``` sql
+```sql
 ALTER TABLE tablename MODIFY columnname INTEGER;
 ```
 

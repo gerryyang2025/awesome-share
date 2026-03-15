@@ -37,7 +37,7 @@ $CMAKE_INSTALL_DIR/bin/cmake --version
 
 完整的安装脚本：先使用本地的，如果没有则下载。
 
-``` bash
+```bash
 #!/bin/bash
 
 CUR_DIR=$(dirname $(readlink -f $0))
@@ -926,7 +926,7 @@ install(RUNTIME_DEPENDENCY_SET <set-name> [...])
 INSTALL(TARGETS ${TARGET_NAME} DESTINATION ${TARGET_INSTALL_PATH} COMPONENT ${TARGET_NAME})
 ```
 
-``` bash
+```bash
 #make install
 
 # install 支持单独 target
@@ -1261,7 +1261,7 @@ Enable/Disable output of compile commands during generation.
 
 If enabled, generates a compile_commands.json file containing the exact compiler calls for all translation units of the project in machine-readable form. The format of the JSON file looks like:
 
-``` json
+```json
 [
   {
     "directory": "/home/user/development/project",
@@ -1904,7 +1904,7 @@ When multiple source files are included into one source file, as is done for uni
 
 3. 参数调优
 
-``` makefile
+```makefile
 set_target_properties(my_target PROPERTIES
     UNITY_BUILD ON
     UNITY_BUILD_BATCH_SIZE 5       # 控制合并规模
@@ -1914,7 +1914,7 @@ set_target_properties(my_target PROPERTIES
 
 4. 开发/发布分离配置
 
-``` makefile
+```makefile
 option(ENABLE_UNITY_BUILD "Enable faster builds" OFF)
 if(ENABLE_UNITY_BUILD)
     set_target_properties(my_target PROPERTIES UNITY_BUILD ON)
@@ -2065,7 +2065,7 @@ target_link_libraries(main my_module)
 
 Step3: 在 `my_project/main.cpp` 文件中添加以下内容
 
-``` cpp
+```cpp
 #include <iostream>
 
 // 声明要从 my_module 导入的函数
@@ -2087,7 +2087,7 @@ add_library(my_module SHARED my_module.cpp)
 
 Step5: 在 `my_project/my_module/my_module.cpp` 文件中添加以下内容
 
-``` cpp
+```cpp
 #include <iostream>
 
 extern "C" void my_module_function() {

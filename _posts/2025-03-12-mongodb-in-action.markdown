@@ -120,7 +120,7 @@ When you use the `.tgz` package to install the server, you need to follow the [m
 
 Use the following command to install the dependencies required for the MongoDB Community `.tgz` tarball:
 
-``` bash
+```bash
 sudo yum install libcurl openssl xz-libs
 ```
 
@@ -141,7 +141,7 @@ After you have installed the required prerequisite packages, download the MongoD
 
 For example, from a system shell, you can extract using the `tar` command:
 
-``` bash
+```bash
 tar -zxvf mongodb-linux-*-8.0.12.tgz
 ```
 
@@ -151,13 +151,13 @@ The MongoDB binaries are in the `bin/` directory of the tarball. You can either:
 
 * Copy the binaries into a directory listed in your `PATH` variable, such as `/usr/local/bin` (Update `/path/to/the/mongodb-directory/` with your installation directory as appropriate)
 
-``` bash
+```bash
 sudo cp /path/to/the/mongodb-directory/bin/* /usr/local/bin/
 ```
 
 * Create symbolic links to the binaries from a directory listed in your `PATH` variable, such as `/usr/local/bin` (Update `/path/to/the/mongodb-directory/` with your installation directory as appropriate):
 
-``` bash
+```bash
 # ln [OPTION]... [-T] TARGET LINK_NAME
 sudo ln -s  /path/to/the/mongodb-directory/bin/* /usr/local/bin/
 ```
@@ -191,14 +191,14 @@ By default, MongoDB runs using the `mongod` user account and uses the following 
 
 Create the MongoDB data and log directories:
 
-``` bash
+```bash
 sudo mkdir -p /var/lib/mongo
 sudo mkdir -p /var/log/mongodb
 ```
 
 By default, MongoDB runs using the `mongod` user account. Create a `mongod` and a `mongodb` group. Ensure that the `mongod` belongs to the group then set the owner and group of these directories to `mongod`:
 
-``` bash
+```bash
 sudo chown -R mongod:mongod /var/lib/mongo
 sudo chown -R mongod:mongod /var/log/mongodb
 ```
@@ -217,7 +217,7 @@ To use a data directory and/or log directory other than the default directories:
 
 3. Ensure that the user running MongoDB has access to the directory or directories:
 
-``` bash
+```bash
 sudo chown -R mongod:mongod <directory>
 ```
 
@@ -264,19 +264,19 @@ MongoDB Shell (mongosh) 是一个 JavaScript 和 Node.js REPL 环境，用于与
 
 * 查看所有数据库
 
-``` javascript
+```javascript
 show dbs
 ```
 
 * 切换/创建数据库
 
-``` javascript
+```javascript
 use mydb  // 切换到 mydb（若不存在则创建）
 ```
 
 * 删除当前数据库
 
-``` javascript
+```javascript
 db.dropDatabase()  // 谨慎操作
 ```
 
@@ -284,19 +284,19 @@ db.dropDatabase()  // 谨慎操作
 
 * 创建集合 (表)
 
-``` javascript
+```javascript
 db.createCollection("users")  // 显式创建集合
 ```
 
 * 查看所有集合
 
-``` javascript
+```javascript
 show collections
 ```
 
 * 删除集合
 
-``` javascript
+```javascript
 db.users.drop()  // 删除 users 集合
 ```
 
@@ -304,7 +304,7 @@ db.users.drop()  // 删除 users 集合
 
 * 插入文档
 
-``` javascript
+```javascript
 // 插入单条文档
 db.users.insertOne({
   name: "Alice",
@@ -322,7 +322,7 @@ db.users.insertMany([
 
 * 查询文档
 
-``` javascript
+```javascript
 // 查询所有文档
 db.users.find()
 
@@ -341,7 +341,7 @@ db.users.find().skip(2).limit(5)
 
 * 更新文档
 
-``` javascript
+```javascript
 // 更新单条文档（将 Alice 的 age 改为 29）
 db.users.updateOne(
   { name: "Alice" },
@@ -357,7 +357,7 @@ db.users.updateMany(
 
 * 删除文档
 
-``` javascript
+```javascript
 // 删除单条文档（name 为 Bob）
 db.users.deleteOne({ name: "Bob" })
 
@@ -369,7 +369,7 @@ db.users.deleteMany({ age: { $lt: 25 } })
 
 * 创建用户
 
-``` javascript
+```javascript
 use admin
 db.createUser({
   user: "admin",
@@ -380,13 +380,13 @@ db.createUser({
 
 * 查看用户
 
-``` javascript
+```javascript
 db.getUsers()  // 查看当前数据库的用户
 ```
 
 * 修改用户权限
 
-``` javascript
+```javascript
 db.updateUser("admin", {
   roles: [ { role: "readWriteAnyDatabase", db: "admin" } ]
 })
@@ -396,7 +396,7 @@ db.updateUser("admin", {
 
 * 创建索引
 
-``` javascript
+```javascript
 // 单字段索引（按 age 升序）
 db.users.createIndex({ age: 1 })
 
@@ -409,13 +409,13 @@ db.users.createIndex({ email: 1 }, { unique: true })
 
 * 查看索引
 
-``` javascript
+```javascript
 db.users.getIndexes()
 ```
 
 * 删除索引
 
-``` javascript
+```javascript
 db.users.dropIndex("age_1")  // 指定索引名称
 ```
 
@@ -423,13 +423,13 @@ db.users.dropIndex("age_1")  // 指定索引名称
 
 * 统计文档数量
 
-``` javascript
+```javascript
 db.users.countDocuments({ age: { $gt: 25 } })
 ```
 
 * 聚合操作（按年龄分组统计）
 
-``` javascript
+```javascript
 db.users.aggregate([
   { $group: { _id: "$age", total: { $sum: 1 } } },
   { $sort: { _id: 1 } }
@@ -441,13 +441,13 @@ db.users.aggregate([
 
 * 备份数据库
 
-``` bash
+```bash
 mongodump --uri="mongodb://username:password@localhost:27017/mydb" --out=/backup/
 ```
 
 * 恢复数据库
 
-``` bash
+```bash
 mongorestore --uri="mongodb://username:password@localhost:27017/mydb" /backup/mydb/
 ```
 
@@ -456,7 +456,7 @@ mongorestore --uri="mongodb://username:password@localhost:27017/mydb" /backup/my
 
 * 查看数据库状态
 
-``` javascript
+```javascript
 db.stats()  // 显示当前数据库的存储状态
 ```
 
@@ -489,7 +489,7 @@ cmgo-otma0539_0 [primary] test_db> db.stats()
 
 * 查看集合状态
 
-``` javascript
+```javascript
 db.users.stats()
 ```
 
@@ -674,7 +674,7 @@ cmgo-otma0539_0 [primary] test_db> db.ImageVersion.stats()
 
 * 清空集合（保留结构）
 
-``` javascript
+```javascript
 db.users.deleteMany({})  // 删除所有文档
 ```
 

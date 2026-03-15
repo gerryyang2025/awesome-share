@@ -30,14 +30,14 @@ Example:
 
 For example, if you have the source files `foo.cpp` and `bar.cpp`, they can be placed in a **Single Compilation Unit** as follows:
 
-``` cpp
+```cpp
 #include "foo.cpp"
 #include "bar.cpp"
 ```
 
 Suppose `foo.cpp` and `bar.cpp` are:
 
-``` cpp
+```cpp
 //foo.cpp
 #include <iostream> // A large, standard header
 #include "bar.h"    // Declaration of function 'bar'
@@ -48,7 +48,7 @@ int main()          // Definition of function 'main'
 }
 ```
 
-``` cpp
+```cpp
 //bar.cpp
 #include <iostream> // The same large, standard header
 
@@ -77,7 +77,7 @@ In computer programming, **conditional compilation** is a compilation technique 
 
 Many programming languages support conditional compilation. Typically [compiler directives](https://en.wikipedia.org/wiki/Compiler_directives) define or "undefine" certain variables; other directives test these variables and modify compilation accordingly. For example, not using an actual language, the compiler may be set to define "Macintosh" and undefine "PC", and the code may contain:
 
-``` c
+```c
 (* System generic code *)
 if mac != Null then
     (* macOS specific code *)
@@ -144,7 +144,7 @@ JSON 编译数据库格式规范（JSON Compilation Database Format）是一种�
 
 参考 [this extractor extension](https://github.com/hedronvision/bazel-compile-commands-extractor) 工具的[解释](https://github.com/hedronvision/bazel-compile-commands-extractor/blob/1e08f8e0507b6b6b1f4416a9a22cf5c28beaba93/refresh_compile_commands.bzl#L34-L37)：
 
-``` bash
+```bash
     # Using ccls or another tool that doesn't want or need headers in compile_commands.json?
         # exclude_headers = "all", # By default, we include entries for headers to support clangd, working around https://github.com/clangd/clangd/issues/123
         # ^ excluding headers will speed up compile_commands.json generation *considerably* because we won't need to preprocess your code to figure out which headers you use.
@@ -198,7 +198,7 @@ Each command object contains the translation unit’s main file, the working dir
 
 Example:
 
-``` json
+```json
 [
   { "directory": "/home/user/llvm/build",
     "arguments": ["/usr/bin/clang++", "-Irelative", "-DSOMEDEF=With spaces, quotes and \\-es.", "-c", "-o", "file.o", "file.cc"],
@@ -238,8 +238,7 @@ For simple projects, Clang tools also recognize a **compile_flags.txt** file. Th
 
 Example:
 
-```
--xc++
+```-xc++
 -I
 libwidget/include/
 ```
@@ -531,7 +530,7 @@ $ll -lh /usr/bin/ccache
 
 在构建命令之前，将 CCACHE_DISABLE 环境变量设置为 1：
 
-``` bash
+```bash
 export CCACHE_DISABLE=1
 ```
 
@@ -541,7 +540,7 @@ export CCACHE_DISABLE=1
 
 编辑 ~/.bashrc 或 ~/.bash_profile 文件，将以下行添加到文件末尾：
 
-``` bash
+```bash
 export CCACHE_DISABLE=1
 ```
 
@@ -552,7 +551,7 @@ export CCACHE_DISABLE=1
 
 在构建命令中，直接指定原始编译器的路径，而不是使用 ccache 包装器。例如，如果您的原始 Clang 编译器位于 /usr/bin/clang，则可以在构建命令中使用此路径。
 
-``` bash
+```bash
 make CC=/usr/bin/clang
 ```
 
@@ -581,7 +580,7 @@ make CC=/usr/bin/clang
 
 make.sh
 
-``` bash
+```bash
 #!/bin/bash
 
 ## https://stackoverflow.com/questions/7031126/switching-between-gcc-and-clang-llvm-using-cmake
@@ -625,7 +624,7 @@ echo "have done"
 
 ninja.sh
 
-``` bash
+```bash
 #!/bin/bash
 
 ## https://stackoverflow.com/questions/7031126/switching-between-gcc-and-clang-llvm-using-cmake

@@ -14,7 +14,7 @@ tags:
 
 # 示例
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <string>
 
@@ -30,23 +30,21 @@ int main()
 
 GCC 4.8.5 输出：
 
-```
-8
+```8
 0x109cd88
 0x109cd88
 ```
 
 GCC 5.1.0 输出：
 
-```
-32
+```32
 0x7ffe01afc030
 0x7ffe01afc010
 ```
 
 内存分配：
 
-``` cpp
+```cpp
 #include <iostream>
 #include <cstdlib>
 #include <string>
@@ -93,7 +91,7 @@ int main()
 * 对于新的`std::string`实现导致的不同版本GCC编译导致的二进制不兼容问题，GCC5 提供了相应的二进制兼容宏开关`_GLIBCXX_USE_CXX11_ABI`。若`_GLIBCXX_USE_CXX11_ABI=0`，则链接旧版本；若`_GLIBCXX_USE_CXX11_ABI=1`，则链接新版本。
 
 
-``` cpp
+```cpp
 // GCC 4.8.5
 template<typename _CharT, typename _Traits = char_traits<_CharT>,
          typename _Alloc = allocator<_CharT> >
@@ -137,7 +135,7 @@ class basic_string
 };
 ```
 
-``` cpp
+```cpp
 // GCC 5.1
 template<typename _CharT, typename _Traits, typename _Alloc>
 class basic_string

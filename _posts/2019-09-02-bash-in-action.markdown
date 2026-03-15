@@ -13,7 +13,7 @@ tags:
 
 # `~/.bashrc` 常用配置
 
-``` bash
+```bash
 # .bashrc
 
 # Source global definitions
@@ -69,13 +69,13 @@ alias ll='ls -rtlh'
 
 Step1: 建议通过软件源安装 bash-completion，也可通过[源码构建](https://github.com/scop/bash-completion/releases)安装
 
-``` bash
+```bash
 sudo yum install bash-completion
 ```
 
 Step2: 在 `~/.bashrc` 配置使用 bash-completion
 
-``` bash
+```bash
 # Use bash-completion, if available, and avoid double-sourcing
 [[ $PS1 &&
   ! ${BASH_COMPLETION_VERSINFO:-} &&
@@ -115,7 +115,7 @@ Step2: 在 `~/.bashrc` 配置使用 bash-completion
 
 检查 bash-completion 是否已加载：如果输出类似 2 或 2 11 的数字，表示已加载；如果输出为空，表示未加载。
 
-``` bash
+```bash
 # 查看 BASH_COMPLETION_VERSINFO 变量
 echo $BASH_COMPLETION_VERSINFO
 
@@ -126,7 +126,7 @@ echo "bash-completion 版本: ${BASH_COMPLETION_VERSINFO[@]}"
 
 检查 complete 命令设置：
 
-``` bash
+```bash
 # 查看已注册的补全数量
 complete -p | wc -l
 
@@ -217,7 +217,7 @@ Bash 显示 COMPREPLY 中的建议
 
 保存补全脚本到 `~/.bash_completion`
 
-``` bash
+```bash
 # 将补全函数添加到 ~/.bashrc 或 ~/.bash_completion
 cat >> ~/.bash_completion << 'EOF'
 
@@ -238,7 +238,7 @@ source ~/.bash_completion
 
 测试命令：
 
-``` bash
+```bash
 # 先定义 mycmd（如果不存在）
 alias mycmd='echo "Running mycmd with:"'
 
@@ -249,7 +249,7 @@ alias mycmd='echo "Running mycmd with:"'
 
 检查 mycmd 命令的补全函数是否已经注册：
 
-``` bash
+```bash
 # 检查是否已注册
 complete -p | grep mycmd
 
@@ -286,7 +286,7 @@ https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Shell-Parameter
 
 **The length in characters of the expanded value of parameter is substituted**. If parameter is `*` or `@`, the value substituted is the number of positional parameters. If parameter is an array name subscripted by `*` or `@`, the value substituted is the number of elements in the array. If parameter is an indexed array name subscripted by a negative number, that number is interpreted as relative to one greater than the maximum index of parameter, so negative indices count back from the end of the array, and an index of -1 references the last element.
 
-``` bash
+```bash
 myvar="some string"
 echo ${#myvar}    # 11
 ```
@@ -301,7 +301,7 @@ echo ${#myvar}    # 11
 
 ## [What is the difference between ${var}, "$var", and "${var}" in the Bash shell?](https://stackoverflow.com/questions/18135451/what-is-the-difference-between-var-var-and-var-in-the-bash-shell)
 
-``` bash
+```bash
 # define a array
 declare -a groups
 
@@ -338,7 +338,7 @@ Answers:
 
 In most cases, `$var` and `${var}` are the same:
 
-``` bash
+```bash
 var=foo
 echo $var
 # foo
@@ -348,7 +348,7 @@ echo ${var}
 
 The braces are only needed to resolve **ambiguity** in expressions:
 
-``` bash
+```bash
 var=foo
 echo $varbar
 # Prints nothing because there is no variable 'varbar'
@@ -360,7 +360,7 @@ echo ${var}bar
 
 When you add **double quotes** around a variable, you tell the shell to **treat it as a single word**, even if it contains **whitespaces**:
 
-``` bash
+```bash
 var="foo bar"
 for i in "$var"; do # Expands to 'for i in "foo bar"; do...'
     echo $i         #   so only runs the loop once
@@ -370,7 +370,7 @@ done
 
 Contrast that behavior with the following:
 
-``` bash
+```bash
 var="foo bar"
 for i in $var; do # Expands to 'for i in foo bar; do...'
     echo $i       #   so runs the loop twice, once for each argument
@@ -381,7 +381,7 @@ done
 
 As with `$var` vs. `${var}`, the braces are only needed for **disambiguation(消除模棱两可情况)**, for example:
 
-``` bash
+```bash
 var="foo bar"
 for i in "$varbar"; do # Expands to 'for i in ""; do...' since there is no
     echo $i            #   variable named 'varbar', so loop runs once and
@@ -404,7 +404,7 @@ Now for your array. According to the [bash manual](http://linux.die.net/man/1/ba
 
 In other words, if you don't supply an index with [], you get the first element of the array:
 
-``` bash
+```bash
 foo=(a b c)
 echo $foo
 # a
@@ -412,7 +412,7 @@ echo $foo
 
 Which is exactly the same as
 
-``` bash
+```bash
 foo=(a b c)
 echo ${foo}
 # a
@@ -420,7 +420,7 @@ echo ${foo}
 
 To get all the elements of an array, you need to use `@` as the index, e.g. `${foo[@]}`. The braces are required with arrays because without them, the shell would expand the `$foo` part first, giving the first element of the array followed by a literal `[@]`:
 
-``` bash
+```bash
 foo=(a b c)
 echo ${foo[@]}
 # a b c
@@ -434,7 +434,7 @@ echo $foo[@]
 
 You didn't ask about this but it's a subtle difference that's good to know about. If the elements in your array could contain whitespace, you need to use double quotes so that each element is treated as a separate "word:"
 
-``` bash
+```bash
 foo=("the first" "the second")
 for i in "${foo[@]}"; do # Expands to 'for i in "the first" "the second"; do...'
     echo $i              #   so the loop runs twice
@@ -445,7 +445,7 @@ done
 
 Contrast this with the behavior without double quotes:
 
-``` bash
+```bash
 foo=("the first" "the second")
 for i in ${foo[@]}; do # Expands to 'for i in the first the second; do...'
     echo $i            #   so the loop runs four times!
@@ -468,7 +468,7 @@ refer:
 
 You can use [Marcus's answer (* wildcards)](https://stackoverflow.com/a/229585/3755692) outside a case statement, too, if you use double brackets:
 
-``` bash
+```bash
 string='My long string'
 if [[ $string == *"My long"* ]]; then
   echo "It's there!"
@@ -479,7 +479,7 @@ Note that spaces in the needle string need to be placed between **double quotes*
 
 If you prefer the regex approach:
 
-``` bash
+```bash
 string='My string';
 
 if [[ $string =~ "My" ]]; then
@@ -489,7 +489,7 @@ fi
 
 I am not sure about using an if statement, but you can get a similar effect with a case statement:
 
-``` bash
+```bash
 case "$string" in
   *foo*)
     # Do stuff
@@ -504,7 +504,7 @@ Neither `${@:2}` nor `${*:2}` is portable, and many shells will reject both as i
 At this point, the first argument is in "$first" and the positional parameters are shifted down one.
 
 
-``` bash
+```bash
 #!/bin/bash
 
 if [[ $# -eq 1 ]]; then
@@ -529,7 +529,7 @@ for x; do echo "$x"; done
 
 # Shell Parameter Expansion (Default value)
 
-``` bash
+```bash
 if [ -z "${VARIABLE}" ]; then
     FOO='default'
 else
@@ -539,14 +539,14 @@ fi
 
 To get the assigned value, or default if it's missing:
 
-``` bash
+```bash
 FOO="${VARIABLE:-default}"  # If variable not set or null, use default.
 # If VARIABLE was unset or null, it still is after this (no assignment done).
 ```
 
 Or to assign default to VARIABLE at the same time:
 
-``` bash
+```bash
 FOO="${VARIABLE:=default}"  # If variable not set or null, set it to default.
 ```
 
@@ -572,7 +572,7 @@ https://stackoverflow.com/questions/25677790/bin-bash-login-vs-bin-bash
 
 For bash, use the `printf` command with alignment flags.
 
-``` bash
+```bash
 echo "Usage: $0 [option] [value]"
 printf "%-16s %-64s\n" -h 查看帮助
 printf "%-16s %-64s\n" -h xxxx
@@ -594,7 +594,7 @@ Usage: main.sh [option] [value]
 
 # PreCheck
 
-``` bash
+```bash
 CURTIME="date +'%Y-%m-%d %H:%M:%S'"
 NOW="echo [\`$CURTIME\`][PID:$$]"
 
@@ -643,7 +643,7 @@ a=$1
 
 # The ‘ls’ command – how to show seconds
 
-``` bash
+```bash
 # show also the seconds (and not only seconds but also microseconds)
 $ ls --full-time
 $ ls -l --time-style=full-iso
@@ -660,7 +660,7 @@ $ ls -l core_worldsvr_1632113278.5873 --time-style=full-iso
 
 # CPU Monitor
 
-``` bash
+```bash
 #!/bin/bash
 
 dir_head_prefix="./datacpu"
@@ -773,7 +773,7 @@ A solution that does not require additional tools would be prefered.
 
 1. Use a lock directory. Directory creation is atomic under linux and unix and *BSD and a lot of other OSes.
 
-``` bash
+```bash
 if mkdir $LOCKDIR
 then
     # Do important, exclusive stuff
@@ -791,7 +791,7 @@ fi
 
 2. `pidof -o %PPID -x $0` gets the PID of the existing script if its already running or exits with error code 1 if no other script is running
 
-``` bash
+```bash
 #!/bin/bash
 
 # Check if another instance of script is running
@@ -802,7 +802,7 @@ pidof -o %PPID -x $0 >/dev/null && echo "ERROR: Script $0 already running" && ex
 
 # Add User
 
-``` bash
+```bash
 #!/bin/bash
 
 if [ $# -ne 1 ]
@@ -833,7 +833,7 @@ chown -R ${USER_NAME}:${USER_GROUP_NAME}  ${USER_HOME}
 
 # 1>&2 / 2>&1
 
-``` bash
+```bash
 if test $# -ne 1; then
     echo "Usage: `basename $0 .sh` <process-id>" 1>&2
     exit 1
@@ -862,7 +862,7 @@ fi
 * `${string%substring}` Deletes **shortest** match of `$substring` from **back** of `$string`.
 * `${string%%substring}` Deletes **longest** match of `$substring` from **back** of `$string`.
 
-``` bash
+```bash
 stringZ=abcABC123ABCabc
 #       |----|          shortest
 #       |----------|    longest
@@ -915,7 +915,7 @@ Refer: https://tldp.org/LDP/abs/html/string-manipulation.html
 
 The simplest way to concatenate two or more string variables is to write them one after another:
 
-``` bash
+```bash
 VAR1="Hello,"
 VAR2=" World"
 VAR3="$VAR1$VAR2"
@@ -924,7 +924,7 @@ echo "$VAR3"
 
 You can also concatenate one or more variable with literal strings. In the example above variable `VAR1` is enclosed in curly braces to protect the variable name from surrounding characters. When the variable is followed by another valid variable-name character you must enclose it in curly braces `${VAR1}`.
 
-``` bash
+```bash
 VAR1="Hello, "
 VAR2="${VAR1}World"
 echo "$VAR2"
@@ -932,7 +932,7 @@ echo "$VAR2"
 
 Another way of concatenating strings in bash is by appending variables or literal strings to a variable using the `+=` operator:
 
-``` bash
+```bash
 VAR1="Hello, "
 VAR1+=" World"
 echo "$VAR1"
@@ -940,7 +940,7 @@ echo "$VAR1"
 
 The following example is using the `+=` operator to concatenate strings in bash for loop :
 
-``` bash
+```bash
 VAR=""
 for ELEMENT in 'Hydrogen' 'Helium' 'Lithium' 'Beryllium'; do
   VAR+="${ELEMENT} "
@@ -967,7 +967,7 @@ echo "$VAR"
 
 示例：
 
-``` bash
+```bash
 if [[ $1 = "start" ]]; then
   # string compare
   # 等于 = (plain sh) / == (only bash)
@@ -992,7 +992,7 @@ if [ "$fname" = "a.txt" ] || [ "$fname" = "c.txt" ]
 
 There are multiple ways to check if a string contains a substring. One approach is to use surround the substring with asterisk symbols `*` which means match all characters.
 
-``` bash
+```bash
 #!/bin/bash
 
 VAR='GNU/Linux is an operating system'
@@ -1003,7 +1003,7 @@ fi
 
 Another option is to use the regex operator `=~` as shown below. The period followed by an asterisk `.*` matches zero or more occurrences any character except a newline character.
 
-``` bash
+```bash
 #!/bin/bash
 
 VAR='GNU/Linux is an operating system'
@@ -1016,7 +1016,7 @@ fi
 
 Instead of using the `test` operators you can also use the `case` statement to compare strings:
 
-``` bash
+```bash
 #!/bin/bash
 
 VAR="Arch Linux"
@@ -1037,7 +1037,7 @@ esac
 
 Lexicographical comparison is an operation where two strings are compared alphabetically by comparing the characters in a string sequentially from left to right. This kind of comparison is rarely used. The following scripts compare two strings lexicographically:
 
-``` bash
+```bash
 #!/bin/bash
 
 VAR1="Linuxize"
@@ -1054,7 +1054,7 @@ fi
 
 ## Compare Digital
 
-``` bash
+```bash
 if [[ $# -eq 0 ]]; then
   # digital compare
   # -eq / -lt / -le / -gt / -ge / -ne
@@ -1069,7 +1069,7 @@ fi
 
 ## Others
 
-``` bash
+```bash
 num=4; if (test $num -gt 5); then echo "yes"; else echo "no"; fi
 
 file="/etc/passwd"; if [ -e $file ]; then echo "whew"; else echo "uh-oh"; fi
@@ -1087,13 +1087,13 @@ fi
 
 # ForceStopAll
 
-``` bash
+```bash
 ps aux | grep `pwd` | grep -v grep | awk '{print $2}' | xargs kill -9
 ```
 
 # Color
 
-``` bash
+```bash
 function PrintColor {
         echo -e "\e[1;31m$@\e[0m"
 }
@@ -1102,7 +1102,7 @@ PrintColor "Oops!"
 
 定义常用变量
 
-``` bash
+```bash
 ColorRedBeg="\e[1;31m"
 ColorGreenBeg="\e[1;32m"
 ColorYellowBeg="\e[1;33m"
@@ -1120,7 +1120,7 @@ function Usage()
 }
 ```
 
-``` bash
+```bash
 #!/bin/bash
 
 # prints colored text
@@ -1156,7 +1156,7 @@ print_style "This has no color";
 
 # CurrentPath
 
-``` bash
+```bash
 #!/bin/bash
 
 echo $0                            # 脚本名
@@ -1185,7 +1185,7 @@ bash
 
 # Function
 
-``` bash
+```bash
 #!/bin/bash
 function quit {
    exit
@@ -1200,7 +1200,7 @@ echo foo
 
 Functions with parameters sample
 
-``` bash
+```bash
 #!/bin/bash
 function quit {
    exit
@@ -1233,7 +1233,7 @@ find ../ -type f |  grep -E "*\.sh" | xargs dos2unix
 
 通过指定日志级别控制日志输出。
 
-``` bash
+```bash
 #!/bin/bash
 
 _log() {
@@ -1260,12 +1260,12 @@ Hello gerryyang
 
 ## Debug
 
-``` bash
+```bash
 set -e  # exit immediately on error
 set -x  # display all commands
 ```
 
-``` bash
+```bash
 #!/bin/bash
 
 echo "Hello $USER,"
@@ -1300,7 +1300,7 @@ Today is 2020-08-03
 
 调试部份的脚本：
 
-``` bash
+```bash
 #!/bin/bash
 
 echo "Hello $USER,"
@@ -1350,7 +1350,7 @@ Today is 2020-08-03
 * `$?`  上个命令的退出状态，或函数的返回值。
 * `$$`  当前Shell进程ID。对于 Shell 脚本，就是这些脚本所在的进程ID。
 
-``` bash
+```bash
 #! /bin/bash
 
 echo "File Name: $0"
@@ -1376,7 +1376,7 @@ Total Number of Parameters : 2
 `$*` 和 `$@` 用法测试：
 
 
-``` bash
+```bash
 #! /bin/bash
 
 echo "\$*=" $*
@@ -1420,7 +1420,7 @@ An array variable whose members are the source filenames where the corresponding
 
 ### 常见用法：获取当前脚本所在目录
 
-``` bash
+```bash
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ```
 
@@ -1434,7 +1434,7 @@ The following example illustrates this:
 
 Script `foo`:
 
-``` bash
+```bash
 #!/bin/bash
 echo "[$0] vs. [${BASH_SOURCE[0]}]"
 ```
@@ -1481,7 +1481,7 @@ If a given function was invoked directly from the top-level scope in the script 
 
 ### 测试脚本
 
-``` bash
+```bash
 #!/bin/bash
 # test_bash_source.sh
 
@@ -1565,14 +1565,14 @@ An array variable containing the names of all shell functions currently in the e
 This variable can be used with `BASH_LINENO` and `BASH_SOURCE`. Each element of `FUNCNAME` has corresponding elements in `BASH_LINENO` and `BASH_SOURCE` to describe the call stack. For instance, `${FUNCNAME[$i]}` was called from the file `${BASH_SOURCE[$i+1]}` at line number `${BASH_LINENO[$i]}`. The caller builtin displays the current call stack using this information.
 
 
-``` bash
+```bash
 make()
 {
     echo "$FUNCNAME: do nothing"
 }
 ```
 
-``` bash
+```bash
 # 获取脚本所在目录（最常用）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -1634,7 +1634,7 @@ done
 
 The basic syntax of getopts is (see: man bash):
 
-``` bash
+```bash
 getopts OPTSTRING VARNAME [ARGS...]
 ```
 
@@ -1655,7 +1655,7 @@ Notes: In other words, colon in front of options allows you handle the errors in
 
 So the code can be:
 
-``` bash
+```bash
 #!/usr/bin/env bash
 usage() { echo "$0 usage:" && grep " .)\ #" $0; exit 0; }
 [ $# -eq 0 ] && usage
@@ -1701,7 +1701,7 @@ See: [Small getopts tutorial](http://wiki.bash-hackers.org/howto/getopts_tutoria
 
 ## pushd/popd
 
-``` bash
+```bash
 pushd () {
     command pushd "$@" > /dev/null
 }
@@ -1728,8 +1728,7 @@ func $INFO
 
 output:
 
-```
-a
+```a
 ```
 
 如果需要将参数作为一个group传递，需要`Enclose the variable in double quotes to preserve white spaces`。
@@ -1785,8 +1784,7 @@ echo "Boom!"
 
 output:
 
-```
-Countdown
+```countdown
 1 2 3 4 5
 Boom!
 ```
@@ -1830,15 +1828,14 @@ done
 
 output:
 
-```
-Dell
+```dell
 HP
 Oracle
 ```
 
 How can I read from variable with while read line? See [§3.6.7 "Here Strings" in the Bash Reference Manual](http://www.gnu.org/software/bash/manual/bashref.html#Here-Strings).
 
-``` bash
+```bash
 GIT_DIFF=$(git diff --cached --name-status)
 while read ST FILE; do
 echo $ST "," $FILE
@@ -1852,7 +1849,7 @@ refer:
 
 ## Array
 
-``` bash
+```bash
 #!/bin/bash
 
 LIST="a,b,c"
@@ -1896,7 +1893,7 @@ foo bar newone
 
 In Bash, you can use the `test` command to check whether a file exists and determine the type of the file.
 
-``` bash
+```bash
 test EXPRESSION
 [ EXPRESSION ]
 [[ EXPRESSION ]]
@@ -1904,7 +1901,7 @@ test EXPRESSION
 
 > If you want your script to be portable you should prefer using the old test `[` command which is available on all POSIX shells. The new upgraded version of the test command `[[` (double brackets) is supported on most modern systems using Bash, Zsh, and Ksh as a default shell.
 
-``` bash
+```bash
 FILE=/etc/resolv.conf
 if test -f "$FILE"; then
     echo "$FILE exist"
@@ -1989,7 +1986,7 @@ If parameter not set, use default.
 
 > ${parameter-default}, ${parameter:-default}
 
-``` bash
+```bash
 GDB=${GDB:-/usr/bin/gdb}
 echo $GDB # /usr/bin/gdb
 ```
@@ -2003,7 +2000,7 @@ The `cat <<EOF` syntax is very useful when working with multi-line text in Bash,
 
 * Assign multi-line string to a shell variable
 
-``` bash
+```bash
 sql=$(cat <<EOF
 SELECT foo, bar FROM db
 WHERE foo='baz'
@@ -2014,7 +2011,7 @@ echo $sql
 
 *  Pass multi-line string to a file in Bash
 
-``` bash
+```bash
 cat <<EOF > print.sh
 > #!/bin/bash
 > echo \$PWD
@@ -2024,7 +2021,7 @@ cat <<EOF > print.sh
 
 The `print.sh` file now contains:
 
-``` bash
+```bash
 #!/bin/bash
 echo $PWD
 echo /home/user
@@ -2032,7 +2029,7 @@ echo /home/user
 
 * Pass multi-line string to a pipe in Bash
 
-``` bash
+```bash
 cat <<EOF | grep 'b' | tee b.txt
 foo
 bar
@@ -2070,7 +2067,7 @@ If the `-V` or `-v` option is supplied, the exit status is 0 if command was foun
 If neither option is supplied and an error occurred or command cannot be found, the exit status is 127. Otherwise, the exit status of the command builtin is the exit status of command.
 ```
 
-``` bash
+```bash
 function CheckCmdExists()
 {
   command -v "$1" >/dev/null 2>&1
@@ -2081,7 +2078,7 @@ function CheckCmdExists()
 
 ## eval
 
-``` bash
+```bash
 #!/bin/bash
 
 f()
@@ -2112,7 +2109,7 @@ It's described in the "POSIX Programmer's Manual": http://www.unix.com/man-page/
 
 It will take an argument and construct a command of it, which will then be executed by the shell. This is the example from the manpage:
 
-``` bash
+```bash
 foo=10 x=foo
 y='$'$x
 echo $y
@@ -2138,7 +2135,7 @@ https://unix.stackexchange.com/questions/23111/what-is-the-eval-command-in-bash
 
 Bash 执行脚本的时候，例如，` bash script.sh` 会创建一个新的 Shell，script.sh 是在一个新的 Shell 里面执行。这个 Shell 就是脚本的执行环境，Bash 默认给定了这个环境的各种参数。set 命令用来修改 Shell 环境的运行参数，也就是可以定制环境。一共有十几个参数可以定制，[官方手册](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html)有完整清单。如果命令行下不带任何参数，直接运行set，会显示所有的环境变量和 Shell 函数。
 
-``` bash
+```bash
 # 遇到不存在的变量不会忽略，而是报错并不再执行后续语句
 set -u
 
@@ -2158,7 +2155,7 @@ set -o pipefail
 
 通常的错误处理方法：对比 `set -e`
 
-``` bash
+```bash
 # 只要command有非零返回值，脚本就会停止执行
 command || exit 1
 
@@ -2166,7 +2163,7 @@ command || exit 1
 command1 && command2
 ```
 
-``` bash
+```bash
 # 写法一
 command || { echo "command failed"; exit 1; }
 
@@ -2186,7 +2183,7 @@ fi
 
 总结：set命令的上面这四个参数，一般都放在一起使用。
 
-``` bash
+```bash
 # 这两种写法建议放在所有 Bash 脚本的头部
 # 另一种办法是在执行 Bash 脚本的时候，从命令行传入这些参数: bash -euxo pipefail script.sh
 
@@ -2203,7 +2200,7 @@ set -o pipefail
 
 ## cp
 
-``` bash
+```bash
 # copy file preserving directory path
 mkdir test
 cp --parents `find . -name "*.gcno"` test
@@ -2219,19 +2216,19 @@ cp --parents `find . -name "*.gcno"` test
 2. 使用 `! -name "*.cpp"` 参数，排除以 ".cpp" 结尾的文件。
 3. 对于找到的每个符合条件的文件，使用 `-exec rm {} \;` 参数执行 `rm` 命令以删除文件。
 
-``` bash
+```bash
 find . -type f -name "test[0-9]*" ! -name "*.cpp" -exec rm {} \;
 ```
 
 在删除文件之前，可以先检查哪些文件将被删除，只需将 `rm` 命令替换为 `echo` 命令：
 
-``` bash
+```bash
 find . -type f -name "test[0-9]*" ! -name "*.cpp" -exec echo {} \;
 ```
 
 ### 根据大小查找文件
 
-``` bash
+```bash
 find /media/d/ -type f -size +50M ! \( -name "*deb" -o -name "*vmdk" \)
 ```
 
@@ -2245,7 +2242,7 @@ find /media/d/ -type f -size +50M ! \( -name "*deb" -o -name "*vmdk" \)
 
 删除某个目录下的 coredump 文件：
 
-``` bash
+```bash
 #!/bin/bash
 
 CORE_FILES=`find /data/home/gerryyang -type f -size +50M -name "*core*"`
@@ -2280,7 +2277,7 @@ The awk utility shall interpret each input record as a sequence of fields where,
 
 ### Summing values of a column using awk command
 
-``` bash
+```bash
 awk '{s+=$1;}END{print s}'
 ```
 
@@ -2294,7 +2291,7 @@ https://blog.csdn.net/delphiwcdj/category_859397.html?spm=1001.2014.3001.5482
 
 ## cut
 
-``` bash
+```bash
 cut -d "delimiter" -f (field number) file.txt
 ```
 
@@ -2327,7 +2324,7 @@ bar
 
 从输入文件 file 中提取第 100 行并将其输出到标准输出。在读取到第 100 行之前的所有行上，d 命令会删除它们，这样它们就不会被输出。当 sed 读取到第 100 行时，它会停止处理并退出
 
-``` bash
+```bash
 sed '100q;d' file
 ```
 
@@ -2343,7 +2340,7 @@ sed '100q;d' file
 
 这个脚本定义了三个测试函数 `foo`、`bar` 和 `baz`，然后使用 `declare -F` 命令和 `awk` 命令来获取所有的函数名。在执行 `declare -F` 命令时，它会列出所有已定义的函数名和函数定义的位置。使用 `awk` 命令可以提取函数名并将其输出。最后，它遍历所有的函数名并输出它们。
 
-``` bash
+```bash
 #!/bin/bash
 
 # 定义几个测试函数
@@ -2429,7 +2426,7 @@ wait [n ...]
     status is 127. Otherwise, the return status is the exit status of the last process or job waited for.
 ```
 
-``` bash
+```bash
 #!/bin/bash
 
 CNT=$1
@@ -2453,7 +2450,7 @@ echo "done"
 * 如果进行16进制计算，仅支持大写十六进制数字
 * 需要先设置`obase`，再设置`ibase`
 
-``` bash
+```bash
 $echo "ibase=16;91A2A80-91A29B0" | bc
 208
 $echo "obase=16;ibase=16;91A2A80-91A29B0" | bc
@@ -2468,7 +2465,7 @@ D0
 
 I have came across this script:
 
-``` bash
+```bash
 #! /bin/bash
 
 if (( $# < 3 )); then
@@ -2503,7 +2500,7 @@ Answers:
 
 将一个文件按指定行数拆分成多个文件。
 
-``` bash
+```bash
 #!/bin/bash
 
 input_file="CSMsg.pb.cc"
@@ -2550,7 +2547,7 @@ $ ls -lSh
 
 对文件大小进行逆序排序，可以使用 ls 命令结合 sort 命令。以下命令将按照文件大小逆序排列所有以 .o 结尾的文件。
 
-``` bash
+```bash
 ls -l *.o | sort -k5,5 -n -r | head
 ```
 
@@ -2563,20 +2560,20 @@ ls -l *.o | sort -k5,5 -n -r | head
 
 * 方法 1：先排序再用 uniq。
 
-``` bash
+```bash
 sort your_file.txt | uniq | wc -l
 ```
 
 * 方法 2：直接使用 sort -u（更高效）
 
-``` bash
+```bash
 # sort -u：直接去重并排序，比 sort | uniq 更高效
 sort -u your_file.txt | wc -l
 ```
 
 * 方法 3：使用 awk（不依赖排序）
 
-``` bash
+```bash
 # !seen[$0]++：仅当行第一次出现时，seen[$0] 为 0（即 !0 为真），然后 count++
 # END {print count}：最后打印不重复的行数
 awk '!seen[$0]++ {count++} END {print count}' your_file.txt
@@ -2586,7 +2583,7 @@ awk '!seen[$0]++ {count++} END {print count}' your_file.txt
 
 完整的脚本：
 
-``` bash
+```bash
 #!/bin/bash
 
 if [ $# -ne 1 ]; then
@@ -2620,7 +2617,7 @@ uniq 是 Linux/Unix 系统中用于**过滤或统计连续重复行**的命令�
 > 注意：**`uniq file.txt` 直接对未排序的文件去重结果是可能不准确的。因为 uniq 只处理连续重复行，未排序的文件可能漏掉非连续的重复行。**。
 
 
-``` bash
+```bash
 # 先排序（sort），再用 uniq 去重（仅保留不重复的行）
 sort file.txt | uniq
 
@@ -2697,7 +2694,7 @@ grape
 
 # Bash Snippet
 
-``` bash
+```bash
 #!/bin/bash
 
 set -e
@@ -2773,7 +2770,7 @@ print_status "  - TestSvr logs: $TEST_DIR/testsvr.log"
 
 将最小版本和当前版本通过管道传给 sort，使用 version sort 模式 (`-V`) 检查当前版本是否 >= 最小版本（当且仅当 `go_version >= MIN_GO_VERSION` 时，`sort -C` 返回 true）
 
-``` bash
+```bash
 # 检查 Golang 版本
 local go_version=$(go version | awk '{print $3}' | sed 's/go//')
 if ! printf '%s\n%s' "$MIN_GO_VERSION" "$go_version" | sort -V -C ; then
@@ -2782,7 +2779,7 @@ if ! printf '%s\n%s' "$MIN_GO_VERSION" "$go_version" | sort -V -C ; then
 fi
 ```
 
-``` bash
+```bash
 $ printf "1.23.0\n1.23.5" | sort -V -C
 $ echo $?
 0
@@ -2793,7 +2790,7 @@ $ echo $?
 
 ## parallel 统计当前目录下包含的文件数量
 
-``` bash
+```bash
 ls | parallel 'echo -n {}" "; find {} -type f | wc -l'
 ```
 
@@ -2802,7 +2799,7 @@ ls | parallel 'echo -n {}" "; find {} -type f | wc -l'
 
 `trap` 是一个 shell 命令，用于在接收到指定信号时执行特定操作。它的语法如下：
 
-``` bash
+```bash
 trap COMMAND SIGNALS
 ```
 
@@ -2814,7 +2811,7 @@ trap COMMAND SIGNALS
 
 * 捕获 SIGINT 信号（通常由 Ctrl+C 产生）并执行自定义操作：
 
-``` bash
+```bash
 #!/bin/bash
 
 trap "echo 'Caught SIGINT signal. Exiting...'; exit 1" INT
@@ -2829,7 +2826,7 @@ done
 
 * 在脚本退出时执行清理操作：
 
-``` bash
+```bash
 #!/bin/bash
 
 function cleanup {
@@ -2853,7 +2850,7 @@ sleep 10
 
 ## 检查是否是 root 用户
 
-``` bash
+```bash
 # Check if the user has root privileges
 if [ "$(id -u)" != "0" ]; then
   echo "This script must be run as root" 1>&2
@@ -2863,7 +2860,7 @@ fi
 
 ## 获取当前 CPU 数量
 
-``` bash
+```bash
 # Get the number of CPU cores
 num_cores=$(nproc)
 ```
@@ -2886,7 +2883,7 @@ or available locally via: info '(coreutils) nproc invocation'
 
 ## 根据大小查找文件
 
-``` bash
+```bash
 #!/bin/bash
 
 # Check input arguments
@@ -2913,7 +2910,7 @@ find "$1" -type f -size +"$2"k
 
 ## pstack
 
-``` bash
+```bash
 #!/bin/sh
 
 if test $# -ne 1; then
@@ -2964,7 +2961,7 @@ EOF
 * 在非交互式模式下 alias 扩展功能默认是关闭的
 * shopt 是 shell 的内置命令，可以控制 shell 功能选项的开启和关闭，从而控制 shell 的行为
 
-``` bash
+```bash
 shopt -s opt_name        # Enable (set) opt_name.
 shopt -u opt_name        # Disable (unset) opt_name.
 shopt opt_name           # Show current status of opt_name.
@@ -2972,7 +2969,7 @@ shopt opt_name           # Show current status of opt_name.
 
 测试：
 
-``` bash
+```bash
 #!/bin/bash --login
 
 alias echo_hello="echo Hello"  # 命令别名
@@ -2999,14 +2996,14 @@ Hello
 
 `time_t` 若使用 int 存储，最高位为符号位，因此实际存储大小为 31bit，则可以表示到`2038年 01月 19日 星期二 11:14:07 CST`这个时间。
 
-``` bash
+```bash
 $date -d@`echo $((16#7FFFFFFF))`
 2038年 01月 19日 星期二 11:14:07 CST
 ```
 
 然而，当前时间为：1661223697，其十六进制的最高为是 `01`
 
-``` bash
+```bash
 $date +%s
 1661223697
 ```
@@ -3015,7 +3012,7 @@ $date +%s
 
 常用命令：
 
-``` bash
+```bash
 # 1. 获取上一个月时间，例如，201211
 
 date -d last-month +%Y%m
@@ -3049,7 +3046,7 @@ date -Is                        # 2025-03-13T10:21:28+08:00
 
 ## ps
 
-``` bash
+```bash
 # -e 此参数的效果和 -A 参数相同，-A 显示所有进程
 # -o 用户自定义格式
 # lstart 启动时间
@@ -3061,7 +3058,7 @@ $ ps -eo pid,lstart,etime | grep `pidof friendsvr`
 
 ## 计算某个目录下所有文件（包括子目录中的文件）的哈希值
 
-``` bash
+```bash
 find your_dir -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum
 ```
 
@@ -3075,7 +3072,7 @@ find your_dir -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum
 
 由于创建子进程造成了 i=`expr $i + 1` 执行效率低。
 
-``` bash
+```bash
 # 执行 100 万次大约需要 884 秒
 i=`expr $i + 1`
 
@@ -3096,14 +3093,14 @@ The `#!` syntax is used in scripts to indicate an interpreter for execution unde
 
 The syntax is:
 
-``` bash
+```bash
 #!/path/to/interpreter [arguments]
 #!/path/to/interpreter -arg1 -arg2
 ```
 
 Most Linux shell and perl / python script starts with the following line. Bash or sh example:
 
-``` bash
+```bash
 #!/bin/bash
 ```
 
@@ -3123,7 +3120,7 @@ Starting a Script With `#!`
 
 I've seen some strange things. I tried to convert hex to dec with bash Shell. I used very very simple command.
 
-``` bash
+```bash
 $ g_receiverBeforeToken=1158e460913d00000
 $ echo $((16#$g_receiverBeforeToken))
 1553255926290448384
@@ -3135,7 +3132,7 @@ Answers:
 
 It's not just that number, it's any number over `7fffffffffffffff`, because it's using **64-bit** integers and that's the largest one. **16-digit** numbers over that wrap around and become negative.
 
-``` bash
+```bash
 $ echo $((16#7fffffffffffffff))
 9223372036854775807
 $ echo $((16#7fffffffffffffff + 1))
@@ -3161,14 +3158,14 @@ When you run nohup command without ‘&’ then it returns to shell command prom
 
 The output of the nohup command will write in nohup.out the file if any redirecting filename is not mentioned in nohup command.
 
-``` bash
+```bash
 nohup bash sleep1.sh
 cat nohup.out
 ```
 
 You can execute the command in the following way to redirect the output to the output.txt file. Check the output of output.txt.
 
-``` bash
+```bash
 nohup bash sleep2.sh > output.txt
 cat output.txt
 ```
@@ -3177,7 +3174,7 @@ cat output.txt
 
 When nohup command use with ‘&’ then it doesn’t return to shell command prompt after running the command in the background. But if you want you can return to shell command prompt by typing ‘fg’
 
-``` bash
+```bash
 nohup bash sleep1.sh &
 fg
 ```
@@ -3186,7 +3183,7 @@ fg
 
 You can run multiple commands in the background by using nohup command. In the following command, mkdir and ls command are executed in the background by using nohup and bash commands. You can get the output of the commands by checking output.txt file.
 
-``` bash
+```bash
 nohup bash -c 'mkdir myDir && ls'> output.txt
 cat output.txt
 ```
@@ -3307,7 +3304,7 @@ egrep "fast|rest" info2.txt
 
 通过如下脚本计算前后两个 size 之合的变化：
 
-``` bash
+```bash
 #!/bin/bash
 
 # 检查是否提供了文件名参数

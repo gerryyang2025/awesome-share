@@ -52,7 +52,7 @@ In this noncompliant code example, an object of type `S` is used to initialize t
 
 如果 throw 一个子类异常对象，catch 的类型是父类，则会发生 **sliced 对象切片问题**，可以捕获到子类的异常但是输出的 `e.what()` 信息是不对的，输出的是父类的错误信息而不是子类的错误信息。
 
-``` cpp
+```cpp
 #include <exception>
 #include <iostream>
 
@@ -80,7 +80,7 @@ int main()
 如果 throw 一个父类异常对象，catch 的类型是子类，则捕获不到，继续在后面的 catch 中进行判断。
 
 
-``` cpp
+```cpp
 #include <exception>
 #include <iostream>
 
@@ -119,7 +119,7 @@ int main()
 
 In this compliant solution, the variable declared by the exception-declaration is an **lvalue reference**. The call to `what()` results in executing `S::what()` instead of `std::exception::what()`.
 
-``` cpp
+```cpp
 #include <exception>
 #include <iostream>
 
@@ -183,7 +183,7 @@ Catching by value is problematic in the face of inheritance hierarchies. Suppose
 
 1. 在异常处理中途释放资源后重新抛出
 
-``` cpp
+```cpp
 catch (...) {
     cleanupResources();  // 释放资源
     throw;              // 保留原始异常继续传播
@@ -192,7 +192,7 @@ catch (...) {
 
 2. 在记录日志后保留原始异常信息
 
-``` cpp
+```cpp
 catch (const std::exception& e) {
     logError(e.what());  // 记录错误
     throw;               // 继续传播原始异常
@@ -204,7 +204,7 @@ catch (const std::exception& e) {
 
 代码示例：
 
-``` cpp
+```cpp
 #include <iostream>
 #include <stdexcept>
 
@@ -285,7 +285,7 @@ Outer catch (by reference): DerivedException occurred
 
 `throw;` 的核心行为：
 
-``` cpp
+```cpp
 // 在 catch 块内部使用
 catch (...) {
     throw;  // 重新抛出当前处理的原始异常
@@ -298,7 +298,7 @@ catch (...) {
 
 对比错误用法：
 
-``` cpp
+```cpp
 catch (BaseException e) {
     throw e;  // 错误！抛出的是切片后的副本
 }
@@ -319,7 +319,7 @@ Avoid using forward declarations where possible. Instead, [include the headers y
 
 A "forward declaration" is a declaration of an entity without an associated definition.
 
-``` cpp
+```cpp
 // In a C++ source file:
 class B;
 void FuncInB();
@@ -340,7 +340,7 @@ ABSL_DECLARE_FLAG(flag_in_b);
 * Forward declaring symbols from namespace std:: yields undefined behavior.
 * It can be difficult to determine whether a forward declaration or a full #include is needed. Replacing an #include with a forward declaration can silently change the meaning of code:
 
-``` cpp
+```cpp
 // b.h:
 struct B {};
 struct D : B {};
@@ -417,7 +417,7 @@ Use designated initializers only in their C++20-compliant form.
 
 [Designated initializers](https://en.cppreference.com/w/cpp/language/aggregate_initialization#Designated_initializers) are a syntax that allows for initializing an aggregate ("plain old struct") by naming its fields explicitly:
 
-``` cpp
+```cpp
 struct Point {
     float x = 0.0;
     float y = 0.0;
@@ -466,7 +466,7 @@ Exceptions:
 
 按照规则，应该这样抛出和捕获异常：
 
-``` cpp
+```cpp
 class MyException {};
 
 void foo() {
@@ -486,7 +486,7 @@ int main() {
 
 * 抛出字符串字面量：
 
-``` cpp
+```cpp
 void foo() {
     throw "An error occurred"; // 抛出字符串字面量，不会被标记
 }
@@ -502,7 +502,7 @@ int main() {
 
 * 抛出函数参数：
 
-``` cpp
+```cpp
 class MyException {};
 
 // 辅助函数，用于抛出异常
@@ -553,7 +553,7 @@ Noncompliant Code Example:
 
 In this noncompliant code example, an object of type S is used to initialize the exception object that is later caught by an exception-declaration of type std::exception. The exception-declaration matches the exception object type, so the variable E is copy-initialized from the exception object, resulting in the exception object being sliced. Consequently, the output of this noncompliant code example is the implementation-defined value returned from calling std::exception::what() instead of "My custom exception".
 
-``` cpp
+```cpp
 #include <exception>
 #include <iostream>
 
@@ -576,7 +576,7 @@ Compliant Solution:
 
 In this compliant solution, the variable declared by the exception-declaration is an lvalue reference. The call to what() results in executing S::what() instead of std::exception::what().
 
-``` cpp
+```cpp
 #include <exception>
 #include <iostream>
 
@@ -606,7 +606,7 @@ void f() {
 
 Finds non-extern non-inline function and variable definitions in header files, which can lead to potential ODR violations in case these headers are included from multiple translation units.
 
-``` cpp
+```cpp
 // Foo.h
 int a = 1; // Warning: variable definition.
 extern int d; // OK: extern variable.
@@ -696,7 +696,7 @@ constexpr T pi = T(3.1415926L);
 
 建议代码示例：
 
-``` cpp
+```cpp
 void foo(int Value) {
   int Local = 0;
   for (int i = 0; i < 42; i++) {
@@ -721,7 +721,7 @@ void foo(int Value) {
 
 This check replaces deprecated dynamic exception specifications with the appropriate noexcept specification (introduced in C++11). By default this check will replace `throw()` with `noexcept`, and `throw(<exception>[,...])` or `throw(...)` with `noexcept(false)`.
 
-``` cpp
+```cpp
 void foo() throw();    // 列表为空表示不抛出异常
 void bar() throw(int) {}
 
@@ -734,7 +734,7 @@ void bar() noexcept(false) {}
 
 Finds range-based for loops that can be replaced by a call to `std::any_of` or `std::all_of`. In C++ 20 mode, suggests `std::ranges::any_of` or `std::ranges::all_of`.
 
-``` cpp
+```cpp
 bool all_even(std::vector<int> V) {
   for (int I : V) {
     if (I % 2)
@@ -788,7 +788,7 @@ Examples:
 
 Replaces explicit calls to the constructor in a return with a braced initializer list. This way the return type is not needlessly duplicated in the function definition and the return statement.
 
-``` cpp
+```cpp
 Foo bar() {
   Baz baz;
   return Foo(baz);
@@ -822,7 +822,7 @@ Adds `[[nodiscard]]` attributes (introduced in C++17) to member functions in ord
   + 特征：函数仅通过返回值传递结果，不修改对象或外部状态（因为是 const 成员函数），且无副作用。
   + 风险：若忽略返回值，计算逻辑完全浪费，可能隐藏逻辑错误。
 
-``` cpp
+```cpp
 class MathUtils {
 public:
     // 计算结果，忽略返回值无意义
@@ -836,7 +836,7 @@ public:
   + 特征：返回对象关键状态（如是否为空、是否有效），但可能被误认为“动作”而非“查询”。
   + 风险：若未检查返回值直接操作资源（如发送数据），可能引发未定义行为。
 
-``` cpp
+```cpp
 class Connection {
 public:
     // 检查连接是否有效，忽略返回值可能导致后续操作失败
@@ -850,7 +850,7 @@ public:
   + 特征：返回新对象或资源句柄，但可能被误认为修改当前对象。
   + 风险：若忽略返回值，开发者可能误以为原对象被修改，导致逻辑错误。
 
-``` cpp
+```cpp
 class StringProcessor {
 public:
     // 生成新字符串，原对象未被修改
@@ -862,14 +862,14 @@ public:
 
 **错误用法（触发警告）**
 
-``` cpp
+```cpp
 auto result = vec.empty(); // 正确：使用返回值
 vec.empty();               // 警告：未处理 [[nodiscard]] 值
 ```
 
 绕过警告。若需主动忽略返回值（少数情况），可显式转换为 void：
 
-``` cpp
+```cpp
 static_cast<void>(vec.someNodiscardMethod());
 ```
 
@@ -885,7 +885,7 @@ With **move semantics** added to the language and the standard library updated w
 
 The transformation is usually beneficial when the calling code passes an **rvalue** and assumes the **move construction** is a cheap operation. This short example illustrates how the construction of the value happens:
 
-``` cpp
+```cpp
 void foo(std::string s);
 std::string get_str();
 
@@ -903,7 +903,7 @@ Detects local variable declarations declaring more than one variable and tries t
 
 The automatic code-transformation will use the same indentation as the original for every created statement and add a line break after each statement. It keeps the order of the variable declarations consistent, too.
 
-``` cpp
+```cpp
 void f() {
   int * pointer = nullptr, value = 42, * const const_ptr = &value;
   // This declaration will be diagnosed and transformed into:

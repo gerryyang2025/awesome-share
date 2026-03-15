@@ -189,7 +189,7 @@ A program will continue running until Ctrl-C is hit, or an `exit()` function is 
 
 ## 函数插桩
 
-``` cpp
+```cpp
 // test.cc
 #include <cstdio>
 
@@ -237,7 +237,7 @@ test
 
 ## 统计函数时耗
 
-``` cpp
+```cpp
 // test.cc
 #include <cstdio>
 #include <unistd.h>
@@ -269,7 +269,7 @@ hello took 2000123088 ns
 
 ## 正则匹配多个函数
 
-``` cpp
+```cpp
 // test.cc
 #include <cstdio>
 #include <unistd.h>

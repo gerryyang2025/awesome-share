@@ -16,7 +16,7 @@ tags:
 
 https://github.com/gflags/example
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <gflags/gflags.h>
 
@@ -75,7 +75,7 @@ Usage:
 
 **Commandline flags** are flags that users specify on the command line when they run an executable. In the command
 
-``` bash
+```bash
 fgrep -l -f /var/tmp/foo johannes brahms
 ```
 
@@ -134,7 +134,7 @@ cc_binary(
 
 Defining a flag is easy: just use the appropriate macro for the type you want the flag to be, as defined at the bottom of `gflags/gflags.h`. Here's an example file, `foo.cc`:
 
-``` cpp
+```cpp
 // foo.cc
 
 #include <gflags/gflags.h>
@@ -170,7 +170,7 @@ All defined flags are available to the program as just a normal variable, with t
 
 You can read and write to the flag just like any other variable:
 
-``` cpp
+```cpp
 if (FLAGS_consider_made_up_languages)
     FLAGS_languages += ",klingon";   // implied by --consider_made_up_languages
 
@@ -192,7 +192,7 @@ After DEFINE-ing a flag, you may optionally register a validator function with t
 
 Here is an example use of this functionality:
 
-``` cpp
+```cpp
 static bool ValidatePort(const char* flagname, int32 value) {
    if (value > 0 && value < 32768)   // value is ok
      return true;
@@ -216,7 +216,7 @@ The return value is available as global static boolean variable named `<flag>_va
 
 The final piece is the one that tells the executable to process the commandline flags, and set the `FLAGS_*` variables to the appropriate, non-default value based on what is seen on the commandline. This is equivalent to the `getopt()` call in the getopt library, but has much less overhead to use. In fact, it's just a single function call:
 
-``` cpp
+```cpp
 gflags::ParseCommandLineFlags(&argc, &argv, true);
 ```
 
@@ -241,7 +241,7 @@ In either case, the `FLAGS_*` variables are modified based on what was [passed i
 
 The reason you make something a flag instead of a compile-time constant, is so users can specify a non-default value on the commandline. Here's how they might do it for an application that links in `foo.cc`:
 
-``` bash
+```bash
 app_containing_foo --nobig_menu -languages="chinese,japanese,korean" ...
 ```
 
@@ -286,7 +286,7 @@ Note that flags do not have single-letter synonyms, like they do in the `getopt`
 
 Sometimes a flag is defined in a library, and you want to change its default value in one application but not others. It's simple to do this: just assign a new value to the flag in `main()`, before calling `ParseCommandLineFlags()`:
 
-``` cpp
+```cpp
 DECLARE_bool(lib_verbose);   // mylib has a lib_verbose flag, default is false
 
 int main(int argc, char** argv) {
@@ -329,7 +329,7 @@ for those names listed as the argument to --undefok, suppress the normal error-e
 
 `--fromenv=foo,bar` says to read the values for the `foo` and `bar` flags from the **environment**. In concert with this flag, you must actually set the values in the environment, via a line like one of the two below:
 
-``` bash
+```bash
 export FLAGS_foo=xxx; export FLAGS_bar=yyy   # sh
 
 setenv FLAGS_foo xxx; setenv FLAGS_bar yyy   # tcsh
@@ -360,7 +360,7 @@ In its simplest form, `f` should just be a list of flag assignments, one per lin
 
 With this flagfile, the following two lines are equivalent:
 
-``` bash
+```bash
 ./myapp --foo --nobig_menus --languages=english,french --bar
 ./myapp --foo --flagfile=/tmp/myflags --bar
 ```
@@ -375,7 +375,7 @@ For more information about these routines, and other useful helper methods such 
 
 If your application has code like this:
 
-``` cpp
+```cpp
 #define STRIP_FLAG_HELP 1    // this must go before the #include!
 #include <gflags/gflags.h>
 ```
@@ -396,7 +396,7 @@ https://www.man7.org/linux/man-pages/man3/getopt.3.html
 
 The following trivial example program uses `getopt()` to handle two program options: `-n`, with no associated value; and `-t val`, which expects an associated value.
 
-``` cpp
+```cpp
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -456,7 +456,7 @@ int main(int argc, char *argv[])
 
 `Program_options` 正是解决这个问题的。这个代码有点老了，不过还挺实用；懒得去找特别的处理库时，至少这个伸手可用。使用这个库需要链接 `boost_program_options` 库。
 
-``` cpp
+```cpp
 #include <iostream>
 #include <string>
 #include <stdlib.h>

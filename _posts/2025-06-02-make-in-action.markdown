@@ -55,7 +55,7 @@ make 程序本身有许多选项，其中最常用的3个选项为：
 
 例子：
 
-``` makefile
+```makefile
 myapp: main.o 2.o 3.o
 main.o: main.c a.h
 2.o: 2.c a.h b.h
@@ -66,7 +66,7 @@ main.o: main.c a.h
 
 **如果想一次创建多个文件，可以利用伪目标 `all`**。假设应用程序由二进制文件 `myapp` 和使用手册 `myapp.1` 组成，可以用下面这行语句进行定义：
 
-``` makefile
+```makefile
 all: myapp myapp.1
 ```
 
@@ -84,7 +84,7 @@ makefile 文件的第二部分内容是规则，它们定义了目标的创建�
 
 一个简单的 makefile 文件：
 
-``` makefile
+```makefile
 myapp: main.o 2.o 3.o
     gcc -o myapp main.o 2.o 3.o            # 注意：开头的为 tab，不能是空格
 main.o: main.c a.h
@@ -114,13 +114,13 @@ makefile 文件允许你使用宏，以一种更通用的格式来书写它们�
 
 在 makefile 文件中定义宏：
 
-``` makefile
+```makefile
 MACRONAME=value
 ```
 
 引用宏的方法：
 
-``` makefile
+```makefile
 $(MACRONAME)
 # or
 ${MACRONAME}    # make 的有些版本还允许 $MACRONAME
@@ -128,7 +128,7 @@ ${MACRONAME}    # make 的有些版本还允许 $MACRONAME
 
 把一个宏的值设置为空的方法：
 
-``` makefile
+```makefile
 MACRONAME=                  # 将等号后面留空
 ```
 
@@ -144,7 +144,7 @@ MACRONAME=                  # 将等号后面留空
 
 例子：带宏定义的 makefile 文件
 
-``` c
+```c
 /* main.c */
 #include <stdlib.h>
 #include "a.h"
@@ -160,7 +160,7 @@ int main()
 }
 ```
 
-``` c
+```c
 /* 2.c */
 #include "a.h"
 #include "b.h"
@@ -172,7 +172,7 @@ void function_two()
 }
 ```
 
-``` c
+```c
 /* 3.c */
 #include "b.h"
 #include "c.h"
@@ -188,7 +188,7 @@ void function_three()
 
 makefile 文件：
 
-``` makefile
+```makefile
 all: myapp
 
 # Which compiler
@@ -241,7 +241,7 @@ main.c、2.c、3.c、a.h、b.h、c.h 文件内容与上例相同。
 
 makefile 文件：
 
-``` makefile
+```makefile
 all: myapp
 
 # Which compiler
@@ -303,7 +303,7 @@ install: myapp
 
 将这些命令用符号 `&&` 连接起来，在执行下一个命令前检查前一个命令的执行是否成功：
 
-``` makefile
+```makefile
 install: myapp
 	@if [ -d $(INSTDIR) ];/
 		then/
@@ -325,7 +325,7 @@ install: myapp
 
 目前为止，你在 makefile 文件中对每个操作步骤的执行都做了精确的说明。事实上，make 命令本身带有大量的内置规则，它们可以极大地简化 makefile 文件的内容，尤其在拥有许多源文件时更是如此。
 
-``` c
+```c
 /* foo.c */
 #include <stdlib.h>
 #include <stdio.h>
@@ -339,7 +339,7 @@ int main()
 
 在不指定 makefile 文件时，尝试用 make 命令来编译它：
 
-``` bash
+```bash
 $ make foo
 cc          foo.c          -o   foo
 ```
@@ -355,7 +355,7 @@ cc          foo.c          -o   foo
 
 可以通过下面命令打印出make命令所有内置规则：
 
-``` bash
+```bash
 $ make -p | more
 ```
 
@@ -365,7 +365,7 @@ $ make -p | more
 
 **考虑到存在这些内置规则，可以将文件 makefile 中用于制作目标的规则去掉，而只需要指定依赖关系，从而达到简化 makefile 文件的目的**。
 
-``` makefile
+```makefile
 main.o: main.c a.h
 2.o: 2.c a.h b.h
 3.o: 3.c b.h c.h

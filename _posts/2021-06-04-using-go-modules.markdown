@@ -47,7 +47,7 @@ A module is a collection of `Go packages` stored in a file tree with a `go.mod` 
 
 Create a new, empty directory somewhere outside $GOPATH/src, cd into that directory, and then create a new source file, `hello.go`:
 
-``` go
+```go
 package hello
 
 func Hello() string {
@@ -57,7 +57,7 @@ func Hello() string {
 
 Let's write a test, too, in `hello_test.go`:
 
-``` go
+```go
 package hello
 
 import "testing"
@@ -106,7 +106,7 @@ The primary motivation for Go modules was to improve the experience of using (th
 
 Let's update our `hello.go` to import `rsc.io/quote` and use it to implement Hello:
 
-``` go
+```go
 package hello
 
 import "rsc.io/quote"
@@ -329,7 +329,7 @@ Note the explicit `@v1.3.1` in the `go get` argument. In general each argument p
 
 Let's add a new function to our package: `func Proverb` returns a Go concurrency proverb, by calling `quote.Concurrency`, which is provided by the module `rsc.io/quote/v3`. First we update `hello.go` to add the new function:
 
-``` go
+```go
 package hello
 
 import (
@@ -348,7 +348,7 @@ func Proverb() string {
 
 Then we add a test to `hello_test.go`:
 
-``` go
+```go
 func TestProverb(t *testing.T) {
     want := "Concurrency is not parallelism."
     if got := Proverb(); got != want {
@@ -412,7 +412,7 @@ func OptV3() string
 
 We can update our use of `quote.Hello()` in hello.go to use `quoteV3.HelloV3()`:
 
-``` go
+```go
 package hello
 
 import (
@@ -495,7 +495,7 @@ ok      github.com/gerryyang/goinaction/module/hello    0.003s
 
 Take [this codes](https://github.com/gerryyang/goinaction/blob/master/helloworld/hello.go) for example:
 
-``` go
+```go
 package main
 
 import (

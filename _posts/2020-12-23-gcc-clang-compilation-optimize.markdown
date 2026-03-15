@@ -117,7 +117,7 @@ DIEs can be split into two general types. Those that describe data including dat
 
 ## 查看当前二进制文件使用的 DWARF 调试信息版本
 
-``` bash
+```bash
 readelf --debug-dump=info <your_binary> | head -20
 ```
 
@@ -125,7 +125,7 @@ readelf --debug-dump=info <your_binary> | head -20
 
 如果遇到 addr2line 的 DWARF 错误，尝试使用 DWARF 4 版本重新编译：
 
-``` bash
+```bash
 gcc -gdwarf-4 -g3 -o myapp source.c
 ```
 
@@ -253,8 +253,7 @@ The "lazy" deserialization behavior of precompiled headers requires their integr
 
 # 编译加速 (统一编译)
 
-```
-bUseUnityBuild
+```buseunitybuild
 Whether to unify C++ code into larger files for faster compilation.
 
 bForceUnityBuild
@@ -529,7 +528,7 @@ Documentation of individual passes is available [here](http://llvm.org/docs/Pass
 
 You can compare the effect of changing high-level flags such as -O like this:
 
-``` bash
+```bash
 diff -wy --suppress-common-lines  \
   <(echo 'int;' | clang -xc -Os   - -o /dev/null -\#\#\# 2>&1 | tr " " "\n" | grep -v /tmp) \
   <(echo 'int;' | clang -xc -O2 - -o /dev/null -\#\#\# 2>&1 | tr " " "\n" | grep -v /tmp)
@@ -538,7 +537,7 @@ diff -wy --suppress-common-lines  \
 
 -O0 优化选项：
 
-``` bash
+```bash
 $echo 'int;' | clang -xc -O0 - -o /dev/null -\#\#\#
 clang version 3.5.2 (tags/RELEASE_352/final)
 Target: x86_64-unknown-linux-gnu
@@ -549,7 +548,7 @@ Thread model: posix
 
 -O2 优化选项：
 
-``` bash
+```bash
 $echo 'int;' | clang -xc -O2 - -o /dev/null -\#\#\#
 clang version 3.5.2 (tags/RELEASE_352/final)
 Target: x86_64-unknown-linux-gnu
@@ -560,7 +559,7 @@ Thread model: posix
 
 -O3 优化选项：
 
-``` bash
+```bash
 $echo 'int;' | clang -xc -O3 - -o /dev/null -\#\#\#
 clang version 3.5.2 (tags/RELEASE_352/final)
 Target: x86_64-unknown-linux-gnu
@@ -608,7 +607,7 @@ Clang provides a mechanism for selectively disabling optimizations in functions 
 
 To disable optimizations in a single function definition, the GNU-style or C++11 non-standard attribute `optnone` can be used.
 
-``` cpp
+```cpp
 // The following functions will not be optimized.
 // GNU-style attribute
 __attribute__((optnone)) int foo() {
@@ -625,7 +624,7 @@ To facilitate disabling optimization for a range of function definitions, a rang
 
 All function definitions in the region between an `off` and the following `on` will be decorated with the `optnone` attribute unless doing so would conflict with explicit attributes already present on the function (e.g. the ones that control inlining).
 
-``` cpp
+```cpp
 #pragma clang optimize off
 // This function will be decorated with optnone.
 int foo() {
@@ -649,7 +648,7 @@ I expected `__attribute__((noinline))`, when added to a function, to make sure t
 
 Here is an example, which you can also [open on Godbolt](https://godbolt.org/z/QMTL8f):
 
-``` cpp
+```cpp
 namespace {
 
 __attribute__((noinline))
@@ -674,7 +673,7 @@ int main() {
 
 When build with `-O3`, `gcc` emits `inner_noinline`, but not `inner_inline`:
 
-``` cpp
+```cpp
 (anonymous namespace)::inner_noinline():
         mov     eax, 3
         ret
@@ -686,7 +685,7 @@ main:
 
 Clang insists on inlining it:
 
-``` cpp
+```cpp
 main: # @main
   mov eax, 7
   ret
@@ -1189,7 +1188,7 @@ Discarded input sections
 ...
 ```
 
-``` bash
+```bash
 $objdump -s -j .text._Z5func2v demo.o
 
 demo.o:     file format elf64-x86-64
@@ -1216,7 +1215,7 @@ refer:
 * 虽然在磁盘容量足够大的PC中，可能不会出现想要将可执行文件变小的情况。但在容量有限的环境，或想要通过网络复制并运行程序时，`strip`却是一个方便的工具。
 
 
-``` bash
+```bash
 # 去除目标文件中的符号
 $ strip objfile
 $ nm objfile
@@ -1236,7 +1235,7 @@ Segmentation fault (core dumped)
 
 例如：
 
-``` bash
+```bash
 # 拷贝出一个符号表文件
 $ objcopy --only-keep-debug mainO3 mainO3.symbol       
 
@@ -1251,13 +1250,13 @@ $ objcopy --add-gnu-debuglink=mainO3.symbol mainO3
 
 例如：可以将`foo.jpg`转换为x86用的ELF32形式的目标文件`foo.o`
 
-``` bash
+```bash
 $ objcopy -I binary -O elf32-i386 -B i386 foo.jpg foo.o
 ```
 
 脚本工具：
 
-``` bash
+```bash
 #!/bin/bash
 
 scriptdir=`dirname ${0}`
@@ -1345,7 +1344,7 @@ The following example illustrates the advantages of LTO’s integrated approach 
 * Input source file `a.c` is compiled into LLVM bitcode form.
 * Input source file `main.c` is compiled into native object code.
 
-``` c
+```c
 --- a.h ---
 extern int foo1(void);
 extern void foo2(void);
@@ -1567,7 +1566,7 @@ You might think that, given how big of an issue compile times are in C++, there 
 
 I’ll do example with a super small C++ snippet that just includes some STL headers and does something with them. See the snippet and the output from three major compilers (Visual Studio, Gcc, Clang) in [Compiler Explorer here](https://godbolt.org/z/Yw08WW). The actual code does not do anything useful, I just needed something to throw at the compiler.
 
-``` cpp
+```cpp
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -1592,7 +1591,7 @@ I’m not using Gcc much, and at least in my industry (game development), it’s
 
 Anyway, gcc has `-ftime-report` argument that prints information about where time was spent during compilation. Brace yourself, this will be over 100 lines of text:
 
-``` bash
+```bash
 #!/bin/bash
 
 g++ -std=c++11 -o test -O2 -ftime-report test.cc
@@ -2009,7 +2008,7 @@ Clang C/C++ build analysis tool when using Clang 9+ `-ftime-trace`. The `-ftime-
 
 Usage:
 
-``` bash
+```bash
 #!/bin/bash
 
 # -ftime-report
@@ -2200,7 +2199,7 @@ Compilation (1 times):
 
 Granularity (粒度) and amount of most expensive things (files, functions, templates, includes) that are reported can be controlled by having an [ClangBuildAnalyzer.ini](https://github.com/aras-p/ClangBuildAnalyzer/blob/main/ClangBuildAnalyzer.ini) file in the working directory. Take a look at ClangBuildAnalyzer.ini for an example.
 
-``` ini
+```ini
 # ClangBuildAnalyzer reads ClangBuildAnalyzer.ini file from the working directory
 # when invoked, and various aspects of reporting can be configured this way.
 # This file example is setup to be exactly like what the defaults are.

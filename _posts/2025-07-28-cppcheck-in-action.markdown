@@ -30,7 +30,7 @@ When building the command line tool, [PCRE](http://www.pcre.org/) is optional. I
 
 The minimum required Python version is 3.6.
 
-``` bash
+```bash
 # 安装 PCRE 开发库
 # RHEL/CentOS
 $ sudo yum install pcre-devel
@@ -49,13 +49,13 @@ $ which pcre-config || find /usr -name pcre-config 2>/dev/null
 
 Simple, unoptimized build (no dependencies):
 
-``` bash
+```bash
 make
 ```
 
 The recommended `release` build is:
 
-``` bash
+```bash
 make -j36 MATCHCOMPILER=yes DESTDIR=$HOME/tools/cppcheck/cppcheck-2.18.0 FILESDIR=-install HAVE_RULES=yes CXXFLAGS="-O2 -DNDEBUG -Wall -Wno-sign-compare -Wno-unused-function" install
 ```
 
@@ -124,7 +124,7 @@ So what is unique in `Cppcheck`.
 
 In `Cppcheck` the data flow analysis is not only "forward" but "bi-directional". Most analyzers will diagnose this:
 
-``` c
+```c
 void foo(int x)
 {
     int buf[10];
@@ -137,7 +137,7 @@ Most tools can determine that the array index will be `1000` and there will be o
 
 `Cppcheck` will also diagnose this:
 
-``` c
+```c
 void foo(int x)
 {
     int buf[10];
@@ -241,7 +241,7 @@ Even tools that have the same design goals as `Cppcheck` will probably be good a
 
 Here is some simple code:
 
-``` c
+```c
 #include <cstdio>
 
 int main()
@@ -287,7 +287,7 @@ With `--file-filter=<str>` you can set a file filter and only those files matchi
 
 For example: if you want to check only those files and folders starting from a subfolder `src/` that start with “test” you have to type:
 
-``` bash
+```bash
 cppcheck src/ --file-filter=src/test*
 ```
 
@@ -298,7 +298,7 @@ cppcheck src/ --file-filter=src/test*
 
 To **exclude a file or folder**, there are two options. The first option is to only provide the paths and files you want to check:
 
-``` bash
+```bash
 cppcheck src/a src/b
 ```
 
@@ -306,13 +306,13 @@ All files under `src/a` and `src/b` are then checked.
 
 The second option is to use `-i`, which specifies the files/paths to ignore. With this command no files in `src/c` are checked:
 
-``` bash
+```bash
 cppcheck -isrc/c src
 ```
 
 This option is only valid when supplying an input directory. To ignore multiple directories supply the `-i` flag for each directory individually. The following command ignores both the `src/b` and `src/c` directories:
 
-``` bash
+```bash
 cppcheck -isrc/b -isrc/c
 ```
 
@@ -365,7 +365,7 @@ If your templates are **recursive** this can lead to slow analysis that uses a l
 
 Example code:
 
-``` cpp
+```cpp
 template <int i>
 void a()
 {
@@ -395,7 +395,7 @@ To limit template recursion you can:
 
 Example code with template specialisation:
 
-``` cpp
+```cpp
 template <int i>
 void a()
 {
@@ -433,7 +433,7 @@ On the command line you configure that through `--cppcheck-build-dir=path`.
 
 Example:
 
-``` bash
+```bash
 mkdir b
 
 # All files are analyzed
@@ -452,19 +452,19 @@ You can import some project files and build configurations into `Cppcheck`.
 
 Generate a compile database:
 
-``` bash
+```bash
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
 ```
 
 The file `compile_commands.json` is created in the current folder. Now run `Cppcheck` like this:
 
-``` bash
+```bash
 cppcheck --project=compile_commands.json
 ```
 
 To ignore certain folders you can use `-i`. This will skip analysis of source files in the `foo` folder.
 
-``` bash
+```bash
 cppcheck --project=compile_commands.json -ifoo
 ```
 
@@ -474,7 +474,7 @@ If you can generate a compile database, then it is possible to import that in `C
 
 In **Linux** you can use for instance the `bear` (**build ear**) utility to generate a compile database from arbitrary build tools:
 
-``` bash
+```bash
 bear -- make
 ```
 
@@ -491,7 +491,7 @@ Cppcheck automatically test different combinations of preprocessor defines to ac
 
 Here is a file that has 3 bugs (when x,y,z are assigned).
 
-``` cpp
+```cpp
 #ifdef A
   x=100/0;
   #ifdef B
@@ -514,7 +514,7 @@ When `-D` is used, `Cppcheck` will only check 1 configuration unless these are u
 
 Example:
 
-``` bash
+```bash
 # test all configurations
 # all bugs are found
 cppcheck test.c
@@ -555,7 +555,7 @@ By default `Cppcheck` uses native platform configuration that works well if your
 
 You can also create your own custom platform configuration in a `XML` file. Here is an example:
 
-``` xml
+```xml
 <?xml version="1"?>
 <platform>
   <char_bit>8</char_bit>
@@ -622,7 +622,7 @@ The filename may include the wildcard characters `*` or `?`, which matches any s
 
 The `--suppress=` command line option is used to specify suppressions on the command line. Example:
 
-``` bash
+```bash
 cppcheck --suppress=memleak:src/file1.cpp src/
 ```
 
@@ -642,7 +642,7 @@ Note that **you may add empty lines and comments** in the **suppressions file**.
 
 The usage of the suppressions file is as follows:
 
-``` bash
+```bash
 cppcheck --suppressions-list=suppressions.txt src/
 ```
 
@@ -652,7 +652,7 @@ cppcheck --suppressions-list=suppressions.txt src/
 You can specify suppressions in a `XML` file, for example as follows:
 
 
-``` xml
+```xml
 <?xml version="1.0"?>
 <suppressions>
   <suppress>
@@ -668,7 +668,7 @@ The `XML` format is extensible and may be extended with further attributes in th
 
 The usage of the suppressions file is as follows:
 
-``` bash
+```bash
 cppcheck --suppress-xml=suppressions.xml src/
 ```
 
@@ -678,7 +678,7 @@ cppcheck --suppress-xml=suppressions.xml src/
 
 This code will normally generate an error message:
 
-``` cpp
+```cpp
 void f() {
     char arr[5];
     arr[10] = 0;
@@ -694,7 +694,7 @@ cppcheck test.c
 
 To activate inline suppressions:
 
-``` bash
+```bash
 cppcheck --inline-suppr test.c
 ```
 
@@ -702,19 +702,19 @@ cppcheck --inline-suppr test.c
 
 You can suppress a warning `aaaa` with:
 
-``` cpp
+```cpp
 // cppcheck-suppress aaaa
 ```
 
 Suppressing multiple ids in one comment by using `[]`:
 
-``` cpp
+```cpp
 // cppcheck-suppress [aaaa, bbbb]
 ```
 
 Suppressing warnings aaaa on a block of code:
 
-``` cpp
+```cpp
 // cppcheck-suppress-begin aaaa
 
 // ...
@@ -724,7 +724,7 @@ Suppressing warnings aaaa on a block of code:
 
 Suppressing multiple ids on a block of code:
 
-``` cpp
+```cpp
 // cppcheck-suppress-begin [aaaa, bbbb]
 
 // ...
@@ -734,19 +734,19 @@ Suppressing multiple ids on a block of code:
 
 Suppressing warnings aaaa for a whole file:
 
-``` cpp
+```cpp
 // cppcheck-suppress-file aaaa
 ```
 
 Suppressing multiple ids for a whole file:
 
-``` cpp
+```cpp
 // cppcheck-suppress-file [aaaa, bbbb]
 ```
 
 Suppressing warnings aaaa where macro is used:
 
-``` cpp
+```cpp
 // cppcheck-suppress-macro aaaa
 #define MACRO ...
 
@@ -757,7 +757,7 @@ x = MACRO; // <- aaaa warnings are suppressed here
 
 Suppressing multiple ids where macro is used:
 
-``` cpp
+```cpp
 // cppcheck-suppress-macro [aaaa, bbbb]
 #define MACRO ...
 
@@ -772,7 +772,7 @@ The comment can be put before the code or at the same line as the code.
 
 **Before the code**:
 
-``` cpp
+```cpp
 void f() {
   char arr[5];
   // cppcheck-suppress arrayIndexOutOfBounds
@@ -782,7 +782,7 @@ void f() {
 
 Or **at the same line as the code**:
 
-``` cpp
+```cpp
 void f() {
   char arr[5];
   arr[10] = 0; // cppcheck-suppress arrayIndexOutOfBounds
@@ -791,7 +791,7 @@ void f() {
 
 In this example there are 2 lines with code and 1 suppression comment. The suppression comment only applies to 1 line: `a = b + c;`.
 
-``` cpp
+```cpp
 void f() {
   a = b + c; // cppcheck-suppress abc
   d = e + f;
@@ -807,7 +807,7 @@ There are several options;
 Using 2 suppression comments before code:
 
 
-``` cpp
+```cpp
 void f() {
   char arr[5];
 
@@ -819,7 +819,7 @@ void f() {
 
 Using 1 suppression comment before the code:
 
-``` cpp
+```cpp
 void f() {
   char arr[5];
   // cppcheck-suppress[arrayIndexOutOfBounds,zerodiv]
@@ -831,7 +831,7 @@ void f() {
 
 You can write comments about a suppression as follows:
 
-``` cpp
+```cpp
 // cppcheck-suppress[warningid] some comment
 // cppcheck-suppress warningid ; some comment
 // cppcheck-suppress warningid // some comment
@@ -844,13 +844,13 @@ You can write comments about a suppression as follows:
 
 A sample command to check a file and output errors in the `XML` format:
 
-``` bash
+```bash
 cppcheck --xml file1.cpp
 ```
 
 Here is a sample report:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <results version="2">
     <cppcheck version="1.66"/>
@@ -922,7 +922,7 @@ If you want to **reformat** the output so that it looks different, then you can 
 
 To get `gcc` compatible output you can use `–template=gcc`:
 
-``` bash
+```bash
 cppcheck --template=gcc samples/arrayIndexOutOfBounds/bad.c
 ```
 
@@ -930,7 +930,7 @@ cppcheck --template=gcc samples/arrayIndexOutOfBounds/bad.c
 
 You can write your own pattern. For instance:
 
-``` bash
+```bash
 cppcheck --template="{file}:{line}:{column}: {severity}:{message}" samples/arrayIndexOutOfBounds/bad.c
 ```
 
@@ -943,7 +943,7 @@ samples/arrayIndexOutOfBounds/bad.c:6:6: error: Array 'a[2]' accessed at index 2
 
 A comma separated format:
 
-``` bash
+```bash
 cppcheck --template="{file},{line},{severity},{id},{message}" samples/arrayIndexOutOfBounds/bad.c
 ```
 
@@ -958,7 +958,7 @@ samples/arrayIndexOutOfBounds/bad.c,6,error,arrayIndexOutOfBounds, Array'a[2]' a
 
 Many warnings have multiple locations. Example code:
 
-``` cpp
+```cpp
 void f(int *p)
 {
     *p = 3; // line 3
@@ -974,7 +974,7 @@ int main()
 
 There is a possible null pointer dereference at line 3. Cppcheck can show how it came to that conclusion by showing extra location information. You need to use both `–template` and `–template-location` at the command line, for example:
 
-``` bash
+```bash
 cppcheck --template="{file}:{line}: {severity}: {message}\n{code}" --template-location="{file}:{line}: note: {info}\n{code}" multiline.c
 ```
 
@@ -1089,7 +1089,7 @@ Such a remark comment shall:
 
 Example code:
 
-``` c
+```c
 void foo() {
     // REMARK Initialize x with 0
     int x = 0;
@@ -1098,7 +1098,7 @@ void foo() {
 
 In `Cppcheck` text output the remarks are not shown by default, you can use `--template` option `{remark}` to show remarks:
 
-``` bash
+```bash
 cppcheck --enable=style --template="{file}:{line}: {message} [{id}]\\n{remark}" test1.c
 ```
 
@@ -1128,7 +1128,7 @@ cppcheck --enable=style --template="{file}:{line}: {message} [{id}]\\n{remark}" 
 
 **Addons** could be run through `Cppcheck` command line utility as follows:
 
-``` bash
+```bash
 cppcheck --addon=misra.py somefile.c
 ```
 
@@ -1136,7 +1136,7 @@ This will launch all `Cppcheck` checks and additionally calls specific checks pr
 
 Some **addons** need extra arguments. You can configure how you want to execute an addon in a json file. For example put this in `misra.json`:
 
-``` json
+```json
 {
   "script": "misra.py",
   "args": [
@@ -1147,13 +1147,13 @@ Some **addons** need extra arguments. You can configure how you want to execute 
 
 And then the configuration can be executed on the `Cppcheck` command line:
 
-``` bash
+```bash
 cppcheck --addon=misra.json somefile.c
 ```
 
 **By default** `Cppcheck` would search **addon** at the standard path which was specified during the installation process. You also can set this path directly, for example:
 
-``` bash
+```bash
 cppcheck --addon=/opt/cppcheck/configurations/my_misra.json somefile.c
 ```
 
@@ -1188,7 +1188,7 @@ In the `Cppcheck` source tree there is a folder `htmlreport` that contains a scr
 
 This command generates the help screen:
 
-``` bash
+```bash
 htmlreport/cppcheck-htmlreport -h
 ```
 
@@ -1198,7 +1198,7 @@ The output screen says:
 
 Example usage:
 
-``` bash
+```bash
 cppcheck gui/test.cpp --xml 2> err.xml
 cppcheck-htmlreport --file=err.xml --report-dir=test1 --source-dir=.
 ```
@@ -1514,7 +1514,7 @@ Check for misusage of variable argument lists:
 
 # Usage
 
-``` bash
+```bash
 cppcheck $DIR --check-level=normal --checkers-report=cppcheck-report.txt --clang=/usr/local/bin/clang --enable=all --platform=unix64 --report-progress --showtime=file --std=c++17 --inconclusive --verbose -j8
 
 ```
@@ -1869,7 +1869,7 @@ Many thanks to the 3rd party libraries we use:
 
 # Tips
 
-``` bash
+```bash
 # get list of checks
 cppcheck --doc
 
@@ -1881,7 +1881,7 @@ cppcheck --errorlist
 
 ## run_cppcheck_by_dir.sh
 
-``` bash
+```bash
 #!/bin/bash
 # Cppcheck 2.18.0
 # https://github.com/danmar/cppcheck/releases/tag/2.18.0
@@ -1937,7 +1937,7 @@ echo "Detailed error log: $ERROR_FILE"
 
 ## run_cppcheck_by_compile_database.sh
 
-``` bash
+```bash
 #!/bin/bash
 # Cppcheck 2.18.0
 # https://github.com/danmar/cppcheck/releases/tag/2.18.0

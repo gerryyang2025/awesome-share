@@ -42,7 +42,7 @@ D: select id from table where A = “x” and C = “z”
 
 * C++多态
 
-``` cpp
+```cpp
 #include <stdio.h>
 
 class Base
@@ -110,7 +110,7 @@ D: 线程不安全函数通过加锁可以改造成可重入函数
 
 * C++实现单例模式
 
-``` cpp
+```cpp
 class A
 {
 private:
@@ -129,19 +129,19 @@ const A* A::m_instance = new A;
 
 * 用宏定义MAX(a,b,c)求三个数最大值
 
-``` cpp
+```cpp
 #define MAX(a,b,c) (a>b?(a>c?a:c):(b>c?b:c))
 ```
 
 * 用一个表达式，判断一个数X是否是2^N次方，不可用循环语句
 
-``` cpp
+```cpp
 !(X & (X-1))
 ```
 
 * 下面代码的作用，求平均值
 
-``` cpp
+```cpp
 int f(int x, int y)
 {
     return (x&y) + ((x^y)>>1);
@@ -150,7 +150,7 @@ int f(int x, int y)
 
 * [翻转一个字符串](https://blog.csdn.net/Solstice/article/details/5166912)，例如把 "12345" 变成 "54321"
 
-``` cpp
+```cpp
 void reverse_by_swap(char* str, int n) {
   char* begin = str;
   char* end = str + n - 1;
@@ -170,7 +170,7 @@ void reverse_by_std(char* str, int n){
 
 *  在32位或64位系统中，以下代码输出可能是哪些？
 
-``` cpp
+```cpp
 void test(int a[], int size)
 {
   int n = sizeof(a)/sizeof(int);
@@ -195,7 +195,7 @@ int main()
 
 * 以下代码可能输出有：
 
-``` cpp
+```cpp
 union U {
   char* a;
   char b;
@@ -228,7 +228,7 @@ int main()
 
 * 当输入参数是2018时，函数返回值是：
 
-``` cpp
+```cpp
 int func(int n) {
   if (n > 0) {
     return n + func(n-1);
@@ -274,7 +274,7 @@ refer:
 
 * 为数据动态分配内存时，有时要求对内存的起始地址做对齐操作以提高其访问效率。请问将某个指针地址Addr对齐到8字节可以使用下列哪条语句实现：
 
-``` cpp
+```cpp
 (Addr + 7) & (~7)
 ```
 
@@ -313,7 +313,7 @@ https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-de
 
 如何实现下面的转换
 
-``` cpp
+```cpp
 // operator()
 std::string operator()() const
 {
@@ -351,7 +351,7 @@ C++支持函数重载，C不支持函数重载。http://blog.csdn.net/delphiwcdj
 
 默认情况下，如果new不能分配所要求的内存空间，它会抛出一个类型为bad_alloc的异常。我们可以改变使用new的方式来阻止它抛出异常：
 
-``` cpp
+```cpp
 int *p1 = new int;           // 如果分配失败，new抛出std::bad_alloc
 int *p2 = new (nothrow) int; // 如果分配失败，new返回一个空指针
 ```
@@ -420,7 +420,7 @@ https://cpppatterns.com/patterns/pimpl.html
 
 * 指针定义
 
-``` cpp
+```cpp
 int a;               // an integer
 int *a;              // a pointer to an integer
 int **a;             // a pointer to a pointer to an integer
@@ -433,7 +433,7 @@ int (*a[10])(int);   // an array of 10 pointers to functions that take an intege
 
 * 双指针
 
-``` cpp
+```cpp
 int a[] = {1, 2, 3, 4, 5};
 int *ptr = (int *)(&a + 1);
 printf("%d %d", *(a + 1), *(ptr - 1));// 2 5
@@ -482,7 +482,7 @@ In C++, you should NOT throw exceptions from:
 
 * 指向常量的指针，和常量指针分别如何定义
 
-``` cpp
+```cpp
 const int * p1 = 1;
 int i;
 int * const p2 = &i;
@@ -505,7 +505,7 @@ https://gcc.gnu.org/onlinedocs/cpp/Macros.html
 
 * 在16位机器上，使用预处理指令 #define 声明一个常数，用以表明1年中有多少秒（忽略闰年问题）
 
-``` cpp
+```cpp
 #define SECONDS_PER_YEAR (60 * 60 * 24 * 365)UL
 ```
 
@@ -529,7 +529,7 @@ http://www.javadude.com/articles/passbyvalue.htm
 
 告诉编译器取消结构在编译过程中的优化对齐按照实际占用字节数进行对齐，是GCC特有的语法。这个功能是跟操作系统没关系，跟编译器有关，gcc编译器不是紧凑模式的。
 
-``` cpp
+```cpp
 struct stCoRoutineAttr_t
 {
     int stack_size;
@@ -554,7 +554,7 @@ struct stCoRoutineAttr_t
 
 * `__sync_fetch_and_add`
 
-``` cpp
+```cpp
 volatile unsigned int g_var = 0;
 
 int atom_op()
@@ -571,7 +571,7 @@ int atom_op()
 
 * 条件编译
 
-``` cpp
+```cpp
 static pid_t GetPid()
 {
     static __thread pid_t pid = 0;
@@ -731,7 +731,7 @@ accept锁，nginx的做法
 
 REUSEPORT，允许将任意数目的socket绑定到完全相同的源地址端口对上
 
-``` c
+```c
 set_sock_opt(socket, SO_REUSERPORT);
 ```
 
@@ -817,7 +817,7 @@ sysv共享内存
 shmget, shmat, shmdt
 注意：每次shmat使用共享内存之后要shmdt，否则会导致打开句柄泄露（Too many open files in system(23)），通过ipcs -m可以看到nattch列有多少次attach。
 
-``` cpp
+```cpp
 // 如果已存在就使用之前的共享内存，如果不存在则创建共享内存并初始化
 int shmid = shmget(MY_SHM_ID, sizeof(int), IPC_CREAT | 0666);
 if (shmid == -1) {
@@ -998,7 +998,7 @@ include表示包含一个外部的makefile文件进来，-include和include功�
 
 * [Include guard](https://en.wikipedia.org/wiki/Include_guard)
 
-``` cpp
+```cpp
 #ifndef GRANDPARENT_H
 #define GRANDPARENT_H
 
@@ -1059,7 +1059,7 @@ http://www.jianshu.com/p/4427db9337d7
 
 数组 + 链表（桶）。简单地说，HashMap 在底层将 key-value 当成一个整体进行处理，这个整体就是一个 Entry 对象。HashMap 底层采用一个 Entry[] 数组来保存所有的 key-value 对，当需要存储一个 Entry 对象时，会根据 hash 算法来决定其在数组中的存储位置，在根据 equals 方法决定其在该数组位置上的链表中的存储位置；当需要取出一个Entry 时，也会根据 hash 算法找到其在数组中的存储位置，再根据 equals 方法从该位置上的链表中取出该Entry。
 
-``` java
+```java
 public HashMap(int initialCapacity, float loadFactor) {
         if (initialCapacity < 0)
             throw new IllegalArgumentException("Illegal initial capacity: " +
@@ -1139,7 +1139,7 @@ https://www.zhihu.com/question/35172305
 
 * 红黑树
 
-``` cpp
+```cpp
 // 红黑树结点定义
 typedef struct RBTNode
 {
@@ -1450,7 +1450,7 @@ Send packet CA->Netherlands->CA .... 150,000,000 ns = 150 ms
 	* UUID。当前时间 + 时钟序列 + 全局唯一的IEEE机器识别号（比如，网卡）。优点：API简单易用；缺点：占用空间大，字符串本身无法加工，可读性不强。
 	* ID生成表。使用MySQL自增长ID的机制。启用两台数据库服务器来生成ID，通过区分auto_increment的起始值和步长来生成奇偶数的ID。
 
-``` sql
+```sql
 CREATE TABLE `Tickets64` (
     `id` bigint(20) unsigned NOT NULL auto_increment,
     `stub` char(1) NOT NULL default '',
@@ -1493,7 +1493,7 @@ SELECT LAST_INSERT_ID();
 
 可以用`START TRANSACTION`语句开始一个事务，然后要么使用`COMMIT`提交事务将修改的数据持久保留，要么使用`ROLLBACK`撤销所有的修改。 事务SQL的样本如下：
 
-``` sql
+```sql
 START TRANSACTION;
 SELECT balance FROM checking WHERE customer_id = 'gerry';
 UPDATE checking SET balance = balance - 200.00 WHERE customer_id = 'gerry';
@@ -1546,7 +1546,7 @@ http://www.bytesoft.org/tcc-intro/
 
 Q: 分布式事务场景, 设置成串行化隔离级别, 是否有必要？MySQL默认是RR隔离级别。
 
-``` sql
+```sql
 set session transaction isolation level SERIALIZABLE;
 ```
 
@@ -1554,8 +1554,7 @@ A: 如果数据库不支持分布式MVCC，就有必要。否则可能RM1的本�
 
 补充说明：数据库为什么要横向扩展（既可以按数据分片扩展，也可以按功能扩展）？当单台 RM 机器达到资源性能瓶颈，无法满足业务增长需求时，就需要横向扩展 RM 资源，形成 RM 集群。通过横向扩展资源，提升非热点数据的并发性能，这对于大体量的互联网产品来说，是至关重要的。基于 XA 协议实现的分布式事务并不能提升热点并发性能，其意义在于横向扩展资源提升非热点数据并发性能时，能严格保证对多资源访问的事务 ACID 特性。至于热点数据并发性能问题，对于一般的应用来说，经过 SQL 层面一定的性能优化之后，其并发性能基本就能够满足业务的需求。如果经过优化，达到性能极限之后，还不能满足，就需要上升到业务层面，根据业务特点，通过专门的业务逻辑或业务架构优化来实现。
 
-``` sql
-
+```sql
 xa start xid;  // request for db1
 update db1.t_user_balance set balance = balance - 1 where user = 'Bob' and balance > 1;
 xa start xid;  // request for db2

@@ -138,8 +138,7 @@ An **open service mesh platform** to connect， observe, secure, and control mic
 How does it work ?
 
 
-```
-                call
+```call
        A ------------------> B
 
                 |
@@ -359,7 +358,7 @@ https://kubernetes.io/docs/tasks/tools/install-kubectl/
 
 Install kubectl binary using native package management:
 
-``` bash
+```bash
 #!/bin/bashls
 # install-kubectl.sh
 # ubuntu
@@ -418,7 +417,7 @@ https://istio.io/docs/setup/kubernetes/platform-setup/minikube/
 
 启动minkube的方法：
 
-``` bash
+```bash
 #!/bin/bash
 # start_minikube.sh
 

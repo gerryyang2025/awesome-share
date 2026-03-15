@@ -37,7 +37,7 @@ Go 提供了一种在运行时更新和检查变量的值、调用变量的方�
 
 Go 的接口是由两部分组成的，一部分是**类型信息**，另一部分是**数据信息**。
 
-``` golang
+```golang
 var a = 1
 var b interface{} = a
 ```
@@ -46,7 +46,7 @@ var b interface{} = a
 
 `b`的类型实际上是`eface`，它是一个**空接口**，在`src/runtime/runtime2.go`中，它的定义如下：
 
-``` golang
+```golang
 type eface struct {
     _type *_type
     data  unsafe.Pointer
@@ -62,7 +62,7 @@ type eface struct {
 * `reflect.TypeOf`: 返回**反射类型**（returns the reflection Type that represents the dynamic type of i）
 * `reflect.ValueOf`: 返回**反射值**（returns a new Value initialized to the concrete value）
 
-``` golang
+```golang
 var a = 1
 t := reflect.TypeOf(a)  // t = int
 
@@ -74,7 +74,7 @@ v := reflect.ValueOf(b)  // v = "hello"
 
 `reflect.TypeOf()` 源码：
 
-``` golang
+```golang
 func TypeOf(i any) Type {
     eface := *(*emptyInterface)(unsafe.Pointer(&i))
     return toType(eface.typ)
@@ -90,7 +90,7 @@ func toType(t *rtype) Type {
 
 `reflect.ValueOf()` 源码：
 
-``` golang
+```golang
 func ValueOf(i any) Value {
     if i == nil {
         return Value{}
@@ -132,7 +132,7 @@ var dummy struct {
 
 可以通过 `reflect.Value.Interface` 来获取到反射对象的 `interface` 对象，也就是传递给 `reflect.ValueOf` 的那个变量本身。不过返回值类型是 `interface{}`，所以需要进行类型断言。
 
-``` golang
+```golang
 type Student struct {
     Name string `json:"name1" db:"name2"`
     Age  int    `json:"age1" db:"age2"`
@@ -152,7 +152,7 @@ func main() {
 
 可以通过 `reflect.Value.CanSet` 来判断一个反射对象是否是可设置的。如果是可设置的，就可以通过 `reflect.Value.Set` 来修改反射对象的值。
 
-``` golang
+```golang
 func main() {
     s := &Student{
         Name: "zhangSan",
@@ -179,7 +179,7 @@ func main() {
 v 是一个指针，而 v.Elem() 是指针指向的值，对于这个指针本身，修改它是没有意义的，可以设想一下，如果修改了指针变量（也就是修改了指针变量指向的地址），那会发生什么呢？那样指针变量就不是指向 x 了， 而是指向了其他的变量，这样就不符合预期了。所以 `v.CanSet()` 返回的是 `false`。
 
 
-``` golang
+```golang
 package demo
 
 import (
@@ -234,7 +234,7 @@ ok      command-line-arguments  0.002s
 
 # 测试代码
 
-``` golang
+```golang
 package demo1
 
 import (
@@ -305,7 +305,7 @@ PASS
 ok      command-line-arguments  0.003s
 ```
 
-``` golang
+```golang
 package demo
 
 import (

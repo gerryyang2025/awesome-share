@@ -45,7 +45,7 @@ When this flag is set, the macros `__pic__` and `__PIC__` are defined to 2.
 
 代码示例：
 
-``` cpp
+```cpp
 // calculate.c
 int add(int a, int b)
 {
@@ -88,7 +88,7 @@ nm libcalculate.so | grep -w T
 
 可以看到函数方法使用的都是相对地址，且顺序与在`calculate.c`中的定义顺序相同。
 
-``` cpp
+```cpp
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
@@ -259,7 +259,7 @@ From The Linux Programming Interface:
 
 bar.c
 
-``` cpp
+```cpp
 extern void foo();
 
 void bar()
@@ -270,7 +270,7 @@ void bar()
 
 main.c
 
-``` cpp
+```cpp
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -296,10 +296,7 @@ int main()
 
         bar();
 }
-```
-
-Makefile
-
+```makefile
 ```
 .PHONY: all clean test
 
@@ -364,7 +361,7 @@ refer:
 * https://www.gnu.org/software/libc/manual/html_node/Backtraces.html
 * [C++ 的 backtrace](https://owent.net/2018/1801.html)
 
-``` cpp
+```cpp
 #include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -540,10 +537,7 @@ global:
 local:
     *;
 };
-```
-
-Makefile
-
+```makefile
 ```
 .PHONY: all clean test
 
@@ -925,7 +919,7 @@ $ nm -D /lib/x86_64-linux-gnu/libc.so.6 | grep hostname
 
 测试代码：
 
-``` c
+```c
 // gethostname.c
 
 #include <stdlib.h>
@@ -946,7 +940,7 @@ int gethostname(char *name, size_t len)
 
 输出：
 
-``` bash
+```bash
 #!/bin/bash
 
 # origin
@@ -960,7 +954,7 @@ FAKE_HOSTNAME=gerryyang.com LD_PRELOAD=./gethostname.so hostname
 
 使用handle `RTLD_NEXT`，用dlsym调出原始的调用函数。handle是`RTLD_NEXT`扩展的特殊代名，在共享对象的下一个共享对象以后取得寻找符号值。`RTLD_NEXT`是GNU的扩展，在包含`dlfcn.h`之前有必要先定义`GNU_SOURCE`。
 
-``` c
+```c
 #define _GNU_SOURCE
 #include <dlfcn.h>
 
@@ -973,7 +967,7 @@ bind0 = dlsym(RTLD_NEXT, "bind");
 
 使用方法：
 
-``` sh
+```sh
 $ LD_PRELOAD=./bindwrap.so BIND_ADDR=127.0.0.1 daemon-program
 ```
 
@@ -1077,7 +1071,7 @@ nm --dynamic  objfile | grep xxx
 
 问题：I want to display local (non-external) symbols in a C-program using `nm`. However, for the main.c program below, I'd expect nm -a to also output foo, since it's defined as a local symbol (internal linkage) by using the static keyword. But, foo is not listed among the symbols. How can I make nm list all symbols (including local ones)?
 
-``` c
+```c
 // main.c
 #include <stdio.h>
 
@@ -1100,7 +1094,7 @@ You're not finding it because it isn't there -- look at the disassembly (objdump
 
 Compilers routinely eliminate unused static functions even at `-O0`. To keep the foo function you can try making it both used and nontrivial (so it doesn't get inlined).
 
-``` c
+```c
 // main.c
 #include <stdio.h>
 
@@ -1389,7 +1383,7 @@ ELF文件参与程序的**链接**和程序的**执行**，因此通常可以分
 
 The `.dynamic` section contains a series of structures that hold relevant dynamic linking information. The `d_tag` member controls the interpretation of `d_un`.
 
-``` c
+```c
 typedef struct {
    Elf32_Sword    d_tag;
    union {
@@ -1502,7 +1496,7 @@ Refer:
 
 测试代码：
 
-``` c
+```c
 // testa.h
 #include <cstdio>
 
@@ -1555,9 +1549,7 @@ objdump -M intel -S main
 objdump用法说明：
 
 
-```
-objdump
-
+```objdump
 -d
 --disassemble
    Display the assembler mnemonics for the machine instructions from objfile. This option only disassembles those sections which are expected to contain instructions.
@@ -1778,7 +1770,7 @@ How to call original functions from hook functions.
 * l_ld: Dynamic section of the shared object
 
 
-``` cpp
+```cpp
 /* Rendezvous structure used by the run-time dynamic linker to communicate
    details of shared object loading to the debugger.  If the executable's
    dynamic section has a DT_DEBUG element, the run-time linker sets that
@@ -1828,7 +1820,7 @@ struct link_map
 
 ## PLT Replace
 
-``` cpp
+```cpp
 int plthook_replace(plthook_t *plthook, const char *funcname, void *funcaddr, void **oldfunc)
 {
     size_t funcnamelen = strlen(funcname);

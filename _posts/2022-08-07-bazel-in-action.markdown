@@ -70,14 +70,14 @@ yum install bazel4
 > Bazelisk is a wrapper for Bazel written in Go. It automatically picks a good version of Bazel given your current working directory, downloads it from the official server (if required) and then transparently passes through all command-line arguments to the real Bazel binary. You can call it just like you would call Bazel.
 
 
-``` bash
+```bash
 sudo wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.17.0/bazelisk-linux-amd64
 sudo chmod +x /usr/local/bin/bazel
 ```
 
 完整的安装脚本：先检查本地是否有，没有则下载安装
 
-``` bash
+```bash
 #!/bin/bash
 
 CUR_DIR=$(dirname $(readlink -f $0))
@@ -790,8 +790,7 @@ Now you are familiar with some key terms, and what they mean in the context of t
 
 It’s time to build the first part of the project. For a visual reference, the structure of the Stage 1 section of the project is:
 
-```
-examples
+```examples
 └── cpp-tutorial
     └──stage1
        ├── main
@@ -824,7 +823,7 @@ cc_binary(
 )
 ```
 
-``` cpp
+```cpp
 // ~/github/examples/cpp-tutorial/stage1/main$cat hello-world.cc
 
 #include <ctime>
@@ -1280,7 +1279,7 @@ Now `cc_` rules can depend on `@gtest//:main`.
 
 For example, you could create a test `./test/hello-test.cc`, such as:
 
-``` cpp
+```cpp
 #include "gtest/gtest.h"
 #include "main/hello-greet.h"
 
@@ -1688,7 +1687,7 @@ On Linux/macOS you can pass `--workspace_status_command=/bin/true` to **disable*
 
 Example program on Linux using Git:
 
-``` bash
+```bash
 #!/bin/bash
 echo "CURRENT_TIME $(date +%s)"
 echo "RANDOM_HASH $(cat /proc/sys/kernel/random/uuid)"
@@ -2115,7 +2114,7 @@ For the authoritative specification of the Starlark syntax and behavior, see the
 
 Starlark's syntax is inspired by `Python3`. This is valid syntax in Starlark:
 
-``` python
+```python
 def fizz_buzz(n):
   """Print Fizz Buzz numbers from 1 to n."""
   for i in range(1, n + 1):
@@ -2660,7 +2659,7 @@ exports_files(["file.cc.tpl"])
 
 ## 修改 bazel 输出目录使用 SSD 磁盘存储
 
-``` bash
+```bash
 # .bazelrc
 startup --output_user_root=/data_ssd/home/gerryyang/bazel
 
@@ -2691,7 +2690,7 @@ config_setting(
 
 version_info.bzl 内容如下：
 
-``` python
+```python
 """
 测试命令：
 ACTION_ENV="--action_env=COMPILER_NAME=clang --action_env=OS=$(uname -r)"
@@ -2746,7 +2745,7 @@ generate_version_info = rule(
 
 构建使用时：
 
-``` bash
+```bash
 function SetActionEnvInfo()
 {
     # 获取环境信息
@@ -2794,7 +2793,7 @@ https://github.com/envoyproxy/envoy/blob/release/v1.22/source/common/version/BUI
 
 示例：
 
-``` python
+```python
 genrule(
     name = "generate_version_number",
     srcs = ["//:VERSION.txt"],
@@ -2929,7 +2928,7 @@ Each command object contains the translation unit’s main file, the working dir
 
 Example:
 
-``` json
+```json
 [
   { "directory": "/home/user/llvm/build",
     "arguments": ["/usr/bin/clang++", "-Irelative", "-DSOMEDEF=With spaces, quotes and \\-es.", "-c", "-o", "file.o", "file.cc"],
@@ -2969,8 +2968,7 @@ For simple projects, Clang tools also recognize a **compile_flags.txt** file. Th
 
 Example:
 
-```
--xc++
+```-xc++
 -I
 libwidget/include/
 ```
@@ -2999,7 +2997,7 @@ cc_binary(
 
 > 建议改成 `--modify_execution_info=^(CppLink|CppArchive)=+no-remote-cache` 的方式，对 CppLink 和 CppArchive 禁止上传 rc。
 
-``` bash
+```bash
 # 控制只有 CppCompile 上传 rc
 build --modify_execution_info=^(CppLink|CppArchive)=+no-remote-cache
 ```
@@ -3741,7 +3739,7 @@ Bazel uses a `major.minor.patch` Semantic Versioning scheme.
 
 问题描述：使用下面的构建规则出现生成的二进制文件中缺失功能。
 
-``` python
+```python
 package(default_visibility = ["//visibility:public"])
 
 cc_binary(
@@ -3858,14 +3856,14 @@ cc_binary(
 
 2. Include the runfiles library.
 
-``` cpp
+```cpp
 #include "tools/cpp/runfiles/runfiles.h"
 using bazel::tools::cpp::runfiles::Runfiles;
 ```
 
 3. Create a `Runfiles` object and use `Rlocation` to look up runfile paths:
 
-``` cpp
+```cpp
 int main(int argc, char** argv) {
   std::string error;
   std::unique_ptr<Runfiles> runfiles(Runfiles::Create(argv[0], &error));

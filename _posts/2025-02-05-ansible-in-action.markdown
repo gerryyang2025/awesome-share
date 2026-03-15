@@ -58,7 +58,7 @@ To begin using Ansible as a means of managing your server infrastructure, you ne
 
 From your control node, run the following command to include the official project’s PPA (personal package archive) in your system’s list of sources:
 
-``` bash
+```bash
 sudo apt-add-repository ppa:ansible/ansible
 ```
 
@@ -66,14 +66,14 @@ Press `ENTER` when prompted to accept the PPA addition.
 
 Next, refresh your system’s package index so that it is aware of the packages available in the newly included PPA:
 
-``` bash
+```bash
 sudo apt update
 ```
 
 Following this update, you can install the Ansible software with:
 
 
-``` bash
+```bash
 sudo apt install ansible
 ```
 
@@ -83,7 +83,7 @@ Your Ansible control node now has all of the software required to administer you
 
 CentOS utilizes the YUM package manager as well, and you can install Ansible directly from the EPEL repository:
 
-``` bash
+```bash
 sudo yum update -y
 sudo yum install epel-release
 sudo yum install ansible
@@ -114,7 +114,7 @@ The **inventory** file contains information about the hosts you’ll manage with
 
 To edit the contents of your default Ansible inventory, open the `/etc/ansible/hosts` file using your text editor of choice, on your Ansible Control Node:
 
-``` bash
+```bash
 sudo nano /etc/ansible/hosts
 ```
 
@@ -179,7 +179,7 @@ $ cat /etc/ansible/hosts
 
 The default inventory file provided by the Ansible installation contains a number of examples that you can use as references for setting up your inventory. The following example defines a group named `[servers]` with three different servers in it, each identified by a custom alias: **server1**, **server2**, and **server3**. Be sure to replace the highlighted IPs with the IP addresses of your Ansible hosts.
 
-``` bash
+```bash
 # /etc/ansible/hosts
 [servers]
 server1 ansible_host=203.0.113.111
@@ -196,13 +196,13 @@ When you’re finished, save and close the file by pressing `CTRL+X` then `Y` an
 
 Whenever you want to check your inventory, you can run:
 
-``` bash
+```bash
 ansible-inventory --list -y
 ```
 
 You’ll see output similar to this, but containing your own server infrastructure as defined in your inventory file:
 
-``` bash
+```bash
 all:
   children:
     servers:
@@ -232,7 +232,7 @@ You can use the `-u` argument to specify the remote system user. When not provid
 
 From your local machine or Ansible control node, run:
 
-``` bash
+```bash
 ansible all -m ping -u root
 ```
 
@@ -265,7 +265,7 @@ server3 | SUCCESS => {
 
 例如：
 
-``` bash
+```bash
 server1 ansible_host=9.134.129.173 ansible_ssh_port=36000 ansible_user=root
 server2 ansible_host=9.134.129.173 ansible_ssh_port=36000 ansible_user=root
 server3 ansible_host=9.134.129.173 ansible_ssh_port=36000 ansible_user=root
@@ -288,7 +288,7 @@ After confirming that your Ansible control node is able to communicate with your
 
 Any command that you would normally execute on a remote server over SSH can be run with Ansible on the servers specified in your inventory file. As an example, you can check disk usage on all servers with:
 
-``` bash
+```bash
 ansible all -a "df -h" -u root
 ```
 
@@ -304,13 +304,13 @@ ansible all -m apt -a "name=vim state=latest" -u root
 
 You can also target individual hosts, as well as groups and subgroups, when running Ansible commands. For instance, this is how you would check the `uptime` of every host in the **servers** group:
 
-``` bash
+```bash
 ansible servers -a "uptime" -u root
 ```
 
 We can specify multiple hosts by separating them with colons:
 
-``` bash
+```bash
 ansible server1:server2 -m ping -u root
 ```
 
@@ -353,7 +353,7 @@ ansible.cfg  hosts  roles
 
 例如，想查看主机的操作系统信息，`filter=ansible_os_family` 表示只显示 `ansible_os_family` 这个字段的信息。
 
-``` bash
+```bash
 $ ansible server1 -m setup -a 'filter=ansible_os_family' -i hosts
 ```
 
@@ -371,7 +371,7 @@ server1 | SUCCESS => {
 
 也可以使用通配符来匹配多个字段。例如，想查看所有以 `ansible_eth` 开头的网络接口信息，`filter=ansible_eth*` 表示显示所有以 `ansible_eth` 开头的字段的信息。
 
-``` bash
+```bash
 $ ansible server2 -m setup -a 'filter=ansible_eth*' -i hosts
 ```
 

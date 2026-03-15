@@ -45,7 +45,7 @@ You can also use `LD_PRELOAD` to heap-profile an executable that you didn't comp
 
 测试代码：
 
-``` cpp
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -167,7 +167,7 @@ Instead of whole-program checking, you can check certain parts of your code to v
 
 To use this kind of checking code, bracket the code you want checked by creating a `HeapLeakChecker` object at the beginning of the code segment, and call `NoLeaks()` at the end. These functions, and all others referred to in this file, are declared in `<gperftools/heap-checker.h>`.
 
-``` cpp
+```cpp
 HeapLeakChecker heap_checker("test_foo");
 {
 code that exercises some foo functionality;
@@ -184,7 +184,7 @@ If you want to do whole-program leak checking in addition to this manual leak ch
 
 Sometimes your code has leaks that you know about and are willing to accept. You would like the heap checker to ignore them when checking your program. You can do this by bracketing the code in question with an appropriate heap-checking construct:
 
-``` cpp
+```cpp
 {
     HeapLeakChecker::Disabler disabler;
     <leaky code>
@@ -197,7 +197,7 @@ The heap leak checker has many options, some that trade off running time and acc
 
 测试代码：
 
-``` cpp
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -287,7 +287,7 @@ $ pprof --text <path/to/binary> prof.out
 
 测试代码：
 
-``` cpp
+```cpp
 #include <iostream>
 using namespace std;
 void func1() {
@@ -377,7 +377,7 @@ gperftools 的 heap profiler 生成的 `heap.prof.*` 文件是堆分配的采样
 
 这两个过滤条件可以帮助 pprof 减少报告的复杂性，让你更容易关注那些分配了大量内存的函数和函数调用。如果你希望看到所有的内存分配，你可以在运行 pprof 时使用 `--nodecount` 和 `--edgecount` 选项来调整这两个过滤条件。例如：
 
-``` bash
+```bash
 pprof --svg --nodecount=10000 --edgecount=10000 a.out heapprofile.out.0001.heap > heapprofile.svg
 ```
 
@@ -527,7 +527,7 @@ The workaround in that issue solved my problem.
 
 > 解决方法
 
-``` cpp
+```cpp
 // CPU profile
 #include "gperftools/profiler.h"
 

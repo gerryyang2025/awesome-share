@@ -186,7 +186,7 @@ AddressSanitizer is open source and is integrated with the LLVM compiler tool ch
 
 Here we give two examples of instrumentation on x86 64 (8- and 4- byte stores). C program:
 
-``` cpp
+```cpp
 void foo(T *a) {
   *a = 0x1234;
 }
@@ -196,7 +196,7 @@ void foo(T *a) {
 
 clang -O2 -faddress-sanitizer a.c -c -DT=long
 
-``` c
+```c
 push %rax
 mov %rdi,%rax
 shr $0x3,%rax
@@ -212,7 +212,7 @@ callq __asan_report_store8 # Error
 
 clang -O2 -faddress-sanitizer a.c -c -DT=int
 
-``` c
+```c
 push %rax
 mov %rdi,%rax
 shr $0x3,%rax

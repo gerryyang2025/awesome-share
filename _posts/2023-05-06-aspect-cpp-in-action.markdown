@@ -93,7 +93,7 @@ $tree
 └── world.ah
 ```
 
-``` cpp
+```cpp
 // main.cc
 
 #include "hello.h"
@@ -104,7 +104,7 @@ int main(){
 }
 ```
 
-``` cpp
+```cpp
 // hello.h
 
 #ifndef __HELLO_H__
@@ -122,7 +122,7 @@ void hello() {
 
 `world.ah` 内容如下：
 
-``` cpp
+```cpp
 #ifndef __WORLD_AH__
 #define __WORLD_AH__
 
@@ -221,7 +221,7 @@ $tree
 └── profiler.ah
 ```
 
-``` cpp
+```cpp
 // main.cc
 
 class MyClass {
@@ -252,7 +252,7 @@ int main() {
 
 genericprofiler.ah
 
-``` cpp
+```cpp
 #ifndef __genericprofiler_ah__
 #define __genericprofiler_ah__
 
@@ -381,7 +381,7 @@ aspect GenericProfiler {
 
 profiler.ah
 
-``` cpp
+```cpp
 #ifndef __profiler_ah__
 #define __profiler_ah__
 
@@ -482,7 +482,7 @@ Example
 
 The following advice is generic advice, because its implementation can deal with multiple overloaded `C::foo(...)` implementations that have different result types:
 
-``` cpp
+```cpp
 advice execution(" % C::foo(...)") : around() {
     std::cout << " executing " << JoinPoint::signature() << " on " << *tjp->that() << std::endl ;
     tjp-> proceed();
@@ -631,8 +631,7 @@ The `README` file explains the necessary steps for the installation, while the `
 
 https://www.aspectc.org/releases/2.3/README-2.3
 
-```
-Installation
+```installation
 ------------
 
 Installation on systems with g++ is straightforward. Unpack the tarball,
@@ -797,7 +796,7 @@ To see the collection of prior postings to the list, visit the [aspectc-user Arc
 
 Make sure that the matched name is not a macro. AspectC++ can't match macros:
 
-``` cpp
+```cpp
 #define X x_is_real_function_name
 
 // ...

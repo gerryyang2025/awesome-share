@@ -106,7 +106,7 @@ tags:
 
 提示链示例代码：https://colab.research.google.com/drive/15XCzDOvBhIQaZ__xkvruf5sP9OznAbK9
 
-``` python
+```python
 import os
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -208,7 +208,7 @@ LangChain 、 LangGraph 和 Google 的 Agent Developer Kit (ADK) 等计算框架
 
 路由示例代码：https://colab.research.google.com/drive/1Yh3eUcvajJfgTFKhEQga6bJ3yyKodAmg
 
-``` python
+```python
 # Copyright (c) 2025 Marco Fago
 #
 # This code is licensed under the MIT License.

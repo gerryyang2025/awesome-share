@@ -35,7 +35,7 @@ tags:
 
 > 上述过程可参考 https://github.com/torvalds/linux/blob/master/mm/page_alloc.c#L4697 代码
 
-``` cpp
+```cpp
 /*
  * This is the 'heart' of the zoned buddy allocator.
  */
@@ -182,7 +182,7 @@ hung task 机制的实现很简单，其基本原理为：创建一个内核线�
 调低 /proc/sys/vm/dirty_background_ratio
 ```
 
-``` bash
+```bash
 $ cat /proc/sys/vm/dirty_writeback_centisecs
 500
 $ cat /proc/sys/vm/dirty_background_ratio
@@ -197,7 +197,7 @@ $ cat /proc/sys/vm/dirty_background_ratio
 调高 /proc/sys/vm/min_free_kbytes
 ```
 
-``` bash
+```bash
 $ cat /proc/sys/vm/min_free_kbytes
 45861
 ```
@@ -209,7 +209,7 @@ $ cat /proc/sys/vm/min_free_kbytes
 
 Linux 内核虽然会对脏页进行周期性回刷，但当产生脏页的速度大于回刷速度时，脏页就会累积。可以模拟出这种情况，找一台 16G 内存的机器，执行以下命令产生脏页：
 
-``` bash
+```bash
 stress -d 1 --hdd-bytes 100M
 ```
 
@@ -226,7 +226,7 @@ Dirty:               396 kB
 
 此时的 `free` 还是很多的，需要再给点内存压力，触发内存回收：
 
-``` bash
+```bash
 stress --vm 1 --vm-bytes 14.9G --vm-keep -t 60
 ```
 
@@ -245,13 +245,13 @@ stress --vm 1 --vm-bytes 14.9G --vm-keep -t 60
 
 16G 内存的机器，对其加压14G，持续 60s：
 
-``` bash
+```bash
 stress --vm 1 --vm-bytes 14G --vm-keep -t 60
 ```
 
 然后，快速申请 2G 内存：
 
-``` bash
+```bash
 stress --vm 1 --vm-bytes 2G --vm-keep -t 60
 ```
 

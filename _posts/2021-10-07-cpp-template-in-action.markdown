@@ -39,7 +39,7 @@ libstdc++-8.3.1-5.el8.0.2.x86_64
 
 在类模版/函数模板定义之前，声明模板参数列表。
 
-``` cpp
+```cpp
 // 类模板
 template <class T1, class T2>
 class A
@@ -60,7 +60,7 @@ T max(const T lhs, const T rhs)
 
 **Explicit specialization** may be declared in any scope where its **primary template** may be defined (which may be different from the scope where the primary template is defined; such as with out-of-class specialization of a member template) . **Explicit specialization has to appear after the non-specialized template declaration.** (特化版本可以声明在主模版作用域之外，特化版本的声明必须出现在非实例化模版声明之后)
 
-``` cpp
+```cpp
 namespace N {
     template<class T> class X { /*...*/ }; // primary template
     template<> class X<int> { /*...*/ }; // specialization in same namespace
@@ -75,7 +75,7 @@ class N::Y<double> { /*...*/ }; // OK: specialization in same namespace
 
 Specialization must be declared before the first use that would cause implicit instantiation, in every translation unit where such use occurs: (在每一个翻译单元若要使用特化版本，则需要在第一次使用时先对其声明，否则会导致隐式的实例化)
 
-``` cpp
+```cpp
 class String {};
 template<class T> class Array { /*...*/ };
 template<class T> void sort(Array<T>& v) { /*...*/ } // primary template
@@ -90,7 +90,7 @@ void sort<String>(Array<String>& v); // after implicit instantiation
 
 A template specialization that was declared but not defined can be used just like any other [incomplete type](https://en.cppreference.com/w/cpp/language/incomplete_type) (e.g. pointers and references to it may be used)
 
-``` cpp
+```cpp
 template<class T> class X; // primary template
 template<> class X<int>; // specialization (declared, not defined)
 
@@ -103,7 +103,7 @@ X<int> x; // error: object of incomplete type
 
 When specializing a function template, its template arguments can be omitted if [template argument deduction](https://en.cppreference.com/w/cpp/language/template_argument_deduction) can provide them from the function arguments: (函数模版实例化时，通过对函数参数的推导，函数模版参数可以省略)
 
-``` cpp
+```cpp
 template<class T> class Array { /*...*/ };
 template<class T> void sort(Array<T>& v); // primary template
 template<> void sort(Array<int>&); // specialization for T = int
@@ -116,7 +116,7 @@ template<> void sort(Array<int>&); // specialization for T = int
 
 When defining a member of an explicitly specialized class template outside the body of the class, the syntax `template <>` is not used, except if it's a member of an explicitly specialized member class template, which is specialized as a class template, because otherwise, the syntax would require such definition to begin with `template<parameters>` required by the nested template.
 
-``` cpp
+```cpp
 template< typename T>
 struct A {
     struct B {};  // member class
@@ -150,7 +150,7 @@ template<class U> void A<char>::C<U>::f() { /* ... */ }
 
 A member or a member template of a class template may be explicitly specialized for a given implicit instantiation of the class template, even if the member or member template is defined in the class template definition.
 
-``` cpp
+```cpp
 template<typename T>
 struct A {
     void f(T); // member, declared in the primary template
@@ -182,7 +182,7 @@ template<> void A<int>::g1(int, char);
 
 Member or a member template may be nested within many enclosing class templates. In an explicit specialization for such a member, there's a `template<>` for every enclosing class template that is explicitly specialized.
 
-``` cpp
+```cpp
 template<class T1> struct A {
     template<class T2> struct B {
       template<class T3>
@@ -200,11 +200,11 @@ template<> template<> template<> void A<char>::B<char>::mf<double>();
 
 通过[全特化一个模板](https://en.cppreference.com/w/cpp/language/template_specialization)，可以对一个**特定参数集合**自定义当前模板(Allows customizing the template code for a given set of template arguments)，**类模板和函数模板都可以全特化**。 全特化的模板参数列表应当是空的，并且应当给出"模板实参"列表：
 
-``` cpp
+```cpp
 template <> declaration
 ```
 
-``` cpp
+```cpp
 // 全特化 类模板
 template <>
 class A<int, double>{
@@ -223,7 +223,7 @@ int max(const int lhs, const int rhs){
 
 例外情况：函数模板不需指定"模板实参"是因为编译器可以通过函数签名来推导，但有时这一过程是有歧义的：
 
-``` cpp
+```cpp
 #include <iostream>
 
 template <class T>
@@ -268,7 +268,7 @@ Any of the following can be fully specialized:
 * [member class template](https://en.cppreference.com/w/cpp/language/member_template) of a class or class template
 * [member function template](https://en.cppreference.com/w/cpp/language/member_template#Member_function_templates) of a class or class template
 
-``` cpp
+```cpp
 #include <iostream>
 template<typename T>   // primary template
 struct is_void : std::false_type
@@ -298,7 +298,7 @@ int main()
 * 类似于全特化，偏特化也是为了给自定义一个参数集合的模板，但偏特化后的模板需要进一步的实例化才能形成确定的签名
 * 偏特化也是以`template`来声明的，需要给出剩余的"模板形参"和必要的"模板实参"
 
-``` cpp
+```cpp
 template <class T2>
 class A<int, T2>{
     // ...
@@ -309,7 +309,7 @@ class A<int, T2>{
 
 ### 类模版的特化版本
 
-``` cpp
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -342,7 +342,7 @@ int main()
 
 ### 类模版的成员函数特化版本
 
-``` cpp
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -375,7 +375,7 @@ int main()
 
 ### 使用静态断言显式控制必须定义特化版本
 
-``` cpp
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -421,7 +421,7 @@ int main()
 }
 ```
 
-``` cpp
+```cpp
 #include <type_traits>
 
 class PlaceHolder{};
@@ -463,7 +463,7 @@ int main()
 * In practice, the use of an **ellipsis** operator in the code causes the whole expression that precedes the ellipsis to be repeated for every subsequent argument unpacked from the argument pack, with the expressions separated by commas.
 * The use of **variadic templates** is often **recursive**. The variadic parameters themselves are not readily available to the implementation of a function or class. Therefore, the typical mechanism for defining something like a C++11 variadic `printf` replacement would be as follows:
 
-``` cpp
+```cpp
 #include <iostream>
 #include <vector>
 #include <type_traits>
@@ -507,7 +507,7 @@ int main()
 
 ## 数字转换为字符串
 
-``` cpp
+```cpp
 namespace detail
 {
 	template<uint8_t... digits> struct positive_to_chars {
@@ -553,7 +553,7 @@ int main()
 
 # SFINAE
 
-``` cpp
+```cpp
 #include <iostream>
 
 // has_member_gc用来判断一个类T是否定义了成员函数void __gc()
@@ -595,7 +595,7 @@ int main()
 }
 ```
 
-``` cpp
+```cpp
 #include <type_traits>
 #include <iostream>
 
@@ -633,7 +633,7 @@ int main()
 
 # std::conditional
 
-``` cpp
+```cpp
 #include <iostream>
 #include <type_traits>
 #include <typeinfo>
@@ -661,7 +661,7 @@ d
 
 # [std::is_same](https://en.cppreference.com/w/cpp/types/is_same)
 
-``` cpp
+```cpp
 #include <type_traits>
 
 template< class T, class U >
@@ -670,7 +670,7 @@ struct is_same;
 
 * If `T` and `U` name the same type (taking into account `const`/`volatile` qualifications), provides the member constant value equal to `true`. Otherwise value is `false`.
 
-``` cpp
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -688,7 +688,7 @@ int main()
 
 `is_same`的实现方式：
 
-``` cpp
+```cpp
 #include <iostream>
 
 // 定义is_same模板类，它接受两个模板参数T和U，它在类内定义了一个叫value的bool静态常量字段，值总是false
@@ -726,7 +726,7 @@ int main()
 
 * Checks whether `T` is a **pointer to object** or **a pointer to function** (**but not a pointer to member/member function**). Provides the member constant value which is equal to `true`, if T is a object/function pointer type. Otherwise, value is equal to `false`.
 
-``` cpp
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -761,7 +761,7 @@ false
 
 * removes the topmost `const`, or the topmost `volatile`, or both, if present.
 
-``` cpp
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -796,7 +796,7 @@ test5 passed
 
 Applies lvalue-to-rvalue, array-to-pointer, and function-to-pointer implicit conversions to the type T, removes cv-qualifiers, and defines the resulting type as the member typedef type.
 
-``` cpp
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -831,7 +831,7 @@ true
 
 Conditionally executes another statement. Used where code needs to be executed based on a `run-time` or `compile-time` condition.
 
-``` cpp
+```cpp
 #include <iostream>
 
 template <typename T>
@@ -863,7 +863,7 @@ if constexpr
 
 使用[cppinsights](https://cppinsights.io/)实例化后的代码：
 
-``` cpp
+```cpp
 #include <iostream>
 
 template <typename T>
@@ -915,7 +915,7 @@ int main()
 
 # 完美转发
 
-``` cpp
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -936,7 +936,7 @@ int main()
 
 这里的 `T&& param` 表示 `param` 是一个万能引用，如果传入的参数是左值，那么 `param` 就是左值 (比如`int&`)，外部传入的是右值，`param` 就是右值 (比如 `int&&`)。
 
-``` cpp
+```cpp
 template<typename T>
 void func(const T& param) {
 	vector<T> v;
@@ -948,7 +948,7 @@ void func(const T& param) {
 
 有了万能引用后，可改进为：
 
-``` cpp
+```cpp
 template<typename T>
 void func(T&& param) {
 	vector<T> v;
@@ -958,7 +958,7 @@ void func(T&& param) {
 
 **注意：一个右值引用变量本身是一个左值**，例如：
 
-``` cpp
+```cpp
 void Test(const Demo&) {
     cout << "normal version" << endl;
 }
@@ -973,7 +973,7 @@ Test(Demo{});
 
 这里的 `v.emplace_back(param)` 依然会调用左值的版本! 这里就需要 `std::forward` 了，和 `std::move` 类似，`std::forward` 其实也是一个类型转换，当实参是左值时候，它返回的是左值引用，也就是没做任何事；实参是右值的时候，它返回的是右值引用。所以，最终正确的版本应该是:
 
-``` cpp
+```cpp
 template<typename T>
 void func(T&& param) {
 	vector<T> v;
@@ -1005,7 +1005,7 @@ More: [template_specialization, In detail](https://en.cppreference.com/w/cpp/lan
 
 https://wandbox.org/permlink/FAu1kZMDGPW1u9Eg
 
-``` cpp
+```cpp
 #include <iostream>
 #include <type_traits>
 

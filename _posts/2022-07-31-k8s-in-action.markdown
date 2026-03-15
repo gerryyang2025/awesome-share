@@ -159,7 +159,7 @@ https://jimmysong.io/kubernetes-handbook/concepts/service.html
 > kubectl [command] [TYPE] [NAME] [flags]
 
 {% raw %}
-``` bash
+```bash
 kubectl help
 
 kubectl version
@@ -251,7 +251,7 @@ minikube 支持 Mac，Windows，Linux 这三种主流平台，可以在 https://
 
 安装脚本：
 
-``` bash
+```bash
 #!/bin/bash
 
 curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
@@ -272,7 +272,7 @@ commit: 62e108c3dfdec8029a890ad6d8ef96b6461426dc
 
 不过 minikube 只能够搭建 Kubernetes 环境，要操作 Kubernetes，还需要另一个专门的客户端工具 kubectl。所以，在 minikube 环境里，会用到两个客户端：minikube 管理 Kubernetes 集群环境，kubectl 操作实际的 Kubernetes 功能。kubectl 是一个与 Kubernetes、minikube 彼此独立的项目，所以不包含在 minikube 里，但 minikube 提供了安装它的简化方式，只需执行下面的这条命令，就会把与当前 Kubernetes 版本匹配的 kubectl 下载下来，存放在内部目录（例如 .minikube/cache/linux/arm64/v1.23.3），然后就可以使用它来对 Kubernetes“发号施令”了。
 
-``` bash
+```bash
 #!/bin/bash
 
 minikube kubectl
@@ -325,7 +325,7 @@ gcr.io/k8s-minikube/kicbase                    v0.0.33             b7ab23e98277 
 
 现在 Kubernetes 集群就已经在本地运行了，可以使用下面命令来查看集群的状态：
 
-``` bash
+```bash
 $ minikube status
 minikube
 type: Control Plane
@@ -335,7 +335,7 @@ apiserver: Running
 kubeconfig: Configured
 ```
 
-``` bash
+```bash
 $ minikube node list
 minikube        192.168.49.2
 ```
@@ -344,7 +344,7 @@ minikube        192.168.49.2
 
 可以用命令 minikube ssh 登录到这个节点上，虽然它是虚拟的，但用起来和实机也没什么区别：
 
-``` bash
+```bash
 $ minikube ssh
 Last login: Thu Aug 25 02:04:57 2022 from 192.168.49.1
 docker@minikube:~$ pwd
@@ -363,7 +363,7 @@ Server Version: version.Info{Major:"1", Minor:"23", GitVersion:"v1.23.3", GitCom
 
 为了避免这个不大不小的麻烦，建议使用 Linux 的 alias 功能，为它创建一个别名，写到当前用户目录下的 .bashrc 里：
 
-``` bash
+```bash
 alias kubectl="minikube kubectl --"
 ```
 
@@ -402,7 +402,7 @@ No resources found in default namespace.
 
 参考`kubectl completion -h`
 
-``` bash
+```bash
 source <(kubectl completion bash)
 ```
 
@@ -423,7 +423,7 @@ source <(kubectl completion bash)
 
 **在容器内**，计算某个容器的内存使用情况：
 
-``` bash
+```bash
 #!/bin/bash
 
 memory_stat_file="/sys/fs/cgroup/memory/memory.stat"
@@ -443,7 +443,7 @@ echo "Container memory working set: ${container_memory_working_set_MB} MB"
 **在容器宿主机上**，通过 cgroup_id 计算所属的 cgroup（控制组）的内存使用情况：
 
 
-``` bash
+```bash
 #!/bin/bash
 
 if [ -z "$1" ]; then
@@ -482,7 +482,7 @@ echo "Container memory working set: ${container_memory_working_set_MB} MB"
 
 kubectl top pods says 5GB:
 
-``` bash
+```bash
 % kubectl top pods -l app=myapp
 NAME                             CPU(cores)   MEMORY(bytes)
 myapp-56b947bf6d-2lcr7           39m          5039Mi
@@ -490,7 +490,7 @@ myapp-56b947bf6d-2lcr7           39m          5039Mi
 
 Cadvisor reports a similar number (might have been from a slightly different time, so please ignore small differences):
 
-``` bash
+```bash
 container_memory_usage_bytes{pod_name=~".*myapp.*"}      5309456384
 
 5309456384 / 1024.0 / 1024 ~= 5063 ~= 5039
@@ -498,7 +498,7 @@ container_memory_usage_bytes{pod_name=~".*myapp.*"}      5309456384
 
 Inside the container, this file appears to be where cadvisor is getting its data:
 
-``` bash
+```bash
 % kubectl exec -it myapp-56b947bf6d-2lcr7 bash
 meme@myapp-56b947bf6d-2lcr7:/app# cat /sys/fs/cgroup/memory/memory.usage_in_bytes
 5309456384
@@ -506,7 +506,7 @@ meme@myapp-56b947bf6d-2lcr7:/app# cat /sys/fs/cgroup/memory/memory.usage_in_byte
 
 The resident set size (RSS) inside the container does NOT match up (less than 1GB):
 
-``` bash
+```bash
 kb=$(ps aux | grep -v grep | grep -v 'ps aux' | grep -v bash | grep -v awk | grep -v RSS | awk '{print $6}' | awk '{s+=$1} END {printf "%.0f", s}'); mb=$(expr $kb / 1024); printf "Kb: $kb\nMb: $mb\n"
 
 Kb: 698076
@@ -515,7 +515,7 @@ Mb: 681
 
 Full ps aux in case that is helpful:
 
-``` bash
+```bash
 meme@myapp-56b947bf6d-2lcr7:/app# ps aux | grep -v grep | grep -v 'ps aux' | grep -v bash | grep -v awk
 USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
 meme         1  0.0  0.0 151840 10984 ?        Ss   Jun04   0:29 /usr/sbin/apache2 -D FOREGROUND
@@ -534,7 +534,7 @@ www-data   189  0.2  0.0 350208 95476 ?        Sl   Jun04  41:47 hotapp
 
 Memory section from docker's container stats API:
 
-``` bash
+```bash
 curl --unix-socket /var/run/docker.sock 'http:/v1.24/containers/a45fc651e7b12f527b677e6a46e2902786bee6620484922016a135e317a42b4e/stats?stream=false' | jq . # yields:
 
 "memory_stats": {
@@ -593,7 +593,7 @@ https://docs.docker.com/engine/reference/commandline/stats/#parent-command says:
 
 And indeed, most of the stuff in `/sys/fs/cgroup/memory/memory.stat` in the container shows up in the above docker stats api response (slight differences are from taking the samples at a different time, sorry):
 
-``` bash
+```bash
 meme@myapp-56b947bf6d-2lcr7:/app# cat /sys/fs/cgroup/memory/memory.stat
 cache 119492608
 rss 607436800
@@ -632,7 +632,7 @@ total_unevictable 0
 
 Memory info from `kubectl describe pod <pod>`:
 
-``` bash
+```bash
 Limits:
   memory:  5Gi
 Requests:
@@ -641,14 +641,14 @@ Requests:
 
 Here's what pmap says inside the container. In this one-liner, I get all process ids, run pmap -x on them, and pull the Kbytes column from the pmap results. The total result is 256 Megabytes (much less than ps's RSS, partially, I think, because many of the processes return no output from pmap -x):
 
-``` bash
+```bash
 ps aux | awk '{print $2}' | grep -v PID | xargs sudo pmap -x | grep total | grep -v grep | awk '{print $3}' | awk '{s+=$1} END {printf "%.0f", s}'; echo
 256820
 ```
 
 [ps_mem.py](https://raw.githubusercontent.com/pixelb/ps_mem/master/ps_mem.py) is mentioned at https://stackoverflow.com/a/133444/6090676. It inspects `/proc/$pid/statm` and `/proc/$pid/smaps`. No illumination here (again, it seems to be ignoring some processes):
 
-``` bash
+```bash
 # python ps_mem.py
 Private  +   Shared  =  RAM used    Program
 
@@ -718,7 +718,7 @@ kubectl scale --replicas=0 deployment/<your-deployment>
 
 see the help
 
-``` bash
+```bash
 # Set a new size for a Deployment, ReplicaSet, Replication Controller, or StatefulSet.
 kubectl scale --help
 ```
@@ -729,7 +729,7 @@ If --current-replicas or --resource-version is specified, it is validated before
 
 Examples:
 
-``` bash
+```bash
 # Scale a replicaset named 'foo' to 3.
 kubectl scale --replicas=3 rs/foo
 

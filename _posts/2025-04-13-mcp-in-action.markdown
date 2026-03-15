@@ -188,7 +188,7 @@ MCP has these main types of messages:
 
 * **Requests** expect a response from the other side:
 
-``` TypeScript
+```typescript
 interface Request {
   method: string;
   params?: { ... };
@@ -197,7 +197,7 @@ interface Request {
 
 * **Results** are successful responses to requests:
 
-``` TypeScript
+```typescript
 interface Result {
   [key: string]: unknown;
 }
@@ -205,7 +205,7 @@ interface Result {
 
 * **Errors** indicate that a request failed:
 
-``` TypeScript
+```typescript
 interface Error {
   code: number;
   message: string;
@@ -215,7 +215,7 @@ interface Error {
 
 * **Notifications** are one-way messages that don’t expect a response:
 
-``` TypeScript
+```typescript
 interface Notification {
   method: string;
   params?: { ... };
@@ -258,7 +258,7 @@ Either party can terminate the connection:
 
 MCP defines these standard error codes:
 
-``` go
+```go
 enum ErrorCode {
   // Standard JSON-RPC error codes
   ParseError = -32700,
@@ -364,7 +364,7 @@ MCP 中的 `Prompts` 本质是标准化、可定制的对话蓝图。它们像�
 
 Each prompt is defined with:
 
-``` TypeScript
+```typescript
 {
   name: string;              // Unique identifier for the prompt
   description?: string;      // Human-readable description
@@ -382,7 +382,7 @@ Each prompt is defined with:
 
 Clients can discover available prompts through the `prompts/list` endpoint:
 
-``` TypeScript
+```typescript
 // Request
 {
   method: "prompts/list"
@@ -410,7 +410,7 @@ Clients can discover available prompts through the `prompts/list` endpoint:
 
 To use a prompt, clients make a `prompts/get` request:
 
-``` TypeScript
+```typescript
 // Request
 {
   method: "prompts/get",
@@ -441,7 +441,7 @@ To use a prompt, clients make a `prompts/get` request:
 
 Here’s a complete example of implementing prompts in an MCP server:
 
-``` TypeScript
+```typescript
 import { Server } from "@modelcontextprotocol/sdk/server";
 import {
   ListPromptsRequestSchema,
@@ -565,7 +565,7 @@ Like **resources**, tools are identified by unique names and can include descrip
 
 Each tool is defined with the following structure:
 
-``` TypeScript
+```typescript
 {
   name: string;          // Unique identifier for the tool
   description?: string;  // Human-readable description
@@ -587,7 +587,7 @@ Each tool is defined with the following structure:
 
 Here’s an example of implementing a basic tool in an MCP server:
 
-``` TypeScript
+```typescript
 const server = new Server({
   name: "example-server",
   version: "1.0.0"
@@ -640,7 +640,7 @@ Here are some examples of types of tools that a server could provide:
 
 Tools that interact with the local system:
 
-``` TypeScript
+```typescript
 {
   name: "execute_command",
   description: "Run a shell command",
@@ -658,7 +658,7 @@ Tools that interact with the local system:
 
 Tools that wrap external APIs:
 
-``` TypeScript
+```typescript
 {
   name: "github_create_issue",
   description: "Create a GitHub issue",
@@ -677,7 +677,7 @@ Tools that wrap external APIs:
 
 Tools that transform or analyze data:
 
-``` TypeScript
+```typescript
 {
   name: "analyze_csv",
   description: "Analyze a CSV file",
@@ -720,7 +720,7 @@ When implementing tools:
 
 Here’s a basic example of implementing an **MCP server**:
 
-``` TypeScript
+```typescript
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
@@ -831,7 +831,7 @@ await server.connect(transport);
 
 A Go implementation of the Model Context Protocol (MCP), enabling seamless integration between LLM applications and external data sources and tools.
 
-``` go
+```go
 package main
 
 import (
@@ -909,19 +909,19 @@ MCP Go handles all the complex protocol details and server management, so you ca
 
 Example Configurations:
 
-``` bash
+```bash
 # For stdio Server (Weather Server Example):
 Command: node ~/mcp-quickstart/weather-server-typescript/build/index.js
 ```
 
-``` bash
+```bash
 # For SSE Server:
 URL: http://example.com:8000/sse
 ```
 
 stdio 完整的配置示例：
 
-``` json
+```json
 {
   "mcpServers": {
     "weather": {
@@ -934,7 +934,7 @@ stdio 完整的配置示例：
 
 sse 完整的配置示例：
 
-``` json
+```json
 {
     "mcpServers": {
       "calculate": {
@@ -989,7 +989,7 @@ sse 完整的配置示例：
 
 完整配置：
 
-``` json
+```json
 {
     "mcpServers": {
       "calculate": {
@@ -1021,7 +1021,7 @@ https://github.com/mark3labs/mcp-go
 ![mcp12](/assets/images/202503/mcp12.png)
 
 
-``` go
+```go
 package main
 
 import (
@@ -1131,7 +1131,7 @@ func main() {
 }
 ```
 
-``` bash
+```bash
 go mod init mcp-go-demo
 go mod tidy
 ```
@@ -1142,7 +1142,7 @@ https://github.com/mark3labs/mcp-go/tree/main/examples/custom_context
 
 The web `https://httpbin.org/` is a simple HTTP Request & Response Service.
 
-``` bash
+```bash
 # /anything Returns anything passed in request data.
 curl -X GET "https://httpbin.org/anything" -H "accept: application/json"
 ```
@@ -1159,7 +1159,7 @@ curl -X GET "https://httpbin.org/anything" -H "accept: application/json"
 
 ![mcp5](/assets/images/202503/mcp5.png)
 
-``` go
+```go
 package main
 
 import (
@@ -1331,7 +1331,7 @@ func main() {
 
 ![mcp10](/assets/images/202503/mcp10.png)
 
-``` go
+```go
 package main
 
 import (
@@ -1582,7 +1582,7 @@ For `TypeScript`, make sure you have the latest version of `Node` installed.
 
 First, let’s install `Node.js` and npm if you haven’t already. You can download them from nodejs.org. Verify your `Node.js` installation:
 
-``` bash
+```bash
 node --version
 npm --version
 ```
@@ -1593,7 +1593,7 @@ For this tutorial, you’ll need `Node.js` version 16 or higher.
 
 https://nodejs.org/zh-cn/download
 
-``` bash
+```bash
 # Download and install nvm:
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash
 
@@ -1613,7 +1613,7 @@ npm -v # Should print "10.9.2".
 
 ## Create and Set up Our Project
 
-``` bash
+```bash
 # Create a new directory for our project
 mkdir weather
 cd weather
@@ -1632,7 +1632,7 @@ touch src/index.ts
 
 Update your `package.json` to add type: “module” and a build script:
 
-``` json
+```json
 {
   "type": "module",
   "bin": {
@@ -1649,7 +1649,7 @@ Update your `package.json` to add type: “module” and a build script:
 
 Create a `tsconfig.json` in the root of your project:
 
-``` json
+```json
 {
   "compilerOptions": {
     "target": "ES2022",
@@ -1675,7 +1675,7 @@ Importing packages and setting up the instance
 
 Add these to the top of your `src/index.ts`:
 
-``` typescript
+```typescript
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
@@ -1699,7 +1699,7 @@ const server = new McpServer({
 
 Next, let’s add our helper functions for querying and formatting the data from the National Weather Service API:
 
-``` typescript
+```typescript
 // Helper function for making NWS API requests
 async function makeNWSRequest<T>(url: string): Promise<T | null> {
   const headers = {
@@ -1773,7 +1773,7 @@ interface ForecastResponse {
 
 The tool execution handler is responsible for actually executing the logic of each tool. Let’s add it:
 
-``` typescript
+```typescript
 // Register weather tools
 server.tool(
   "get-alerts",
@@ -1912,7 +1912,7 @@ server.tool(
 
 Finally, implement the main function to run the server:
 
-``` typescript
+```typescript
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
@@ -1933,7 +1933,7 @@ Let’s now test your server from an existing MCP host, Claude for Desktop.
 
 通过 Cursor 测试 MCP 服务是否正常：
 
-``` json
+```json
 {
     "mcpServers": {
       "typescript-weather1": {
@@ -2024,7 +2024,7 @@ The MCP Inspector is an interactive developer tool for testing and debugging MCP
 
 ![mcp21](/assets/images/202503/mcp21.png)
 
-``` json
+```json
 {
     "mcpServers": {
       "calculate1": {

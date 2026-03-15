@@ -30,7 +30,7 @@ tags:
 
 在 vscode 中安装作者为 Chris Johnston 的 SVN 扩展插件。在 `.vscode/settings.json` 配置中添加 `svn.path` 路径配置，然后输入 `Command+Shift+P` 执行 `Reload Window` 使配置修改生效。当 vscode 加载配置生效后，可以在左边栏看到 "S" 图标，随后可以添加需要的 SVN URL 仓库地址。
 
-``` json
+```json
     // Path to the svn executable
     "svn.path": "/usr/bin/svn",
 ```
@@ -63,7 +63,7 @@ tags:
 
 确认是否能获取到自己的提交：
 
-``` bash
+```bash
 svn update
 svn log -v -l 1  # 查看最新日志是否包含你的提交
 ```
@@ -97,37 +97,37 @@ Select: (p) postpone, (df) diff-full, (e) edit,
 
 * 创建分支：首先需要创建一个分支，可以使用 `svn copy` 命令将主干（trunk）复制到分支目录中。例如：
 
-``` bash
+```bash
 svn copy http://svn.example.com/repo/trunk http://svn.example.com/repo/branches/my_branch -m "Creating a new branch"
 ```
 
 * 切换到分支：在本地工作副本中切换到新创建的分支，以便进行开发和修改。可以使用 `svn switch` 命令切换到分支：
 
-``` bash
+```bash
 svn switch http://svn.example.com/repo/branches/my_branch
 ```
 
 * 修改分支内容：在分支上进行代码修改，并提交更改到服务器。例如：
 
-``` bash
+```bash
 svn commit -m "My Changes"
 ```
 
 * 合并分支到主干：当分支上的修改完成后，需要将分支的更改合并到主干（trunk）。可以使用 `svn merge` 命令进行合并。例如：
 
-``` bash
+```bash
 svn merge http://svn.example.com/repo/branches/my_branch
 ```
 
 * 解决冲突：如果合并过程中出现冲突，需要手动解决冲突文件。在本地编辑器中编辑冲突文件，然后使用 `svn resolve` 命令标记冲突已解决：
 
-``` bash
+```bash
 svn resolve --accept=working path/to/conflict/file
 ```
 
 * 提交合并结果：解决冲突后，将合并后的更改提交到服务器。例如：
 
-``` bash
+```bash
 svn commit -m "Merged changes from my_branch to trunk"
 ```
 
@@ -153,7 +153,7 @@ R  已替换
 
 ## 基础操作
 
-``` bash
+```bash
 # 查看仓库信息
 svn info
 
@@ -181,7 +181,7 @@ svn up
 
 ## 分支操作
 
-``` bash
+```bash
 # 创建分支
 svn copy <source_url> <branch_url> -m "创建分支说明"
 
@@ -211,7 +211,7 @@ svn merge <branch_url>
 
 ## 提交更改
 
-``` bash
+```bash
 # 添加新文件
 svn add <filename>
 svn add --force *
@@ -231,7 +231,7 @@ svn ci -m "提交说明"
 
 ## 解决冲突
 
-``` bash
+```bash
 # 问题类型：系统锁定/损坏
 # 触发条件：操作中断或异常
 # 前置操作：无
@@ -247,14 +247,14 @@ svn resolved <filename>
 
 ## 查看文件差异
 
-``` bash
+```bash
 # 查看 diff
 svn diff
 ```
 
 ## 撤销本地修改
 
-``` bash
+```bash
 svn revert <filename>
 svn revert . -R
 ```
@@ -273,7 +273,7 @@ svn revert . -R
 3. 结果中的日期是提交日期，不是修改日期
 4. 如果文件被移动/重命名过，需要使用 --stop-on-copy 参数查看完整历史
 
-``` bash
+```bash
 svn blame -v filename.txt
 ```
 
@@ -285,7 +285,7 @@ svn blame -v filename.txt
   12346  user2   2023-05-02 14:15:22  // 这是第二行代码
 ```
 
-``` bash
+```bash
 # 追踪代码变更来源
 svn blame -v utils.py | grep "problem_function"
 
@@ -302,13 +302,13 @@ svn blame src/ | awk '{print $2}' | sort | uniq -c | sort -nr
 
 与 [How do you see recent SVN log entries?](https://stackoverflow.com/questions/4881129/how-do-you-see-recent-svn-log-entries) 反馈的问题感受一样，如果执行 `svn log` 命令默认会输出所有 svn 的历史提交记录到终端且不会暂停分页输出，交互体验比较差。如果要分页显示需要执行 `svn log | less`。或者通过 `--limit` 选项限制查询输出的记录条数，例如：查询最近 4 条历史提交记录 `svn log --limit 4` 或 `svn log -l 4`。
 
-``` bash
+```bash
 `-l [--limit] ARG`         : maximum number of log entries
 ```
 
 另外可以根据 `revision` 查询一个返回的历史提交记录。
 
-``` bash
+```bash
 `-r [--revision] ARG`      : ARG (some commands also take ARG1:ARG2 range)
                              A revision argument can be one of:
                                 NUMBER       revision number
@@ -321,7 +321,7 @@ svn blame src/ | awk '{print $2}' | sort | uniq -c | sort -nr
 
 使用示例：
 
-``` bash
+```bash
 # To list everything in ascending order
 svn log -r 1:HEAD
 
@@ -340,7 +340,7 @@ You can combine all the above expressions with the `--limit` option, so that can
 
 I like to use `-v` for **verbose** mode. It'll give you the commit id, comments and all affected files.
 
-``` bash
+```bash
 svn log -v --limit 4
 ```
 
@@ -361,7 +361,7 @@ D /trunk/java/App/src/code/test.xml
 
 In case anybody is looking at this old question, a handy command to see the changes since your last update:
 
-``` bash
+```bash
 svn log -r BASE:HEAD -v
 
 # or

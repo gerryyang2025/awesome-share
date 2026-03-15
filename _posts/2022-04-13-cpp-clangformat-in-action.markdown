@@ -177,7 +177,7 @@ DisableFormat:   false
 
 Clang-format understands also special comments that switch formatting in a delimited range. The code between a comment `// clang-format off` or `/* clang-format off */` up to a comment `// clang-format on` or `/* clang-format on */` will not be formatted. The comments themselves will be formatted (aligned) normally.
 
-``` cpp
+```cpp
 int formatted_code;
 // clang-format off
     void    unformatted_code  ;

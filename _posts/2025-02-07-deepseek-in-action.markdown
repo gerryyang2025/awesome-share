@@ -360,8 +360,7 @@ DeepSeek-R1-Distill-14B: `ollama run deepseek-r1:14b`
 
 系列模型清单：
 
-```
-DeepSeek-V3
+```deepseek-v3
 DeepSeek-R1
 DeepSeek-R1-Distill-Qwen-1.5B
 DeepSeek-R1-Distill-Qwen-7B
@@ -379,12 +378,12 @@ Get up and running with large language models. Ollama 是一个开源工具，�
 
 以下选择 macOS 版本，本地机器配置 Apple M1 Pro 32G 内存，下载 https://ollama.com/download/Ollama-darwin.zip 安装完成后：
 
-``` bash
+```bash
 ~ ollama --version
 ollama version is 0.5.7
 ```
 
-``` bash
+```bash
 ~ ollama --help
 Large language model runner
 
@@ -415,7 +414,7 @@ Use "ollama [command] --help" for more information about a command.
 
 下载安装第一个模型：
 
-``` bash
+```bash
 # Run your first model
 ollama run llama3.2
 ```

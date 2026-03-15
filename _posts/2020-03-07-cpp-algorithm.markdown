@@ -30,8 +30,7 @@ Output:
 
 Sample Input:
 
-```
-3
+```3
 3
 0 1 -1
 5
@@ -42,15 +41,14 @@ Sample Input:
 
 Sample Output:
 
-```
-Yes
+```yes
 Yes
 No
 ```
 
 解题思路：记`x`为序列中正数的数量，`y`为序列中负数的数量，`z`为序列中零的数量，判断`max(x,y) - min(x,y) <= z + 1`即可。
 
-``` cpp
+```cpp
 #include <iostream>
 
 int main()
@@ -86,7 +84,7 @@ int main()
 }
 ```
 
-``` golang
+```golang
 package main
 
 import (
@@ -162,7 +160,7 @@ Hint:
 
 For the first sample test case, one valid record array after filling the unknown integers is {5, 5, 15, 0, 5}, so the answer is 5 + 5 + 15 + 0 + 5 = 30.
 
-``` cpp
+```cpp
 #include <bits/stdc++.h>
 #include <algorithm>
 
@@ -268,21 +266,19 @@ int main()
 
 样例输入：
 
-```
-2
+```2
 01110
 000
 ```
 
 样例输出：
 
-```
-11100
+```11100
 Impossible
 ```
 
 
-``` cpp
+```cpp
 #include <iostream>
 #include <algorithm>
 #include <string>
@@ -365,8 +361,7 @@ IPv6 的 128 位地址可以分为 8 组，每组各 16 位。我们可以将每
 
 样例输入：
 
-```
-4
+```4
 7abc::00ff:fffc
 fc:0:0:8976:0:0:0:ff
 2c0f:9981::
@@ -383,7 +378,7 @@ fc:0:0:8976:0:0:0:ff
 ```
 
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -523,16 +518,14 @@ int main()
 
 样例输入：
 
-```
-2
+```2
 2
 5
 ```
 
 样例输出：
 
-```
-1
+```1
 2
 ```
 
@@ -540,7 +533,7 @@ int main()
 
 对于第二组样例数据，我们可以将整数划分为 {1, 2, 3, 5} 和 {4} 两组。
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <cmath>
 
@@ -567,7 +560,7 @@ int main()
 }
 ```
 
-``` cpp
+```cpp
 #include<bits/stdc++.h>
 
 int main()
@@ -584,7 +577,7 @@ int main()
 
 使用GoLang实现：
 
-``` golang
+```golang
 package main
 import (
     "bufio"
@@ -640,8 +633,7 @@ func main() {
 
 样例输入：
 
-```
-2
+```2
 3
 1 2 3
 2
@@ -650,12 +642,11 @@ func main() {
 
 样例输出：
 
-```
-2
+```2
 5
 ```
 
-``` cpp
+```cpp
 #include <bits/stdc++.h>
 
 int main()
@@ -691,7 +682,7 @@ int main()
 
 已知链表的头结点head, 写一个函数把这个链表逆序（即1->2->3转变为3->2->1）
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <iostream>
 
@@ -779,7 +770,7 @@ int main(int argc, char **argv)
 * `set(key, value)`: 更新key对应的value, 如果key不存在则插入对应的key, value。如果cache达到容量则淘汰最久未使用的键值对之后再插入
 
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <iostream>
 #include <list>
@@ -874,7 +865,7 @@ refer: https://github.com/lamerman/cpp-lru-cache/blob/master/include/lrucache.hp
 
 # 封装迭代器
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <iostream>
 #include <map>
@@ -981,7 +972,7 @@ refer:
 
 通过这两个条件的组合使用，就可以准确判断任意一个年份是否为闰年。
 
-``` c
+```c
 #include <stdio.h>
 
 int main() {
@@ -1014,7 +1005,7 @@ rand, rand_r, srand — pseudo-random number generator (伪随机数生成器)
 * https://linux.die.net/man/3/drand48_r
 * https://linux.die.net/man/3/random
 
-``` c
+```c
 #include <stdlib.h>
 
 int rand(void);
@@ -1047,7 +1038,7 @@ The `rand()` and `rand_r()` functions return a value between `0` and `RAND_MAX` 
 
 POSIX.1-2001 gives the following example of an implementation of `rand()` and `srand()`, **possibly useful when one needs the same sequence on two different machines**.
 
-``` c
+```c
 static unsigned long next = 1;
 
 /* RAND_MAX assumed to be 32767 */
@@ -1132,7 +1123,7 @@ refer:
 累积概率:   10   30   60   100
 ```
 
-``` cpp
+```cpp
 struct STRandInfo
 {
     uint32_t m_uProb;             // 当前元素的权重概率
@@ -1149,7 +1140,7 @@ struct STRandInfo
 
 使用累积概率进行快速定位：
 
-``` cpp
+```cpp
 uint32_t uProb = rand() % uMaxProb; // 假设生成随机数 45
 
 // 遍历查找第一个累积概率大于随机数的元素
@@ -1166,7 +1157,7 @@ for (size_t i = 0; i < m_stRandInfoVec.size(); ++i)
 
 使用示例：
 
-``` cpp
+```cpp
 // 游戏物品掉落系统示例
 CRandomAgent<ItemData> dropTable;
 
@@ -1195,7 +1186,7 @@ const ItemData* droppedItem = dropTable.Rand();
 3. 算法设计：Rand() 方法只依赖累积概率值，不依赖元素位置
 4. 最终结果：无论以什么顺序构建，最终的权重分布都是相同的
 
-``` c
+```c
 // 测试1：递增顺序
 CRandomAgent<ItemData> table1;
 table1.Add(10, ItemData{"A"});
@@ -1277,7 +1268,7 @@ table2.Add(10, ItemData{"A"});
 
 ### 算法实现
 
-``` cpp
+```cpp
 template < typename UserDataType>
 class CRandomAgent
 {

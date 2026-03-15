@@ -154,7 +154,7 @@ The common workaround for these problems is to use [POST](https://en.wikipedia.o
 
 支持 GET 或 POST 请求打印，支持 keep-alive 检查，并返回固定的应答参数。
 
-``` python
+```python
 #!/usr/bin/env python3
 # web_server.py
 
@@ -302,7 +302,7 @@ if __name__ == '__main__':
 
 ## 客户端测试命令 (短连接)
 
-``` bash
+```bash
 #!/bin/bash
 
 curl -X POST 'http://localhost:8088/cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451' \
@@ -350,13 +350,13 @@ Connection will be: closed
 
 应答内容：
 
-``` json
+```json
 {"status": "success", "message": "POST request received and processed", "timestamp": "2025-10-27T15:34:54.009649", "method": "POST", "path": "/cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451", "client_ip": "127.0.0.1", "client_port": 49302, "connection": "close"}
 ```
 
 ## 客户端测试命令 (长连接)
 
-``` bash
+```bash
 #!/bin/bash
 
 curl -X POST 'http://localhost:8088/cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451' \
@@ -405,7 +405,7 @@ Connection will be: kept alive
 
 应答内容：
 
-``` json
+```json
 {"status": "success", "message": "POST request received and processed", "timestamp": "2025-10-27T15:34:47.469851", "method": "POST", "path": "/cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451", "client_ip": "127.0.0.1", "client_port": 49290, "connection": "keep-alive"}
 ```
 

@@ -65,7 +65,7 @@ tags:
 
 下面是一个简单的`.proto`模版。
 
-``` proto
+```proto
 // Copyright (C) 2021 $company Inc.  All rights reserved.
 //
 // This is a sample protobuf source code.
@@ -159,7 +159,7 @@ The JSON representation for `Empty` is empty JSON object `{}`.
 
 例如，一个简单的健康检查接口，客户端不需要传递任何参数，服务端也只需确认请求是否成功：
 
-``` cpp
+```cpp
 service HealthService {
   rpc CheckHealth(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
@@ -169,7 +169,7 @@ service HealthService {
 
 例如，一个删除资源的接口，客户端发送删除请求后，服务端无需返回具体数据，只需确认操作成功：
 
-``` cpp
+```cpp
 service ResourceService {
   rpc DeleteResource(DeleteRequest) returns (google.protobuf.Empty);
 }
@@ -179,7 +179,7 @@ service ResourceService {
 
 在发布-订阅模式中，某些事件可能只需要触发动作，不需要携带数据：
 
-``` cpp
+```cpp
 service NotificationService {
   rpc OnEventTriggered(google.protobuf.Empty) returns (stream Event);
 }
@@ -189,7 +189,7 @@ service NotificationService {
 
 Protobuf 定义：
 
-``` proto
+```proto
 syntax = "proto3";
 import "google/protobuf/empty.proto";
 
@@ -198,7 +198,7 @@ service ExampleService {
 }
 ```
 
-``` go
+```go
 package main
 
 import (
@@ -252,7 +252,7 @@ func (s *ExampleServiceServer) DoSomething(ctx context.Context, empty *emptypb.E
 
 # Defining A Message Type (Step by Step)
 
-``` proto
+```proto
 syntax = "proto3";
 
 /* SearchRequest represents a search query, with pagination options to
@@ -333,7 +333,7 @@ To add comments to your `.proto` files, use C/C++-style `//` and `/* ... */` syn
 
 If you update a message type by entirely removing a field, or commenting it out, future users can reuse the field number when making their own updates to the type. This can cause severe issues if they later load old versions of the same `.proto`, including data corruption, privacy bugs, and so on. One way to make sure this doesn't happen is to specify that the field numbers (and/or names, which can also cause issues for JSON serialization) of your deleted fields are `reserved`. The protocol buffer compiler will complain if any future users try to use these field identifiers.
 
-``` proto
+```proto
 message Foo {
   reserved 2, 15, 9 to 11;
   reserved "foo", "bar";
@@ -363,7 +363,7 @@ The default value for repeated fields is empty (generally an empty list in the a
 You can use other message types as field types. For example, let's say you wanted to include `Result` messages in each `SearchResponse` message – to do this, you can define a `Result` message type in the same `.proto` and then specify a field of type `Result` in `SearchResponse`:
 
 
-``` proto
+```proto
 message SearchResponse {
   repeated Result results = 1;
 }
@@ -382,7 +382,7 @@ In the above example, the `Result` message type is defined in the same file as `
 
 You can use definitions from other `.proto` files by importing them. To import another .proto's definitions, you add an import statement to the top of your file:
 
-``` proto
+```proto
 import "myproject/other_protos.proto";
 ```
 
@@ -390,7 +390,7 @@ import "myproject/other_protos.proto";
 
 You can define and use message types inside other message types, as in the following example – here the `Result` message is defined inside the `SearchResponse` message:
 
-``` proto
+```proto
 message SearchResponse {
   message Result {
     string url = 1;
@@ -403,7 +403,7 @@ message SearchResponse {
 
 If you want to reuse this message type outside its parent message type, you refer to it as `_Parent_._Type_`:
 
-``` proto
+```proto
 message SomeOtherMessage {
   SearchResponse.Result result = 1;
 }
@@ -411,7 +411,7 @@ message SomeOtherMessage {
 
 You can nest messages as deeply as you like:
 
-``` proto
+```proto
 message Outer {                  // Level 0
   message MiddleAA {             // Level 1
     message Inner {              // Level 2
@@ -457,7 +457,7 @@ Originally, `proto3` messages always discarded unknown fields during parsing, bu
 
 The `Any` message type lets you use messages as embedded types without having their `.proto` definition. An `Any` contains an arbitrary serialized message as bytes, along with a URL that acts as a globally unique identifier for and resolves to that message's type. To use the `Any` type, you need to import `google/protobuf/any.proto`.
 
-``` proto
+```proto
 import "google/protobuf/any.proto";
 
 message ErrorStatus {
@@ -472,7 +472,7 @@ If you have a message with many fields and where at most one field will be set a
 
 To define a `oneof` in your `.proto` you use the `oneof` keyword followed by your oneof name, in this case `test_oneof`:
 
-``` proto
+```proto
 message SampleMessage {
   oneof test_oneof {
     string name = 4;
@@ -489,7 +489,7 @@ In your generated code, oneof fields have the same getters and setters as regula
 
 If you want to create an associative map as part of your data definition, protocol buffers provides a handy shortcut syntax:
 
-``` proto
+```proto
 map<key_type, value_type> map_field = N;
 ```
 
@@ -498,7 +498,7 @@ map<key_type, value_type> map_field = N;
 
 So, for example, if you wanted to create a map of projects where each Project message is associated with a string key, you could define it like this:
 
-``` proto
+```proto
 map<string, Project> projects = 3;
 ```
 
@@ -512,14 +512,14 @@ map<string, Project> projects = 3;
 
 You can add an optional `package` specifier to a `.proto` file to prevent name clashes between protocol message types.
 
-``` proto
+```proto
 package foo.bar;
 message Open { ... }
 ```
 
 You can then use the package specifier when defining fields of your message type:
 
-``` proto
+```proto
 message Foo {
   ...
   foo.bar.Open open = 1;
@@ -538,7 +538,7 @@ The way a package specifier affects the generated code depends on your chosen la
 
 If you want to use your message types with an **RPC (Remote Procedure Call)** system, you can define an RPC service interface in a `.proto` file and the protocol buffer compiler will generate **service interface code and stubs** in your chosen language. So, for example, if you want to define an RPC service with a method that takes your `SearchRequest` and returns a `SearchResponse`, you can define it in your `.proto` file as follows:
 
-``` proto
+```proto
 service SearchService {
   rpc Search(SearchRequest) returns (SearchResponse);
 }
@@ -548,7 +548,7 @@ The most straightforward RPC system to use with protocol buffers is [gRPC](https
 
 By default, the protocol compiler will then generate **an abstract interface called `SearchService`** and **a corresponding "stub" implementation**. The stub forwards all calls to an `RpcChannel`, which in turn is an abstract interface that you must define yourself in terms of your own RPC system. For example, you might implement an `RpcChannel` which serializes the message and sends it to a server via HTTP. In other words, the generated stub provides a type-safe interface for making protocol-buffer-based RPC calls, without locking you into any particular RPC implementation. So, in C++, you might end up with code like this:
 
-``` cpp
+```cpp
 using google::protobuf;
 
 protobuf::RpcChannel* channel;
@@ -583,7 +583,7 @@ void Done() {
 
 All service classes also implement the `Service` interface, which provides a way to call specific methods without knowing the method name or its input and output types at compile time. On the server side, this can be used to implement an RPC server with which you could register services.
 
-``` cpp
+```cpp
 using google::protobuf;
 
 class ExampleSearchService : public SearchService {
@@ -635,7 +635,7 @@ Here are a few of the most commonly used options:
 	+ `LITE_RUNTIME`: The protocol buffer compiler will generate classes that depend only on the "lite" runtime library (`libprotobuf-lite` instead of `libprotobuf`). The lite runtime is much smaller than the full library (around an order of magnitude smaller) but omits certain features like descriptors and reflection. This is particularly useful for apps running on constrained platforms like mobile phones. The compiler will still generate fast implementations of all methods as it does in SPEED mode. Generated classes will only implement the `MessageLite` interface in each language, which provides only a subset of the methods of the full `Message` interface.
 
 
-``` proto
+```proto
 option optimize_for = CODE_SIZE;
 ```
 
@@ -669,7 +669,7 @@ This document describes **the protocol buffer wire format**, which defines the d
 
 Let's say you have the following very simple message definition:
 
-``` proto
+```proto
 message Test1 {
   optional int32 a = 1;
 }
@@ -911,7 +911,7 @@ $ xxd foo.bin
 
 ## Defining Your Protocol Format
 
-``` proto3
+```proto3
 // Copyright (C) 2021 $company Inc.  All rights reserved.
 //
 // This is a sample protobuf source code.
@@ -976,7 +976,7 @@ libprotoc 3.15.8
   + `addressbook.pb.cc`, which contains the implementation of your classes.
 
 
-``` bash
+```bash
 #!/bin/bash
 
 PROTOCOL_DIR=./
@@ -1004,7 +1004,7 @@ echo "ok"
 
 Let's look at some of the generated code and see what classes and functions the compiler has created for you. If you look in `addressbook.pb.h`, you can see that you have a class for each message you specified in `addressbook.proto`. Looking closer at the Person class, you can see that the compiler has generated accessors for each field. For example, for the `name`, `id`, `email`, and `phones` fields, you have these methods:
 
-``` cpp
+```cpp
 // string name = 1;
 void clear_name();
 const std::string& name() const;
@@ -1154,7 +1154,7 @@ Here is a program which reads an `AddressBook` from a file, adds one new `Person
 * Notice the `GOOGLE_PROTOBUF_VERIFY_VERSION` macro. It is good practice – though not strictly necessary – to execute this macro before using the C++ Protocol Buffer library. It verifies that you have not accidentally linked against a version of the library which is incompatible with the version of the headers you compiled with. If a version mismatch is detected, the program will abort. Note that every `.pb.cc` file automatically invokes this macro on startup.
 * Also notice the call to `ShutdownProtobufLibrary()` at the end of the program. All this does is delete any global objects that were allocated by the Protocol Buffer library. This is unnecessary for most programs, since the process is just going to exit anyway and the OS will take care of reclaiming all of its memory. However, if you use a memory leak checker that requires that every last object be freed, or if you are writing a library which may be loaded and unloaded multiple times by a single process, then you may want to force Protocol Buffers to clean up everything.
 
-``` cc
+```cc
 // ...
 ```
 
@@ -1163,7 +1163,7 @@ Here is a program which reads an `AddressBook` from a file, adds one new `Person
 
 Of course, an address book wouldn't be much use if you couldn't get any information out of it! This example reads the file created by the above example and prints all the information in it.
 
-``` cc
+```cc
 // ...
 ```
 
@@ -1240,7 +1240,7 @@ typedef std::reverse_iterator< iterator > reverse_iterator
 
 ![quick_cpp_benchmark](/assets/images/202104/quick_cpp_benchmark.png)
 
-``` cpp
+```cpp
 static void VectorFind(benchmark::State& state) {
 
   int max = 10000;
@@ -1390,7 +1390,7 @@ This is a thread-safe implementation: multiple threads may allocate from the are
 
 ### Arena message allocation protocol
 
-``` cpp
+```cpp
 // Arena allocator. Arena allocation replaces ordinary (heap-based) allocation
 // with new/delete, and improves performance by aggregating allocations into
 // larger blocks and freeing allocations all at once. Protocol messages are
@@ -1451,7 +1451,7 @@ class PROTOBUF_EXPORT Arena {
 
 ### CreateMessage
 
-``` cpp
+```cpp
 // protobuf/arena.h
 
 // API to create proto2 message objects on the arena. If the arena passed in
@@ -1555,7 +1555,7 @@ PROTOBUF_ALWAYS_INLINE static T* CreateMaybeMessage(Arena* arena,
 
 ### ArenaOptions
 
-``` cpp
+```cpp
 // protobuf/arena.h
 
 // ArenaOptions provides optional additional parameters to arena construction
@@ -1650,7 +1650,7 @@ Memory allocation and deallocation constitutes a significant fraction of CPU tim
 
 The protocol buffer compiler generates code for `arena` allocation for the messages in your file, as used in the following example.
 
-``` cpp
+```cpp
 #include <google/protobuf/arena.h>
 {
   google::protobuf::Arena arena;
@@ -1682,7 +1682,7 @@ If `arena` is not NULL, the returned message object is allocated on the `arena`,
 
 * `template<typename T> static T* Create(Arena* arena, args...)`: Similar to `CreateMessage()` but lets you create an object of any class on the `arena`, not just protocol buffer message types. For example, let's say you have this C++ class:
 
-``` cpp
+```cpp
 class MyCustomClass {
     MyCustomClass(int arg1, int arg2);
     // ...
@@ -1691,7 +1691,7 @@ class MyCustomClass {
 
 you can create an instance of it on the `arena` like this:
 
-``` cpp
+```cpp
 void func() {
     // ...
     google::protobuf::Arena arena;
@@ -1875,7 +1875,7 @@ message NestedMessage {
 };
 ```
 
-``` cpp
+```cpp
 #include <google/protobuf/arena.h>
 
 Arena arena;
@@ -1900,7 +1900,7 @@ https://docs.buf.build/best-practices/style-guide
 
 If you want to know how large the serialized protobuf message returned by [MessageLite::SerializeToString(](https://developers.google.com/protocol-buffers/docs/reference/cpp/google.protobuf.message_lite#MessageLite.SerializeToString.details)) is going to be you can use [Message::ByteSizeLong](https://developers.google.com/protocol-buffers/docs/reference/cpp/google.protobuf.message#Message.ByteSizeLong.details)().
 
-``` cpp
+```cpp
 virtual size_t Message::ByteSizeLong() const
 ```
 
@@ -1910,7 +1910,7 @@ This recursively calls ByteSizeLong() on all embedded messages.
 
 ByteSizeLong() is generally linear in the number of fields defined for the proto.
 
-``` cpp
+```cpp
 ExampleMessage msg;
 msg.set_example(12);
 
@@ -1926,7 +1926,7 @@ This is also the way SerializeToString() [calculates the size of the message int
 
 On the other hand if you want to know how much memory the message currently requires in unserialized form you can use [Message::SpaceUsedLong()](https://developers.google.com/protocol-buffers/docs/reference/cpp/google.protobuf.message#Message.SpaceUsedLong.details) - which will give you an estimate of that size.
 
-``` cpp
+```cpp
 ExampleMessage msg;
 msg.set_example(12);
 
@@ -1939,7 +1939,7 @@ https://stackoverflow.com/questions/72619077/how-to-get-the-actual-size-of-a-pro
 
 通过 [SpaceUsedLong](https://protobuf.dev/reference/cpp/api-docs/google.protobuf.message/#Message.SpaceUsedLong.details) 接口
 
-``` cpp
+```cpp
 virtual size_t Message::SpaceUsedLong() const
 ```
 
@@ -1950,7 +1950,7 @@ The default implementation calls the Reflection object's SpaceUsed() method.
 SpaceUsed() is noticeably slower than ByteSize(), as it is implemented using reflection (rather than the generated code implementation for ByteSize()). Like ByteSize(), its CPU time is linear in the number of fields defined for the proto.
 
 
-``` cpp
+```cpp
 #include <iostream>
 #include "example.pb.h"
 
@@ -1974,7 +1974,7 @@ int main() {
 
 https://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt
 
-``` cpp
+```cpp
 void PbAbnormalTestImpl()
 {
     ProtocolPB::CSMsg stMsg;
@@ -2006,7 +2006,7 @@ void PbAbnormalTestImpl()
 
 对于 string 类型的字段，PB 在编码时会调用 VerifyUtf8String 检查字段内容是否符合 UTF-8 编码，若不是则会编码失败，但不会返回错误。而在解码时同样会调用 VerifyUtf8String 检查，此时检查失败会返回解码错误。问题影响是，业务在编码时没有及时发现错误，导致保存的编码内容是错误的，而在解码时才出现异常，导致异常不可恢复。
 
-``` cpp
+```cpp
   // Verifies that a string field is valid UTF8, logging an error if not.
   // This function will not be called by newly generated protobuf code
   // but remains present to support existing code.
@@ -2019,7 +2019,7 @@ void PbAbnormalTestImpl()
 
 `VerifyUtf8String` 具体实现：
 
-``` cpp
+```cpp
 bool WireFormatLite::VerifyUtf8String(const char* data,
                                       int size,
                                       Operation op,
@@ -2052,7 +2052,7 @@ bool WireFormatLite::VerifyUtf8String(const char* data,
 
 编码接口：
 
-``` cpp
+```cpp
 // Serialization ---------------------------------------------------
   // Methods for serializing in protocol buffer format.  Most of these
   // are just simple wrappers around ByteSize() and SerializeWithCachedSizes().
@@ -2084,7 +2084,7 @@ bool WireFormatLite::VerifyUtf8String(const char* data,
 
 业务协议生成代码，编码时调用 `SerializeWithCachedSizes` 接口，其中 `VerifyUtf8String` 检查失败，不会返回错误。
 
-``` cpp
+```cpp
   // string Name = 2;
   if (this->Name().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -2098,7 +2098,7 @@ bool WireFormatLite::VerifyUtf8String(const char* data,
 
 解码接口：
 
-``` cpp
+```cpp
 // Several of the Parse methods below just do one thing and then call another
 // method.  In a naive implementation, we might have ParseFromString() call
 // ParseFromArray() which would call ParseFromZeroCopyStream() which would call
@@ -2120,7 +2120,7 @@ GOOGLE_PROTOBUF_ATTRIBUTE_ALWAYS_INLINE bool InlineParsePartialFromArray(
 
 业务协议生成代码，解码时调用 `MergePartialFromCodedStream` 接口，其中 `VerifyUtf8String` 检查失败则返回错误。
 
-``` cpp
+```cpp
       // string Name = 2;
       case 2: {
         if (static_cast< ::google::protobuf::uint8>(tag) == (18 & 0xFF)) {
@@ -2199,7 +2199,7 @@ Indeed, **it is internal only** but it might have been worth externalizing excep
 
 The [default log handler](https://github.com/protocolbuffers/protobuf/blob/a21caa237a92b21d9af7e9aba2ea3600885ae5f9/src/google/protobuf/stubs/common.cc#L163) just sends messages to `stderr`, but you might need to check that `GOOGLE_PROTOBUF_MIN_LOG_LEVEL` was set to an appropriate level (should be set to `LOGLEVEL_INFO` if you want to see all log messages.)
 
-``` cpp
+```cpp
 enum LogLevel {
   LOGLEVEL_INFO,     // Informational.  This is never actually used by
                      // libprotobuf.
@@ -2222,7 +2222,7 @@ enum LogLevel {
 };
 ```
 
-``` cpp
+```cpp
 LogHandler* SetLogHandler(LogHandler* new_func) {
   LogHandler* old = internal::log_handler_;
   if (old == &internal::NullLogHandler) {
@@ -2239,7 +2239,7 @@ LogHandler* SetLogHandler(LogHandler* new_func) {
 
 修改 LogHandler:
 
-``` cpp
+```cpp
 #include "google/protobuf/stubs/logging.h"
 #include "google/protobuf/stubs/common.h"
 
@@ -2282,7 +2282,7 @@ $ldd protoc
 
 protobuf 3.0 版本支持 protobuf 与 json 数据相互转换。
 
-``` cpp
+```cpp
 /* protobuf 转 json */
 inline util::Status MessageToJsonString(const Message& message, std::string* output);
 
@@ -2290,7 +2290,7 @@ inline util::Status MessageToJsonString(const Message& message, std::string* out
 inline util::Status JsonStringToMessage(StringPiece input, Message* message);
 ```
 
-``` cpp
+```cpp
 int PbToJson(const google::protobuf::Message& stMsg, std::string& strJson)
 {
     google::protobuf::util::JsonOptions jOptions;

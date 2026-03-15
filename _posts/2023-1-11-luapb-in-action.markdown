@@ -58,7 +58,7 @@ luarocks make rockspecs/lua-protobuf-scm-1.rockspec
 
 生成静态库：
 
-``` bash
+```bash
 #!/bin/bash
 
 gcc -g -O2 -c pb.c -I ../lua
@@ -68,7 +68,7 @@ rm pb.o
 
 生成动态库：
 
-``` bash
+```bash
 #!/bin/bash
 
 gcc -O2 -shared -fPIC pb.c -o pb.so
@@ -86,7 +86,7 @@ OK
 
 ## 示例代码
 
-``` lua
+```lua
 local pb = require "pb"
 local protoc = require "protoc"
 

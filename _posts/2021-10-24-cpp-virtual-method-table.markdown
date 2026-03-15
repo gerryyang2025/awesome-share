@@ -14,7 +14,7 @@ tags:
 
 # 问题
 
-``` cpp
+```cpp
 #include <iostream>
 
 class IBaseA
@@ -59,7 +59,7 @@ int main()
 
 # Example
 
-``` cpp
+```cpp
 #include <iostream>
 
 class A
@@ -89,7 +89,7 @@ int main()
 }
 ```
 
-``` cpp
+```cpp
 #include <iostream>
 #include <stdint.h>
 
@@ -148,12 +148,12 @@ https://pabloariasal.github.io/2017/06/10/understanding-virtual-tables/
 
 Dynamic cast of `shared_ptr`. Returns a copy of `sp` of the proper type with its stored pointer casted dynamically from `U*` to `T*`.
 
-``` cpp
+```cpp
 template <class T, class U>
 shared_ptr<T> dynamic_pointer_cast (const shared_ptr<U>& sp) noexcept;
 ```
 
-``` cpp
+```cpp
 #include <iostream>
 #include <memory>
 
@@ -201,7 +201,7 @@ std::dynamic_pointer_cast 的作用如下：
 1. 进行类型安全的指针转换：std::dynamic_pointer_cast 在运行时检查转换是否有效。如果转换失败（即指向的对象不是目标类型的实例），它将返回一个空的 std::shared_ptr。这有助于避免潜在的错误，并确保类型安全。
 2. 管理引用计数：与 std::static_pointer_cast 和 std::const_pointer_cast 类似，std::dynamic_pointer_cast 也会正确地处理 std::shared_ptr 的引用计数。这意味着在转换过程中，原始智能指针和转换后的智能指针都将共享相同的引用计数，从而确保资源的正确管理。
 
-``` cpp
+```cpp
 #include <iostream>
 #include <memory>
 
@@ -240,7 +240,7 @@ Derived specific function called.
 
 `dynamic_cast` 是面向对象语言中常被称为类似“**是某种**”的概念的 C++ 版本：
 
-``` cpp
+```cpp
 void do_something(Shape* p)
 {
     if (Circle* pc = dynamic_cast<Circle*>(p)) { // p 是某种 Circle？
@@ -256,7 +256,7 @@ void do_something(Shape* p)
 
 一种更简单的变种是使用引用而不是指针：
 
-``` cpp
+```cpp
 void do_something2(Shape& r)
 {
     Circle& rc = dynamic_cast<Circle&>(r);  // r 是某种 Circle！
@@ -293,7 +293,7 @@ Notes:
 * A downcast can also be performed with `static_cast`, which avoids the cost of the runtime check, but it's only safe if the program can guarantee (through some other logic) that the object pointed to by expression is definitely Derived.
 * Some forms of `dynamic_cast` rely on [runtime type identification (RTTI)](https://en.wikipedia.org/wiki/Run-time_type_information), that is, information about each polymorphic class in the compiled program. Compilers typically have options to disable the inclusion of this information.
 
-``` cpp
+```cpp
 #include <iostream>
 
 struct V {
@@ -351,7 +351,7 @@ downcast from b2 to d successful
 */
 ```
 
-``` cpp
+```cpp
 #include <iostream>
 #include <memory>
 
@@ -427,7 +427,7 @@ xyz obj:0x1757018
 */
 ```
 
-``` cpp
+```cpp
 #include <iostream>
 #include <map>
 #include <memory>
@@ -565,7 +565,7 @@ C++指出，当derived class对象经由一个base class指针被删除，而该
 
 继承和组合：
 
-``` cpp
+```cpp
 #include <iostream>
 
 class A1
@@ -614,7 +614,7 @@ B()
 */
 ```
 
-``` cpp
+```cpp
 #include <iostream>
 
 class A1
@@ -664,7 +664,7 @@ B()
 
 多重继承：
 
-``` cpp
+```cpp
 #include <iostream>
 
 class A1

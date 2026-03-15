@@ -120,7 +120,7 @@ Persistent Installation (Recommended)
 
 Install once and use everywhere:
 
-``` bash
+```bash
 uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 ```
 
@@ -131,7 +131,7 @@ uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 
 Then use the tool directly:
 
-``` bash
+```bash
 specify init <PROJECT_NAME>
 specify check
 ```
@@ -144,7 +144,7 @@ specify check
 
 To upgrade Specify, see the [Upgrade Guide](https://github.com/github/spec-kit/blob/main/docs/upgrade.md) for detailed instructions. Quick upgrade:
 
-``` bash
+```bash
 uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git
 ```
 
@@ -155,7 +155,7 @@ Launch your AI assistant in the project directory. The `/speckit.*` commands are
 
 Use the `/speckit.constitution` command to **create your project's governing principles and development guidelines that will guide all subsequent development**.
 
-``` bash
+```bash
 /speckit.constitution Create principles focused on code quality, testing standards, user experience consistency, and performance requirements
 ```
 
@@ -163,7 +163,7 @@ Use the `/speckit.constitution` command to **create your project's governing pri
 
 Use the `/speckit.specify` command to **describe what you want to build. Focus on the what and why, not the tech stack**.
 
-``` bash
+```bash
 /speckit.specify Build an application that can help me organize my photos in separate photo albums. Albums are grouped by date and can be re-organized by dragging and dropping on the main page. Albums are never in other nested albums. Within each album, photos are previewed in a tile-like interface.
 ```
 
@@ -171,7 +171,7 @@ Use the `/speckit.specify` command to **describe what you want to build. Focus o
 
 Use the `/speckit.plan` command to **provide your tech stack and architecture choices**.
 
-``` bash
+```bash
 /speckit.plan The application uses Vite with minimal number of libraries. Use vanilla HTML, CSS, and JavaScript as much as possible. Images are not uploaded anywhere and metadata is stored in a local SQLite database.
 ```
 
@@ -179,7 +179,7 @@ Use the `/speckit.plan` command to **provide your tech stack and architecture ch
 
 Use `/speckit.tasks` to **create an actionable task list from your implementation plan**.
 
-``` bash
+```bash
 /speckit.tasks
 ```
 
@@ -187,7 +187,7 @@ Use `/speckit.tasks` to **create an actionable task list from your implementatio
 
 Use `/speckit.implement` to **execute all tasks and build your feature according to the plan**.
 
-``` bash
+```bash
 /speckit.implement
 ```
 
@@ -261,7 +261,7 @@ Crucially, your role isn’t just to steer. It’s to verify. At each phase, you
 Setting it up is straightforward. First, install the `specify` command-line tool. This tool initializes your project and sets up the necessary structure.
 
 
-``` bash
+```bash
 uvx --from git+https://github.com/github/spec-kit.git
 specify init <PROJECT_NAME>
 ```

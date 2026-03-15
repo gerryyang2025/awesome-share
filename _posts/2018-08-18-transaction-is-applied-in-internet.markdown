@@ -583,7 +583,7 @@ Phase 2：for commit case, do the work asynchronously and quickly.
 
 但是此模式对支持的SQL回滚语句有限制，并非所有情况都可以UNDO。以下是在业务本地隐式创建的`undo_log`反操作信息表。
 
-``` sql
+```sql
 -- 注意此处0.3.0+ 增加唯一索引 ux_undo_log
 CREATE TABLE `undo_log` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,

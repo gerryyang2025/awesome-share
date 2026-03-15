@@ -16,7 +16,7 @@ tags:
 
 测试代码：https://godbolt.org/z/Gn1bx1d7r
 
-``` cpp
+```cpp
 #include <cstdint>
 #include <limits>
 #include <iostream>

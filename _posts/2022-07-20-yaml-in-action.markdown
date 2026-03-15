@@ -61,8 +61,7 @@ hash: { name: Steve, foo: bar }
 
 数据结构的子成员是一个数组，则可以在该项下面缩进一个空格。
 
-```
--
+```-
  - Cat
  - Dog
  - Goldfish

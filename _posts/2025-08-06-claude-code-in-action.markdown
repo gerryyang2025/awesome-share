@@ -80,7 +80,7 @@ Your CI can run `claude -p "If there are new text strings, translate them into F
 
 macOS, Linux, WSL:
 
-``` bash
+```bash
 curl -fsSL https://claude.ai/install.sh | bash
 ```
 
@@ -88,7 +88,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 
 ![cc17](/assets/images/202601/cc17.png)
 
-``` bash
+```bash
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc
 ```
 
@@ -118,7 +118,7 @@ I really recommend you install node and npm using [nvm](https://github.com/creat
 
 To install or update **nvm**, you should run the [install script](https://github.com/nvm-sh/nvm/blob/v0.40.3/install.sh). To do that, you may either download and run the script manually, or use the following `cURL` or `Wget` command:
 
-``` bash
+```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 
 wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
@@ -126,7 +126,7 @@ wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 
 Running either of the above commands downloads a script and runs it. The script clones the **nvm** repository to `~/.nvm`, and attempts to add the source lines from the snippet below to the correct profile file (`~/.bashrc`, `~/.bash_profile`, `~/.zshrc`, or `~/.profile`). If you find the install script is updating the wrong profile file, set the `$PROFILE` env var to the profile file’s path, and then rerun the installation script.
 
-``` bash
+```bash
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 ```
@@ -153,19 +153,19 @@ Usage:
 
 And you are now able to **install node typing**:
 
-``` bash
+```bash
 nvm install <version>
 ```
 
 For example
 
-``` bash
+```bash
 nvm install 4.2.1
 ```
 
 If you just want to install the latest node version, you can just type
 
-``` bash
+```bash
 nvm install node
 ```
 
@@ -177,7 +177,7 @@ nvm install node
 
 参考：https://code.claude.com/docs/en/setup
 
-``` bash
+```bash
 # Install Claude Code
 npm install -g @anthropic-ai/claude-code
 
@@ -209,7 +209,7 @@ lrwxrwxrwx 1 gerryyang users 52 Aug  6 16:50 /data/home/gerryyang/.nvm/versions/
 After the installation process completes, navigate to your project and start Claude Code:
 
 
-``` bash
+```bash
 cd your-awesome-project
 claude
 ```
@@ -243,7 +243,7 @@ Claude Code offers the following **authentication options**:
 
 Get your API key at the [Claude Console](https://platform.claude.com/settings/keys) and set it as an environment variable:
 
-``` bash
+```bash
 export ANTHROPIC_API_KEY='your-api-key-here'
 ```
 
@@ -251,7 +251,7 @@ export ANTHROPIC_API_KEY='your-api-key-here'
 
 Run this command to create a simple web search assistant:
 
-``` bash
+```bash
 curl https://api.anthropic.com/v1/messages \
   -H "Content-Type: application/json" \
   -H "x-api-key: $ANTHROPIC_API_KEY" \
@@ -270,7 +270,7 @@ curl https://api.anthropic.com/v1/messages \
 
 Example output:
 
-``` json
+```json
 {
   "id": "msg_01HCDu5LRGeP2o7s2xGmxyx8",
   "type": "message",
@@ -315,7 +315,7 @@ Claude Code automatically keeps itself up to date to ensure you have the latest 
 
 ## Disable auto-updates
 
-``` bash
+```bash
 # Via configuration
 claude config set autoUpdates false --global
 
@@ -325,7 +325,7 @@ export DISABLE_AUTOUPDATER=1
 
 ## Update manually
 
-``` bash
+```bash
 claude update
 ```
 
@@ -339,14 +339,14 @@ Remove the Claude Code binary and version files:
 
 macOS, Linux, WSL:
 
-``` bash
+```bash
 rm -f ~/.local/bin/claude
 rm -rf ~/.local/share/claude
 ```
 
 ## NPM installation
 
-``` bash
+```bash
 npm uninstall -g @anthropic-ai/claude-code
 ```
 
@@ -356,7 +356,7 @@ npm uninstall -g @anthropic-ai/claude-code
 
 To remove Claude Code settings and cached data:
 
-``` bash
+```bash
 # Remove user settings and state
 rm -rf ~/.claude
 rm ~/.claude.json
@@ -494,7 +494,7 @@ The SlashCommand tool allows Claude to execute [custom slash commands](https://c
 
 To encourage Claude to use the SlashCommand tool, reference the command by name, including the slash, in your prompts or CLAUDE.md file. For example:
 
-``` bash
+```bash
 > Run /write-unit-test when you are about to start writing tests.
 ```
 
@@ -586,7 +586,7 @@ The `--agents` flag accepts a JSON object that defines one or more custom subage
 
 Example:
 
-``` bash
+```bash
 claude --agents '{
   "code-reviewer": {
     "description": "Expert code reviewer. Use proactively after code changes.",
@@ -613,19 +613,19 @@ When to use each:
 
 * `--system-prompt`: Use when you need complete control over Claude’s system prompt. This removes all default Claude Code instructions, giving you a blank slate.
 
-``` bash
+```bash
 claude --system-prompt "You are a Python expert who only writes type-annotated code"
 ```
 
 * `--system-prompt-file`: Use when you want to load a custom prompt from a file, useful for team consistency or version-controlled prompt templates.
 
-``` bash
+```bash
 claude -p --system-prompt-file ./prompts/code-review.txt "Review this PR"
 ```
 
 * `--append-system-prompt`: Use when you want to add specific instructions while keeping Claude Code’s default capabilities intact. This is the safest option for most use cases.
 
-``` bash
+```bash
 claude --append-system-prompt "Always use TypeScript and include JSDoc comments"
 ```
 
@@ -658,7 +658,7 @@ Create, manage, and share Skills to extend Claude’s capabilities in Claude Cod
 
 ## /insights
 
-``` bash
+```bash
 /insights               Generate a report analyzing your Claude Code sessions
 ```
 
@@ -704,7 +704,7 @@ Each scheduled task has an 8-character ID you can pass to CronDelete. A session 
 
 如果没有清除以下 Anthropic 相关的环境变量，就会提示使用限制的提示：
 
-``` bash
+```bash
 unset ANTHROPIC_AUTH_TOKEN
 unset ANTHROPIC_BASE_URL
 ```

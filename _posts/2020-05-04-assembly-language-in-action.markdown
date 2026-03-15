@@ -23,7 +23,7 @@ tags:
 * **栈**：用于维护函数调用的上下文空间；局部变量、函数参数、返回地址等
 * **内核虚拟空间**：用户代码不可见的内存区域，由内核管理(页表就存放在内核虚拟空间)
 
-``` bash
+```bash
 objdump -dj .data your_binary | grep "g_"
 objdump -dj .bss your_binary | grep "g_"
 ```
@@ -53,7 +53,7 @@ objdump -dj .bss your_binary | grep "g_"
 
 ![test1](/assets/images/202111/test1.png)
 
-``` cpp
+```cpp
 #include <cstdio>
 
 int swap_add(int *xp, int *yp)
@@ -231,7 +231,7 @@ The x86 architecture is **little-endian**, meaning that multi-byte values are wr
 
 The stack is a **Last In First Out** (`LIFO`) data structure; data is pushed onto it and popped off of it in the reverse order.
 
-``` asm
+```asm
 mov ax, 006Ah
 mov bx, F79Ah
 mov cx, 1124h
@@ -287,7 +287,7 @@ The Stack is usually used to pass arguments to functions or procedures and also 
 * lea 指令，装入有效地址到寄存器
 * 跳转指令：call，ret。
 
-``` bash
+```bash
 # cpu 执行 call 跳转指令时，cpu 做了如下操作：
 
 rsp = rsp – 8
@@ -405,8 +405,7 @@ mov $1, %rax
 
 In the rest of the article I will use only `Intel syntax` because it’s the one supported by `NASM`.
 
-```
-+------------------------------+------------------------------------+
+```+------------------------------+------------------------------------+
 |       Intel Code             |      AT&T Code                     |
 +------------------------------+------------------------------------+
 | mov     eax,1                |  movl    $1,%eax                   |
@@ -617,7 +616,7 @@ What this means is that is takes a single int argument in the `rdi` register. Th
 
 Let’s make our program end successfully:
 
-``` asm
+```asm
 section .text
   global _start
 _start:
@@ -662,7 +661,7 @@ The simplest way do declare variables is by initializing them in the `.data` seg
 
 An example use:
 
-``` asm
+```asm
 section .data
   exit_code dq 0
   sys_call dq 60
@@ -716,7 +715,7 @@ rdx   int               string_size
 
 For `rdi` we will use `1` because that is **the file descriptor for stdout**. Let’s see how this works in a program:
 
-``` asm
+```asm
 section .data
   some_string dq "Hello world"
   some_string_size dq 11           ; "Hello world" contains 11 characters
@@ -760,7 +759,7 @@ total 12K
 
 We may compare this asm program to c program:
 
-``` c
+```c
 #include <stdio.h>
 int main()
 {
@@ -787,7 +786,7 @@ total 16K
 -rwxrwxr-x 1 ubuntu ubuntu 6.0K May  5 14:02 a.out
 ```
 
-``` asm
+```asm
 .file   "helloworld.c"
         .text
         .section        .rodata
@@ -935,7 +934,7 @@ mov rax, 60
 
 This mode is very simple because there is no indirection. The `rax` register will be set to `60`. The value `60` is called **an immediate constant (立即数)**. Immediate constants can be specified in decimal, binary, octal or hexadecimal. These instructions all do the same:
 
-``` asm
+```asm
 mov rax, 60         ; decimal
 mov rax, 0b111100   ; binary
 mov rax, 0o74       ; octal
@@ -1087,7 +1086,7 @@ valid debug formats for 'elf64' output format are ('*' denotes default):
 
 so we can use:
 
-``` asm
+```asm
 $ nasm -f elf64 -g -F dwarf -o example.o example.asm
 $ ld -o example example.o
 $ ls -rtlh
@@ -1378,7 +1377,7 @@ je   somewhere  ; branch if ZF is set
 
 So the `and` instruction will set the `ZF` flag equal to the complement of the lowest bit of `%eax`, and the test instruction will set it again to the same thing. This probably comes from code that looks like:
 
-``` cpp
+```cpp
 if (var & 1) {
     // ... do something ...
 }

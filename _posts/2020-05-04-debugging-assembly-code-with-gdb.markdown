@@ -180,7 +180,7 @@ Conversely, whenever you restart the program, all threads start executing. This 
 
 On some OSes, you can modify GDB’s default behavior by locking the OS scheduler to allow only a single thread to run.
 
-``` bash
+```bash
 # Set the scheduler locking mode. It applies to normal execution, record mode, and replay mode. mode can be one of the following
 set scheduler-locking mode
 ```
@@ -193,7 +193,7 @@ set scheduler-locking mode
 * `replay`
   * Behaves like on in replay mode, and off in either record mode or during normal execution. This is the default mode.
 
-``` bash
+```bash
 # Display the current scheduler locking mode.
 show scheduler-locking
 
@@ -273,8 +273,7 @@ Num     Type           Disp Enb Address            What
 
 Disassembles a specified function or a function fragment.
 
-```
-disassemble
+```disassemble
 disassemble [Function]
 disassemble [Address]
 disassemble [Start],[End]
@@ -282,10 +281,7 @@ disassemble [Function],+[Length]
 disassemble [Address],+[Length]
 disassemble /m [...]
 disassemble /r [...]
-```
-
-Parameters
-
+```parameters
 * Function
 
 Specifies the function to disassemble. If specified, the disassemble command will produce the disassembly output of the entire function.
@@ -525,7 +521,7 @@ GDB would then rewrite `/usr/src/include/defs.h` into `/mnt/include/defs.h` by u
 
 工具脚本示例：
 
-``` bash
+```bash
 #!/bin/bash
 
 CUR_DIR=$(dirname $(readlink -f $0))
@@ -588,7 +584,7 @@ g_a in section .data of /data/home/gerryyang/test/perf/a.out
 
 ## 打印内存的值
 
-``` cpp
+```cpp
 #include <stdio.h>
 
 int main(void)
@@ -650,7 +646,7 @@ And you can examine the current logging configuration:
 
 ## 打印 STL 容器中的内容
 
-``` cpp
+```cpp
 #include <iostream>
 #include <vector>
 
@@ -689,13 +685,13 @@ gdb -q -ex "show envir" -ex "quit" your_bin your_corefile | grep your_env
 
 [How to get environment variable from a core dump](https://stackoverflow.com/questions/44686478/how-to-get-environment-variable-from-a-core-dump)
 
-``` bash
+```bash
 gdb -q -ex "p *__environ" -ex "quit" your_bin your_corefile
 ```
 
 ![gdb_env1](/assets/images/202506/gdb_env1.png)
 
-``` bash
+```bash
 # 环境变量基本都是在core文件的末尾，所以只需要搜索后面的内容即可
 tail -c 1048576  your_corefile | grep -a -o -P 'gerry=\K[^[:cntrl:]]*'
 ```
@@ -847,7 +843,7 @@ set disassembly-flavor intel
 
 示例：
 
-``` cpp
+```cpp
 #include <iostream>
 int main()
 {
@@ -959,7 +955,7 @@ gdb 可以为被调试的程序创建一个**快照**，即**保存程序运行�
 
 打印指定进程的系统栈。本质是一段脚本，核心是下面这句话：
 
-``` bash
+```bash
 #!/bin/zsh
 gdb -q -nx -p $1 <<< 't a a bt' 2>&- | sed -ne '/^#/p'
 ```
@@ -1005,14 +1001,14 @@ A gdb command to inspect the size of objects on the stack.
 
 Use `gdb` to navigate to a certain stack frame (run until your stack overflows or set a breakpoint somewhere). Then, simply run:
 
-``` bash
+```bash
 source stack-inspector.py
 stack-inspector
 ```
 
 用法示例：
 
-``` cpp
+```cpp
 #include <iostream>
 #include <array>
 
@@ -1044,7 +1040,7 @@ int main()
 }
 ```
 
-``` bash
+```bash
 $ ./gdb.sh
 Reading symbols from ./test...
 Breakpoint 1 at 0x401181: file test.cc, line 6.

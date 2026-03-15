@@ -228,7 +228,7 @@ OpenClaw 的工作空间是智能体运行时的唯一工作目录，它包含�
 ![openclaw74](/assets/images/202601/openclaw74.png)
 
 
-``` bash
+```bash
 ~/.openclaw/workspace/
 ├── AGENTS.md       # 代理调度规则与标准作业程序
 ├── BOOTSTRAP.md    # 初始化序列与核心系统提示词
@@ -259,7 +259,7 @@ OpenClaw 的工作空间是智能体运行时的唯一工作目录，它包含�
 
 SOUL.md 是整个 OpenClaw 身份架构中最基础的文件，定义了代理的性格、核心价值观和长期指令。
 
-``` md
+```md
 ## 1. 核心身份与人格
 
 - **角色设定**：你是主人的专属AI助手
@@ -282,7 +282,7 @@ SOUL.md 是整个 OpenClaw 身份架构中最基础的文件，定义了代理�
 
 AGENTS.md 是 OpenClaw 的日常行为配置文件，详细记录了任务处理流程、工具使用策略和决策规范。
 
-``` md
+```md
 ## 1. 唤醒协议
 
 每次会话开始前必须执行：
@@ -308,7 +308,7 @@ AGENTS.md 是 OpenClaw 的日常行为配置文件，详细记录了任务处理
 
 USER.md 是写给 OpenClaw 的“使用说明书”，决定了 AI 如何服务你。
 
-``` md
+```md
 ## 1. 基础参数
 
 - 称呼：poetry
@@ -337,7 +337,7 @@ USER.md 是写给 OpenClaw 的“使用说明书”，决定了 AI 如何服务�
 
 HEARTBEAT.md 决定了 AI 能否主动为你工作，而不是只能等你下命令。
 
-``` md
+```md
 # 主动请求
 
 - 每半小时抓取指定推特的最新数据
@@ -370,7 +370,7 @@ TOOLS.md 定义了 OpenClaw 能用什么工具。
 * Tools 是器官 —— 决定了 AI 是否能做某事
 * Skills 是教科书 —— 教 AI 如何组合工具完成任务
 
-``` md
+```md
 # Skills配置
 
 ## 1. 社交媒体采集
@@ -392,7 +392,7 @@ IDENTITY.md 负责定义 AI 的“外在形象”——显示名称、表情符�
 
 > 注意区分：SOUL.md 告诉 AI“你是谁”，IDENTITY.md 告诉用户 AI“长什么样”。这种分离设计很强大，你可以随时调整 AI 的对外形象，但保持核心人格不变。
 
-``` md
+```md
 # IDENTITY.md
 
 - 姓名：poetry
@@ -407,7 +407,7 @@ BOOTSTRAP.md 是全新工作空间的一次性引导文件。核心功能是引�
 > 关键：完成后必须删除 BOOTSTRAP.md。你已经有了灵魂，不再是空白机器了。
 
 
-``` md
+```md
 # 引导流程
 
 ## 1. 拷打
@@ -437,7 +437,7 @@ BOOTSTRAP.md 是全新工作空间的一次性引导文件。核心功能是引�
 * `~/.openclaw/skills/`，通过 clawhub 安装的技能，可自动识别
 * ~/.openclaw/workspace/skills/，用户自定义生成存放的技能
 
-``` bash
+```bash
 # 查看 OpenClaw 技能安装目录
 ls ~/.local/share/pnpm/global/5/.pnpm/openclaw@*/node_modules/openclaw/skills/
 ```
@@ -528,7 +528,7 @@ In the current session, reply directly. Do NOT call message tool just to send pr
 
 通过 openclaw 配置一个常驻的 HTTP 服务（可以指定数据访问的目录和端口），可方便通过 Web 浏览器查看和下载 openclaw 在云服务器上生成的文件。
 
-``` bash
+```bash
 # 数据访问目录
 /root/.openclaw/workspace/data
 
@@ -903,7 +903,7 @@ Works on macOS, Windows & Linux. The one-liner installs `Node.js` and everything
 
 Runtime: **Node ≥22**.
 
-``` bash
+```bash
 #!/bin/bash
 # install.sh
 curl -fsSL https://molt.bot/install.sh | bash
@@ -955,7 +955,7 @@ The wizard installs the Gateway daemon (launchd/systemd user service) so it stay
 
 Uninstall the gateway service + local data (CLI remains).
 
-``` bash
+```bash
 moltbot uninstall
 moltbot uninstall --all --yes
 moltbot uninstall --dry-run
@@ -964,7 +964,7 @@ moltbot uninstall --dry-run
 
 ## Run the onboarding wizard (and install the service)
 
-``` bash
+```bash
 moltbot onboard --install-daemon
 ```
 
@@ -995,7 +995,7 @@ Headless/server tip: do OAuth on a normal machine first, then copy `oauth.json` 
 
 If you installed the service during onboarding, the Gateway should already be running:
 
-``` bash
+```bash
 moltbot gateway status
 ```
 
@@ -1003,7 +1003,7 @@ moltbot gateway status
 
 Manual run (foreground):
 
-``` bash
+```bash
 moltbot gateway --port 18789 --verbose
 ```
 
@@ -1012,7 +1012,7 @@ Dashboard (local loopback): `http://127.0.0.1:18789/` If a token is configured, 
 
 ## Quick verify (2 min)
 
-``` bash
+```bash
 moltbot status
 moltbot status --all
 
@@ -1211,7 +1211,7 @@ Docs: docs.openclaw.ai/cli
 
 ## 配置相关
 
-``` bash
+```bash
 # 首次安装后初始化配置
 openclaw setup
 
@@ -1222,7 +1222,7 @@ openclaw onboard
 openclaw dashboard
 ```
 
-``` bash
+```bash
 # 打开完整配置向导
 openclaw configure
 
@@ -1237,7 +1237,7 @@ openclaw configure --section channels
 
 ## 启停 Gateway
 
-``` bash
+```bash
 # 启动 Gateway（默认端口 18789）
 openclaw gateway start
 
@@ -1265,7 +1265,7 @@ openclaw health
 
 ## 查看日志
 
-``` bash
+```bash
 # 查看实时日志
 openclaw logs
 
@@ -1280,7 +1280,7 @@ openclaw logs --follow
 
 ## 健康检查
 
-``` bash
+```bash
 # 运行健康检查
 openclaw doctor
 
@@ -1290,7 +1290,7 @@ openclaw doctor --fix
 
 ## 安全检查
 
-``` bash
+```bash
 # 运行安全检查
 openclaw security audit
 
@@ -1303,7 +1303,7 @@ openclaw security verify-keys
 
 ## 更新 OpenClaw
 
-``` bash
+```bash
 # 查看更新
 openclaw update --dry-run
 
@@ -1347,7 +1347,7 @@ openclaw update --tag 2026.2.22
 
 问题现象：openclaw 升级到 2026.3.2 版本后，出现 openclaw 访问权限错误，工作区下 Skills (`/root/.openclaw/workspace/skills/`) 都会提示工具不可用。
 
-``` bash
+```bash
 # openclaw --version
 2026.3.2
 ```

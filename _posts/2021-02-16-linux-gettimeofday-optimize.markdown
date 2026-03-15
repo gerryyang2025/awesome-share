@@ -15,7 +15,7 @@ tags:
 
 参考：https://man7.org/linux/man-pages/man2/time.2.html
 
-``` cpp
+```cpp
 #include <time.h>
 
 time_t time(time_t *tloc);
@@ -27,7 +27,7 @@ If `tloc` is non-NULL, the return value is also stored in the memory pointed to 
 
 On success, the value of time in seconds since the Epoch is returned.  On error, (`(time_t) -1`) is returned, and [errno](https://man7.org/linux/man-pages/man3/errno.3.html) is set to indicate the error.
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <time.h>
 
@@ -42,7 +42,7 @@ time(NULL): 1673429363
 */
 ```
 
-``` cpp
+```cpp
 // std::time
 // https://en.cppreference.com/w/cpp/chrono/c/time
 #include <iostream>
@@ -63,7 +63,7 @@ Wed Jan 11 17:04:57 2023
 
 > gettimeofday 相比 time 除了获取 seconds 还可以获取 microseconds
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <time.h>
 #include <sys/time.h>
@@ -88,7 +88,7 @@ gettimeofday: 1673429363.980282
 
 参考：https://man7.org/linux/man-pages/man2/settimeofday.2.html
 
-``` cpp
+```cpp
 #include <sys/time.h>
 
 int gettimeofday(struct timeval *restrict tv,
@@ -101,7 +101,7 @@ The functions `gettimeofday()` and `settimeofday()` can get and set the **time**
 
 The `tv` argument is a `struct timeval` (as specified in `<sys/time.h>`)
 
-``` cpp
+```cpp
 struct timeval {
     time_t      tv_sec;     /* seconds */
     suseconds_t tv_usec;    /* microseconds */
@@ -112,7 +112,7 @@ and gives the number of **seconds** and **microseconds** since the **Epoch** (se
 
 The `tz` argument is a `struct timezone`:
 
-``` cpp
+```cpp
 struct timezone {
     int tz_minuteswest;     /* minutes west of Greenwich */
     int tz_dsttime;         /* type of DST correction */
@@ -125,7 +125,7 @@ The use of the `timezone` structure is **obsolete**; the `tz` argument should no
 
 `gettimeofday()` and `settimeofday()` return 0 for success. On error, `-1` is returned and `errno` is set to indicate the error.
 
-``` cpp
+```cpp
 #include <cstdio>
 #include <sys/time.h>
 
@@ -170,7 +170,7 @@ UTC + (+0800) = 本地（北京）时间
 
 测试代码：
 
-``` cpp
+```cpp
 // https://en.cppreference.com/w/cpp/chrono/c/localtime
 #include <iostream>
 #include <sstream>
@@ -289,7 +289,7 @@ refer:
 
 gettimeofday定义：
 
-``` c
+```c
 // https://man7.org/linux/man-pages/man2/gettimeofday.2.html
 #include <sys/time.h>
 
@@ -351,7 +351,7 @@ refer: https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-i
 
 下面的宏定义用于读取TSC的值：
 
-``` c
+```c
 #ifdef __x86_64__
 #define RDTSC() ({ unsigned int tickl, tickh; __asm__ __volatile__("rdtsc":"=a"(tickl),"=d"(tickh)); ((unsigned long long)tickh << 32)|tickl; })
 #else
@@ -361,7 +361,7 @@ refer: https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-i
 
 `TSC`是一个**64位的寄存器，相当与一个计数器(It counts the number of CPU cycles since its reset)，但我们所需要的是时间，而不是计数。由于`TSC`的值是每个CPU时钟周期增加1，所以只要知道了CPU的时间频率，就可以将这个值换算成时间**。因为对精度的要求并不是很高（微秒级），我们只需要获得以兆为单位的大约值就可以了。下面的函数获得**CPU的频率**：
 
-``` cpp
+```cpp
 static inline int getcpuspeed_mhz(unsigned int wait_us)
 {
    uint64_t tsc1, tsc2;
@@ -409,7 +409,7 @@ static inline int getcpuspeed_mhz(unsigned int wait_us)
 
 The `a` and `d` registers. This class is used for instructions that return **double word(2 * 32)** results in the `ax:dx` register pair. Single word values will be allocated either in `ax` or `dx`. For example on `i386` the following implements `rdtsc`:
 
-``` c
+```c
 unsigned long long rdtsc (void)
 {
   unsigned long long tick;
@@ -420,7 +420,7 @@ unsigned long long rdtsc (void)
 
 This is not correct on `x86-64` as it would allocate tick in either `ax` or `dx`. You have to use the following variant instead:
 
-``` c
+```c
 unsigned long long rdtsc (void)
 {
   unsigned int tickl, tickh;
@@ -509,7 +509,7 @@ sys     0m0.040s
 
 rdtsc测试代码 (Linux, GCC)：
 
-``` cpp
+```cpp
 /* define this somewhere */
 #ifdef __i386
 __inline__ uint64_t rdtsc() {
@@ -537,7 +537,7 @@ t = rdtsc() - t;
 
 Generates the rdtsc instruction, which returns the processor time stamp. The processor time stamp records the number of clock cycles since the last reset.
 
-``` c
+```c
 // rdtsc.cpp
 // processor: x86, x64
 #include <stdio.h>
@@ -599,12 +599,12 @@ Let’s take a look at the `vDSO` code implementing `gettimeofday` for more clar
 
 If we examine the code in [arch/x86/vdso/vclock_gettime.c](https://github.com/torvalds/linux/blob/v3.13/arch/x86/vdso/vclock_gettime.c#L260-L282) and check the `vDSO` implementations for `gettimeofday` (`__vdso_gettimeofday`) and `clock_gettime` (`__vdso_clock_gettime`), we’ll find that both pieces of code have a similar conditional near the end of the function:
 
-``` cpp
+```cpp
 if (ret == VCLOCK_NONE)
   return vdso_fallback_gtod(clock, ts);
 ```
 
-``` cpp
+```cpp
 notrace int __vdso_gettimeofday(struct timeval *tv, struct timezone *tz)
 {
 	long ret = VCLOCK_NONE;
@@ -634,7 +634,7 @@ int gettimeofday(struct timeval *, struct timezone *)
 
 If `ret` is set to `VCLOCK_NONE` this indicates that the system’s current clocksource **does not support the vDSO**. In this case, the [vdso_fallback_gtod](https://github.com/torvalds/linux/blob/v3.13/arch/x86/vdso/vclock_gettime.c#L144-L151) function failsafe function is called which will simply executes a system call normally: by entering the kernel and incurring all the normal overhead.
 
-``` cpp
+```cpp
 notrace static long vdso_fallback_gtod(struct timeval *tv, struct timezone *tz)
 {
 	long ret;
@@ -651,7 +651,7 @@ If we follow the code backward from this point, we’ll find that `ret` is set t
 
 * the [High Precision Event Timer](https://github.com/torvalds/linux/blob/v3.13/arch/x86/kernel/hpet.c#L755-L757), and
 
-``` cpp
+```cpp
 static struct clocksource clocksource_hpet = {
 	.name		= "hpet",
 	.rating		= 250,
@@ -667,7 +667,7 @@ static struct clocksource clocksource_hpet = {
 
 * the [Time Stamp Counter](https://github.com/torvalds/linux/blob/v3.13/arch/x86/kernel/tsc.c#L789-L791),
 
-``` cpp
+```cpp
 static struct clocksource clocksource_tsc = {
 	.name                   = "tsc",
 	.rating                 = 300,
@@ -765,7 +765,7 @@ The two system calls listed cannot use the vDSO as they normally would on any ot
 
 * gcc 4.8版本在调用`std::chrono::system_clock::now`会bypass vdso走system call，优化方法：升级到gcc 7或者改换其他用法。bug参考可见：[Bug 59177 - steady_clock::now() and system_clock::now do not use the vdso (and are therefore very slow)](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=59177)
 
-``` cpp
+```cpp
 #include <time.h>
 #include <sys/time.h>
 

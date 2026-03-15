@@ -22,7 +22,7 @@ tags:
   + 可以适当使用宏来定义代码中的常量，消除**魔术数字**（magic number）。
   + 用宏来代替直接定义名字空间。
 
-``` cpp
+```cpp
 // 通过 #define 指令定义一个宏：#define NAME_OF_MACRO value
 #define BUFFER_SIZE 1024
 auto foo = (char *)malloc(BUFFER_SIZE);
@@ -32,7 +32,7 @@ auto foo = (char *)malloc(BUFFER_SIZE);
   + 通常编译环境都会有一些预定义宏，比如 CPU 支持的特殊指令集、操作系统 / 编译器 / 程序库的版本、语言特性等，使用它们就可以早于运行阶段，提前在预处理阶段做出各种优化，产生出最适合当前系统的源码。
   + 与优化更密切相关的底层系统信息在 C++ 语言标准里没有定义，但编译器通常都会提供，比如 GCC 可以使用一条简单的命令查看`g++ -E -dM - < /dev/null`。基于它们，你就可以更精细地根据具体的语言、编译器、系统特性来改变源码，有，就用新特性；没有，就采用变通实现。
 
-``` cpp
+```cpp
 // Here, expression is an expression of integer type (can be integers, characters, arithmetic expression, macros and so on).
 #if expression
    // conditional codes
@@ -79,7 +79,7 @@ https://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
 https://en.wikipedia.org/wiki/Variadic_macro_in_the_C_preprocessor
 
 
-``` cpp
+```cpp
 #ifdef DEBUG_THRU_UART0
 #   define DEBUG(...)  printString (__VA_ARGS__)
 #else
@@ -92,7 +92,7 @@ DEBUG(1,2,3); //calls printString(1,2,3) or dummyFunc() depending on
 
 `##__VA_ARGS__`的作用？
 
-``` cpp
+```cpp
 #define FOO(...)       printf(__VA_ARGS__)
 #define BAR(fmt, ...)  printf(fmt, __VA_ARGS__)
 
@@ -112,7 +112,7 @@ refer:
 
 # 用法示例
 
-``` cpp
+```cpp
 #ifndef _XXX_H_INCLUDED_
 #define _XXX_H_INCLUDED_
 
@@ -185,7 +185,7 @@ print(f)("hello\n"); // printf("hello\n");
 
 
 
-``` cpp
+```cpp
 $ g++ -E -dM - < /dev/null
 #define __SSP_STRONG__ 3
 #define __DBL_MIN_EXP__ (-1021)
@@ -537,7 +537,7 @@ $ g++ -E -dM - < /dev/null
 ```
 
 
-``` cpp
+```cpp
 #if defined(__cpp_decltype_auto)        //检查是否支持decltype(auto)
     cout << "decltype(auto) enable" << endl;
 #else
@@ -577,7 +577,7 @@ The [gcc manual](https://gcc.gnu.org/onlinedocs/gcc-4.8.5/gcc/Function-Names.htm
 
 Note that since `__func__` and `__FUNCTION__` **are predefined identifiers, not macros**, you only need the `#define` once, not in each function. On the other hand, you **can't use** `#ifdef __func__` or `#ifdef __FUNCTION__` to detect the level of support.
 
-``` cpp
+```cpp
  #if __STDC_VERSION__ < 199901L
  # if __GNUC__ >= 2
  #  define __func__ __FUNCTION__
@@ -589,7 +589,7 @@ Note that since `__func__` and `__FUNCTION__` **are predefined identifiers, not 
 
 测试代码
 
-``` cpp
+```cpp
 #include <iostream>
 
 template<typename T>
@@ -623,7 +623,7 @@ void func(T&&) [with T = int]
 */
 ```
 
-``` cpp
+```cpp
 #include <iostream>
 
 void myFunction(int a, double b)
@@ -641,7 +641,7 @@ int main()
 
 ## 通过编译期提取类名和函数名
 
-``` cpp
+```cpp
 #include <iostream>
 #include <string_view>
 
@@ -675,7 +675,7 @@ Function name: A::myFunction
 
 # 测试代码
 
-``` cpp
+```cpp
 // demo.cpp
 #include <iostream>
 
@@ -699,7 +699,7 @@ int main()
 * `533 "/usr/include/x86_64-linux-gnu/c++/7/bits/c++config.h" 3`表示将`bits/c++config.h`第533行的`#include <bits/os_defines.h>`，通过`#include`包含展开另一个文件的内容。
 
 
-``` cpp
+```cpp
 // ...
 
 # 229 "/usr/include/x86_64-linux-gnu/c++/7/bits/c++config.h" 3
@@ -747,7 +747,7 @@ int main()
 * `_GLIBCXX_RELEASE`对应`gcc -v`查看的gcc版本号
 
 
-``` cpp
+```cpp
 /** @file bits/c++config.h
  *  This is an internal header file, included by other library headers.
  *  Do not attempt to use it directly. @headername{iosfwd}

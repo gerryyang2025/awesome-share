@@ -35,7 +35,7 @@ Here is a trivial example that prints "17 items are made of wool".
 
 
 {% raw %}
-``` golang
+```golang
 type Inventory struct {
 	Material string
 	Count    uint
@@ -51,7 +51,7 @@ if err != nil { panic(err) }
 另一个示例：
 
 {% raw %}
-``` golang
+```golang
 package main
 
 import (
@@ -315,8 +315,7 @@ Arguments may evaluate to any type; if they are pointers the implementation auto
 
 A pipeline is a possibly chained sequence of "commands". A command is a simple value (argument) or a function or method call, possibly with multiple arguments.
 
-```
-Argument
+```argument
 	The result is the value of evaluating the argument.
 .Method [Argument...]
 	The method can be alone or the last element of a chain but,
@@ -369,8 +368,7 @@ Go 模板提供了大量的预定义函数，如果有特殊需求也可以实�
 
 Predefined global functions are named as follows.
 
-```
-and
+```and
 	Returns the boolean AND of its arguments by returning the
 	first empty argument or the last argument. That is,
 	"and x y" behaves as "if x then y else x."
@@ -430,8 +428,7 @@ The boolean functions take any zero value to be false and a non-zero value to be
 
 There is also a set of binary comparison operators defined as functions:
 
-```
-eq
+```eq
 	Returns the boolean truth of arg1 == arg2
 ne
 	Returns the boolean truth of arg1 != arg2
@@ -449,7 +446,7 @@ ge
 
 默认情况下，模板中无自定义函数，可以使用模板的`Funcs`方法添加。`sprig` 模板函数库，就是通过这种方式使用的。
 
-``` golang
+```golang
 t, err := template.New("test").Funcs(sprig.TxtFuncMap()).Parse(string(tmpStr))
 err = t.Execute(os.Stdout, meta)
 if err != nil {
@@ -568,7 +565,7 @@ go template 配置：
 
 {% raw %}
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <UpdateMgr>
 {{- range $name,$attr := $.UpdateMgr }}
@@ -581,7 +578,7 @@ go template 配置：
 
 生成的格式：
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <UpdateMgr>
     <Update Name="EpollMgr" Type="BY_MICROSECOND" Interval="1000" />

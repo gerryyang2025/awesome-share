@@ -21,7 +21,7 @@ tags:
 
 Consider the following function that extracts all the keys from a `map[string]int` type:
 
-``` go
+```go
 func getKeys(m map[string]int) []string {
     var keys []string
     for k := range m {
@@ -35,7 +35,7 @@ What if we would like to use a similar feature for another map type such as a `m
 
 For example, we could write two functions, one for each map type, or even try to extend `getKeys` to accept different map types:
 
-``` go
+```go
 func getKeys(m any) ([]any, error) {
     switch t := m.(type) {
     default:
@@ -65,7 +65,7 @@ func getKeys(m any) ([]any, error) {
 
 Type parameters are generic types we can use with **functions** and **types**. For example, the following function accepts a type parameter:
 
-``` go
+```go
 func foo[T any](t T) {
     // ...
 }
@@ -75,7 +75,7 @@ When calling `foo`, we will pass a type argument of any type. Passing a type arg
 
 Let’s get back to the `getKeys` function and use type parameters to write a generic version that would accept any kind of map:
 
-``` go
+```go
 func getKeys[K comparable, V any](m map[K]V) []K {
   var keys []K
   for k := range m {
@@ -87,7 +87,7 @@ func getKeys[K comparable, V any](m map[K]V) []K {
 
 To handle the map, we defined two kinds of type parameters. First, the values can be of any type: `V any`. **However, in Go, the map keys can’t be of any type**. For example, we cannot use **slices**:
 
-``` go
+```go
 var m map[[]byte]int
 ```
 
@@ -100,7 +100,7 @@ Restricting type arguments to match specific requirements is called a **constrai
 
 Let’s see a concrete example for the latter. Imagine we don’t want to accept any `comparable` type for map key type. For instance, we would like to restrict it to either `int` or `string` types. We can define a custom constraint this way:
 
-``` go
+```go
 type customConstraint interface {
    ~int | ~string // Define a custom type that will restrict types to int and string
 }
@@ -115,7 +115,7 @@ First, we define a `customConstraint` interface to restrict the types to be eith
 
 Now, the signature of `getKeys` enforces that we can call it with a map of any value type, but the key type has to be an `int` or a `string`. For example, on the caller-side:
 
-``` go
+```go
 m = map[string]int{
    "one":   1,
    "two":   2,
@@ -126,7 +126,7 @@ keys := getKeys(m)
 
 Note that Go can infer that `getKeys` is called with a `string` type argument. The previous call was similar to this:
 
-``` go
+```go
 keys := getKeys[string](m)
 ```
 
@@ -140,7 +140,7 @@ So far, we have discussed examples using generics for functions. **However, we c
 
 For example, we will create a linked list containing values of any type. Meanwhile, we will write an `Add` method to append a node:
 
-``` go
+```go
 type Node[T any] struct { // Use type parameter
    Val  T
    next *Node[T]
@@ -155,7 +155,7 @@ We use type parameters to define `T` and use both fields in `Node`. Regarding th
 
 **One last thing to note about type parameters: they can’t be used on `methods`, only on `functions`**. For example, the following method wouldn’t compile:
 
-``` go
+```go
 type Foo struct {}
 
 func (Foo) bar[T any](t T) {}
@@ -177,7 +177,7 @@ So when are **generics** useful? Let’s discuss a couple of common uses **where
 
 * **Functions working with slices, maps, and channels of any type**. For example, a function to merge two channels would work with any channel type. Hence, we could use type parameters to factor out the channel type:
 
-``` go
+```go
 func merge[T any](ch1, ch2 <-chan T) <-chan T {
     // ...
 }
@@ -185,7 +185,7 @@ func merge[T any](ch1, ch2 <-chan T) <-chan T {
 
 * **Meanwhile, instead of factoring out a type, we can factor out behaviors**. For example, the sort package contains functions to sort different slice types such as `sort.Ints` or `sort.Float64s`. Using type parameters, we can factor out the sorting behaviors that rely on three methods, `Len`, `Less`, and `Swap`:
 
-``` go
+```go
 type sliceFn[T any] struct { // Use type parameter
    s       []T
    compare func(T, T) bool // Compare two T elements
@@ -200,7 +200,7 @@ Conversely, **when is it recommended not to use generics**?
 
 * When just calling a method of the type argument. For example, consider a function that receives an `io.Writer` and call the `Write` method:
 
-``` go
+```go
 func foo[T io.Writer](w T) {
    b := getBytes()
    _, _ = w.Write(b)

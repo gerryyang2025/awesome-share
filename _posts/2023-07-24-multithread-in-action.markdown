@@ -19,7 +19,7 @@ tags:
 
 shm_open, shm_unlink - create/open or unlink POSIX shared memory objects
 
-``` c
+```c
 #include <sys/mman.h>
 #include <sys/stat.h>        /* For mode constants */
 #include <fcntl.h>           /* For O_* constants */
@@ -38,7 +38,7 @@ The operation of `shm_open()` is analogous to that of `open(2)`. `name` specifie
 
 pthread_mutex_init — destroy and initialize a mutex
 
-``` c
+```c
 #include <pthread.h>
 
 int pthread_mutex_init(pthread_mutex_t *restrict mutex, const pthread_mutexattr_t *restrict attr);
@@ -49,7 +49,7 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_condattr_init — initialize the condition variable attributes object
 
-``` c
+```c
 #include <pthread.h>
 
 int pthread_condattr_init(pthread_condattr_t *attr);
@@ -60,7 +60,7 @@ int pthread_condattr_init(pthread_condattr_t *attr);
 
 pthread_condattr_setpshared — set the process-shared condition variable attribute
 
-``` c
+```c
 #include <pthread.h>
 
 int pthread_condattr_setpshared(pthread_condattr_t *attr, int pshared);
@@ -70,7 +70,7 @@ int pthread_condattr_setpshared(pthread_condattr_t *attr, int pshared);
 
 pthread_cond_destroy, pthread_cond_init - destroy and initialize condition variables
 
-``` c
+```c
 #include <pthread.h>
 
 int pthread_cond_destroy(pthread_cond_t *cond);
@@ -83,7 +83,7 @@ pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 pthread_mutexattr_init, pthread_mutexattr_destroy - initialize and destroy a mutex attributes object
 
-``` c
+```c
 #include <pthread.h>
 
 int pthread_mutexattr_init(pthread_mutexattr_t *attr);
@@ -103,7 +103,7 @@ The results of destroying an uninitialized mutex attributes object are undefined
 
 ## pthread_mutexattr_getpshared / [pthread_mutexattr_setpshared](https://linux.die.net/man/3/pthread_mutexattr_setpshared)
 
-``` c
+```c
 #include <pthread.h>
 
 int pthread_mutexattr_getpshared(const pthread_mutexattr_t *restrict attr, int *restrict pshared);
@@ -123,7 +123,7 @@ If the process-shared attribute is `PTHREAD_PROCESS_PRIVATE`, the mutex shall on
 
 pthread_cond_broadcast, pthread_cond_signal - broadcast or signal a condition
 
-``` c
+```c
 #include <pthread.h>
 
 int pthread_cond_broadcast(pthread_cond_t *cond);
@@ -134,7 +134,7 @@ int pthread_cond_signal(pthread_cond_t *cond);
 
 pthread_cond_timedwait, pthread_cond_wait - wait on a condition
 
-``` c
+```c
 #include <pthread.h>
 
 int pthread_cond_timedwait(pthread_cond_t *restrict cond, pthread_mutex_t *restrict mutex, const struct timespec *restrict abstime);
@@ -164,7 +164,7 @@ Upon successful return, the mutex shall have been locked and shall be owned by t
 
 # 测试代码
 
-``` c
+```c
 // kbhit.h
 
 #pragma once
@@ -216,7 +216,7 @@ int kbhit()
 
 ## 生产者
 
-``` c
+```c
 // producer.c
 
 #include <stdio.h>
@@ -314,7 +314,7 @@ int main() {
 
 ## 消费者
 
-``` c
+```c
 // consumer.c
 
 #include <stdio.h>

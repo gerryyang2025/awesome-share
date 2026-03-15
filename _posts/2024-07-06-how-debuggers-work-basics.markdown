@@ -36,7 +36,7 @@ I'm now going to develop an example of running a process in "traced" mode in whi
 
 The high-level plan is to write code that splits into a child process that will execute a user-supplied command, and a parent process that traces the child. First, the main function:
 
-``` cpp
+```cpp
 int main(int argc, char** argv)
 {
     pid_t child_pid;
@@ -64,7 +64,7 @@ Pretty simple: we start a new child process with `fork` [^4]. The `if` branch of
 
 Here's the target process:
 
-``` cpp
+```cpp
 void run_target(const char* programname)
 {
     procmsg("target started. will run '%s'\n", programname);
@@ -82,7 +82,7 @@ void run_target(const char* programname)
 
 The most interesting line here is the `ptrace` call. `ptrace` is declared thus (in `sys/ptrace.h`):
 
-``` cpp
+```cpp
 long ptrace(enum __ptrace_request request, pid_t pid,
                  void *addr, void *data);
 ```
@@ -95,7 +95,7 @@ I've highlighted the part that interests us in this example. Note that the very 
 
 Thus, time is ripe to see what the parent does:
 
-``` cpp
+```cpp
 void run_debugger(pid_t child_pid)
 {
     int wait_status;
@@ -182,7 +182,7 @@ Sure enough. Now the tracer reported that 7 instructions were executed, which is
 
 The assembly-written program allows me to introduce you to another powerful use of `ptrace` - closely examining the state of the traced process. Here's another version of the `run_debugger` function:
 
-``` cpp
+```cpp
 void run_debugger(pid_t child_pid)
 {
     int wait_status;
@@ -217,7 +217,7 @@ void run_debugger(pid_t child_pid)
 
 The only difference is in the first few lines of the `while` loop. There are two new `ptrace` calls. The first one reads the value of the process's registers into a structure. `user_regs_struct` is defined in `sys/user.h`. Now here's the fun part - if you look at this header file, a comment close to the top says:
 
-``` cpp
+```cpp
 /* The whole purpose of this file is for GDB and GDB only.
    Don't read too much into it. Don't use it for
    anything other than GDB unless know what you are
@@ -271,7 +271,7 @@ The correspondence between this and our tracing output is easily observed.
 
 The complete C source-code of the simple tracer presented in this article (the more advanced, instruction-printing version) is available [here](https://github.com/eliben/code-for-blog/blob/main/2011/simple_tracer.c). It compiles cleanly with `-Wall -pedantic --std=c99` on version 4.4 of `gcc`.
 
-``` cpp
+```cpp
 /* Code sample: using ptrace for simple tracing of a child process.
 **
 ** Note: this was originally developed for a 32-bit x86 Linux system; some

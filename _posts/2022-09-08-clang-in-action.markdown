@@ -257,7 +257,7 @@ hello world
 
 The clang driver is designed to work as closely to GCC as possible to maximize portability. The only major difference between the two is that Clang defaults to `gnu99` mode while GCC defaults to gnu89 mode. If you see weird link-time errors relating to inline functions, try passing `-std=gnu89` to clang.
 
-``` c
+```c
 // test.c
 typedef float V __attribute__((vector_size(16)));
 V foo(V a, V b)
@@ -268,7 +268,7 @@ V foo(V a, V b)
 
 Preprocessing:
 
-``` cpp
+```cpp
 //$clang test.c -E
 # 1 "test.c"
 # 1 "<built-in>" 1
@@ -302,7 +302,7 @@ Pretty printing from the AST:
 
 > Note, the `-cc1` argument indicates the compiler front-end, and not the driver, should be run. The compiler front-end has several additional Clang specific features which are not exposed through the GCC compatible driver interface.
 
-``` cpp
+```cpp
 // $clang -cc1 test.c -ast-print
 typedef __attribute__((__vector_size__(4 * sizeof(float)))) float V;
 V foo(V a, V b) {
@@ -313,7 +313,7 @@ V foo(V a, V b) {
 Code generation with LLVM:
 
 
-``` cpp
+```cpp
 // $clang test.c -S -emit-llvm -o -
 ; ModuleID = 'test.c'
 target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
@@ -407,7 +407,7 @@ llvm[0]: ***** Completed Release+Asserts Build
 
 安装编译好的 llvm：
 
-``` bash
+```bash
 # 会安装在 /usr/local/bin 目录
 make install
 ```
@@ -513,7 +513,7 @@ Polly：Polly是一个LLVM的子项目，提供了高级循环优化和数据局
 
 完整的 clang 安装，包括安装一些辅助工具，例如 lld, lldb, clang-tools-extra 等：
 
-``` bash
+```bash
 #!/bin/bash
 
 # Download the LLVM project
@@ -574,7 +574,7 @@ clang --version
 
 例如，升级 glibc 2.18
 
-``` bash
+```bash
 mkdir ~/glibc_install; cd ~/glibc_install
 wget http://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz
 tar zxvf glibc-2.18.tar.gz
@@ -754,7 +754,7 @@ The clangd server also supports a number of feature customizations using its [co
 > 2. clangd 可以单独下载然后在 vscode 配置中指定安装路径，也可以通过 vscode 的 clangd 扩展自动提示下载。
 > 3. 禁用或卸载 C/C++ 扩展，防止相互影响
 
-``` bash
+```bash
 code --install-extension llvm-vs-code-extensions.vscode-clangd
 # We also need make sure that Microsoft's C++ extension is not involved and interfering.
 code --uninstall-extension ms-vscode.cpptools
@@ -765,7 +765,7 @@ code --uninstall-extension ms-vscode.cpptools
 
 vscode 上使用 clangd 的配置 (项目根目录 `.vscode/settings.json` )
 
-``` json
+```json
 {
     // clangd configuration for jmesh project (C++20, CMake)
     "clangd.arguments": [
@@ -840,8 +840,7 @@ clang-tidy --checks='clang-analyzer-*,modernize-*,readability-*' test.cpp
 
 `.clang-tidy `配置内容如下，可根据[官方定义的规则](https://clang.llvm.org/extra/clang-tidy/checks/list.html)进行自定义，同时也可以参考其他开源项目的配置示例。
 
-```
----
+```---
 # @refer
 # https://clang.llvm.org/extra/clang-tidy/checks/list.html
 # https://github.com/googleapis/google-cloud-cpp/blob/main/.clang-tidy
@@ -917,7 +916,7 @@ All comments can be followed by an optional list of check names in parentheses (
 
 For example:
 
-``` cpp
+```cpp
 class Foo {
   // Suppress all the diagnostics for the line
   Foo(int param); // NOLINT
@@ -989,7 +988,7 @@ JlibtestCheck.cpp  JlibtestCheck.h
 
 
 
-``` cpp
+```cpp
 // JlibtestCheck.h
 
 //===--- JlibtestCheck.h - clang-tidy ---------------------------*- C++ -*-===//
@@ -1028,7 +1027,7 @@ public:
 #endif // LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_PERFORMANCE_JLIBTESTCHECK_H
 ```
 
-``` cpp
+```cpp
 // JlibtestCheck.cpp
 
 //===--- JlibtestCheck.cpp - clang-tidy -----------------------------------===//
@@ -1182,7 +1181,7 @@ Explanation:
 * **Clangd's Include Cleaner**: `Clangd`, a powerful language server for C++, integrates IWYU-like functionality through its include cleaner. This feature helps manage includes by suggesting additions, removals, and reordering. The `// IWYU pragma: keep` directive is respected by clangd's include cleaner, preventing it from suggesting the removal of marked includes.
 
 
-``` cpp
+```cpp
 #include <vector> // IWYU pragma: keep
 #include "my_utility.h"
 
@@ -1430,7 +1429,7 @@ lld has built-in `LTO` (link-time optimization) support
 
 ## ld 切换脚本
 
-``` bash
+```bash
 #!/bin/bash
 
 CUR_DIR=$(dirname $(readlink -f $0))

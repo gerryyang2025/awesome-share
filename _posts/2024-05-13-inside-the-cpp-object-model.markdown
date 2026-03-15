@@ -14,7 +14,7 @@ tags:
 
 # 简单对象内存分布
 
-``` cpp
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -39,7 +39,7 @@ int main()
 
 # 带方法的对象内存分布
 
-``` cpp
+```cpp
 #include <iostream>
 
 class Basic
@@ -113,7 +113,7 @@ $7 = (void (*)(Basic * const, double)) 0x4011c4 <Basic::setB(double)>
 
 # 私有成员内存分布
 
-``` cpp
+```cpp
 #include <iostream>
 
 class Basic
@@ -152,7 +152,7 @@ int main()
 
 那么 `private` 怎么进行可见性控制的呢？首先编译期肯定是有保护的，无法通过 tmp 对象直接调用 secret 方法，否则会编译报错。那么运行期是否有保护呢？可以测试下，前面已经验证 `private` 成员变量也是根据偏移来找到内存位置的，可以在代码中直接根据偏移找到内存位置并更改里面的值。
 
-``` cpp
+```cpp
 #include <iostream>
 
 class Basic
@@ -201,7 +201,7 @@ int main()
 
 # 静态成员 (数据和函数)
 
-``` cpp
+```cpp
 #include <iostream>
 
 class Basic
@@ -261,7 +261,7 @@ $14 = {void (void)} 0x401216 <Basic::show()>
 
 ## 不带虚函数的继承
 
-``` cpp
+```cpp
 #include <iostream>
 
 class Base
@@ -307,7 +307,7 @@ int main()
 
 ## 带有虚函数的继承
 
-``` cpp
+```cpp
 #include <iostream>
 
 class Base

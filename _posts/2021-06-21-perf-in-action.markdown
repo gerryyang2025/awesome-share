@@ -75,9 +75,7 @@ The `perf` tool offers a rich set of commands to collect and analyze performance
 
 The list of supported commands:
 
-```
-perf
-
+```perf
  usage: perf [--version] [--help] COMMAND [ARGS]
 
  The most commonly used perf commands are:
@@ -534,7 +532,7 @@ perf report --help
 
 ## Counting Events
 
-``` bash
+```bash
 # CPU counter statistics for the specified PID, until Ctrl-C
 perf stat -p $pid
 
@@ -556,7 +554,7 @@ perf stat -e 'block:*' -a sleep 10
 
 ## Profiling
 
-``` bash
+```bash
 # Sample on-CPU functions for the specified command, at 99 Hertz:
 perf record -F 99 command
 
@@ -587,7 +585,7 @@ perf top -F 49 -ns comm,dso
 
 ## Static Tracing
 
-``` bash
+```bash
 # Trace new processes, until Ctrl-C:
 perf record -e sched:sched_process_exec -a
 
@@ -609,7 +607,7 @@ perf record -e page-faults -ag
 
 ## Dynamic Tracing
 
-``` bash
+```bash
 # Add a tracepoint for the kernel tcp_sendmsg() function entry ("--add" is optional):
 perf probe --add tcp_sendmsg
 
@@ -619,7 +617,7 @@ perf probe -d tcp_sendmsg
 
 ## Reporting
 
-``` bash
+```bash
 # Show perf.data in an ncurses browser (TUI) if possible:
 perf report
 

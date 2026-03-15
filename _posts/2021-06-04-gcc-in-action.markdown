@@ -91,7 +91,7 @@ Often people want the most recent version of gcc, and [devtoolset](https://www.s
 * [List of Software Collections available in SCLo SIG](https://wiki.centos.org/SpecialInterestGroup/SCLo/CollectionsList)
 * [Red Hat Software Collections Product Life Cycle](https://access.redhat.com/support/policy/updates/rhscl/)
 
-``` bash
+```bash
 # 1. Install a package with repository for your system:
 # On CentOS, install package centos-release-scl available in CentOS repository:
 $ sudo yum install centos-release-scl
@@ -267,7 +267,7 @@ gcc最基本的用法是：`gcc [options] [filenames]`
 
 > 说明：C程序中的头文件包含两种情况：
 
-``` cpp
+```cpp
 #include <stdio.h>
 #include "stdio.h"
 ```
@@ -284,7 +284,7 @@ gcc最基本的用法是：`gcc [options] [filenames]`
 
 例子：假定有一个程序名为 `test.c` 的C语言源代码文件，要生成一个可执行文件。
 
-``` c
+```c
 #include <stdio.h>
 int main(void)
 {
@@ -358,7 +358,7 @@ gcc包含完整的出错检查和警告提示功能，它们可以帮助Linux程
 
 当gcc在编译不符合`ANSI/ISO C` 语言标准的源代码时，将产生相应的警告信息。
 
-``` c
+```c
 #include <stdio.h>
 void main(void)
 {
@@ -462,7 +462,7 @@ Normally, the compiler places the objects it generates in sections like `data` a
 
 示例：
 
-``` cpp
+```cpp
 #include <iostream>
 #include "mydefine.h"
 
@@ -472,7 +472,7 @@ int main()
 }
 ```
 
-``` cpp
+```cpp
 // mydefine.h
 #pragma once
 
@@ -556,7 +556,7 @@ See [Attribute Syntax](https://gcc.gnu.org/onlinedocs/gcc-4.8.5/gcc/Attribute-Sy
 
 The `format` attribute specifies that a function takes `printf`, `scanf`, `strftime` or `strfmon` style arguments that should be type-checked against a format string. For example, the declaration:
 
-``` cpp
+```cpp
 extern int my_printf (void *my_object, const char *my_format, ...) __attribute__ ((format (printf, 2, 3)));
 ```
 
@@ -583,7 +583,7 @@ The format attribute allows you to identify your own functions that take format 
 
 `vprintf` 是一个可变参数函数，用于格式化输出到标准输出。由于它的参数是可变的，编译器无法在编译时检查这些参数是否正确。因此，对于 `vprintf` 函数，编译器只检查格式字符串的格式是否一致。
 
-``` cpp
+```cpp
 // Print formatted data from variable argument list to stdout
 int vprintf ( const char * format, va_list arg );
 ```
@@ -599,7 +599,7 @@ In any case, **arg** should have been initialized by [va_start](https://cplusplu
 
 Example:
 
-``` cpp
+```cpp
 /* vprintf example */
 #include <stdio.h>
 #include <stdarg.h>
@@ -674,7 +674,7 @@ The GNU C preprocessor recognizes several `pragmas` in addition to the compiler 
 
 示例代码：https://wandbox.org/permlink/U4CUnRy09abxOSHy
 
-``` cpp
+```cpp
 #include <iostream>
 #include <stdint.h>
 
@@ -891,7 +891,7 @@ gcc -m32 geek.c -o geek
 
 How to check whether a program is compiled with 32-bit after adding a “-m32” flag?
 
-``` c
+```c
 // C program to demonstrate difference
 // in output in 32-bit and 64-bit gcc
 // File name: geek.c
@@ -916,8 +916,7 @@ refer: https://www.geeksforgeeks.org/compile-32-bit-program-64-bit-gcc-c-c/
 
 The GCC compiler flags that control [unused warnings](http://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html) include:
 
-```
--Wunused-function
+```-wunused-function
 -Wunused-label
 -Wunused-parameter
 -Wunused-value
@@ -927,8 +926,7 @@ The GCC compiler flags that control [unused warnings](http://gcc.gnu.org/onlined
 
 Each of these has a corresponding negative form with "no-" inserted after the W which turns off the warning (in case it was turned on by -Wall, for example). Thus, in your case you should use
 
-```
--Wno-unused-function
+```-wno-unused-function
 ```
 
 refer: http://stackoverflow.com/questions/386220/how-can-i-hide-defined-but-not-used-warnings-in-gcc
@@ -973,7 +971,7 @@ Defined to the value 1 by default. Configurable via --disable-libstdcxx-dual-abi
 
 https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_macros.html
 
-``` cpp
+```cpp
 #include <iostream>
 #include <list>
 #include <string>
@@ -1029,7 +1027,7 @@ int main() { return _GLIBCXX_USE_CXX11_ABI; }" HAS_GLIBCXX_USE_CXX11_ABI)
 
 测试代码：
 
-``` cpp
+```cpp
 #include <iostream>
 #include <cxxabi.h>
 #include <string>
@@ -1094,21 +1092,21 @@ all that said, using an old version of glibc is a terrible idea. it will be full
 
 查看 GLIBC 版本：
 
-``` bash
+```bash
 getconf GNU_LIBC_VERSION
 ```
 
-``` bash
+```bash
 getconf -a | grep GNU_LIBC
 GNU_LIBC_VERSION                   glibc 2.18
 ```
 
-``` bash
+```bash
 $ rpm -q glibc
 glibc-2.28-164.tl3.x86_64
 ```
 
-``` bash
+```bash
 $ ldd --version
 ldd (GNU libc) 2.28
 ```
@@ -1117,7 +1115,7 @@ ldd (GNU libc) 2.28
 
 例如，升级 glibc 2.18
 
-``` bash
+```bash
 mkdir ~/glibc_install; cd ~/glibc_install
 wget http://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz
 tar zxvf glibc-2.18.tar.gz
@@ -1242,7 +1240,7 @@ Enable `UndefinedBehaviorSanitizer`, **a fast undefined behavior detector**. Var
 
 Generate instrumentation calls for entry and exit to functions. Just after function entry and just before function exit, the following profiling functions are called with the address of the current function and its call site. (On some platforms, __builtin_return_address does not work beyond the current function, so the call site information may not be available to the profiling functions otherwise.)
 
-``` cpp
+```cpp
 void __cyg_profile_func_enter (void *this_fn,
                                void *call_site);
 void __cyg_profile_func_exit  (void *this_fn,
@@ -1274,7 +1272,7 @@ This is similar to -finstrument-functions-exclude-file-list, but this option set
 
 测试代码：
 
-``` c
+```c
 #include <stdio.h>
 
 #define DUMP(func, call) printf("%s: func = %p, called by = %p\n", __FUNCTION__, func, call)

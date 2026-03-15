@@ -158,7 +158,7 @@ http://104.131.173.242/phpmyadmin/
 
 #### 设置命令行提示符显示格式
 
-``` bash
+```bash
 # Ex. [gerryyang ~ 09:31:21]
 PS1="\[\e[1;35m\][\[\e[1;33m\]\u \[\e[1;31m\]\w \[\e[1;33m\]\t\[\e[1;35m\]]\[\e[1;36m\]\$\[\e[0m\] "
 
@@ -169,7 +169,7 @@ PS1='\[\e[1;34m\]\w\[\e[1;37m\]$\[\e[m\]'
 
 #### 设置编码
 
-``` bash
+```bash
 export LC_ALL="zh_CN.UTF-8"
 export LANG="zh_CN.UTF-8"
 ```
@@ -177,7 +177,7 @@ export LANG="zh_CN.UTF-8"
 
 #### 设置别名
 
-``` bash
+```bash
 alias grep='grep --color'
 alias his='history | tail -n 10'
 ```
@@ -384,7 +384,7 @@ A delightful community-driven (with 2,300+ contributors) framework for managing 
 
 
 
-``` bash
+```bash
 #!/usr/bin/zsh
 
 # Powerlevel10k

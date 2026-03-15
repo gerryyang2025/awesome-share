@@ -54,8 +54,7 @@ As you add or improve functionality in your module, you publish new versions of 
 
 On Linux or Mac:
 
-```
-cd
+```cd
 ```
 
 On Windows:
@@ -79,7 +78,7 @@ Run the `go mod init` command, giving it your module path -- here, use `example.
 
 For more on naming your module with a module path, see [Managing dependencies](https://go.dev/doc/modules/managing-dependencies#naming_module).
 
-``` bash
+```bash
 $ go mod init example.com/greetings
 go: creating new go.mod: module example.com/greetings
 ```
@@ -91,7 +90,7 @@ The `go mod init` command creates a `go.mod` file to track your code's dependenc
 
 > 5. Paste the following code into your `greetings.go` file and save the file.
 
-``` go
+```go
 package greetings
 
 import "fmt"
@@ -120,7 +119,7 @@ This function takes a name parameter whose type is `string`. The function also r
 
 In Go, the `:=` operator is a shortcut for declaring and initializing a variable in one line (Go uses the value on the right to determine the variable's type). Taking the long way, you might have written this as:
 
-``` go
+```go
 var message string
 message = fmt.Sprintf("Hi, %v. Welcome!", name)
 ```
@@ -148,7 +147,7 @@ After you create this directory, you should have both a `hello` and a `greetings
 
 For example, if your command prompt is in the greetings directory, you could use the following commands:
 
-``` bash
+```bash
 cd ..
 mkdir hello
 cd hello
@@ -160,7 +159,7 @@ To enable dependency tracking for your code, run the [go mod init command](https
 
 For the purposes of this tutorial, use `example.com/hello` for the module path.
 
-``` bash
+```bash
 $ go mod init example.com/hello
 go: creating new go.mod: module example.com/hello
 ```
@@ -171,7 +170,7 @@ go: creating new go.mod: module example.com/hello
 
 To do that, paste the following code into `hello.go`.
 
-``` go
+```go
 package main
 
 import (
@@ -200,7 +199,7 @@ To do that, use the go mod edit command to edit the `example.com/hello` module t
 
 * From the command prompt in the `hello` directory, run the following command:
 
-``` bash
+```bash
 $ go mod edit -replace example.com/greetings=../greetings
 ```
 
@@ -216,7 +215,7 @@ replace example.com/greetings => ../greetings
 
 * From the command prompt in the `hello` directory, run the `go mod tidy` command to synchronize the `example.com/hello` module's dependencies, adding those required by the code, but not yet tracked in the module.
 
-``` bash
+```bash
 $ go mod tidy
 go: found example.com/greetings in example.com/greetings v0.0.0-00010101000000-000000000000
 ```
@@ -247,7 +246,7 @@ For more on version numbers, see [Module version numbering](https://go.dev/doc/m
 
 > 6. At the command prompt in the `hello` directory, run your code to confirm that it works.
 
-``` bash
+```bash
 $ go run .
 Hi, Gladys. Welcome!
 ```
@@ -296,7 +295,7 @@ Your initial commit should include files listed in the following table:
 
 From the command-line, you can create an empty repository, add the files that will be part of your initial commit, and commit with a message. Here’s an example using `git`:
 
-``` bash
+```bash
 $ git init
 $ git add --all
 $ git commit -m "mycode: initial commit"
@@ -355,7 +354,7 @@ Assuming this directory is uploaded to a GitHub repository at `github.com/someus
 
 The code in `modname.go` declares the package with:
 
-``` go
+```go
 package modname
 
 // ... package code here
@@ -363,7 +362,7 @@ package modname
 
 Users can then rely on this package by import-ing it in their Go code with:
 
-``` go
+```go
 import "github.com/someuser/modname"
 ```
 

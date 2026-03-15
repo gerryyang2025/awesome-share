@@ -130,7 +130,7 @@ The parser extracts the following information from HTTP messages:
 
 One `http_parser` object is used per TCP connection. Initialize the struct using `http_parser_init()` and set the callbacks. That might look something like this for a request parser:
 
-``` cpp
+```cpp
 http_parser_settings settings;
 settings.on_url = my_url_callback;
 settings.on_header_field = my_header_field_callback;
@@ -143,7 +143,7 @@ parser->data = my_socket;
 
 When data is received on the socket execute the parser and check for errors.
 
-``` cpp
+```cpp
 size_t len = 80*1024, nparsed;
 char buf[len];
 ssize_t recved;
@@ -208,7 +208,7 @@ For cases where it is necessary to pass local information to/from a callback, th
 
 Example:
 
-``` cpp
+```cpp
  typedef struct {
   socket_t sock;
   void* buffer;
@@ -288,7 +288,7 @@ Reading headers may be a tricky task if you read/parse headers partially. Basica
 
 http_parser.h
 
-``` cpp
+```cpp
 /* Callbacks should return non-zero to indicate an error. The parser will
  * then halt execution.
  *
@@ -367,7 +367,7 @@ The state machine graph is encoded explicitly in llhttp. The [llparse](https://g
 
 ## Usage
 
-``` cpp
+```cpp
 #include "llhttp.h"
 
 llhttp_t parser;
@@ -450,7 +450,7 @@ The library exposes four functions: `phr_parse_request`, `phr_parse_response`, `
 
 The example below reads an HTTP request from socket sock using read(2), parses it using phr_parse_request, and prints the details.
 
-``` cpp
+```cpp
 char buf[4096], *method, *path;
 int pret, minor_version;
 struct phr_header headers[100];
@@ -621,7 +621,7 @@ Keep-Alive: timeout=5, max=1000
 
 ## [How to send a header using a HTTP request through a cURL call?](https://stackoverflow.com/questions/356705/how-to-send-a-header-using-a-http-request-through-a-curl-call)
 
-``` bash
+```bash
 # http1.0 curl 默认使用 http1.1 通信协议，若使用 http1.0 协议需要显示指定
 curl --http1.0 http://hostname/resource
 

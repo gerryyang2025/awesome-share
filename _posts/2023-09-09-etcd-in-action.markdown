@@ -213,7 +213,7 @@ etcd 是基于复制状态机实现的分布式协调服务。如下图所示，
 
 etcd 使用的是简单内存树，它的节点数据结构精简后如下，含节点路径、值、孩子节点信息。这是一个典型的低容量设计，数据全放在内存，无需考虑数据分片，只能保存 key 的最新版本，简单易实现。
 
-``` go
+```go
 type node struct {
    Path string                    // 节点路径
    Parent *node                   // 关联父亲节点
@@ -241,7 +241,7 @@ type node struct {
 
 启动完 etcd 集群后，用 etcd 的客户端工具 `etcdctl` 执行一个 `get hello` 命令时，对应到图中流程1，etcdctl 是如何工作的呢？
 
-``` bash
+```bash
 $ etcdctl put hello world --endpoints http://127.0.0.1:2379
 OK
 $ etcdctl get hello --endpoints http://127.0.0.1:2379
@@ -273,7 +273,7 @@ world
 
 * etcd server 定义了如下的 Service KV 和 Range 方法，启动的时候它会将实现 KV 各方法的对象注册到 gRPC Server，并在其上注册对应的拦截器。下面的代码中的 Range 接口就是负责读取 etcd key-value 的的 RPC 接口。
 
-``` golang
+```golang
 service KV {
   // Range gets the keys in the range from the key-value store.
   rpc Range(RangeRequest) returns (RangeResponse) {
@@ -408,7 +408,7 @@ https://dezeming.top/wp-content/uploads/2023/04/B-Tree%E5%92%8CBTree.pdf
 
 在如上的架构图中，用序号标识了下面的一个 put hello 为 world 的写请求的简要执行流程，帮助从整体上快速了解一个写请求的全貌。
 
-``` bash
+```bash
 $ etcdctl put hello world --endpoints http://127.0.0.1:2379
 OK
 ```
@@ -485,7 +485,7 @@ OK
   + Type 是日志类型，比如是普通的命令日志（EntryNormal）还是集群配置变更日志（EntryConfChange）；
   + Data 保存上面描述的 put 提案内容。
 
-``` golang
+```golang
 type Entry struct {
    Term             uint64    `protobuf:"varint，2，opt，name=Term" json:"Term"`
    Index            uint64    `protobuf:"varint，3，opt，name=Index" json:"Index"`
@@ -805,7 +805,7 @@ etcd 鉴权体系架构由**控制面**和**数据面**组成。
 
 * 首先可以通过如下的 auth enable 命令开启鉴权，注意 etcd 会先要求你创建一个 `root` 账号，**它拥有集群的最高读写权限**。
 
-``` bash
+```bash
 $ etcdctl user add root:root
 User root created
 $ etcdctl auth enable
@@ -814,7 +814,7 @@ Authentication Enabled
 
 * 启用鉴权后，这时 client 发起如下 put hello 操作时， etcd server 会返回 "user name is empty" 错误给 client，就初步达到了防止匿名用户访问你的 etcd 数据目的。那么 etcd server 是在哪里做的鉴权的呢?
 
-``` bash
+```bash
 $ etcdctl put hello world
 Error: etcdserver: user name is empty
 ```
@@ -823,7 +823,7 @@ Error: etcdserver: user name is empty
 
 * 下面通过鉴权模块的 user 命令，给 etcd 增加一个 alice 账号。一起来看看 etcd 鉴权模块是如何基于上面介绍的技术方案，来安全存储 alice 账号信息。
 
-``` bash
+```bash
 $ etcdctl user add alice:alice --user root:root
 User alice created
 ```
@@ -854,7 +854,7 @@ User alice created
 
 * 当使用如上创建的 alice 账号执行 put hello 操作的时候，etcd 却会返回如下的 "etcdserver: permission denied" 无权限错误，这是为什么呢？
 
-``` bash
+```bash
 $ etcdctl put hello world --user alice:alice
 Error: etcdserver: permission denied
 ```
@@ -873,7 +873,7 @@ Error: etcdserver: permission denied
 
 * 下面我们通过 etcd 的 RBAC 机制，给 alice 用户赋予一个可读写 `[hello,helly]` 数据范围的读写权限，如何操作呢？按照上面介绍的 RBAC 原理，首先需要创建一个 role，这里命名为 admin，然后新增了一个可读写 `[hello,helly]` 数据范围的权限给 admin 角色，并将 admin 的角色的权限授予了用户 alice。详细如下：
 
-``` bash
+```bash
 $ #创建一个admin role
 etcdctl role add admin  --user root:root
 Role admin created
@@ -889,7 +889,7 @@ Role admin is granted to user alice
 
 * 在这个案例中，很明显 hello 在 admin 角色可读写的 `[hello，helly)` 数据范围内，因此它有权限更新 key hello，执行成功。你也可以尝试更新 key hey，因为此 key 未在鉴权的数据区间内，因此 etcd server 会返回 "etcdserver: permission denied" 错误给 client，如下所示。
 
-``` bash
+```bash
 $ etcdctl put hello world --user alice:alice
 OK
 $ etcdctl put hey hey --user alice:alice
@@ -975,7 +975,7 @@ OK
 
 * 了解完整体架构后，再看如何基于 Lease 特性实现检测一个节点存活。首先如何为节点健康指标创建一个租约、并与节点健康指标 key 关联呢? 如 KV 模块的一样，client 可通过 clientv3 库的 Lease API 发起 RPC 调用，可以使用如下的 etcdctl 命令为 node 的健康状态指标，创建一个 Lease，有效期为 600 秒。然后通过 `timetolive` 命令，查看 Lease 的有效期、剩余时间。
 
-``` bash
+```bash
 # 创建一个 TTL 为 600 秒的 lease，etcd server 返回 LeaseID
 $ etcdctl lease grant 600
 lease 326975935f48f814 granted with TTL(600s)
@@ -989,7 +989,7 @@ lease 326975935f48f814 granted with TTL(600s)，remaining(590s)
 
 * 首先 Lessor 的 Grant 接口会把 Lease 保存到内存的 ItemMap 数据结构中，然后它需要持久化 Lease，将 Lease 数据保存到 boltdb 的 Lease bucket 中，返回一个唯一的 LeaseID 给 client。通过这样一个流程，就基本完成了 Lease 的创建。那么节点的健康指标数据如何关联到此 Lease 上呢？很简单，KV 模块的 API 接口提供了一个 `--lease` 参数，可以通过如下命令，将 key `node` 关联到对应的 LeaseID 上。然后查询的时候增加 `-w` 参数输出格式为 json，就可查看到 key 关联的 LeaseID。
 
-``` bash
+```bash
 $ etcdctl put node healthy --lease 326975935f48f818
 OK
 $ etcdctl get node -w=json | python -m json.tool
@@ -997,7 +997,7 @@ $ etcdctl get node -w=json | python -m json.tool
 
 输出：
 
-``` json
+```json
 {
     "kvs":[
         {
@@ -1099,7 +1099,7 @@ TODO
 
 * 如下面的命令所示，第一次 key hello 更新完后，通过 get 命令获取下它的 key-value 详细信息。正如所看到的，除了 key、value 信息，还有各类版本号。这里重点关注 `mod_revision`，它**表示 key 最后一次修改时的 etcd 版本号**。当再次更新 key hello 为 world2 后，然后通过查询时指定 key 第一次更新后的版本号，会发现查询到了第一次更新的值，甚至执行删除 key hello 后，依然可以获得到这个值。那么 etcd 是如何实现的呢?
 
-``` bash
+```bash
 # 更新 key hello 为 world1
 $ etcdctl put hello world1
 OK
@@ -1176,7 +1176,7 @@ world2
 
 * 在 treeIndex 中，每个节点的 key 是一个 keyIndex 结构，etcd 就是通过它保存了用户的 key 与版本号的映射关系。那么 keyIndex 结构包含哪些信息呢？下面是字段说明。
 
-``` golang
+```golang
 type keyIndex struct {
    key         []byte          // 用户的 key 名称，比如示例中的 "hello"
    modified    revision        // 最后一次修改 key 时的 etcd 版本号，比如示例中的刚写入 hello 为 world1 时的版本号为 2
@@ -1186,7 +1186,7 @@ type keyIndex struct {
 
 * keyIndex 中包含用户的 key、最后一次修改 key 时的 etcd 版本号、key 的若干代（generation）版本号信息，每代中包含对 key 的多次修改的版本号列表。那要如何理解 generations？为什么它是个数组呢？generations 表示一个 key 从创建到删除的过程，每代对应 key 的一个生命周期的开始与结束。当第一次创建一个 key 时，会生成第 0 代，后续的修改操作都是在往第 0 代中追加修改版本号。当把 key 删除后，它就会生成新的第 1 代，一个 key 不断经历创建、删除的过程，它就会生成多个代。generation 结构详细信息如下：generation 结构中包含此 key 的修改次数、generation 创建时的版本号、对此 key 的修改版本号记录列表。
 
-``` golang
+```golang
 type generation struct {
    ver     int64            // 表示此 key 的修改次数
    created revision         // 表示 generation 结构创建时的版本号
@@ -1198,7 +1198,7 @@ type generation struct {
 
 > 解释：通过引入事务的子版本号 sub，实现了同一事务的操作可见，不同事务的操作不可见，满足了不同事务间的隔离性。
 
-``` golang
+```golang
 type revision struct {
    main int64    // 一个全局递增的主版本号，随 put/txn/delete 事务递增，一个事务内的 key main 版本号是一致的
    sub int64     // 一个事务内的子版本号，从 0 开始随事务内 put/delete 操作递增
@@ -1402,7 +1402,7 @@ $ etcdctl watch hello -w=json --rev=1
 
 * etcd v2 滑动窗口是如何实现的？它有什么缺点呢？它使用的是如下一个简单的环形数组来存储历史事件版本，当 key 被修改后，相关事件就会被添加到数组中来。若超过 eventQueue 的容量，则淘汰最旧的事件。在 etcd v2 中，eventQueue 的容量是固定的 1000，因此它最多只会保存 1000 条事件记录，不会占用大量 etcd 内存导致 etcd OOM。但是它的缺陷显而易见的，固定的事件窗口只能保存有限的历史事件版本，是不可靠的。当写请求较多的时候、client 与 server 网络出现波动等异常时，很容易导致事件丢失，client 不得不触发大量的 expensive 查询操作，以获取最新的数据及版本号，才能持续监听数据。特别是对于重度依赖 Watch 机制的 Kubernetes 来说，显然是无法接受的。因为这会导致控制器等组件频繁的发起 expensive List Pod 等资源操作，导致 APIServer/etcd 出现高负载、OOM 等，对稳定性造成极大的伤害。
 
-``` golang
+```golang
 type EventHistory struct {
    Queue      eventQueue
    StartIndex uint64
@@ -1549,7 +1549,7 @@ OK
 
 * 下图左边的十六进制是执行如下 bbolt dump 命令，所打印的 boltdb 第 0 页的数据，图的右边是对应的 page 磁盘页结构和 meta page 的数据结构。
 
-``` bash
+```bash
 $ bbolt dump ./infra1.etcd/member/snap/db 0
 ```
 
@@ -1730,13 +1730,13 @@ etcd-dump-logs dumps the log from data directory.
 
 Install the tool by running the following command from the etcd source directory.
 
-``` bash
+```bash
 $ go install -v ./tools/etcd-dump-logs
 ```
 
 The installation will place executables in the `$GOPATH/bin`. If `$GOPATH` environment variable is not set, the tool will be installed into the `$HOME/go/bin`. You can also find out the installed location by running the following command from the etcd source directory. Make sure that `$PATH` is set accordingly in your environment.
 
-``` bash
+```bash
 {% raw %}
 $ go list -f "{{.Target}}" ./tools/etcd-dump-logs
 {% endraw %}
@@ -1744,7 +1744,7 @@ $ go list -f "{{.Target}}" ./tools/etcd-dump-logs
 
 Alternatively, instead of installing the tool, you can use it by simply running the following command from the etcd source directory.
 
-``` bash
+```bash
 $ go run ./tools/etcd-dump-logs
 ```
 
@@ -1760,7 +1760,7 @@ $ etcd-dump-logs /var/lib/etcd/VM-129-173-tencentos.etcd | grep foo
 ## 进程管理工具 [goreman](https://github.com/mattn/goreman)
 
 
-``` bash
+```bash
 go install github.com/mattn/goreman@latest
 ```
 
@@ -1770,7 +1770,7 @@ goreman Procfile 文件：https://github.com/etcd-io/etcd/blob/v3.5.17/Procfile
 * 通过 `goreman -f Procfile start` 命令就可以快速启动一个 3 节点的本地集群了。
 * 通过 `goreman -f Procfile run stop-all` 命令停止集群
 
-``` bash
+```bash
 # Use goreman to run `go get github.com/mattn/goreman`
 
 etcd1: /usr/local/bin/etcd --name infra1 --listen-client-urls http://127.0.0.1:2379 --advertise-client-urls http://127.0.0.1:2379 --listen-peer-urls http://127.0.0.1:12380 --initial-advertise-peer-urls http://127.0.0.1:12380 --initial-cluster-token etcd-cluster-1 --initial-cluster 'infra1=http://127.0.0.1:12380,infra2=http://127.0.0.1:22380,infra3=http://127.0.0.1:32380' --initial-cluster-state new --enable-pprof --logger=zap --log-outputs=stderr
@@ -1789,7 +1789,7 @@ etcd3: /usr/local/bin/etcd --name infra3 --listen-client-urls http://127.0.0.1:3
 
 查看进程信息：
 
-``` bash
+```bash
 $ ps ux | grep etcd | grep -v grep
 gerryya+ 1865815  0.9  0.0 11738844 30340 pts/0  Sl   14:57   0:00 /usr/local/bin/etcd --name infra1 --listen-client-urls http://127.0.0.1:2379 --advertise-client-urls http://127.0.0.1:2379 --listen-peer-urls http://127.0.0.1:12380 --initial-advertise-peer-urls http://127.0.0.1:12380 --initial-cluster-token etcd-cluster-1 --initial-cluster infra1=http://127.0.0.1:12380,infra2=http://127.0.0.1:22380,infra3=http://127.0.0.1:32380 --initial-cluster-state new --enable-pprof --logger=zap --log-outputs=stderr
 gerryya+ 1865816  0.8  0.0 11738844 29556 pts/0  Sl   14:57   0:00 /usr/local/bin/etcd --name infra3 --listen-client-urls http://127.0.0.1:32379 --advertise-client-urls http://127.0.0.1:32379 --listen-peer-urls http://127.0.0.1:32380 --initial-advertise-peer-urls http://127.0.0.1:32380 --initial-cluster-token etcd-cluster-1 --initial-cluster infra1=http://127.0.0.1:12380,infra2=http://127.0.0.1:22380,infra3=http://127.0.0.1:32380 --initial-cluster-state new --enable-pprof --logger=zap --log-outputs=stderr
@@ -2159,7 +2159,7 @@ The easiest way to install etcd is from pre-built binaries:
 3. Add the executable binaries to your path. For example, rename and/or move the binaries to a directory in your path (like `/usr/local/bin`), or add the directory created by the previous step to your path.
 4. From a shell, test that `etcd` is in your path.
 
-``` bash
+```bash
 $ etcd --version
 etcd Version: 3.5.17
 Git SHA: 507c0de
@@ -2169,7 +2169,7 @@ Go OS/Arch: linux/amd64
 
 ### etcd 简单安装和测试功能脚本
 
-``` bash
+```bash
 #!/bin/bash
 
 ETCD_VER=v3.5.17
@@ -2241,7 +2241,7 @@ kill ${ETCD_PID}
 
 ### etcd 启动脚本
 
-``` bash
+```bash
 #!/bin/bash
 
 function CheckCmdExists()
@@ -2307,7 +2307,7 @@ exit 1
 
 启动参数：
 
-``` bash
+```bash
 etcd --name JLib-etcd-1 --data-dir /data/home/gerryyang/tools/etcd/etcd-data --listen-client-urls http://0.0.0.0:2379 --advertise-client-urls http://0.0.0.0:2379 --listen-peer-urls http://0.0.0.0:2380 --initial-advertise-peer-urls http://0.0.0.0:2380 --initial-cluster JLib-etcd-1=http://0.0.0.0:2380 --initial-cluster-token JLib-etcd-token --initial-cluster-state new
 ```
 
@@ -2320,7 +2320,7 @@ starting an etcd server","etcd-version":"3.5.17","git-sha":"507c0de","go-version
 
 ### etcd 用例测试脚本
 
-``` bash
+```bash
 #!/bin/bash
 
 ENDPOINT=localhost:2379
@@ -2370,7 +2370,7 @@ If you have [Go version 1.2+](https://golang.org/doc/install), you can build etc
 
 * [Download the etcd repo as a zip file](https://github.com/etcd-io/etcd/archive/v3.5.17.zip) and unzip it, or clone the repo using the following command.
 
-``` bash
+```bash
 $ git clone -b v3.5.17 https://github.com/etcd-io/etcd.git
 ```
 
@@ -2378,13 +2378,13 @@ $ git clone -b v3.5.17 https://github.com/etcd-io/etcd.git
 
 * Change directory:
 
-``` bash
+```bash
 $ cd etcd
 ```
 
 * Run the build script:
 
-``` bash
+```bash
 $ ./build.sh
 ```
 
@@ -2392,13 +2392,13 @@ The binaries are under the `bin` directory.
 
 * Add the full path to the `bin` directory to your path, for example:
 
-``` bash
+```bash
 $ export PATH="$PATH:`pwd`/bin"
 ```
 
 * Test that `etcd` is in your path:
 
-``` bash
+```bash
 $ etcd --version
 ```
 
@@ -2453,7 +2453,7 @@ etcd 基于 MVCC 机制实现了事务，许多使用了 MVCC 的数据库都不
 
 这个事务首先检查键 "key" 的值是否等于 "value"。如果条件满足，那么它会将 "key" 的值更新为 "new_value"；否则，它会获取 "key" 的当前值。这个事务是一个原子操作，它要么全部执行成功，要么全部执行失败，不会出现部分成功部分失败的情况。
 
-``` go
+```go
 _, err := cli.Txn(ctx).
   If(clientv3.Compare(clientv3.Value("key"), "=", "value")).
   Then(clientv3.OpPut("key", "new_value")).
@@ -2504,7 +2504,7 @@ With this configuration, etcd can approximately write:
 
 Sample commands are:
 
-``` bash
+```bash
 # write to leader
 benchmark --endpoints=${HOST_1} --target-leader --conns=1 --clients=1 \
     put --key-size=8 --sequential-keys --total=10000 --val-size=256
@@ -2632,25 +2632,25 @@ By default, Ansible reads the inventory file from `/etc/ansible/hosts`; however,
 
 To get started, create a new directory on your local machine (the control node) to house all the files for this tutorial:
 
-``` bash
+```bash
 mkdir -p $HOME/playground/etcd-ansible
 ```
 
 Then, enter into the directory you just created:
 
-``` bash
+```bash
 cd $HOME/playground/etcd-ansible
 ```
 
 Inside the directory, create and open a blank inventory file named hosts using your editor:
 
-``` bash
+```bash
 nano $HOME/playground/etcd-ansible/hosts
 ```
 
 Inside the `hosts` file, list out each of your managed nodes in the following format, replacing the public IP addresses highlighted with the actual public IP addresses of your servers:
 
-``` bash
+```bash
 [etcd]
 etcd1 ansible_host=etcd1_public_ip  ansible_user=root
 etcd2 ansible_host=etcd2_public_ip  ansible_user=root
@@ -2661,7 +2661,7 @@ The `[etcd]` line defines a group called **etcd**. Under the group definition, w
 
 To ensure Ansible is able to connect with our managed nodes, we can test for connectivity by using Ansible to run the `hostname` command on each of the hosts within the **etcd** group:
 
-``` bash
+```bash
 ansible etcd -i hosts -m command -a hostname
 ```
 
@@ -2674,8 +2674,7 @@ Let us break down this command to learn what each part means:
 
 After running the command, you will find the following output, which means Ansible is configured correctly:
 
-```
-Output
+```output
 etcd2 | CHANGED | rc=0 >>
 etcd2
 
@@ -2702,7 +2701,7 @@ In this step, we will replicate what was done in Step 1—printing out the hostn
 
 Inside your project directory, create a new file named `playbook.yaml` using your editor:
 
-``` bash
+```bash
 nano $HOME/playground/etcd-ansible/playbook.yaml
 ```
 
@@ -2724,7 +2723,7 @@ The playbook contains a list of plays; each play contains a list of tasks that s
 
 We can now run this playbook using the `ansible-playbook` command:
 
-``` bash
+```bash
 ansible-playbook -i hosts playbook.yaml
 ```
 
@@ -2744,7 +2743,7 @@ In this step, we will show you the commands to install `etcd` manually and demon
 
 `etcd` and its client `etcdctl` are available as binaries, which we’ll download, extract, and move to a directory that’s part of the `PATH` environment variable. When configured manually, these are the steps we would take on each of the managed nodes:
 
-``` bash
+```bash
 mkdir -p /opt/etcd/bin
 cd /opt/etcd/bin
 wget -qO- https://storage.googleapis.com/etcd/v3.3.13/etcd-v3.3.13-linux-amd64.tar.gz | tar --extract --gzip --strip-components=1
@@ -2758,7 +2757,7 @@ The first four commands download and extract the binaries to the `/opt/etcd/bin/
 
 To replicate the same steps in a standardized format, we can add tasks to our playbook. Open the `playbook.yaml` playbook file in your editor:
 
-``` bash
+```bash
 nano $HOME/playground/etcd-ansible/playbook.yaml
 ```
 
@@ -2833,7 +2832,7 @@ Each task uses a module; for this set of tasks, we are making use of the followi
 
 To apply these changes, close and save the `playbook.yaml` file by pressing `CTRL+X` followed by `Y`. Then, on the terminal, run the same `ansible-playbook` command again:
 
-``` bash
+```bash
 ansible-playbook -i hosts playbook.yaml
 ```
 
@@ -2843,13 +2842,13 @@ The `PLAY RECAP` section of the output will show only `ok` and `changed`:
 
 To confirm a correct installation of etcd, manually SSH into one of the managed nodes and run `etcd` and `etcdctl`:
 
-``` bash
+```bash
 ssh root@etcd1_public_ip
 ```
 
 `etcd1_public_ip` is the public IP addresses of the server named **etcd1**. Once you have gained SSH access, run `etcd --version` to print out the version of etcd installed:
 
-``` bash
+```bash
 etcd --version
 ```
 
@@ -2864,7 +2863,7 @@ Go OS/Arch: linux/amd64
 
 To confirm etcdctl is successfully installed, run etcdctl version:
 
-``` bash
+```bash
 etcdctl version
 ```
 
@@ -2890,19 +2889,19 @@ Ubuntu 18.04 uses [systemd](https://www.digitalocean.com/community/tutorials/sys
 
 First, inside our project directory, create a new directory named `files/`:
 
-``` bash
+```bash
 mkdir files
 ```
 
 Then, using your editor, create a new file named `etcd.service` within that directory:
 
-``` bash
+```bash
 nano files/etcd.service
 ```
 
 Next, copy the following code block into the `files/etcd.service` file:
 
-``` bash
+```bash
 [Unit]
 Description=etcd distributed reliable key-value store
 
@@ -2922,7 +2921,7 @@ Next, we need to add a task inside our playbook that will copy the `files/etcd.s
 
 Open up your playbook:
 
-``` bash
+```bash
 nano $HOME/playground/etcd-ansible/playbook.yaml
 ```
 
@@ -2945,19 +2944,19 @@ Save and exit the playbook.
 
 Run the same `ansible-playbook` command again to apply the new changes:
 
-``` bash
+```bash
 ansible-playbook -i hosts playbook.yaml
 ```
 
 To confirm the changes have been applied, first SSH into one of the managed nodes:
 
-``` bash
+```bash
 ssh root@etcd1_public_ip
 ```
 
 Then, run `systemctl status etcd` to query systemd about the status of the etcd service:
 
-``` bash
+```bash
 systemctl status etcd
 ```
 
@@ -2969,7 +2968,7 @@ You will find the following output, which states that the service is loaded:
 
 Press `q` to return to the shell, and then run `exit` to exit out of the managed node and back to your local shell:
 
-``` bash
+```bash
 exit
 ```
 
@@ -2981,7 +2980,7 @@ etcd is a key-value data store, which means we must provide it with space to sto
 
 Open up your playbook:
 
-``` bash
+```bash
 nano $HOME/playground/etcd-ansible/playbook.yaml
 ```
 
@@ -3005,19 +3004,19 @@ Next, we need to instruct etcd to use this data directory. We do this by passing
 
 In your project directory, create a new directory named `templates/`:
 
-``` bash
+```bash
 mkdir templates
 ```
 
 Then, using your editor, create a new file named `etcd.conf.yaml.j2` within the directory:
 
-``` bash
+```bash
 nano templates/etcd.conf.yaml.j2
 ```
 
 Next, copy the following line and paste it into the file:
 
-``` bash
+```bash
 data-dir: /var/lib/etcd/{{ inventory_hostname }}.etcd
 ```
 
@@ -3025,7 +3024,7 @@ This file uses the same Jinja2 variable substitution syntax as our playbook. To 
 
 Exit from `etcd.conf.yaml.j2`, then open up your playbook:
 
-``` bash
+```bash
 nano $HOME/playground/etcd-ansible/playbook.yaml
 ```
 
@@ -3055,14 +3054,14 @@ Because we’ve made this change, we need to update our service’s unit file to
 
 Open the etcd service file on your local machine:
 
-``` bash
+```bash
 nano files/etcd.service
 ```
 
 Update the files/etcd.service file by adding the `--config-file` flag highlighted in the following:
 
 
-``` bash
+```bash
 [Unit]
 Description=etcd distributed reliable key-value store
 
@@ -3082,7 +3081,7 @@ Whenever we make changes to the unit file of a service, we need to restart the s
 
 To run commands, we can use the [`command` module](https://docs.ansible.com/ansible/latest/modules/command_module.html):
 
-``` bash
+```bash
 nano $HOME/playground/etcd-ansible/playbook.yaml
 ```
 
@@ -3099,19 +3098,19 @@ Save and close the file.
 
 Run `ansible-playbook -i hosts playbook.yaml` once more:
 
-``` bash
+```bash
 ansible-playbook -i hosts playbook.yaml
 ```
 
 To check that the `etcd` service is now restarted and enabled, SSH into one of the managed nodes:
 
-``` bash
+```bash
 ssh root@etcd1_public_ip
 ```
 
 Then, run `systemctl status etcd` to check the status of the `etcd` service:
 
-``` bash
+```bash
 systemctl status etcd
 ```
 
@@ -3135,13 +3134,13 @@ First, create a new entry using the `put` subcommand.
 
 The `put` subcommand has the following syntax:
 
-``` bash
+```bash
 etcdctl put key value
 ```
 
 On **etcd1**, run the following command:
 
-``` bash
+```bash
 etcdctl put foo "bar"
 ```
 
@@ -3151,7 +3150,7 @@ You will then find `OK` printed in the output, which indicates the data persiste
 
 We can then retrieve this entry using the get subcommand, which has the syntax `etcdctl get` key:
 
-``` bash
+```bash
 etcdctl get foo
 ```
 
@@ -3159,7 +3158,7 @@ You will find this output, which shows the key on the first line and the value y
 
 We can delete the entry using the del subcommand, which has the syntax `etcdctl del` key:
 
-``` bash
+```bash
 etcdctl del foo
 ```
 
@@ -3167,7 +3166,7 @@ You will find the following output, which indicates the number of entries delete
 
 Now, let’s run the get subcommand once more in an attempt to retrieve a deleted key-value pair:
 
-``` bash
+```bash
 etcdctl get foo
 ```
 
@@ -3175,7 +3174,7 @@ You will not receive an output, which means etcdctl is unable to retrieve the ke
 
 Now that you’ve tested the basic operations of etcd and etcdctl, let’s exit out of our managed node and back to your local environment:
 
-``` bash
+```bash
 exit
 ```
 
@@ -3198,7 +3197,7 @@ If these conditions cannot be met, then you can use a dynamic discovery service.
 
 Since we know we want a 3-node etcd cluster, and all our servers have static IP addresses, we will use static discovery. To initiate our cluster using static discovery, we must add several parameters to our configuration file. Use an editor to open up the `templates/etcd.conf.yaml.j2` template file:
 
-``` bash
+```bash
 nano templates/etcd.conf.yaml.j2
 ```
 
@@ -3264,7 +3263,7 @@ The {% %} Jinja2 syntax defines the `for` loop structure that iterates through e
 
 **To form the new three-member cluster, you must first stop the etcd service and clear the data directory before launching the cluster. To do this, use an editor to open up the playbook.yaml file on your local machine**:
 
-``` bash
+```bash
 nano $HOME/playground/etcd-ansible/playbook.yaml
 ```
 
@@ -3313,19 +3312,19 @@ The `with_items` property defines a list of strings that this task will iterate 
 
 Close and save the `playbook.yaml` file by pressing `CTRL+X` followed by `Y`. Then, run `ansible-playbook` again. Ansible will now create a single, 3-member etcd cluster:
 
-``` bash
+```bash
 ansible-playbook -i hosts playbook.yaml
 ```
 
 You can check this by SSH-ing into any etcd member node:
 
-``` bash
+```bash
 ssh root@etcd1_public_ip
 ```
 
 Then run `etcdctl endpoint health --cluster`:
 
-``` bash
+```bash
 etcdctl endpoint health --cluster
 ```
 
@@ -3339,26 +3338,25 @@ http://etcd3_private_ip:2379 is healthy: successfully committed proposal: took =
 
 We have now successfully created a 3-node etcd cluster. We can confirm this by adding an entry to etcd on one member node, and retrieving it on another member node. On one of the member nodes, run `etcdctl put`:
 
-``` bash
+```bash
 etcdctl put foo "bar"
 ```
 
 Then, use a new terminal to SSH into a different member node:
 
-``` bash
+```bash
 ssh root@etcd2_public_ip
 ```
 
 Next, attempt to retrieve the same entry using the key:
 
-``` bash
+```bash
 etcdctl get foo
 ```
 
 You will be able to retrieve the entry, which proves that the cluster is working:
 
-```
-foo
+```foo
 bar
 ```
 
@@ -3404,7 +3402,7 @@ initial-cluster: VM-129-173-tencentos=http://9.134.129.173:2380,VM-84-53-tencent
 
 ## Example
 
-``` bash
+```bash
 #!/bin/bash
 
 # enable xtrace
@@ -3476,7 +3474,7 @@ etcd 提供了一个 HTTP/JSON API，可以使用 curl 命令或者其他 HTTP �
 * 可以使用 `jq` 工具来解析 JSON 响应并提取 value 字段，然后使用 `base64` 命令来解码这个字段。安装 jq 工具：`yum -y install jq`
 
 
-``` bash
+```bash
 #!/bin/bash
 
 # enable xtrace
@@ -3514,7 +3512,7 @@ echo -e "\n"
 
 输出：
 
-``` json
+```json
 Writing data to etcd...
 {"header":{"cluster_id":"12297797944536498889","member_id":"17894252403103677144","revision":"29","raft_term":"5"}}
 
@@ -3572,7 +3570,7 @@ etcdctl member list --endpoints http://ip:port --user root:comeon -w json | jq
 
 ### 只查看 key 和 value
 
-``` bash
+```bash
 $ etcdctl get /ns/counter/agent --prefix --endpoints http://ip:port --user root:comeon
 /ns/counter/agent
 1450
@@ -3584,7 +3582,7 @@ $ etcdctl get /ns/counter/agent --prefix --endpoints http://ip:port --user root:
 通过 `-w fields` 或 `-w json` 查看 key 的详细元数据。
 
 
-``` bash
+```bash
 $ etcdctl get /ns/counter/agent --prefix --endpoints http://ip:port --user root:comeon -w fields
 "ClusterID" : 3446818099286441330
 "MemberID" : 954628371628346732
@@ -3607,7 +3605,7 @@ $ etcdctl get /ns/counter/agent --prefix --endpoints http://ip:port --user root:
 
 通过 `-w json` 也可以查看：
 
-``` bash
+```bash
 $ etcdctl get /ns/counter/agent --prefix --endpoints http://ip:port --user root:comeon -w json | jq
 {
   "header": {
@@ -3632,7 +3630,7 @@ $ etcdctl get /ns/counter/agent --prefix --endpoints http://ip:port --user root:
 
 若知道 key 修改时的全局 revision，可查询指定 revision 的数据：
 
-``` bash
+```bash
 $ etcdctl get /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib --rev=242999
 /namesvr/counter/agent
 1
@@ -3660,7 +3658,7 @@ $ etcdctl get /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 
 
 * **通过删除命令直接获取**。使用 `etcdctl del` 时添加 `-w fields` 参数。这里的关键字段 `revision` 就是**删除操作发生时的新全局版本号**。
 
-``` bash
+```bash
 $ etcdctl del /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib -w fields
 "ClusterID" : 12297797944536498889
 "MemberID" : 17894252403103677144
@@ -3673,7 +3671,7 @@ $ etcdctl del /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 
 
 虽然被删除的 key 不可直接访问，但可通过特定修订版本查询其"墓碑"：查询指定 `revision` 的数据（删除操作发生的 `revision`）
 
-``` bash
+```bash
 $ etcdctl get /namesvr/counter/agent --prefix --endpoints http://127.0.0.1:2379 --user root:jlib --rev=242999
 /namesvr/counter/agent
 1
@@ -3710,7 +3708,7 @@ version = 1（重新计数）
 
 首先插入两条记录：
 
-``` bash
+```bash
 $ etcdctl put hello world1 --endpoints http://127.0.0.1:2379 --user root:jlib
 OK
 $ etcdctl put hello world2 --endpoints http://127.0.0.1:2379 --user root:jlib
@@ -3719,13 +3717,13 @@ OK
 
 然后执行 watch 命令，空集群启动后的版本号为 1
 
-``` bash
+```bash
 $ etcdctl watch hello --endpoints http://127.0.0.1:2379 --user root:jlib --rev=1 -w json
 ```
 
 输出：两个事件记录分别对应上面的两次的修改，事件中含有 key、value、各类版本号等信息。
 
-``` json
+```json
 {
 	"Header": {
 		"cluster_id": 12297797944536498889,
@@ -3766,7 +3764,7 @@ $ etcdctl watch hello --endpoints http://127.0.0.1:2379 --user root:jlib --rev=1
 
 # etcd 运维脚本
 
-``` bash
+```bash
 #!/bin/bash
 
 # 设置默认值
@@ -3979,7 +3977,7 @@ main "$@"
 
 > 方案1：basic 认证 (基于角色的访问控制)
 
-``` bash
+```bash
 # 首先创建 root 用户
 etcdctl --endpoints=ip:port user add root
 
@@ -3991,7 +3989,7 @@ etcdctl --endpoints=ip:port auth enable
 
 将下面两个参数改成只监听本地的 127.0.0.1 地址。
 
-``` bash
+```bash
 LISTEN_CLIENT_URLS=${LISTEN_CLIENT_URLS:-http://0.0.0.0:2379}
 ADVERTISE_CLIENT_URLS=${ADVERTISE_CLIENT_URLS:-http://0.0.0.0:2379}
 ```
@@ -4012,7 +4010,7 @@ etcd 服务同时在同一个端口上运行了 HTTP 和 gRPC 服务。在生产
 
 查看所有以 `ansible_eth` 开头的网络接口信息：
 
-``` bash
+```bash
 $ ansible server2 -m setup -a 'filter=ansible_eth*' -i hosts
 ```
 
@@ -4412,7 +4410,7 @@ The naming of metrics follows the suggested [Prometheus best practices](https://
 
 在启动 etcd 时，可以通过命令行参数来设置监控端点的监听地址。以下是一个配置示例：应用程序通过 **2379** 端口连接 etcd，而监控系统（如 Prometheus）则通过 **2381** 端口来抓取指标数据。
 
-``` bash
+```bash
 etcd \
   --name=my-etcd \
   --listen-client-urls=http://0.0.0.0:2379 \

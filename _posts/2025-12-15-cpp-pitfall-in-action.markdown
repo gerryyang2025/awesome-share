@@ -124,7 +124,7 @@ std::cout << *p2;  // 可能输出错误的值，或崩溃
 
 ## 实际测试示例
 
-``` cpp
+```cpp
 // test_double_delete.cpp
 //
 // 编译: g++ -o test_double_delete test_double_delete.cpp

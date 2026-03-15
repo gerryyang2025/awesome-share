@@ -14,7 +14,7 @@ tags:
 
 # Mac OS X 环境安装 Python 3
 
-``` bash
+```bash
 brew install python
 ```
 
@@ -23,7 +23,7 @@ https://pythonguidecn.readthedocs.io/zh/latest/starting/install3/osx.html
 
 # Linux 环境安装 Python 3.8
 
-``` bash
+```bash
 #!/bin/bash
 
 # Download Python
@@ -88,7 +88,7 @@ $ which python
 
 安装 pip
 
-``` bash
+```bash
 python -m pip install --upgrade pip
 ```
 
@@ -96,7 +96,7 @@ python -m pip install --upgrade pip
 
 ## xxhash
 
-``` bash
+```bash
 /usr/local/bin/pip install xxhash
 
 # or
@@ -114,7 +114,7 @@ python3 -m pip install xxhash
 
 例如，如果我们想要在 Python 3 中运行脚本，可以在脚本文件的开头添加以下 shebang 行：
 
-``` python
+```python
 #!/usr/bin/env python3
 ```
 
@@ -122,7 +122,7 @@ python3 -m pip install xxhash
 
 如果我们想要在 Python 2 中运行脚本，可以使用以下 shebang 行：
 
-``` python
+```python
 #!/usr/bin/env python2
 ```
 
@@ -146,7 +146,7 @@ python3 -m pip install xxhash
 2. 编译为字节码：将 `.py` 编译为 `.pyc`（如果语法正确）
 3. 快速验证：不执行代码，只检查语法
 
-``` bash
+```bash
 # 语法正确的文件 - 无输出，静默成功
 $ python3 -m py_compile succ_file.py
 $ echo $?
@@ -167,7 +167,7 @@ SyntaxError: unexpected EOF while parsing
 `traceback.format_exc()` or `sys.exc_info()` will yield more info if that's what you want.
 
 
-``` python
+```python
 import traceback
 import sys
 
@@ -185,13 +185,13 @@ except Exception:
 
 Test for `str`:
 
-``` python
+```python
 isinstance(unicode_or_bytestring, str)
 ```
 
 or, if you must handle bytestrings, test for `bytes` separately:
 
-``` python
+```python
 isinstance(unicode_or_bytestring, bytes)
 ```
 
