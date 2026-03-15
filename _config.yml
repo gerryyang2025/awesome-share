@@ -124,7 +124,8 @@ compress_html:
   comments: all
   endings: all
   profile: false
-  blanklines: false
+  # true = only remove lines that are purely whitespace; preserves newlines in <pre>/code blocks
+  blanklines: true
   ignore:
     envs: [development]
 
