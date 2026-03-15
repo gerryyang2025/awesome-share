@@ -732,3 +732,4 @@ https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md
 * https://github.com/anthropics/claude-code
 * https://docs.anthropic.com/en/docs/claude-code/overview
 * https://platform.claude.com/cookbooks
+* [How I Use Claude Code](https://boristane.com/blog/how-i-use-claude-code/) (Feb 10, 2026)
