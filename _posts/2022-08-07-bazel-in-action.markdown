@@ -790,7 +790,8 @@ Now you are familiar with some key terms, and what they mean in the context of t
 
 It’s time to build the first part of the project. For a visual reference, the structure of the Stage 1 section of the project is:
 
-{% highlight examples %}
+{% highlight text %}
+examples
 └── cpp-tutorial
     └──stage1
        ├── main
@@ -2969,9 +2970,10 @@ For simple projects, Clang tools also recognize a **compile_flags.txt** file. Th
 Example:
 
 {% highlight text %}
+-xc++
 -I
 libwidget/include/
-{% highlight text %}
+{% endhighlight %}
 
 Here `-I libwidget/include` is two arguments, and so becomes two lines. Paths are relative to the directory containing **compile_flags.txt**.
 
@@ -3931,4 +3933,3 @@ https://github.com/vincent-picaud/Bazel_with_Data
 
 
 
-{% endhighlight %}
