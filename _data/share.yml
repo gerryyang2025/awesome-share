@@ -18,7 +18,7 @@ platforms:
     icon: "fab fa-weibo"
     link: "https://service.weibo.com/share/share.php?title=TITLE&url=URL"
 
-  - type: 微信
+  - type: WeChat
     icon: "fab fa-weixin"
     # 打开当前文章链接的二维码，扫码或保存图片后在微信中分享
     link: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=URL"
@@ -26,3 +26,7 @@ platforms:
   - type: LinkedIn
     icon: "fab fa-linkedin"
     link: "https://www.linkedin.com/sharing/share-offsite/?url=URL"
+
+  - type: Copy link
+    icon: "fas fa-link"
+    link: "#"
