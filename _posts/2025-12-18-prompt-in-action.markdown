@@ -42,16 +42,58 @@ https://clocks.brianmoore.com/
 
 # 英语学习小精灵 - 记住么
 
+[小学英语教材 - 上海教育出版社 或 沪教版](https://github.com/gerryyang2025/ChinaTextbook/tree/master/%E5%B0%8F%E5%AD%A6/%E8%8B%B1%E8%AF%AD/%E6%B2%AA%E6%95%99%E7%89%88)
+
+
+## 音频
+
+* 侧重讲解五年级下册教材中的重点单词，语法和核心句型。
+* 以五年级学生的口吻分析内容，解释如何运用到日常交流。
+
+
+
+## 单词
+
+请从英语五年级下册 pdf 中最后的单词列表中解析出 unit1 单元的单词，补充例句和记忆方法，并按照下面的格式输出。
+
+``` md
+# 英语五年级上册
+
+## Unit 1
+Title:My future Category:职业类
+
+* future /ˈfjuːtʃə/ 将来；未来
+  - 例句：I want to be a teacher in the future. (我将来想成为一名老师。)
+  - 记忆：future = fu + ture
+
+* want /wɒnt/ 想要
+  - 例句：I want an apple. (我想要一个苹果。)
+
+## Unit 2
+Title:What subjects do you like? Category:学科类
+
+* subject /ˈsʌbdʒekt/ 学科；主题
+  - 例句：What subject do you like? (你喜欢什么学科？)
+  - 记忆：sub + ject
+```
+
+
+
+
+## 课文
+
 请从 pdf 中解析 unit1 课文内容并生成对话文本，同时对每个对话添加中文翻译，并总结这个单元的重要句型和知识点。最后按照下面格式输出 ``` markdown xxx ``` 包裹的文本格式。
 
 ``` markdown
-# 题目：Friends (好朋友的共同点)
-# 场景：Kitty 正在介绍她的好朋友 Alice，并描述她们的性格、共同爱好以及经常一起做的事情。
-# 重点句型：
+## Unit 1
+
+* 题目：Friends (好朋友的共同点)
+* 场景：Kitty 正在介绍她的好朋友 Alice，并描述她们的性格、共同爱好以及经常一起做的事情。
+* 重点句型：
   - We both like sport. (我们两个都喜欢运动。)
   - We're in the same class. (我们在同一个班级。)
   - We sometimes help old people cross the street. (我们有时帮助老人穿过马路。)
-# 知识点：
+* 知识点：
   - 核心形容词：`clever` (聪明的), `same` (相同的), `different` (不同的), `heavy` (重的), `bored` (无聊的), `easy` (容易的)
   - 重点短语：`both` (两个都), `each other` (互相), `cross the street` (穿过马路), `carry heavy bags` (提重袋子), `make phone calls` (打电话)
   - 语音知识：掌握字母组合 `dr` (dress) 和 `pr` (princess) 的发音
@@ -63,6 +105,8 @@ Kitty: We both love animals. I have a cat and Alice has a dog. (吉蒂：我们�
 Kitty: We both like helping people. We sometimes help old people cross the street. We also help them carry heavy bags. (吉蒂：我们两个都喜欢帮助别人。我们有时帮助老人穿过马路。我们还帮他们提重袋子。)
 Kitty: We like each other. We're good friends. (吉蒂：我们喜欢彼此。我们是好朋友。)
 ```
+
+
 
 
 # 画图
