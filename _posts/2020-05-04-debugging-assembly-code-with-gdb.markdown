@@ -273,7 +273,8 @@ Num     Type           Disp Enb Address            What
 
 Disassembles a specified function or a function fragment.
 
-{% highlight disassemble %}
+{% highlight text %}
+disassemble
 disassemble [Function]
 disassemble [Address]
 disassemble [Start],[End]
@@ -281,7 +282,10 @@ disassemble [Function],+[Length]
 disassemble [Address],+[Length]
 disassemble /m [...]
 disassemble /r [...]
-{% highlight parameters %}
+{% endhighlight %}
+
+Parameters
+
 * Function
 
 Specifies the function to disassemble. If specified, the disassemble command will produce the disassembly output of the entire function.
@@ -313,9 +317,9 @@ https://visualgdb.com/gdbreference/commands/disassemble
 
 对于比较大的二进制文件，为了缩短gdb的加载时间可以对程序文件事先创建符号索引。
 
-{% endhighlight %}
-gdb-add-index filename
 {% highlight text %}
+gdb-add-index filename
+{% endhighlight %}
 
 https://man7.org/linux/man-pages/man1/gdb-add-index.1.html
 
@@ -334,16 +338,16 @@ To use gdb with high-level language programs, you should compile with the `-g` o
 
 
 
-{% endhighlight %}
-gcc -m64 -g -o foo fooDriver.c fooRoutine.s
 {% highlight text %}
+gcc -m64 -g -o foo fooDriver.c fooRoutine.s
+{% endhighlight %}
 
 
 To invoke the debugger on `foo`, type
 
-{% endhighlight %}
-gdb foo
 {% highlight text %}
+gdb foo
+{% endhighlight %}
 
 This loads program `foo` and brings up the gdb command line interpreter, which then waits for you to type commands. Program execution doesn’t begin until you say so.
 Here are some useful commands. Many can be **abbreviated**, as shown. Hitting return generally repeats the last command, sometimes advancing the current location.
@@ -472,32 +476,32 @@ TODO
 
 Executable programs sometimes do not record the directories of the source files from which they were compiled, just the names. Even when they do, the directories could be moved between the compilation and your debugging session. GDB has a list of directories to search for source files; this is called the **source path**. Each time GDB wants a source file, it tries all the directories in the list, in the order they are present in the list, until it finds a file with the desired name.
 
-{% endhighlight %}
-(gdb) directory /search/code/some
 {% highlight text %}
+(gdb) directory /search/code/some
+{% endhighlight %}
 
 使用 `directory` 或 `dir` 命令设置源文件的查找目录后，gdb 就可以正常地解析源代码了。如果希望在 gdb 启动时加载 code 的位置，避免每次在 gdb 中再次输入命令，可以使用 gdb 的 `-d` 参数。
 
-{% endhighlight %}
-gdb -q a.out -d /search/code/some
 {% highlight text %}
+gdb -q a.out -d /search/code/some
+{% endhighlight %}
 
 refer: [Specifying Source Directories](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Source-Path.html)
 
 
 ## 替换源文件查找路径
 
-{% endhighlight %}
-set substitute-path from to
 {% highlight text %}
+set substitute-path from to
+{% endhighlight %}
 
 Define a source path substitution rule, and add it at the end of the current list of existing substitution rules. If a rule with the same from was already defined, then the old rule is also deleted.
 
 For example, if the file `/foo/bar/baz.c` was moved to `/mnt/cross/baz.c`, then the command
 
-{% endhighlight %}
-(gdb) set substitute-path /foo/bar /mnt/cross
 {% highlight text %}
+(gdb) set substitute-path /foo/bar /mnt/cross
+{% endhighlight %}
 
 will tell GDB to replace `/foo/bar` with `/mnt/cross`, which will allow GDB to find the file baz.c even though it was moved.
 
@@ -505,10 +509,10 @@ In the case when more than one substitution rule have been defined, the rules ar
 
 For instance, if we had entered the following commands:
 
-{% endhighlight %}
+{% highlight text %}
 (gdb) set substitute-path /usr/src/include /mnt/include
 (gdb) set substitute-path /usr/src /mnt/src
-{% highlight text %}
+{% endhighlight %}
 
 GDB would then rewrite `/usr/src/include/defs.h` into `/mnt/include/defs.h` by using the first rule. However, it would use the second rule to rewrite `/usr/src/lib/foo.c` into `/mnt/src/lib/foo.c`.
 
@@ -1089,4 +1093,3 @@ Missing separate debuginfos, use: dnf debuginfo-install bash-4.4.20-1.tl3.2.x86_
 * [Introduction to GDB - Posted by adrian.ancona on February 9, 2018](https://ncona.com/2018/02/introduction-to-gdb/)
 * [Debugging assembly with GDB - Posted by adrian.ancona on December 11, 2019](https://ncona.com/2019/12/debugging-assembly-with-gdb/)
 * 以色列的 Haifa Linux club 有一次讲座讲 gdb，讲稿值得一看：http://haifux.org/lectures/210/gdb_-_customize_it.html
-{% endhighlight %}
