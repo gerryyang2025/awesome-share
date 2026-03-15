@@ -2,6 +2,8 @@ source "https://rubygems.org"
 
 gem "jekyll", "~> 4.3"
 gem "jekyll-theme-chirpy"
+# Required for Kramdown 2.x to parse GFM fenced code blocks (```lang) correctly
+gem "kramdown-parser-gfm"
 
 group :jekyll_plugins do
   gem "jekyll-feed", "~> 0.17"

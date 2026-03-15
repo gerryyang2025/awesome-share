@@ -93,6 +93,15 @@ tags: [prompt, LLM, tutorial]
 - **Tag page**: `/tags/prompt/` lists all posts with tag `prompt`.
 - **Multiple tags**: Use a list, e.g. `tags: [Go, Kubernetes, tutorial]`. Tags have been added to all posts via `tools/add_tags_to_posts.rb`; see **[tools/README.md](tools/README.md)** for usage and options.
 
+### Markdown code blocks (GFM)
+
+Posts use **GitHub Flavored Markdown** fenced code blocks so you can keep writing ` ```lang ` in Markdown without switching to Jekyll’s `{% highlight %}`. This is enabled by:
+
+- **Config**: `_config.yml` has `kramdown: input: GFM` and `syntax_highlighter: rouge`.
+- **Gem**: The `kramdown-parser-gfm` gem is in the Gemfile (required for Kramdown 2.x to parse fenced blocks and highlight with Rouge).
+
+Use **no space** between backticks and the language, e.g. ` ```bash ` or ` ```yaml ` (not ` ``` bash `). For YAML snippets that start with `---`, prefer adding a comment on the first line (e.g. `# .file.yaml`) so the block is unambiguous. Syntax highlighting styles come from `assets/css/rouge-highlight.css` (included via `_includes/metadata-hook.html`).
+
 ### Common deployment issue (Ruby too old)
 
 If your server is using Ruby 2.x (e.g. Ruby 2.5), `bundle install` / `./optools start` will fail for Chirpy/Jekyll 4.x. The `optools` script can attempt an automatic fix (rbenv + Ruby 3.2) on Ubuntu; otherwise upgrade Ruby manually, then run `bundle install`.
