@@ -1,0 +1,28 @@
+# Share options at the bottom of the post.
+# Placeholders TITLE and URL are replaced by Chirpy with the post title and absolute URL.
+
+platforms:
+  - type: Twitter
+    icon: "fa-brands fa-square-x-twitter"
+    link: "https://twitter.com/intent/tweet?text=TITLE&url=URL"
+
+  - type: Facebook
+    icon: "fab fa-facebook-square"
+    link: "https://www.facebook.com/sharer/sharer.php?u=URL"
+
+  - type: Telegram
+    icon: "fab fa-telegram"
+    link: "https://t.me/share/url?url=URL&text=TITLE"
+
+  - type: Weibo
+    icon: "fab fa-weibo"
+    link: "https://service.weibo.com/share/share.php?title=TITLE&url=URL"
+
+  - type: 微信
+    icon: "fab fa-weixin"
+    # 打开当前文章链接的二维码，扫码或保存图片后在微信中分享
+    link: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=URL"
+
+  - type: LinkedIn
+    icon: "fab fa-linkedin"
+    link: "https://www.linkedin.com/sharing/share-offsite/?url=URL"
