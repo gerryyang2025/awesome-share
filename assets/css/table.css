@@ -1,14 +1,20 @@
-/* Table: size adapts to content, content wraps when needed */
+/* Table: scroll contained in wrapper (page does not scroll horizontally) */
 
 .table-wrapper {
-  overflow-x: visible !important;
-  overflow-y: visible !important;
+  width: 100%;
   max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
   margin: 1em 0;
+  -webkit-overflow-scrolling: touch;
+  /* Hint that content is scrollable */
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px rgba(27, 31, 35, 0.08);
 }
 
 .table-wrapper > table {
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
   table-layout: auto;
   border-collapse: collapse;
   border-spacing: 0;
@@ -108,4 +114,76 @@
 [data-theme="dark"] .table-wrapper > table tbody tr:nth-child(even),
 .theme-dark .table-wrapper > table tbody tr:nth-child(even) {
   background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* ----- 窄屏卡片布局（可选：在表格后加 {: .table-cards } 启用）----- */
+@media (max-width: 960px) {
+  .table-wrapper:has(table.table-cards) {
+    overflow-x: visible;
+    box-shadow: none;
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards {
+    width: 100%;
+    display: block;
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards thead {
+    display: none;
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody tr {
+    display: block;
+    margin-bottom: 1.25rem;
+    padding: 0.75rem;
+    background: #f6f8fa;
+    border: 1px solid rgba(27, 31, 35, 0.12);
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td {
+    display: block;
+    padding: 0.4rem 0 0.5rem;
+    border: none;
+    border-bottom: 1px solid rgba(27, 31, 35, 0.08);
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td::before {
+    display: block;
+    font-weight: 600;
+    color: #57606a;
+    margin-bottom: 0.2rem;
+    font-size: 0.85em;
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(1)::before { content: "算法"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(2)::before { content: "核心机制"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(3)::before { content: "查询速度"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(4)::before { content: "内存占用"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(5)::before { content: "均衡性 (负载分布)"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(6)::before { content: "扩缩容影响 (扰动)"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(7)::before { content: "实现复杂度"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(8)::before { content: "最大缺点"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(9)::before { content: "最大优点"; }
+
+  [data-theme="dark"] .table-wrapper:has(table.table-cards) > table.table-cards tbody tr,
+  .theme-dark .table-wrapper:has(table.table-cards) > table.table-cards tbody tr {
+    background: #21262d;
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  [data-theme="dark"] .table-wrapper:has(table.table-cards) > table.table-cards tbody td,
+  .theme-dark .table-wrapper:has(table.table-cards) > table.table-cards tbody td {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .table-wrapper:has(table.table-cards) > table.table-cards tbody td::before,
+  .theme-dark .table-wrapper:has(table.table-cards) > table.table-cards tbody td::before {
+    color: #8b949e;
+  }
 }
