@@ -1,33 +1,43 @@
-/* Table: full-width, no horizontal scroll, content wraps (flat layout) */
+/* Table: size adapts to content, content wraps when needed */
 
 .table-wrapper {
   overflow-x: visible !important;
+  overflow-y: visible !important;
   max-width: 100%;
   margin: 1em 0;
 }
 
 .table-wrapper > table {
-  width: 100% !important;
-  table-layout: fixed;
+  width: 100%;
+  table-layout: auto;
   border-collapse: collapse;
+  border-spacing: 0;
   font-size: 0.9em;
 }
 
 .table-wrapper > table th,
 .table-wrapper > table td {
-  padding: 0.5rem 0.6rem;
+  padding: 0.6rem 0.75rem;
   border: 1px solid rgba(27, 31, 35, 0.12);
   white-space: normal;
   word-wrap: break-word;
   overflow-wrap: break-word;
   word-break: break-word;
   vertical-align: top;
+  line-height: 1.5;
+  overflow: visible;
+  box-sizing: border-box;
 }
 
 .table-wrapper > table thead th {
   background-color: #f6f8fa;
   font-weight: 600;
   color: #1f2328;
+}
+
+.table-wrapper > table tbody tr,
+.table-wrapper > table thead tr {
+  height: auto;
 }
 
 .table-wrapper > table tbody tr:nth-child(even) {
@@ -38,12 +48,28 @@
   background-color: rgba(27, 31, 35, 0.05);
 }
 
+/* Prevent content in cells from overlapping */
+.table-wrapper > table th p,
+.table-wrapper > table td p {
+  margin: 0.35em 0;
+}
+
+.table-wrapper > table th p:first-child,
+.table-wrapper > table td p:first-child {
+  margin-top: 0;
+}
+
+.table-wrapper > table th p:last-child,
+.table-wrapper > table td p:last-child {
+  margin-bottom: 0;
+}
+
 /* Fallback when table is not inside .table-wrapper (e.g. theme version) */
 .content table,
 #post-content table,
 .post-content table {
-  width: 100% !important;
-  table-layout: fixed;
+  width: 100%;
+  table-layout: auto;
   font-size: 0.9em;
 }
 
@@ -53,13 +79,16 @@
 #post-content table td,
 .post-content table th,
 .post-content table td {
-  padding: 0.5rem 0.6rem;
+  padding: 0.6rem 0.75rem;
   border: 1px solid rgba(27, 31, 35, 0.12);
   white-space: normal;
   word-wrap: break-word;
   overflow-wrap: break-word;
   word-break: break-word;
   vertical-align: top;
+  line-height: 1.5;
+  overflow: visible;
+  box-sizing: border-box;
 }
 
 /* Dark mode */
