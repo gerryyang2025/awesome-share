@@ -1,0 +1,82 @@
+/* Table: full-width, no horizontal scroll, content wraps (flat layout) */
+
+.table-wrapper {
+  overflow-x: visible !important;
+  max-width: 100%;
+  margin: 1em 0;
+}
+
+.table-wrapper > table {
+  width: 100% !important;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.table-wrapper > table th,
+.table-wrapper > table td {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid rgba(27, 31, 35, 0.12);
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  vertical-align: top;
+}
+
+.table-wrapper > table thead th {
+  background-color: #f6f8fa;
+  font-weight: 600;
+  color: #1f2328;
+}
+
+.table-wrapper > table tbody tr:nth-child(even) {
+  background-color: rgba(27, 31, 35, 0.03);
+}
+
+.table-wrapper > table tbody tr:hover {
+  background-color: rgba(27, 31, 35, 0.05);
+}
+
+/* Fallback when table is not inside .table-wrapper (e.g. theme version) */
+.content table,
+#post-content table,
+.post-content table {
+  width: 100% !important;
+  table-layout: fixed;
+  font-size: 0.9em;
+}
+
+.content table th,
+.content table td,
+#post-content table th,
+#post-content table td,
+.post-content table th,
+.post-content table td {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid rgba(27, 31, 35, 0.12);
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  vertical-align: top;
+}
+
+/* Dark mode */
+[data-theme="dark"] .table-wrapper > table th,
+.theme-dark .table-wrapper > table th {
+  background-color: #21262d;
+  color: #e6edf3;
+}
+
+[data-theme="dark"] .table-wrapper > table th,
+[data-theme="dark"] .table-wrapper > table td,
+.theme-dark .table-wrapper > table th,
+.theme-dark .table-wrapper > table td {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .table-wrapper > table tbody tr:nth-child(even),
+.theme-dark .table-wrapper > table tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.03);
+}
