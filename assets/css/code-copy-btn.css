@@ -1,23 +1,52 @@
-/* Code block copy button - Chirpy / Rouge highlight blocks */
+/* Code block - mainstream style (GitHub/GitLab-like) + copy button */
+
+/* Container: background, border, radius, padding */
 .highlight {
   position: relative;
+  margin: 1em 0;
+  padding: 1rem;
+  background-color: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
+.highlight pre {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.highlight pre code {
+  display: block;
+  padding: 0;
+  font-size: 0.875em;
+  line-height: 1.45;
+}
+
+/* Line number gutter area - subtle background (Rouge: .gutter or .rouge-gutter) */
+.highlight .gutter,
+.highlight .rouge-gutter {
+  background-color: rgba(27, 31, 35, 0.05);
+  padding-right: 0.75rem;
+}
+
+/* Copy button */
 .highlight .code-copy-btn {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
   z-index: 1;
-  padding: 0.25rem 0.5rem;
+  padding: 0.2rem 0.5rem;
   font-size: 0.75rem;
-  line-height: 1.2;
-  color: var(--highlight-color, #6c757d);
-  background: var(--highlight-bg, rgba(255, 255, 255, 0.9));
-  border: 1px solid var(--highlight-border, rgba(0, 0, 0, 0.08));
+  line-height: 1.3;
+  color: #57606a;
+  background: #fff;
+  border: 1px solid #d0d7de;
   border-radius: 4px;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease;
+  transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
 .highlight:hover .code-copy-btn {
@@ -25,8 +54,9 @@
 }
 
 .highlight .code-copy-btn:hover {
-  color: var(--link-color, #0d6efd);
-  background: var(--highlight-btn-hover-bg, rgba(13, 110, 253, 0.08));
+  color: #0969da;
+  background: #f6f8fa;
+  border-color: #0969da;
 }
 
 .highlight .code-copy-btn:active,
@@ -36,24 +66,40 @@
 }
 
 .highlight .code-copy-btn.copied {
-  color: var(--success-color, #198754);
+  color: #1a7f37;
+  border-color: #1a7f37;
 }
 
-/* Dark mode (Chirpy theme_mode) */
+/* ----- Dark mode (Chirpy theme_mode / GitHub dark style) ----- */
+[data-theme="dark"] .highlight,
+.theme-dark .highlight {
+  background-color: #161b22;
+  border-color: #30363d;
+}
+
+[data-theme="dark"] .highlight .gutter,
+[data-theme="dark"] .highlight .rouge-gutter,
+.theme-dark .highlight .gutter,
+.theme-dark .highlight .rouge-gutter {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
 [data-theme="dark"] .highlight .code-copy-btn,
 .theme-dark .highlight .code-copy-btn {
-  color: #adb5bd;
-  background: rgba(33, 37, 41, 0.9);
-  border-color: rgba(255, 255, 255, 0.1);
+  color: #8b949e;
+  background: #21262d;
+  border-color: #30363d;
 }
 
 [data-theme="dark"] .highlight .code-copy-btn:hover,
 .theme-dark .highlight .code-copy-btn:hover {
-  color: #6ea8fe;
-  background: rgba(13, 110, 253, 0.2);
+  color: #58a6ff;
+  background: #21262d;
+  border-color: #58a6ff;
 }
 
 [data-theme="dark"] .highlight .code-copy-btn.copied,
 .theme-dark .highlight .code-copy-btn.copied {
-  color: #75b798;
+  color: #3fb950;
+  border-color: #3fb950;
 }
