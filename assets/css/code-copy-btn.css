@@ -1,12 +1,12 @@
 /* Code block - mainstream style (GitHub/GitLab-like) + copy button */
 
-/* Container: background, border, radius, padding */
+/* Container: light gray background with clear contrast, border, radius, padding */
 .highlight {
   position: relative;
   margin: 1em 0;
   padding: 1rem;
-  background-color: #f6f8fa;
-  border: 1px solid #d0d7de;
+  background-color: #e8ecf0;
+  border: 1px solid #cfd4d9;
   border-radius: 6px;
   overflow: hidden;
 }
@@ -24,10 +24,10 @@
   line-height: 1.45;
 }
 
-/* Line number gutter area - subtle background (Rouge: .gutter or .rouge-gutter) */
+/* Line number gutter area - slightly darker for hierarchy (Rouge: .gutter or .rouge-gutter) */
 .highlight .gutter,
 .highlight .rouge-gutter {
-  background-color: rgba(27, 31, 35, 0.05);
+  background-color: rgba(0, 0, 0, 0.06);
   padding-right: 0.75rem;
 }
 
@@ -55,7 +55,7 @@
 
 .highlight .code-copy-btn:hover {
   color: #0969da;
-  background: #f6f8fa;
+  background: #e0e4e8;
   border-color: #0969da;
 }
 
