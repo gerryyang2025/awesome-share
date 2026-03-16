@@ -370,6 +370,53 @@ int32_t JumpConsistentHash(uint64_t key, int32_t num_buckets) {
 > **最大缺点**：节点必须为连续的整数编号，无法支持任意命名的节点（如 IP 地址），也无法为不同节点设置权重，灵活性严重受限。
 
 
+## MementoHash (针对 JumpHash 的优化算法)
+
+MementoHash 本质上就是 “拥有记忆的 JumpHash”。它解决了 JumpHash 在实际分布式系统中最大的痛点——无法应对中间节点随意故障或替换的问题，而付出的代价仅仅是极小的内存开销和在极端故障场景下轻微的性能妥协。
+
+[MementoHash: A Stateful, Minimal Memory, Best Performing Consistent Hash Algorithm](https://arxiv.org/abs/2306.09783)
+
+Consistent hashing is used in distributed systems and networking applications to spread data evenly and efficiently across a cluster of nodes. In this paper, we present MementoHash, a novel consistent hashing algorithm that eliminates known limitations of state-of-the-art algorithms while keeping optimal performance and minimal memory usage. **We describe the algorithm in detail, provide a pseudo-code implementation, and formally establish its solid theoretical guarantees. To measure the efficacy of MementoHash, we compare its performance, in terms of memory usage and lookup time, to that of state-of-the-art algorithms, namely, AnchorHash, DxHash, and JumpHash. Unlike JumpHash, MementoHash can handle random failures. Moreover, MementoHash does not require fixing the overall capacity of the cluster (as AnchorHash and DxHash do), allowing it to scale indefinitely.** The number of removed nodes affects the performance of all the considered algorithms. Therefore, we conduct experiments considering three different scenarios: stable (no removed nodes), one-shot removals (90% of the nodes removed at once), and incremental removals. We report experimental results that averaged a varying number of nodes from ten to one million. Results indicate that our algorithm shows optimal lookup performance and minimal memory usage in its best-case scenario. It behaves better than AnchorHash and DxHash in its average-case scenario and at least as well as those two algorithms in its worst-case scenario. However, the worst-case scenario for MementoHash occurs when more than 70% of the nodes fail, which describes a unlikely scenario. Therefore, MementoHash shows the best performance during the regular life cycle of a cluster.
+
+* 论文 (pdf)：https://arxiv.org/pdf/2306.09783
+* 实现参考：https://github.com/planecrazyf16/loadbalance-go/blob/edf536a7907c4accde63c3143946295026861093/consistenthash/mementohash.go
+
+
+* 核心机制：基于有状态的替换表 + 跳跃。结合了Jump Consistent Hash的核心逻辑，但增加了一个轻量级数据结构（替换表），仅用于记录已失效的节点。查询时通过跳跃定位到一个虚拟桶，若该桶已失效，则通过替换表查找其当前有效的替代桶。
+* 查询速度：极快 (接近 O(1))。在最佳和平均情况下，查找速度非常接近无状态的Jump Consistent Hash，因为它主要在寄存器内计算，仅在遇到失效节点时才需访问内存中的替换表。
+* 内存占用：极小。内存占用远小于AnchorHash和DxHash，因为它只需要维护一个包含已移除节点的替换表，而不是记录所有节点的状态。
+* 均衡性 (负载分布)：优秀。理论保证和实验结果表明其具有良好的负载均衡能力。
+* 扩缩容影响 (扰动)：优秀。继承了Jump Consistent Hash的低扰动特性，节点增减时仅影响约 1/n 的数据。同时，通过替换表机制，能够处理任意节点的随机故障，解决了JumpHash只能移除最后一个节点的限制。
+* 实现复杂度：中等。核心思想是向JumpHash添加一个最小的“记忆”层，设计精巧，但理解和实现替换表的维护逻辑需要一定成本。
+* **最大优点**：融合JumpHash性能与处理随机故障的能力。它既保留了JumpHash近乎完美的计算效率（速度极快、内存为零），又克服了其无法处理随机节点故障的致命缺陷，同时不像AnchorHash等算法那样需要预先固定集群的最大容量，支持无限扩展。
+* **最大缺点**：极端场景下性能衰减。其最坏情况发生在集群中超过70%的节点同时故障时，此时替换表查询频繁，导致查找性能下降。但在常规集群生命周期中，这种情况极为罕见。
+
+MementoHash 与 Jump Consistent Hash（JumpHash）**最大的区别在于：能否处理任意节点的随机故障（或移除），同时保持内存占用的极小化**。
+
+**对节点故障的容忍度（核心区别）**
+
+* **JumpHash**：
+ + **只能按顺序移除最后一个节点**。它的数学公式假设桶（节点）的编号是连续的 0, 1, 2, ..., n-1。如果你需要移除编号为 2 的节点（而 3、4、5 还存在），JumpHash **无法直接支持**。强行使用会导致大量的键映射错乱，因为它不具备“跳过”某个中间节点的机制。
+ + **本质：无状态，顺序依赖**。
+
+* **MementoHash**：
+  + **支持任意节点的随机移除**。它通过在 JumpHash 的基础上增加一个极小的、**仅记录“已删除”节点的替换表**，实现了对任意节点故障的处理。
+  + 当一个节点被移除时，它会被记录在替换表中。查询时，如果 JumpHash 计算出的目标节点在替换表中（即已失效），算法会通过替换表快速跳转到当前有效的替代节点。
+  + **本质：有状态（但状态极小），随机适应**。
+
+**内存占用的逻辑**
+
+* **JumpHash**：**零内存**。完全靠计算，不存储任何数据。
+
+* **MementoHash**：**极小内存**。虽然引入了状态，但它**不记录所有节点的状态，只记录“已失效”的节点**。在常规运行中，失效节点通常是少数，因此内存开销远小于其他支持随机移除的算法（如 AnchorHash）。
+
+**扩缩容的灵活性**
+
+* **JumpHash**：只能进行“整体扩容”或“尾部缩容”。如果要替换中间的一个节点，通常需要重建整个集群。
+
+* **MementoHash**：支持节点的完全自由增删。你可以随时移除中间的任何节点，也可以随时添加新节点，算法都能保证映射的稳定性和数据的 minimal disruption（最小干扰）。
+
+
 
 ## Maglev hash
 
@@ -386,8 +433,6 @@ Maglev hash 是 Google 于 2016 年发表的一篇[论文](https://static.google
 
 > **最大优点**：查询速度达到极致（`O(1)`），仅需一次内存访问即可定位目标节点，非常适合需要每秒处理数百万个数据包的网络负载均衡器（如 Google 的 Maglev 系统）。
 > **最大缺点**：节点变更时引发全局重映射，所有数据都可能需要迁移，对于缓存类系统极易导致缓存雪崩，因此仅适合低频变更或可接受短暂流量冲击的场景。
-
-
 
 
 ## [MurmurHash](https://en.wikipedia.org/wiki/MurmurHash)
@@ -425,13 +470,6 @@ MurmurHash 本身不是一致性哈希算法，而是一个通用的非加密哈
 
 
 
-## [MementoHash: A Stateful, Minimal Memory, Best Performing Consistent Hash Algorithm](https://arxiv.org/abs/2306.09783)
-
-Consistent hashing is used in distributed systems and networking applications to spread data evenly and efficiently across a cluster of nodes. In this paper, we present MementoHash, a novel consistent hashing algorithm that eliminates known limitations of state-of-the-art algorithms while keeping optimal performance and minimal memory usage. **We describe the algorithm in detail, provide a pseudo-code implementation, and formally establish its solid theoretical guarantees. To measure the efficacy of MementoHash, we compare its performance, in terms of memory usage and lookup time, to that of state-of-the-art algorithms, namely, AnchorHash, DxHash, and JumpHash. Unlike JumpHash, MementoHash can handle random failures. Moreover, MementoHash does not require fixing the overall capacity of the cluster (as AnchorHash and DxHash do), allowing it to scale indefinitely.** The number of removed nodes affects the performance of all the considered algorithms. Therefore, we conduct experiments considering three different scenarios: stable (no removed nodes), one-shot removals (90% of the nodes removed at once), and incremental removals. We report experimental results that averaged a varying number of nodes from ten to one million. Results indicate that our algorithm shows optimal lookup performance and minimal memory usage in its best-case scenario. It behaves better than AnchorHash and DxHash in its average-case scenario and at least as well as those two algorithms in its worst-case scenario. However, the worst-case scenario for MementoHash occurs when more than 70% of the nodes fail, which describes a unlikely scenario. Therefore, MementoHash shows the best performance during the regular life cycle of a cluster.
-
-* 论文 (pdf)：https://arxiv.org/pdf/2306.09783
-* 实现参考：https://github.com/planecrazyf16/loadbalance-go/blob/edf536a7907c4accde63c3143946295026861093/consistenthash/mementohash.go
-
 
 
 
@@ -444,6 +482,7 @@ Consistent hashing is used in distributed systems and networking applications to
 | Maglev | 基于查找表 + 顺序填充。预先为每个后端节点生成一个“偏好位置”列表，然后通过一个全局的、确定性的填充过程，将每个节点分配到固定大小的查找表的某个条目上。 | 极快（`O(1)`）。直接通过哈希值在预计算的查找表中索引，一步到位，非常适合性能敏感场景。 | 可控。内存占用主要由查找表大小（如 65537 个条目）决定，与后端节点数量关系不大，更易预测。 | 良好。在节点数量变化时，填充过程可能导致一些节点的条目数略有差异，出现轻微的分配不均，但通常可接受。 | 较差。节点变化需要完全重建查找表，导致几乎全部数据的映射关系都可能发生变化。 | 较高。查找表的构建逻辑相对复杂，需要仔细处理以保证最终结果的确定性。 | 节点变更时引发全局重映射，所有数据都可能需要迁移，对于缓存类系统极易导致缓存雪崩，因此仅适合低频变更或可接受短暂流量冲击的场景。 | 查询速度达到极致（O(1)），仅需一次内存访问即可定位目标节点，非常适合需要每秒处理数百万个数据包的网络负载均衡器（如Google的Maglev系统）。 |
 | Rendezvous Hashing | 基于最高随机权重。对于给定的Key，分别计算它与每个后端节点的组合哈希值（如 `hash(key, node)`），选择产生最大哈希值的节点作为目标节点。 | 慢（`O(n)`）。需要遍历所有节点并计算权重，节点数量较多时性能成为瓶颈。 | 极低。无需存储任何额外数据结构，完全依靠实时计算。 | 优秀。理论上基于概率分布，只要哈希函数质量好，数据分布非常均匀。 | 优秀。节点变化仅影响那些最大权重值恰好落在变化节点上的Key，数据迁移量最小化。 | 低。算法逻辑简单直观，易于实现，无需复杂的数据结构维护。 | 查询时间复杂度与节点数线性相关，当集群规模超过几百个节点时，每次请求的计算开销急剧增大，难以支撑高并发场景。 | 无需任何数据结构，内存占用为零，且节点变动时数据迁移量达到理论最小值（仅影响落在变化节点上的Key），实现极其简单，非常适合节点数量有限且对内存敏感的场景。 |
 | Jump Consistent Hash | 基于随机跳跃。通过一个随机数生成器，让Key从一个虚拟位置开始“跳跃”，每次跳跃都有可能落入当前桶，直到它跳出桶的范围，最终落脚的桶即为目标桶。桶必须按连续整数编号（0, 1, 2, ..., n-1）。 | 快（`O(ln n)`）。循环次数少，且完全在寄存器内计算，效率极高。 | 零。无需内存存储任何数据结构，仅有几行代码。 | 极佳。论文证明其方差极小，近乎完美的均匀分布。 | 优秀。采用“跳跃”机制，节点增减时只影响约 1/n 的数据重新映射。 | 低。核心代码仅约5行，实现非常简洁，但需要理解其随机跳跃的数学原理。 | 节点必须为连续的整数编号，无法支持任意命名的节点（如IP地址），也无法为不同节点设置权重，灵活性严重受限。 | 计算效率极高且内存零占用，同时具备理论上完美的均匀分布，是内部数据分片（如数据库分库分表）中节点编号连续场景下的最佳选择。 |
+| MementoHash | 基于有状态的替换表 + 跳跃。结合了Jump Consistent Hash的核心逻辑，但增加了一个轻量级数据结构（替换表），仅用于记录已失效的节点。查询时通过跳跃定位到一个虚拟桶，若该桶已失效，则通过替换表查找其当前有效的替代桶。 | 极快 (接近 O(1))。在最佳和平均情况下，查找速度非常接近无状态的Jump Consistent Hash，因为它主要在寄存器内计算，仅在遇到失效节点时才需访问内存中的替换表。 | 极小。内存占用远小于AnchorHash和DxHash，因为它只需要维护一个包含已移除节点的替换表，而不是记录所有节点的状态。 | 优秀。理论保证和实验结果表明其具有良好的负载均衡能力。 | 优秀。继承了Jump Consistent Hash的低扰动特性，节点增减时仅影响约 1/n 的数据。同时，通过替换表机制，能够处理任意节点的随机故障，解决了JumpHash只能移除最后一个节点的限制。 | 中等。核心思想是向JumpHash添加一个最小的“记忆”层，设计精巧，但理解和实现替换表的维护逻辑需要一定成本。 | 极端场景下性能衰减。其最坏情况发生在集群中超过70%的节点同时故障时，此时替换表查询频繁，导致查找性能下降。但在常规集群生命周期中，这种情况极为罕见。 | 融合JumpHash性能与处理随机故障的能力。它既保留了JumpHash近乎完美的计算效率（速度极快、内存为零），又克服了其无法处理随机节点故障的致命缺陷，同时不像AnchorHash等算法那样需要预先固定集群的最大容量，支持无限扩展。 |
 | MurmurHash | 非加密哈希函数。将任意长度的输入快速计算出一个均匀分布、随机性强的哈希值（如32位或128位整数）。它不是一致性哈希算法，但常作为其他一致性哈希算法的核心计算组件。 | 极快（`O(k)`，k为输入长度）。比SHA等加密哈希函数快数十倍，设计目标即追求高性能。 | 零。无状态的计算函数，不占用内存。 | 优秀。设计目标即为输出均匀分布，碰撞率低，能满足大多数哈希需求。 | 不适用。MurmurHash本身不提供映射稳定性，它只负责计算哈希值，不涉及节点映射逻辑。 | 低。有大量成熟的现成库可用，只需调用函数即可，无需自行实现。 | 作为非加密哈希，易受HashDoS攻击（恶意构造大量碰撞的输入），且单独使用时无法实现一致性哈希所需的单调性（节点变化时无法最小化重映射）。 | 作为非加密哈希，速度极快且分布均匀，碰撞率低，是Ketama、Rendezvous等一致性哈希算法理想的底层哈希函数，广泛应用于各类高性能哈希场景。 |
 
 
