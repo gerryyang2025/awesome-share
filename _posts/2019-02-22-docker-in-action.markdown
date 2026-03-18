@@ -280,7 +280,7 @@ An `ENTRYPOINT` allows you to configure a container that will run as an executab
 ENTRYPOINT ["executable", "param1", "param2"]
 {% endhighlight %}
 
-The shell form:
+* The shell form:
 
 {% highlight bash %}
 ENTRYPOINT command param1 param2
