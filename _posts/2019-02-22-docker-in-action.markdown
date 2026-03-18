@@ -15,34 +15,34 @@ tags:
 
 # 核心技术
 
-Docker底层是基于成熟的`Linux Container(LXC)`技术实现。自Docker 0.9版本起，Docker除了继续支持LXC之外，还开始引入自家的[runc]，试图打造更通用的底层容器虚拟化库。
+Docker 底层是基于成熟的 `Linux Container(LXC)` 技术实现。自 Docker 0.9 版本起，Docker 除了继续支持 LXC 之外，还开始引入自家的[runc]，试图打造更通用的底层容器虚拟化库。
 
 > runc is a CLI tool for spawning and running containers according to the OCI specification.
 
-从操作系统功能上看，Docker底层依赖的**核心技术**主要包括：
+从操作系统功能上看，Docker 底层依赖的**核心技术**主要包括：
 
-* Namespaces (Linux操作系统的命名空间)
+* Namespaces (Linux 操作系统的命名空间)
 * Control Groups (控制组)
-* Union File Systems (联合文件系统，目前支持的联合文件系统种类包括，AUFS, btrfs, vfs和DeviceMapper等)
-* Linux虚拟网络
+* Union File Systems (联合文件系统，目前支持的联合文件系统种类包括：AUFS，btrfs，vfs 和 DeviceMapper 等)
+* Linux 虚拟网络
 
 [runc]: https://github.com/opencontainers/runc
 
-# 开发流程对比
+# 一些思考
 
-* 在Docker应用中，项目架构师的作用贯穿整个开发，测试，生产三个环节。
-* 项目伊始，架构师根据项目预期创建好需要的基础Base镜像（比如，Nginx, Tomcat, MySQL等镜像），或者将Dockerfile分发给所有开发，所有开发根据Dockerfile创建的镜像来进行开发，达到开发环境充分一致。
-* 若开发过程中需要添加新的程序，需要向架构师申请修改基础的Base镜像的Dockerfile。
-* 开发完成后，将Dockerfile提交给测试，消除部署困难的问题。
-* 使用`-v`共享文件夹来存储开发的程序代码。
-* 利用好Base镜像的**继承特性**来调整镜像的轻微改动。即，只需要修改Base镜像，而不需要修改其他依赖的镜像。
-* 对Docker化程序和原生程序进行性能测试对比。
-* 如果Docker出现不可控的风险，是否有替代方案。
-* 是否需要对Docker容器做资源限制。
+* 在 Docker 应用中，项目架构师的作用贯穿整个开发，测试，生产三个环节。
+* 项目伊始，架构师根据项目预期创建好需要的基础 Base 镜像（比如，Nginx，Tomcat，MySQL 等镜像），或者将 Dockerfile 分发给所有开发，所有开发根据 Dockerfile 创建的镜像来进行开发，达到开发环境充分一致。
+* 若开发过程中需要添加新的程序，需要向架构师申请修改基础的 Base 镜像的 Dockerfile。
+* 开发完成后，将 Dockerfile 提交给测试，消除部署困难的问题。
+* 使用 `-v` 共享文件夹来存储开发的程序代码。
+* 利用好 Base 镜像的继承特性来调整镜像的轻微改动。即，只需要修改 Base 镜像，而不需要修改其他依赖的镜像。
+* 对 Docker 化程序和原生程序进行性能测试对比。
+* 如果 Docker 出现不可控的风险，是否有替代方案。
+* 是否需要对 Docker 容器做资源限制。
 * 容器安全管理。
 * 内部私有仓库的管理。
 * 建议一个容器内只运行一个应用进程。
-* Vagrant适合管理虚拟机，而Docker适合管理应用环境。Docker不是虚拟机，而是进程隔离，对于资源的消耗很少，但是目前需要Linux环境支持。Vagrant是虚拟机上做的封装，虚拟机本身会消耗资源。
+* Vagrant 适合管理虚拟机，而 Docker 适合管理应用环境。Docker 不是虚拟机，而是进程隔离，对于资源的消耗很少，但是目前需要 Linux 环境支持。Vagrant 是虚拟机上做的封装，虚拟机本身会消耗资源。
 
 
 ![docker_dev_flow](/assets/images/201902/docker_dev_flow.jpg)
@@ -90,7 +90,7 @@ docker exec -it $container_id bash
 * `docker kill <容器ID或名称>`：强制停止容器（发送 `SIGKILL` 信号）。
 * `docker rm`：删除已停止的容器。使用 `-f` 可强制删除运行中的容器。
 
-> **提示**：在执行这些命令时，通常可以使用容器的 名称 (Name) 或 ID（只需输入前几位能唯一标识即可）。
+> **提示**：在执行这些命令时，通常可以使用容器的名称或 ID（只需输入前几位能唯一标识即可）。
 
 
 ## 状态查看与监控
@@ -270,9 +270,23 @@ If you would like your container to run the same executable every time, then you
 
 ## [ENTRYPOINT](https://docs.docker.com/engine/reference/builder/#entrypoint)
 
+An `ENTRYPOINT` allows you to configure a container that will run as an executable.
 
+`ENTRYPOINT` has two possible forms:
 
+* The exec form, which is the preferred form:
 
+{% highlight bash %}
+ENTRYPOINT ["executable", "param1", "param2"]
+{% endhighlight %}
+
+The shell form:
+
+{% highlight bash %}
+ENTRYPOINT command param1 param2
+{% endhighlight %}
+
+For more information about the different forms, see [Shell and exec form](https://docs.docker.com/reference/dockerfile#shell-and-exec-form).
 
 # Q&A
 
