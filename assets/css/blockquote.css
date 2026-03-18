@@ -1,12 +1,11 @@
-/* Blockquote - prominent style for key info: left border + noticeable background */
+/* Blockquote - GitHub-like style (subtle, neutral) */
 
 blockquote {
-  margin: 1em 0;
-  padding: 0.75rem 1rem 0.75rem 1rem;
-  color: #1f2328;
-  background-color: #ddf4ff;
-  border-left: 4px solid #0969da;
-  border-radius: 0 4px 4px 0;
+  margin: 1rem 0;
+  padding: 0 1rem;
+  color: var(--md-fg-muted, #57606a);
+  background: transparent;
+  border-left: 0.25em solid var(--md-border-strong, rgba(27, 31, 35, 0.18));
 }
 
 blockquote p:first-child {
@@ -17,10 +16,10 @@ blockquote p:last-child {
   margin-bottom: 0;
 }
 
-/* Dark mode (Chirpy theme_mode) - still prominent */
+/* Dark mode */
 [data-theme="dark"] blockquote,
 .theme-dark blockquote {
-  color: #e6edf3;
-  background-color: #1c3d5c;
-  border-left-color: #58a6ff;
+  color: var(--md-fg-muted, #8b949e);
+  background: transparent;
+  border-left-color: var(--md-border-strong, rgba(255, 255, 255, 0.22));
 }

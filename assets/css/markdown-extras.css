@@ -1,0 +1,383 @@
+/* Markdown extras - GitHub-like polish for common elements not covered elsewhere */
+
+/*
+  Scope note:
+  Prefer scoping to common post containers first, with a global fallback.
+  Chirpy commonly uses .post-content / #post-content; some pages may use .content.
+*/
+
+:where(.post-content, #post-content, .content) {
+  --md-fg: #1f2328;
+  --md-fg-muted: #57606a;
+  --md-border: rgba(27, 31, 35, 0.12);
+  --md-border-strong: rgba(27, 31, 35, 0.18);
+  --md-canvas-subtle: #f6f8fa;
+  --md-canvas: #ffffff;
+  --md-link: #0969da;
+  --md-link-hover: #0550ae;
+  --md-inline-code-bg: rgba(175, 184, 193, 0.2);
+}
+
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content),
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) {
+  --md-fg: #e6edf3;
+  --md-fg-muted: #8b949e;
+  --md-border: rgba(255, 255, 255, 0.16);
+  --md-border-strong: rgba(255, 255, 255, 0.22);
+  --md-canvas-subtle: #161b22;
+  --md-canvas: #0d1117;
+  --md-link: #58a6ff;
+  --md-link-hover: #79c0ff;
+  --md-inline-code-bg: rgba(110, 118, 129, 0.4);
+}
+
+/* Baseline typography rhythm inside article containers */
+:where(.post-content, #post-content, .content) :where(p, ul, ol, dl, table, pre, blockquote, details, figure) {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+:where(.post-content, #post-content, .content) :where(p, li) {
+  line-height: 1.65;
+}
+
+/* Inline images in paragraphs: center by default (GitHub-like) */
+:where(.post-content, #post-content, .content) p > img:only-child {
+  display: block;
+  margin: 0.75rem auto;
+}
+
+/* Ensure <pre> keeps rounded corners consistent with code-copy container */
+:where(.post-content, #post-content, .content) pre {
+  border-radius: 6px;
+}
+
+/* Tables: add subtle outer border when not wrapped */
+:where(.post-content, #post-content, .content) table {
+  border-radius: 6px;
+}
+
+/* "Back to footnote" arrow alignment */
+:where(.post-content, #post-content, .content) .footnote-backref {
+  font-size: 0.9em;
+  margin-left: 0.25em;
+  color: var(--md-fg-muted);
+}
+
+:where(.post-content, #post-content, .content) .footnote-backref:hover {
+  color: var(--md-link-hover);
+}
+
+/* Selection color (subtle, readable) */
+:where(.post-content, #post-content, .content) ::selection {
+  background: rgba(9, 105, 218, 0.18);
+}
+
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) ::selection,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) ::selection {
+  background: rgba(88, 166, 255, 0.25);
+}
+
+/* Headings: spacing + subtle divider like GitHub */
+:where(.post-content, #post-content, .content) h1,
+:where(.post-content, #post-content, .content) h2,
+:where(.post-content, #post-content, .content) h3,
+:where(.post-content, #post-content, .content) h4,
+:where(.post-content, #post-content, .content) h5,
+:where(.post-content, #post-content, .content) h6 {
+  color: var(--md-fg);
+  scroll-margin-top: 5rem;
+}
+
+:where(.post-content, #post-content, .content) h2 {
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--md-border);
+}
+
+:where(.post-content, #post-content, .content) h1,
+:where(.post-content, #post-content, .content) h2 {
+  margin-top: 1.6em;
+  margin-bottom: 0.8em;
+}
+
+:where(.post-content, #post-content, .content) h3,
+:where(.post-content, #post-content, .content) h4,
+:where(.post-content, #post-content, .content) h5,
+:where(.post-content, #post-content, .content) h6 {
+  margin-top: 1.3em;
+  margin-bottom: 0.6em;
+}
+
+/* Links: consistent underline behavior */
+:where(.post-content, #post-content, .content) a {
+  color: var(--md-link);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+}
+
+:where(.post-content, #post-content, .content) a:hover {
+  color: var(--md-link-hover);
+  text-decoration: underline;
+}
+
+/* Paragraph/code mixed in blockquote: keep contrast */
+blockquote :where(code, kbd) {
+  background-color: var(--md-inline-code-bg);
+}
+
+/* Lists: GitHub-ish spacing and nested list stability */
+:where(.post-content, #post-content, .content) ul,
+:where(.post-content, #post-content, .content) ol {
+  padding-left: 1.5em;
+}
+
+:where(.post-content, #post-content, .content) li + li {
+  margin-top: 0.25em;
+}
+
+:where(.post-content, #post-content, .content) li > p {
+  margin: 0.35em 0;
+}
+
+:where(.post-content, #post-content, .content) li > :where(ul, ol) {
+  margin-top: 0.35em;
+  margin-bottom: 0.35em;
+}
+
+/* Definition lists (dl/dt/dd) */
+:where(.post-content, #post-content, .content) dl {
+  padding: 0;
+}
+
+:where(.post-content, #post-content, .content) dt {
+  padding: 0;
+  margin-top: 1em;
+  font-weight: 600;
+}
+
+:where(.post-content, #post-content, .content) dd {
+  padding: 0 0 0 1em;
+  margin: 0.3em 0 0.9em;
+  color: var(--md-fg);
+  border-left: 2px solid var(--md-border);
+}
+
+/* Tables: generic overflow fallback (when not wrapped in .table-wrapper) */
+:where(.post-content, #post-content, .content) table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Images with captions (kramdown can emit <figcaption>) */
+figure {
+  margin: 1.25rem 0;
+}
+
+figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.9em;
+  color: var(--md-fg-muted);
+  text-align: center;
+}
+
+/* Horizontal rule */
+hr {
+  height: 1px;
+  padding: 0;
+  margin: 1.5rem 0;
+  border: 0;
+  background-color: rgba(27, 31, 35, 0.15);
+}
+
+[data-theme="dark"] hr,
+.theme-dark hr {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Images: keep inside article width */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* <kbd> */
+kbd {
+  display: inline-block;
+  padding: 0.15em 0.45em;
+  font-size: 0.85em;
+  line-height: 1;
+  color: #1f2328;
+  background-color: #f6f8fa;
+  border: 1px solid rgba(27, 31, 35, 0.12);
+  border-bottom-color: rgba(27, 31, 35, 0.2);
+  border-radius: 6px;
+  box-shadow: inset 0 -1px 0 rgba(27, 31, 35, 0.12);
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+}
+
+[data-theme="dark"] kbd,
+.theme-dark kbd {
+  color: #e6edf3;
+  background-color: #161b22;
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* <mark> highlight */
+mark {
+  padding: 0.05em 0.2em;
+  border-radius: 4px;
+  background-color: rgba(255, 223, 93, 0.6);
+  color: inherit;
+}
+
+[data-theme="dark"] mark,
+.theme-dark mark {
+  background-color: rgba(187, 128, 9, 0.45);
+}
+
+/* Task lists (kramdown GFM) */
+ul.task-list {
+  padding-left: 1.2em;
+}
+
+li.task-list-item {
+  list-style: none;
+  margin-left: -0.2em;
+}
+
+li.task-list-item input[type="checkbox"] {
+  margin: 0 0.5em 0 0;
+  transform: translateY(0.08em);
+}
+
+/* Footnotes (kramdown) */
+.footnotes {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--md-border);
+  font-size: 0.95em;
+}
+
+[data-theme="dark"] .footnotes,
+.theme-dark .footnotes {
+  border-top-color: var(--md-border);
+}
+
+.footnotes ol {
+  padding-left: 1.25em;
+}
+
+.footnotes li {
+  margin: 0.4rem 0;
+}
+
+.footnote-backref,
+a.footnote {
+  text-decoration: none;
+}
+
+.footnote-backref:hover,
+a.footnote:hover {
+  text-decoration: underline;
+}
+
+/* Details/Summary callouts */
+details {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--md-border);
+  border-radius: 6px;
+  background: rgba(27, 31, 35, 0.02);
+}
+
+details > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+details[open] > summary {
+  margin-bottom: 0.5rem;
+}
+
+[data-theme="dark"] details,
+.theme-dark details {
+  border-color: var(--md-border);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* kramdown {:toc} output (#markdown-toc) */
+:where(.post-content, #post-content, .content) #markdown-toc {
+  margin: 1rem 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--md-border);
+  border-radius: 8px;
+  background: var(--md-canvas-subtle);
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc::before {
+  content: "Contents";
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--md-fg);
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc ul,
+:where(.post-content, #post-content, .content) #markdown-toc ol {
+  margin: 0.35rem 0 0;
+  padding-left: 1.25em;
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc li + li {
+  margin-top: 0.2em;
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc a {
+  color: var(--md-link);
+  text-decoration: none;
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc a:hover {
+  text-decoration: underline;
+}
+
+/* Code blocks spacing (works with Rouge containers) */
+:where(.post-content, #post-content, .content) pre {
+  margin: 1rem 0;
+}
+
+:where(.post-content, #post-content, .content) .highlight {
+  margin: 1rem 0;
+}
+
+/* Heading anchor links (Chirpy/various plugins may emit these classnames) */
+:where(.post-content, #post-content, .content) :is(h1, h2, h3, h4, h5, h6) :is(a.anchor, a.anchorjs-link, a.heading-anchor, a.header-link) {
+  margin-left: 0.25em;
+  color: var(--md-fg-muted);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+:where(.post-content, #post-content, .content) :is(h1, h2, h3, h4, h5, h6):hover :is(a.anchor, a.anchorjs-link, a.heading-anchor, a.header-link) {
+  opacity: 1;
+}
+
+:where(.post-content, #post-content, .content) :is(h1, h2, h3, h4, h5, h6) :is(a.anchor, a.anchorjs-link, a.heading-anchor, a.header-link):hover {
+  color: var(--md-link-hover);
+}
+
+/* Blockquote/link tightness */
+:where(.post-content, #post-content, .content) blockquote {
+  margin: 1rem 0;
+}
+
+/* Keep long URLs from breaking layout */
+:where(.post-content, #post-content, .content) a {
+  overflow-wrap: anywhere;
+}
+
