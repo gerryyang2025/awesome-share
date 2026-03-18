@@ -68,6 +68,16 @@ Watch your six when walking alone at night. 晚上独自走路时要小心背后
 
 # Words (柯林斯英汉双解大词典)
 
+* harness /ˈhɑːnɪs/
+  + V-T If you **harness** something such as an emotion or natural source of energy, you bring it under your control and use it. 利用
+    - Turkey plans to **harness** the waters of the Tigris and Euphrates rivers for big hydro-electric power projects. 土耳其计划利用底格里斯河与幼发拉底河的水来建造大型水力发电工程。
+  + N-COUNT A **harness** is a set of straps which fit under a person's arms and fasten around their body in order to keep a piece of equipment in place or to prevent the person moving from a place. 背带; 安全带
+  + N-COUNT A **harness** is a set of leather straps and metal links fastened around a horse's head or body so that the horse can have a carriage, cart, or plough fastened to it. 马具; 挽具
+  + V-T If a horse or other animal is **harnessed**, a harness is put on it, especially so that it can pull a carriage, cart, or plough. 给…套上挽具
+    - On Sunday the horses were **harnessed** to a heavy wagon for a day-long ride over the border. 星期天这些马被套在一辆沉重的货车上，踏上长达一天的旅程越过边境。
+
+
+
 * obsidian /ɒbˈsɪdɪən/
   + N a dark volcanic glass formed by very rapid solidification of lava 黑曜石 (Also called Iceland agate)
 
