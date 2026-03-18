@@ -15,7 +15,7 @@ tags:
 
 # 核心技术
 
-Docker 底层是基于成熟的 `Linux Container(LXC)` 技术实现。自 Docker 0.9 版本起，Docker 除了继续支持 LXC 之外，还开始引入自家的[runc]，试图打造更通用的底层容器虚拟化库。
+Docker 底层是基于成熟的 `Linux Container(LXC)` 技术实现。自 Docker 0.9 版本起，Docker 除了继续支持 LXC 之外，还开始引入自家的 [runc]，试图打造更通用的底层容器虚拟化库。
 
 > runc is a CLI tool for spawning and running containers according to the OCI specification.
 
