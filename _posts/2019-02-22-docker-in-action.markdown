@@ -53,6 +53,74 @@ Docker底层是基于成熟的`Linux Container(LXC)`技术实现。自Docker 0.9
 
 ![docker_cmd](/assets/images/201902/docker_cmd.jpg)
 
+## TL;DR
+
+{% highlight bash %}
+# 查看已下载镜像
+docker images
+
+# 拉取镜像，如果不指定标签，默认下载 latest
+docker pull <镜像名>:<标签>
+
+# 创建容器
+# 直接执行 docker run 时，如果本地没有对应的镜像，Docker 会自动先执行 pull
+docker run -itd -v /data:/data <镜像名>:<标签> bash
+
+# 查看容器信息
+docker ps -l
+
+# 执行进入容器
+docker exec -it $container_id bash
+{% endhighlight %}
+
+
+## 生命周期管理
+
+* `docker run`：创建并启动一个新容器。这是最常用的命令，结合了 create 和 start。
+  + `docker run -d --name my_container nginx`（`-d` 后台运行，`--name` 指定名称）。
+
+* `docker start`：启动一个或多个已经停止的容器。
+
+* `docker stop <容器ID或名称>`：优雅地停止运行中的容器（发送 `SIGTERM` 信号）。
+  + 优雅停止并指定等待时间（例如 60 秒）：`docker stop -t 60 <容器ID或名称>`。如果不希望由于停止等待太久，可以配合 `-t 0` 参数快速停止。停止后的容器状态变为 `Exited`，数据依然保留，可用 `docker start` 重新启动。
+  + 停止所有正在运行的容器：`docker stop $(docker ps -q)`
+
+* `docker restart`：重启容器。
+* `docker pause / unpause`：暂停或恢复容器中所有的进程。
+* `docker kill <容器ID或名称>`：强制停止容器（发送 `SIGKILL` 信号）。
+* `docker rm`：删除已停止的容器。使用 `-f` 可强制删除运行中的容器。
+
+> **提示**：在执行这些命令时，通常可以使用容器的 名称 (Name) 或 ID（只需输入前几位能唯一标识即可）。
+
+
+## 状态查看与监控
+
+* `docker ps`：列出当前正在运行的容器。
+  + `docker ps -a`：查看所有容器，包括已停止的。
+
+* `docker logs`：查看容器日志。
+  + `docker logs -f <ID>`：持续跟踪日志输出。
+
+* `docker stats`：实时显示容器的资源使用情况（CPU、内存、网络 I/O）。
+* `docker inspect`：获取容器的详细元数据（JSON 格式），如 IP 地址、配置信息等。
+* `docker top`：查看容器内运行的进程。
+
+## 容器交互操作
+
+* `docker exec`：在运行中的容器内执行命令。
+  + `docker exec -it <ID> /bin/bash`：进入容器的交互式终端。
+
+* `docker cp`：在容器与宿主机之间拷贝文件。
+* `docker port`：查看容器的端口映射情况。
+
+
+## 资源清理
+
+* `docker container prune`：一键清理所有已停止的容器，释放系统资源。
+
+
+
+
 ## docker build
 
 https://docs.docker.com/engine/reference/commandline/build/
@@ -216,10 +284,84 @@ Answers:
 
 {% highlight bash %}
 #!/usr/bin/bashs
-
-# docker_remote_tags.sh
 curl -s -S "https://registry.hub.docker.com/v2/repositories/library/$@/tags/" | jq '."results"[]["name"]' | sort
 {% endhighlight %}
+
+## 权限问题：dial unix /var/run/docker.sock: connect: permission denied
+
+**问题描述**：在当前用户权限下使用 docker 命令需要 sudo 否则出现以下问题：
+
+{% highlight text %}
+[user00@~]$ docker ps -l
+Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.39/containers/json?limit=1: dial unix /var/run/docker.sock: connect: permission denied
+{% endhighlight %}
+
+**解决方案**：通过将当前用户添加到 docker 用户组可以将 sudo 去掉，命令如下：
+
+{% highlight bash %}
+groupadd docker            # 添加 docker 用户组
+gpasswd -a 用户名 docker    # 将登陆用户加入到 docker 用户组中
+newgrp docker              # 更新用户组
+systemctl restart docker   # 最后重启 docker 生效
+{% endhighlight %}
+
+
+## 镜像过大导致根目录磁盘空间用完
+
+**问题描述**：由于系统初始分区的原因，操作系统中对应 `/` 分区不会太大，通常 `/var` 目录不会单独分区。如果上面运行 Docker 服务，经过长时间的使用，镜像下载过多会导致根目录磁盘空间用完。
+
+{% highlight text %}
+[user00@~]$ df -h
+Filesystem    Size  Used Avail Use% Mounted on
+/dev/vda1      99G   98G     0 100% /
+{% endhighlight %}
+
+> 注意：1. 首先排除 root 用户的根目录下是否有不需要的数据，并进行清理。2. yum clean all 清理当前的 yum 缓存数据。
+
+**解决方法**：通过 `docker info` 命令可以查看 `Docker Root Dir: /var/lib/docker` 的存储路径。`/var/lib/docker` 目录中保存着各种信息，例如：容器数据、卷、构建文件、网络文件和集群数据。最大的文件通常是镜像。如果使用默认的 `overlay2` 存储驱动，Docker 镜像会保存在 `/var/lib/docker/overlay2` 目录。
+
+![docker_storage](/assets/images/202603/docker_storage.png)
+
+第一步：对于不需要的文件，可先清理 Docker 使用的空间（可选）
+
+**清理不再使用的容器**。可以使用以下命令清理容器、网络文件、镜像和构建缓存：
+
+
+{% highlight text %}
+$docker system prune -a
+WARNING! This will remove:
+        - all stopped containers
+        - all networks not used by at least one container
+        - all images without at least one container associated to them
+        - all build cache
+Are you sure you want to continue? [y/N] y
+{% endhighlight %}
+
+**清除不再使用的卷**：
+
+
+{% highlight text %}
+$docker volume prune
+WARNING! This will remove all local volumes not used by at least one container.
+Are you sure you want to continue? [y/N] y
+{% endhighlight %}
+
+
+第二步：若不需要第一步清理空间，也可直接修改存储目录。解决默认存储容量不足的情况，最直接且最有效的方法就是挂载新的分区到该目录。但是在原有系统空间不变的情况下，可采用软链接的方式，修改镜像和容器的存放路径达到同样的目的。
+
+{% highlight bash %}
+# 停止 Docker 服务
+service docker stop
+# 如果停止不了，可尝试 systemctl stop docker.socket docker.service
+
+# 通过软链修改存储目录
+mv /var/lib/docker /data
+ln -sf /data/docker /var/lib/docker
+
+# 启动 Docker 服务
+service docker start
+{% endhighlight %}
+
 
 
 # 历史文章
