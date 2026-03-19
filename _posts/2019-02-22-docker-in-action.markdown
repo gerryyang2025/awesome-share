@@ -288,6 +288,59 @@ ENTRYPOINT command param1 param2
 
 For more information about the different forms, see [Shell and exec form](https://docs.docker.com/reference/dockerfile#shell-and-exec-form).
 
+## [EXPOSE](https://docs.docker.com/reference/dockerfile/#expose)
+
+The `EXPOSE` instruction informs Docker that the container listens on the specified network ports at runtime. You can specify whether the port listens on TCP or UDP, and the default is TCP if you don't specify a protocol.
+
+The `EXPOSE` instruction doesn't actually publish the port. It functions as a type of documentation between the person who builds the image and the person who runs the container, about which ports are intended to be published. To publish the port when running the container, use the `-p` flag on `docker run` to publish and map one or more ports, or the `-P` flag to publish all exposed ports and map them to high-order ports.
+
+
+`EXPOSE` 用来声明容器在运行时会监听哪些端口，它本身不会：
+
+* 在宿主机上开放端口
+* 做端口映射
+* 改变容器网络行为
+
+它的作用是：
+
+* 文档说明：告诉维护者这个镜像会监听哪些端口
+* 配合 `docker run -P`：使用 `-P` 时，Docker 会把 `EXPOSE` 声明的端口随机映射到宿主机
+* 配合编排工具：Kubernetes、Docker Compose 等可以据此知道要暴露哪些端口
+
+例如：
+
+{% highlight bash %}
+# 使用 -P 时，EXPOSE 的 8080、9090、9091 会被映射到宿主机随机端口
+docker run -P namesvr
+
+# 使用 -p 时，需要自己指定映射，与 EXPOSE 无关
+docker run -p 8080:8080 -p 9090:9090 -p 9091:9091 namesvr
+{% endhighlight %}
+
+
+## [HEALTHCHECK](https://docs.docker.com/reference/dockerfile/#healthcheck)
+
+The `HEALTHCHECK` instruction has two forms:
+
+* `HEALTHCHECK [OPTIONS] CMD command` (check container health by running a command inside the container)
+* `HEALTHCHECK NONE` (disable any healthcheck inherited from the base image)
+
+The `HEALTHCHECK` instruction tells Docker how to test a container to check that it's still working. This can detect cases such as a web server stuck in an infinite loop and unable to handle new connections, even though the server process is still running.
+
+When a container has a healthcheck specified, it has a health status in addition to its normal status. This status is initially `starting`. Whenever a health check passes, it becomes `healthy` (whatever state it was previously in). After a certain number of consecutive failures, it becomes `unhealthy`.
+
+For example, to check every five minutes or so that a web-server is able to serve the site's main page within three seconds:
+
+{% highlight bash %}
+HEALTHCHECK --interval=5m --timeout=3s \
+  CMD curl -f http://localhost/ || exit 1
+{% endhighlight %}
+
+
+
+
+
+
 # Q&A
 
 ## [How can I find a Docker image with a specific tag in Docker registry on the Docker command line?](https://stackoverflow.com/questions/24481564/how-can-i-find-a-docker-image-with-a-specific-tag-in-docker-registry-on-the-dock)
@@ -378,14 +431,6 @@ service docker start
 
 
 
-# 历史文章
-
-* [Where are Docker images stored? (杂译)]
-* [使用Docker registry镜像创建私有仓库]
-* [Docker使用桥接的通信方案]
-* [github-docker]
-
-
 # 书籍
 
 * [Docker - 从入门到实践](https://yeasy.gitbook.io/docker_practice/)
@@ -398,20 +443,12 @@ service docker start
 
 # 官方文档
 
-* https://docs.docker.com/engine/reference/run/
-* [Docker Release Notes]
-* [Docker development best practices]
 
+* [Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
+* https://docs.docker.com/manuals/
+* [Building best practices](https://docs.docker.com/build/building/best-practices/)
+* https://github.com/gerryyang/mac-utils/tree/master/tools/docker
+* [Docker使用桥接的通信方案](https://blog.csdn.net/delphiwcdj/article/details/49508045)
+* [使用Docker registry镜像创建私有仓库](https://blog.csdn.net/delphiwcdj/article/details/43099877)
+* [Where are Docker images stored? (杂译)](https://blog.csdn.net/delphiwcdj/article/details/43602877)
 
-
-[Where are Docker images stored? (杂译)]: https://blog.csdn.net/delphiwcdj/article/details/43602877
-
-[使用Docker registry镜像创建私有仓库]: https://blog.csdn.net/delphiwcdj/article/details/43099877
-
-[Docker使用桥接的通信方案]: https://blog.csdn.net/delphiwcdj/article/details/49508045
-
-[github-docker]: https://github.com/gerryyang/mac-utils/tree/master/tools/docker
-
-[Docker Release Notes]: https://docs.docker.com/release-notes/
-
-[Docker development best practices]: https://docs.docker.com/develop/dev-best-practices/
