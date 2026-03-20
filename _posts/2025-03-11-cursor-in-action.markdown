@@ -1304,7 +1304,57 @@ Cursor 中的每个对话都有自己的上下文窗口。在一次会话中，�
 
 
 
-## 模型定价
+## [模型与价格](https://cursor.com/cn/docs/models-and-pricing)
+
+Cursor 支持来自 OpenAI、Anthropic、Google 等的所有最新一代代码模型。每个个人方案都包含**两个用量池**，方便你在智能水平、速度和成本之间找到合适的平衡。
+
+### 用量池
+
+有两个独立的用量池，每个都会在你的月度计费周期**重置**：
+
+* **Auto + Composer**：当选择 Auto 或 Composer 2 时，包含的用量会显著增加。专为日常代理式编码设计，成本更低。
+* **API**：按模型的 API 价格计费。个人套餐每月至少包含 $20 的 API 用量 (更高档位包含更多) ，并可根据需要额外付费购买用量。
+
+这两个用量池都可以在你的编辑器设置和你的[用量仪表盘](https://cursor.com/cn/dashboard/usage)中查看。
+
+
+### Auto + Composer 用量池
+
+Auto 允许 Cursor 选择在智能能力、成本效益和可靠性之间取得平衡的模型。它适用于日常任务。
+
+> Auto 定价
+
+![cursor_price1](/assets/images/202603/cursor_price1.png)
+
+> Composer 定价
+
+Composer 2 是 Cursor 自研的模型，专门针对代理式编码 (agentic coding) 进行了强化训练。Auto 和 Composer 2 都从这个用量池中选取模型。
+
+![cursor_price2](/assets/images/202603/cursor_price2.png)
+
+
+### API 池
+
+当你选择特定模型 (或使用 Premium 路由) 时，使用量将按该模型对应的 API 费率从 API 池中扣减。
+
+所有价格均为每百万 tokens 的费用，数据来源于各提供商的 API 定价：(**以下是 2026年3月20日 显示的价格**)
+
+![cursor_price3](/assets/images/202603/cursor_price3.png)
+
+
+### 套餐
+
+所有个人套餐都包含无限制的 Tab 补全、所有模型上的扩展 Agent 使用限额、对 Bugbot 的访问权限，以及对 Cloud Agents 的访问权限。
+
+![cursor_price4](/assets/images/202603/cursor_price4.png)
+
+> **由于不同模型的 API 成本不同，你选择的模型会影响所含用量的消耗速度**。
+
+![cursor_price5](/assets/images/202603/cursor_price5.png)
+
+
+
+### 历史记录
 
 Cursor [套餐](https://cursor.com/docs/account/pricing)的使用量按各模型 API 的计费标准计算。例如，Pro 套餐中包含的 20 美元用量，会根据你选择的模型及其价格逐步消耗。
 
@@ -1317,6 +1367,31 @@ Cursor [套餐](https://cursor.com/docs/account/pricing)的使用量按各模型
 * [OpenAI 定价](https://openai.com/api/pricing/)
 * [Anthropic 定价](https://www.anthropic.com/pricing#api)
 * [Google Gemini 定价](https://ai.google.dev/gemini-api/docs/pricing)
+
+
+
+
+## [推出 Composer 2](https://cursor.com/cn/blog/composer-2) (Mar 19, 2026)
+
+它具备前沿水准的编码能力，定价为每百万输入 token 0.50、每百万输出 token 2.50，使其成为兼顾智能与成本的全新最优组合。
+
+![composer-2-scatter-r4](/assets/images/202603/composer-2-scatter-r4.png)
+
+我们正在快速提升模型质量。Composer 2 在我们衡量的所有[基准测试](https://cursor.com/blog/cursorbench)上都取得了大幅提升，其中包括 Terminal-Bench 2.01 和 SWE-bench Multilingual：
+
+![composer-2-terminal-bench-score-r9](/assets/images/202603/composer-2-terminal-bench-score-r9.png)
+
+![composer_compare](/assets/images/202603/composer_compare.png)
+
+这些质量提升来自我们首次进行的持续预训练运行，为进一步扩展强化学习奠定了更强的基础。我们通过[强化学习](https://cursor.com/blog/self-summarization)训练 Composer 处理[长周期](https://cursor.com/blog/self-driving-codebases)编程任务的能力。Composer 2 能够解决需要数百个操作的高难度任务。
+
+此外，**我们还提供了一个智能水平相同但速度更快的变体，定价为每百万输入 token 1.50、每百万输出 token 7.50，成本低于其他快速模型**。我们将把快速版设为默认选项。完整详情请参见我们的[模型文档](https://cursor.com/docs/models/cursor-composer-2)。
+
+![composer-speed-cost-r12](/assets/images/202603/composer-speed-cost-r12.png)
+
+对于个人方案，Composer 用量属于[独立的用量池](https://cursor.com/docs/models-and-pricing#usage-pools)，并包含充足的使用额度。
+
+
 
 
 # [Cursor Learn](https://cursor.com/cn/learn)
@@ -1332,6 +1407,9 @@ Cursor [套餐](https://cursor.com/docs/account/pricing)的使用量按各模型
 * 开车。最贵，但最快。
 
 你可以在时间、金钱、可靠性和投入之间做取舍。
+
+
+
 
 
 # Others
