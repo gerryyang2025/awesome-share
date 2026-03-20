@@ -39,34 +39,48 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 * FOMO (fear of missing out) 错失恐惧症
 
 * watch your six (源自：疯狂动物城2)
-
-watch your six 是一个英语俚语，直译是“注意你的六点钟方向”。它源自军事术语，其中方向用时钟表示：12点为正前方，3点为右侧，6点为正后方，9点为左侧。因此，这个短语的引申意思是 **“小心背后”或“保持警惕”**，常用于提醒某人注意来自后方的危险或意外。
-
-Watch your six when walking alone at night. 晚上独自走路时要小心背后。
-
+  + watch your six 是一个英语俚语，直译是“注意你的六点钟方向”。它源自军事术语，其中方向用时钟表示：12点为正前方，3点为右侧，6点为正后方，9点为左侧。因此，这个短语的引申意思是 **“小心背后”或“保持警惕”**，常用于提醒某人注意来自后方的危险或意外。
+  + Watch your six when walking alone at night. 晚上独自走路时要小心背后。
 
 * raise the bar
   + 更上一层楼
 
 * kick off
-  + PHRASAL VERB If an event, game, series, or discussion kicks off, or is kicked off, **it begins**. 开始 (事件、比赛等)
+  + If an event, game, series, or discussion kicks off, or is kicked off, **it begins**. 开始 (事件、比赛等)
     - The shows kick off on October 24th. 展览从10月24日开始。
 
-
-* the Executive Committee
-  + N-SING **The executive committee** or board of an organization is a committee within that organization that has the authority to make decisions and ensures that these decisions are carried out. 执行委员会
-    - They opted to put **an executive committee** in charge of the project rather than a single person. 他们选择由**一个执行委员会**而非个人来负责这个项目。
-
 * vice versa
-  + PHRASE **Vice versa** is used to indicate that the reverse of what you have said is true. For example, "women may bring their husbands with them, and vice versa" means that men may also bring their wives with them. 反之亦然
+  + **Vice versa** is used to indicate that the reverse of what you have said is true. For example, "women may bring their husbands with them, and vice versa" means that men may also bring their wives with them. 反之亦然
 
-
-
-
+* If someone is trying **to reinvent the wheel**, they are trying to do something that has already been done successfully. 重复劳动; 白费力
+  + Some of these ideas are worth pursuing, **but there is no need to reinvent the wheel**. 这些观点中有些值得进一步探究，但是没有必要全部重来
 
 
 
 # Words (柯林斯英汉双解大词典)
+
+* citation /saɪˈteɪʃ(ə)n/
+  + N-COUNT A **citation** is an official document or speech which praises a person for something brave or special that they have done. 嘉奖; 奖状
+    - His **citation** says he showed outstanding and exemplary courage. 他的嘉奖令中写道他表现出了与众不同和堪为楷模的英勇。
+  + N-COUNT A **citation** from a book or other piece of writing is a passage or phrase from it. 引文
+  + N-COUNT A **citation** is an official piece of paper which orders you to pay a fine or to appear in court because you have committed a traffic offence. 交通违规传票; 交通罚单
+    - The Highway Patrol this year issued 1,018 speeding **citations**. 高速公路巡警今年开出了1018张超速罚单。
+
+
+* reinvent /ˌriːɪnˈvɛnt/
+  + V-T To **reinvent** something means to change it so that it seems different and new. 彻底改变; 改造
+    - They have tried to **reinvent** their retail stores. 他们一直在尝试改造他们的零售店。
+    - He was determined to **reinvent** himself as a poet and writer. 他下决心把自己重塑成一个诗人兼作家。
+  + PHRASE If someone is trying **to reinvent the wheel**, they are trying to do something that has already been done successfully. 重复劳动; 白费力
+    - Some of these ideas are worth pursuing, **but there is no need to reinvent the wheel**. 这些观点中有些值得进一步探究，但是没有必要全部重来
+
+* synopsis /sɪˈnɒpsɪs/
+  + N-COUNT A **synopsis** is a summary of a longer piece of writing or work. 提要
+    - For each title there is a brief **synopsis** of the book. 每本书都附有一个该书的简短提要。
+
+* entropy /ˈentrəpi/
+  + N-UNCOUNT **Entropy** is a state of disorder, confusion, and disorganization. 混乱状态; 无序状态
+
 
 * harness /ˈhɑːnɪs/
   + V-T If you **harness** something such as an emotion or natural source of energy, you bring it under your control and use it. 利用
