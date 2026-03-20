@@ -71,7 +71,6 @@
 }
 
 /* Fallback when table is not inside .table-wrapper (e.g. theme version) */
-.content table,
 #post-content table,
 .post-content table {
   width: 100%;
@@ -79,12 +78,8 @@
   font-size: 0.9em;
 }
 
-.content table th,
-.content table td,
-#post-content table th,
-#post-content table td,
-.post-content table th,
-.post-content table td {
+:where(#post-content, .post-content) table th,
+:where(#post-content, .post-content) table td {
   padding: 0.6rem 0.75rem;
   border: 1px solid rgba(27, 31, 35, 0.12);
   white-space: normal;

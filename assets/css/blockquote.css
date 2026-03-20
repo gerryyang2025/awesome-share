@@ -1,6 +1,6 @@
 /* Blockquote - GitHub-like style (subtle, neutral) */
 
-blockquote {
+:where(.post-content, #post-content, .content) blockquote {
   margin: 1rem 0;
   padding: 0 1rem;
   color: var(--md-fg-muted, #57606a);
@@ -8,17 +8,17 @@ blockquote {
   border-left: 0.25em solid var(--md-border-strong, rgba(27, 31, 35, 0.18));
 }
 
-blockquote p:first-child {
+:where(.post-content, #post-content, .content) blockquote p:first-child {
   margin-top: 0;
 }
 
-blockquote p:last-child {
+:where(.post-content, #post-content, .content) blockquote p:last-child {
   margin-bottom: 0;
 }
 
 /* Dark mode */
-[data-theme="dark"] blockquote,
-.theme-dark blockquote {
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) blockquote,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) blockquote {
   color: var(--md-fg-muted, #8b949e);
   background: transparent;
   border-left-color: var(--md-border-strong, rgba(255, 255, 255, 0.22));

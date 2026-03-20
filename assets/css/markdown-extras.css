@@ -123,7 +123,7 @@
 }
 
 /* Paragraph/code mixed in blockquote: keep contrast */
-blockquote :where(code, kbd) {
+:where(.post-content, #post-content, .content) blockquote :where(code, kbd) {
   background-color: var(--md-inline-code-bg);
 }
 
@@ -174,11 +174,11 @@ blockquote :where(code, kbd) {
 }
 
 /* Images with captions (kramdown can emit <figcaption>) */
-figure {
-  margin: 1.25rem 0;
+:where(.post-content, #post-content, .content) figure {
+  margin: 0 0 1rem;
 }
 
-figcaption {
+:where(.post-content, #post-content, .content) figcaption {
   margin-top: 0.5rem;
   font-size: 0.9em;
   color: var(--md-fg-muted);
@@ -186,27 +186,27 @@ figcaption {
 }
 
 /* Horizontal rule */
-hr {
+:where(.post-content, #post-content, .content) hr {
   height: 1px;
   padding: 0;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
   border: 0;
   background-color: rgba(27, 31, 35, 0.15);
 }
 
-[data-theme="dark"] hr,
-.theme-dark hr {
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) hr,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) hr {
   background-color: rgba(255, 255, 255, 0.18);
 }
 
 /* Images: keep inside article width */
-img {
+:where(.post-content, #post-content, .content) img {
   max-width: 100%;
   height: auto;
 }
 
 /* <kbd> */
-kbd {
+:where(.post-content, #post-content, .content) kbd {
   display: inline-block;
   padding: 0.15em 0.45em;
   font-size: 0.85em;
@@ -220,8 +220,8 @@ kbd {
   font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
 }
 
-[data-theme="dark"] kbd,
-.theme-dark kbd {
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) kbd,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) kbd {
   color: #e6edf3;
   background-color: #161b22;
   border-color: rgba(255, 255, 255, 0.16);
@@ -229,84 +229,84 @@ kbd {
 }
 
 /* <mark> highlight */
-mark {
+:where(.post-content, #post-content, .content) mark {
   padding: 0.05em 0.2em;
   border-radius: 4px;
   background-color: rgba(255, 223, 93, 0.6);
   color: inherit;
 }
 
-[data-theme="dark"] mark,
-.theme-dark mark {
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) mark,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) mark {
   background-color: rgba(187, 128, 9, 0.45);
 }
 
 /* Task lists (kramdown GFM) */
-ul.task-list {
+:where(.post-content, #post-content, .content) ul.task-list {
   padding-left: 1.2em;
 }
 
-li.task-list-item {
+:where(.post-content, #post-content, .content) li.task-list-item {
   list-style: none;
   margin-left: -0.2em;
 }
 
-li.task-list-item input[type="checkbox"] {
+:where(.post-content, #post-content, .content) li.task-list-item input[type="checkbox"] {
   margin: 0 0.5em 0 0;
   transform: translateY(0.08em);
 }
 
 /* Footnotes (kramdown) */
-.footnotes {
+:where(.post-content, #post-content, .content) .footnotes {
   margin-top: 2rem;
   padding-top: 1rem;
   border-top: 1px solid var(--md-border);
   font-size: 0.95em;
 }
 
-[data-theme="dark"] .footnotes,
-.theme-dark .footnotes {
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) .footnotes,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) .footnotes {
   border-top-color: var(--md-border);
 }
 
-.footnotes ol {
+:where(.post-content, #post-content, .content) .footnotes ol {
   padding-left: 1.25em;
 }
 
-.footnotes li {
+:where(.post-content, #post-content, .content) .footnotes li {
   margin: 0.4rem 0;
 }
 
-.footnote-backref,
-a.footnote {
+:where(.post-content, #post-content, .content) .footnote-backref,
+:where(.post-content, #post-content, .content) a.footnote {
   text-decoration: none;
 }
 
-.footnote-backref:hover,
-a.footnote:hover {
+:where(.post-content, #post-content, .content) .footnote-backref:hover,
+:where(.post-content, #post-content, .content) a.footnote:hover {
   text-decoration: underline;
 }
 
 /* Details/Summary callouts */
-details {
-  margin: 1rem 0;
+:where(.post-content, #post-content, .content) details {
+  margin: 0 0 1rem;
   padding: 0.75rem 1rem;
   border: 1px solid var(--md-border);
   border-radius: 6px;
   background: rgba(27, 31, 35, 0.02);
 }
 
-details > summary {
+:where(.post-content, #post-content, .content) details > summary {
   cursor: pointer;
   font-weight: 600;
 }
 
-details[open] > summary {
+:where(.post-content, #post-content, .content) details[open] > summary {
   margin-bottom: 0.5rem;
 }
 
-[data-theme="dark"] details,
-.theme-dark details {
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) details,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) details {
   border-color: var(--md-border);
   background: rgba(255, 255, 255, 0.04);
 }

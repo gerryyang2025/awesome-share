@@ -4,10 +4,7 @@
  */
 #post-body :not(pre) > code,
 .post-content :not(pre) > code,
-#post-content :not(pre) > code,
-article .content :not(pre) > code,
-main .content :not(pre) > code,
-.content :not(pre) > code {
+#post-content :not(pre) > code {
   padding: 0.2em 0.4em;
   margin: 0;
   font-size: 85%;
@@ -25,27 +22,21 @@ main .content :not(pre) > code,
 }
 
 /* Blockquote: keep code “pill” ink like GitHub, not muted body text */
-blockquote :not(pre) > code {
+:where(#post-body, .post-content, #post-content) blockquote :not(pre) > code {
   color: #24292e;
 }
 
 [data-theme="dark"] #post-body :not(pre) > code,
 [data-theme="dark"] .post-content :not(pre) > code,
 [data-theme="dark"] #post-content :not(pre) > code,
-[data-theme="dark"] article .content :not(pre) > code,
-[data-theme="dark"] main .content :not(pre) > code,
-[data-theme="dark"] .content :not(pre) > code,
 .theme-dark #post-body :not(pre) > code,
 .theme-dark .post-content :not(pre) > code,
-.theme-dark #post-content :not(pre) > code,
-.theme-dark article .content :not(pre) > code,
-.theme-dark main .content :not(pre) > code,
-.theme-dark .content :not(pre) > code {
+.theme-dark #post-content :not(pre) > code {
   color: #e6edf3;
   background-color: rgba(110, 118, 129, 0.4);
 }
 
-[data-theme="dark"] blockquote :not(pre) > code,
-.theme-dark blockquote :not(pre) > code {
+:where([data-theme="dark"] #post-body, [data-theme="dark"] .post-content, [data-theme="dark"] #post-content) blockquote :not(pre) > code,
+:where(.theme-dark #post-body, .theme-dark .post-content, .theme-dark #post-content) blockquote :not(pre) > code {
   color: #e6edf3;
 }
