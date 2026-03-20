@@ -228,9 +228,8 @@ sudo usermod -aG docker ${USER}   # 当前用户加入 docker 组
 > usermod -aG 是把当前的用户加入 Docker 的用户组。这是因为操作 Docker 必须要有 root 权限，而直接使用 root 用户不够安全，加入 Docker 用户组是一个比较好的选择，这也是 Docker 官方推荐的做法。当然，如果只是为了图省事，也可以直接切换到 root 用户来操作 Docker
 
 
-# Dockerfile
+# [Dockerfile](https://docs.docker.com/reference/dockerfile/)
 
-* https://docs.docker.com/engine/reference/builder/
 
 ## [CMD](https://docs.docker.com/engine/reference/builder/#cmd)
 
@@ -430,6 +429,13 @@ service docker start
 {% endhighlight %}
 
 
+# 历史文章
+
+* [Docker使用桥接的通信方案](https://blog.csdn.net/delphiwcdj/article/details/49508045)
+* [使用Docker registry镜像创建私有仓库](https://blog.csdn.net/delphiwcdj/article/details/43099877)
+* [Where are Docker images stored? (杂译)](https://blog.csdn.net/delphiwcdj/article/details/43602877)
+* https://github.com/gerryyang/mac-utils/tree/master/tools/docker
+
 
 # 书籍
 
@@ -443,12 +449,7 @@ service docker start
 
 # 官方文档
 
-
 * [Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
-* https://docs.docker.com/manuals/
+* [Docker Manuals](https://docs.docker.com/manuals/)
 * [Building best practices](https://docs.docker.com/build/building/best-practices/)
-* https://github.com/gerryyang/mac-utils/tree/master/tools/docker
-* [Docker使用桥接的通信方案](https://blog.csdn.net/delphiwcdj/article/details/49508045)
-* [使用Docker registry镜像创建私有仓库](https://blog.csdn.net/delphiwcdj/article/details/43099877)
-* [Where are Docker images stored? (杂译)](https://blog.csdn.net/delphiwcdj/article/details/43602877)
 
