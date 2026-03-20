@@ -16,6 +16,8 @@
   --md-link: #0969da;
   --md-link-hover: #0550ae;
   --md-inline-code-bg: rgba(175, 184, 193, 0.2);
+  /* Prevent margin collapsing causing content to visually escape background on mobile */
+  display: flow-root;
 }
 
 :where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content),
