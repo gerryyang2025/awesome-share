@@ -1,18 +1,25 @@
 ---
-# Keep layout null: JSON must not pass through HTML compress (theme uses compress here).
+# Keep layout null: output must stay valid JSON (do not use theme HTML compress layout).
 layout: null
 permalink: /assets/js/data/search.json
 ---
 [
 {% for post in site.posts %}
+{% assign c = post.content %}
+{% if c contains '<td class="rouge-gutter gl"><pre class="lineno">' %}
+{% assign c = c
+  | replace: '<td class="rouge-gutter gl"><pre class="lineno">', '<!-- <td class="rouge-gutter gl"><pre class="lineno">'
+%}
+{% assign c = c | replace: '</td><td class="rouge-code">', '</td> --><td class="rouge-code">' %}
+{% endif %}
+{% assign c = c | strip_html | strip_newlines | strip | truncate: 5000 %}
 {
   "title": {{ post.title | jsonify }},
   "url": {{ post.url | relative_url | jsonify }},
   "categories": {{ post.categories | join: ', ' | jsonify }},
   "tags": {{ post.tags | join: ', ' | jsonify }},
   "date": {{ post.date | jsonify }},
-  {% capture content -%}{% include post-summary.html full_text=true %}{%- endcapture %}
-  "content": {{ content | jsonify }}
+  "content": {{ c | jsonify }}
 }{% unless forloop.last %},{% endunless %}
 {% endfor %}
 ]
