@@ -95,7 +95,7 @@ image:                            # 顶部预览图；也可简写为 image: /pa
 
 在引用块后接 Kramdown 属性，类型为 `tip` / `info` / `warning` / `danger`：
 
-{% highlight markdown %}
+````markdown
 > 这是一条提示。
 {: .prompt-tip }
 
@@ -107,17 +107,17 @@ image:                            # 顶部预览图；也可简写为 image: /pa
 
 > 这是一条危险/重要提醒。
 {: .prompt-danger }
-{% endhighlight %}
+````
 
 ## 行内「文件路径」样式
 
-{% highlight markdown %}
+````markdown
 编辑 `config.yml`{: .filepath} 以修改站点配置。
-{% endhighlight %}
+````
 
 ## 代码块：语言高亮与文件名
 
-主题推荐使用 **围栏代码块**（` ```语言 `），**不要用** Jekyll 的 `{% highlight %}`，与 Chirpy 不兼容（见 [Writing a New Post — Code Block](https://chirpy.cotes.page/posts/write-a-new-post/)）。
+主题推荐使用 **围栏代码块**（` ```语言 `），**不要用** Jekyll 的 `{% raw %}{% highlight %}{% endraw %}` 标签（Liquid 会先解析它，且与 Chirpy 文档建议不一致；见 [Writing a New Post — Code Block](https://chirpy.cotes.page/posts/write-a-new-post/)）。
 
 默认除 `plaintext`、`console`、`terminal` 外会显示行号。若要去掉行号，在代码块后加 `{: .nolineno }`：
 
@@ -137,7 +137,7 @@ echo "hello"
 {: file="scripts/hello.sh" }
 ````
 
-文中若要**展示 Liquid 源码**，用 `{% raw %}…{% endraw %}` 包起来，或在 Front Matter 加 `render_with_liquid: false`（需 Jekyll 4+）。
+文中若要**展示 Liquid 源码**，请用 Liquid 的 **raw** / **endraw** 标签整段包裹，或在 Front Matter 加 `render_with_liquid: false`（需 Jekyll 4+）。
 
 ## 数学公式（需 `math: true`）
 
@@ -152,12 +152,12 @@ echo "hello"
 
 ## Mermaid（需 `mermaid: true`）
 
-{% highlight markdown %}
+````markdown
 ```mermaid
 flowchart LR
   A[开始] --> B[结束]
 ```
-{% endhighlight %}
+````
 
 ## 媒体 URL 前缀（CDN 与 `media_subpath`）
 
@@ -184,17 +184,17 @@ flowchart LR
 
 ## 脚注
 
-{% highlight markdown %}
+````markdown
 正文中的引用[^fn1]。
 
 [^fn1]: 脚注内容。
-{% endhighlight %}
+````
 
 本仓库 `_config.yml` 中 `kramdown.footnote_backlink` 可自定义返回正文符号样式。
 
 ## 内嵌社交平台音视频
 
-统一形式为 `{% include embed/<platform>.html id='<ID>' %}`（`<platform>` 为小写平台名）。示例（YouTube）：
+统一形式为：`include` 主题的 `embed/<platform>.html`，并传入 `id='<ID>'`（`<platform>` 为小写平台名）。示例（YouTube）：
 
 {% raw %}
 ```liquid
@@ -231,10 +231,10 @@ Spotify 还可加 `compact=1`（紧凑播放器）、`dark=1`（深色）。
 
 若不希望某标题出现在侧边目录中，可为该标题添加属性，例如：
 
-{% highlight markdown %}
+````markdown
 ## 附录
 {: data-toc-skip='' }
-{% endhighlight %}
+````
 
 （与官方演示文中对标题的写法一致。）
 
