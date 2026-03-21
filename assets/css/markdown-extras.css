@@ -15,7 +15,7 @@
   --md-canvas: #ffffff;
   --md-link: #0969da;
   --md-link-hover: #0550ae;
-  --md-inline-code-bg: var(--inline-code-bg);
+  --md-inline-code-bg: var(--inline-code-bg, rgb(25 25 28 / 5%));
   /* Prevent margin collapsing causing content to visually escape background on mobile */
   display: flow-root;
 }
@@ -30,6 +30,7 @@
   --md-canvas: #0d1117;
   --md-link: #58a6ff;
   --md-link-hover: #79c0ff;
+  --md-inline-code-bg: var(--inline-code-bg, rgb(255 255 255 / 5%));
 }
 
 /* Baseline typography rhythm inside article containers */

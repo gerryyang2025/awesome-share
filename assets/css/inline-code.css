@@ -1,11 +1,9 @@
 /*
- * Inline code — match Chirpy theme (_sass/base/_syntax.scss code.highlighter-rouge)
- * Uses theme vars --code-color and --inline-code-bg (no fallbacks; defined by Chirpy on <html>).
+ * Inline `code` in post body — Chirpy _syntax.scss (code.highlighter-rouge).
+ * Use .content code so `p`/`li`/heading inline code is covered (Chirpy uses `article > .content > p > code`, not `.content > code`).
+ * Reset pre/.highlight code so code blocks keep Rouge + theme block chrome.
  */
-article .content :not(pre) > code,
-#post-body :not(pre) > code,
-.post-content :not(pre) > code,
-#post-content :not(pre) > code {
+.content code {
   -webkit-hyphens: none;
   -ms-hyphens: none;
   hyphens: none;
@@ -16,8 +14,8 @@ article .content :not(pre) > code,
   white-space: break-spaces;
   overflow-wrap: break-word;
   word-break: break-word;
-  color: var(--code-color);
-  background-color: var(--inline-code-bg);
+  color: var(--code-color, #3a3a3a);
+  background-color: var(--inline-code-bg, rgb(25 25 28 / 5%));
   border: 0;
   border-radius: 6px;
   box-shadow: none;
@@ -26,7 +24,20 @@ article .content :not(pre) > code,
   vertical-align: baseline;
 }
 
-/* Chirpy: blockquote & { color: inherit; } — inline code follows blockquote text color */
-:where(article .content, #post-body, .post-content, #post-content) blockquote :not(pre) > code {
+/* Block / Rouge — strip pill only; font metrics stay with pre / code-copy-btn */
+.content pre code,
+.content .highlight code {
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  vertical-align: baseline;
+}
+
+/* Chirpy: blockquote & { color: inherit; } — parent must not be pre */
+.content blockquote :not(pre) > code {
   color: inherit;
 }
