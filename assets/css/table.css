@@ -1,60 +1,68 @@
-/* Table: scroll contained in wrapper (page does not scroll horizontally) */
+/* Markdown tables — match Chirpy theme (.table-wrapper from refactor-content.html)
+   Ref: https://github.com/cotes2020/jekyll-theme-chirpy/blob/master/_sass/base/_typography.scss */
 
 .table-wrapper {
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
   overflow-y: visible;
-  margin: 1em 0;
+  margin: 0 0 1.5rem;
   -webkit-overflow-scrolling: touch;
-  border-radius: 6px;
-  border: 1px solid var(--md-border, rgba(27, 31, 35, 0.12));
-  background: var(--md-canvas, #ffffff);
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .table-wrapper > table {
   width: max-content;
   min-width: 100%;
-  table-layout: auto;
+  margin: 0;
   border-collapse: collapse;
   border-spacing: 0;
-  font-size: 0.9em;
+  font-size: 95%;
+  table-layout: auto;
 }
 
-.table-wrapper > table th,
-.table-wrapper > table td {
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--md-border, rgba(27, 31, 35, 0.12));
-  white-space: normal;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  vertical-align: top;
-  line-height: 1.5;
-  overflow: visible;
-  box-sizing: border-box;
+.table-wrapper > table thead {
+  border-bottom: 2px solid rgb(210 215 217 / 75%);
 }
 
 .table-wrapper > table thead th {
-  background-color: var(--md-canvas-subtle, #f6f8fa);
+  padding: 0.4rem 1rem;
+  border: none;
   font-weight: 600;
-  color: var(--md-fg, #1f2328);
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  vertical-align: top;
+  line-height: 1.5;
+  background: transparent;
+  color: inherit;
 }
 
-.table-wrapper > table tbody tr,
-.table-wrapper > table thead tr {
-  height: auto;
+.table-wrapper > table tbody tr {
+  border-bottom: 1px solid var(--tb-border-color, #eaeaea);
+}
+
+.table-wrapper > table tbody tr:nth-child(odd) {
+  background-color: var(--tb-odd-bg, #fbfcfd);
 }
 
 .table-wrapper > table tbody tr:nth-child(even) {
-  background-color: rgba(27, 31, 35, 0.03);
+  background-color: var(--tb-even-bg, #ffffff);
 }
 
-.table-wrapper > table tbody tr:hover {
-  background-color: rgba(27, 31, 35, 0.05);
+.table-wrapper > table tbody td {
+  padding: 0.4rem 1rem;
+  border: none;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  vertical-align: top;
+  line-height: 1.5;
 }
 
-/* Prevent content in cells from overlapping */
 .table-wrapper > table th p,
 .table-wrapper > table td p {
   margin: 0.35em 0;
@@ -70,58 +78,38 @@
   margin-bottom: 0;
 }
 
-/* Fallback when table is not inside .table-wrapper (e.g. theme version) */
-#post-content table,
-.post-content table {
-  width: 100%;
-  table-layout: auto;
-  font-size: 0.9em;
+/* Dark — use Chirpy vars when present */
+[data-theme="dark"] .table-wrapper > table thead,
+.theme-dark .table-wrapper > table thead {
+  border-bottom-color: rgba(255, 255, 255, 0.22);
 }
 
-:where(#post-content, .post-content) table th,
-:where(#post-content, .post-content) table td {
-  padding: 0.6rem 0.75rem;
-  border: 1px solid rgba(27, 31, 35, 0.12);
-  white-space: normal;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  vertical-align: top;
-  line-height: 1.5;
-  overflow: visible;
-  box-sizing: border-box;
-}
-
-/* Dark mode */
-[data-theme="dark"] .table-wrapper > table th,
-.theme-dark .table-wrapper > table th {
-  background-color: var(--md-canvas-subtle, #21262d);
-  color: var(--md-fg, #e6edf3);
-}
-
-[data-theme="dark"] .table-wrapper,
-.theme-dark .table-wrapper {
-  border-color: var(--md-border, rgba(255, 255, 255, 0.16));
-  background: var(--md-canvas, #0d1117);
-}
-
-[data-theme="dark"] .table-wrapper > table th,
-[data-theme="dark"] .table-wrapper > table td,
-.theme-dark .table-wrapper > table th,
-.theme-dark .table-wrapper > table td {
-  border-color: var(--md-border, rgba(255, 255, 255, 0.12));
+[data-theme="dark"] .table-wrapper > table tbody tr:nth-child(odd),
+.theme-dark .table-wrapper > table tbody tr:nth-child(odd) {
+  background-color: var(--tb-odd-bg, #252526);
 }
 
 [data-theme="dark"] .table-wrapper > table tbody tr:nth-child(even),
 .theme-dark .table-wrapper > table tbody tr:nth-child(even) {
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: var(--tb-even-bg, rgb(31 31 34));
 }
 
-/* ----- 窄屏卡片布局（可选：在表格后加 {: .table-cards } 启用）----- */
+[data-theme="dark"] .table-wrapper > table tbody tr,
+.theme-dark .table-wrapper > table tbody tr {
+  border-bottom-color: var(--tb-border-color, rgba(255, 255, 255, 0.12));
+}
+
+/* Chirpy: slightly narrower min width on large screens */
+@media (min-width: 992px) {
+  .content .table-wrapper > table {
+    min-width: 70%;
+  }
+}
+
+/* ----- Optional: {: .table-cards } on <table> (narrow screens) ----- */
 @media (max-width: 960px) {
   .table-wrapper:has(table.table-cards) {
     overflow-x: visible;
-    box-shadow: none;
   }
 
   .table-wrapper:has(table.table-cards) > table.table-cards {
@@ -137,8 +125,8 @@
     display: block;
     margin-bottom: 1.25rem;
     padding: 0.75rem;
-    background: var(--md-canvas-subtle, #f6f8fa);
-    border: 1px solid var(--md-border, rgba(27, 31, 35, 0.12));
+    background: var(--tb-odd-bg, var(--md-canvas-subtle, #f6f8fa));
+    border: 1px solid var(--tb-border-color, var(--md-border, rgba(27, 31, 35, 0.12)));
     border-radius: 6px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   }
@@ -174,8 +162,8 @@
 
   [data-theme="dark"] .table-wrapper:has(table.table-cards) > table.table-cards tbody tr,
   .theme-dark .table-wrapper:has(table.table-cards) > table.table-cards tbody tr {
-    background: var(--md-canvas-subtle, #21262d);
-    border-color: var(--md-border, rgba(255, 255, 255, 0.12));
+    background: var(--tb-odd-bg, var(--md-canvas-subtle, #21262d));
+    border-color: var(--tb-border-color, rgba(255, 255, 255, 0.12));
   }
 
   [data-theme="dark"] .table-wrapper:has(table.table-cards) > table.table-cards tbody td,

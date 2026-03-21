@@ -54,11 +54,6 @@
   border-radius: 6px;
 }
 
-/* Tables: add subtle outer border when not wrapped */
-:where(.post-content, #post-content, .content) table {
-  border-radius: 6px;
-}
-
 /* "Back to footnote" arrow alignment */
 :where(.post-content, #post-content, .content) .footnote-backref {
   font-size: 0.9em;
@@ -164,14 +159,8 @@
   border-left: 2px solid var(--md-border);
 }
 
-/* Tables: generic overflow fallback (when not wrapped in .table-wrapper) */
-:where(.post-content, #post-content, .content) table {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
+/* Markdown tables: Chirpy wraps them in .table-wrapper (horizontal scroll there).
+   Do not set display:block on <table> — it breaks table layout. */
 
 /* Images with captions (kramdown can emit <figcaption>) */
 :where(.post-content, #post-content, .content) figure {
@@ -311,13 +300,48 @@
   background: rgba(255, 255, 255, 0.04);
 }
 
-/* kramdown {:toc} output (#markdown-toc) */
+/* kramdown {:toc} output (#markdown-toc)
+   Chirpy shows the real TOC in the right #panel-wrapper (tocbot); hide this duplicate when
+   article[data-toc="true"]. When toc is off per-post, keep {:toc} and mirror Chirpy layout on xl+. */
+
+article[data-toc="true"] .content #markdown-toc {
+  display: none !important;
+}
+
+@media (min-width: 1200px) {
+  /* Match Chirpy xl breakpoint where #panel-wrapper is shown */
+  article:not([data-toc="true"]) .content:has(> #markdown-toc) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) min(16rem, 28vw);
+    gap: 1.5rem 1.75rem;
+    align-items: start;
+  }
+
+  article:not([data-toc="true"]) .content:has(> #markdown-toc) > #markdown-toc {
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+    max-height: calc(100vh - 3.5rem);
+    overflow: auto;
+    margin: 0 !important;
+    z-index: 1;
+  }
+
+  article:not([data-toc="true"]) .content:has(> #markdown-toc) > *:not(#markdown-toc) {
+    grid-column: 1;
+  }
+}
+
 :where(.post-content, #post-content, .content) #markdown-toc {
   margin: 1rem 0 1.25rem;
   padding: 0.85rem 1rem;
   border: 1px solid var(--md-border);
   border-radius: 8px;
   background: var(--md-canvas-subtle);
+  font-size: 0.9rem;
+  line-height: 1.35;
 }
 
 :where(.post-content, #post-content, .content) #markdown-toc::before {
@@ -328,19 +352,38 @@
   color: var(--md-fg);
 }
 
+/* Nested heading levels (Chirpy-like: no bullets, progressive indent) */
 :where(.post-content, #post-content, .content) #markdown-toc ul,
 :where(.post-content, #post-content, .content) #markdown-toc ol {
+  list-style: none;
   margin: 0.35rem 0 0;
-  padding-left: 1.25em;
+  padding-left: 0;
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc > ul {
+  margin-top: 0.25rem;
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc ul ul {
+  margin-top: 0.15rem;
+  margin-bottom: 0;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--md-border);
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc ul ul ul {
+  padding-left: 0.65rem;
 }
 
 :where(.post-content, #post-content, .content) #markdown-toc li + li {
-  margin-top: 0.2em;
+  margin-top: 0.25em;
 }
 
 :where(.post-content, #post-content, .content) #markdown-toc a {
+  display: block;
   color: var(--md-link);
   text-decoration: none;
+  padding: 0.15rem 0;
 }
 
 :where(.post-content, #post-content, .content) #markdown-toc a:hover {
