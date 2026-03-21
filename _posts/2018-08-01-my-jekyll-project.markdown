@@ -13,7 +13,7 @@ tags:
 
 > 我这辈子遇到的聪明人（来自各行各业的聪明人）没有不每天阅读的——没有，一个都没有。——《穷查理宝典》查理·芒格
 
-> In the field of pedagogy(教育学), [learning by teaching](https://en.wikipedia.org/wiki/Learning_by_teaching) is a method of teaching in which students are made to learn material and prepare lessons to teach it to the other students. There is a strong emphasis on acquisition of life skills along with the subject matter. This method was originally defined by [Jean-Pol Martin](https://en.wikipedia.org/wiki/Jean-Pol_Martin) in the 1980s.
+> In the field of pedagogy (教育学), [learning by teaching](https://en.wikipedia.org/wiki/Learning_by_teaching) is a method of teaching in which students are made to learn material and prepare lessons to teach it to the other students. There is a strong emphasis on acquisition of life skills along with the subject matter. This method was originally defined by [Jean-Pol Martin](https://en.wikipedia.org/wiki/Jean-Pol_Martin) in the 1980s.
 
 > Any fool can write code that a computer can understand. Good programmers write code that humans can understand.
 
@@ -39,6 +39,7 @@ tags:
 * 环境自由，可以各种折腾，为程序员而生。
 
 > Simple cloud hosting, built for developers. A droplet is a KVM VPS which you get full root access to so you can install anything you like.
+{: .prompt-info }
 
 [Tutorials]: https://www.digitalocean.com/community/tutorials
 
@@ -48,6 +49,7 @@ tags:
 
 > Give $100, Get $25
 > Everyone you refer gets $100 in credit over 60 days. Once they’ve spent $25 with us, you'll get $25. There is no limit to the amount of credit you can earn through referrals.
+{: .prompt-tip }
 
 [我的推荐码]: https://m.do.co/c/06b03cc8b6ca
 
