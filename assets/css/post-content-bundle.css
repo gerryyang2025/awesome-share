@@ -238,7 +238,7 @@
 }
 
 /* ==== markdown-extras.css ==== */
-/* Markdown extras - GitHub-like polish for common elements not covered elsewhere */
+/* Markdown extras — body typography polish; inline code colors follow Chirpy (--code-color / --inline-code-bg) via inline-code.css */
 
 /*
   Scope note:
@@ -255,7 +255,7 @@
   --md-canvas: #ffffff;
   --md-link: #0969da;
   --md-link-hover: #0550ae;
-  --md-inline-code-bg: rgba(175, 184, 193, 0.2);
+  --md-inline-code-bg: var(--inline-code-bg);
   /* Prevent margin collapsing causing content to visually escape background on mobile */
   display: flow-root;
 }
@@ -270,7 +270,6 @@
   --md-canvas: #0d1117;
   --md-link: #58a6ff;
   --md-link-hover: #79c0ff;
-  --md-inline-code-bg: rgba(110, 118, 129, 0.4);
 }
 
 /* Baseline typography rhythm inside article containers */
@@ -884,44 +883,34 @@ article[data-toc="true"] .content #markdown-toc {
 
 /* ==== inline-code.css ==== */
 /*
- * Inline code (`...`) — match GitHub .markdown-body code (light/dark)
- * Same article as: https://github.com/gerryyang2025/awesome-share/blob/master/_posts/2019-02-22-docker-in-action.markdown
+ * Inline code — match Chirpy theme (_sass/base/_syntax.scss code.highlighter-rouge)
+ * Uses theme vars --code-color and --inline-code-bg (no fallbacks; defined by Chirpy on <html>).
  */
+article .content :not(pre) > code,
 #post-body :not(pre) > code,
 .post-content :not(pre) > code,
 #post-content :not(pre) > code {
-  padding: 0.2em 0.4em;
+  -webkit-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
   margin: 0;
-  font-size: 85%;
-  line-height: 1.45;
+  padding: 3px 5px;
+  font-size: 0.85rem;
+  line-height: 1.4rem;
   white-space: break-spaces;
+  overflow-wrap: break-word;
   word-break: break-word;
-  color: #24292e;
-  background-color: rgba(175, 184, 193, 0.2);
+  color: var(--code-color);
+  background-color: var(--inline-code-bg);
   border: 0;
   border-radius: 6px;
   box-shadow: none;
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   font-weight: 400;
-  vertical-align: text-bottom;
+  vertical-align: baseline;
 }
 
-/* Blockquote: keep code “pill” ink like GitHub, not muted body text */
-:where(#post-body, .post-content, #post-content) blockquote :not(pre) > code {
-  color: #24292e;
-}
-
-[data-theme="dark"] #post-body :not(pre) > code,
-[data-theme="dark"] .post-content :not(pre) > code,
-[data-theme="dark"] #post-content :not(pre) > code,
-.theme-dark #post-body :not(pre) > code,
-.theme-dark .post-content :not(pre) > code,
-.theme-dark #post-content :not(pre) > code {
-  color: #e6edf3;
-  background-color: rgba(110, 118, 129, 0.4);
-}
-
-:where([data-theme="dark"] #post-body, [data-theme="dark"] .post-content, [data-theme="dark"] #post-content) blockquote :not(pre) > code,
-:where(.theme-dark #post-body, .theme-dark .post-content, .theme-dark #post-content) blockquote :not(pre) > code {
-  color: #e6edf3;
+/* Chirpy: blockquote & { color: inherit; } — inline code follows blockquote text color */
+:where(article .content, #post-body, .post-content, #post-content) blockquote :not(pre) > code {
+  color: inherit;
 }

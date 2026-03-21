@@ -1,4 +1,4 @@
-/* Markdown extras - GitHub-like polish for common elements not covered elsewhere */
+/* Markdown extras — body typography polish; inline code colors follow Chirpy (--code-color / --inline-code-bg) via inline-code.css */
 
 /*
   Scope note:
@@ -15,7 +15,7 @@
   --md-canvas: #ffffff;
   --md-link: #0969da;
   --md-link-hover: #0550ae;
-  --md-inline-code-bg: rgba(175, 184, 193, 0.2);
+  --md-inline-code-bg: var(--inline-code-bg);
   /* Prevent margin collapsing causing content to visually escape background on mobile */
   display: flow-root;
 }
@@ -30,7 +30,6 @@
   --md-canvas: #0d1117;
   --md-link: #58a6ff;
   --md-link-hover: #79c0ff;
-  --md-inline-code-bg: rgba(110, 118, 129, 0.4);
 }
 
 /* Baseline typography rhythm inside article containers */
