@@ -38,9 +38,7 @@ tags:
 * 官方的客服服务响应迅速。如果遇到问题可以向官方提 issue 获得帮助。
 * 环境自由，可以各种折腾，为程序员而生。
 
-{% highlight text %}
-Simple cloud hosting, built for developers. A droplet is a KVM VPS which you get full root access to so you can install anything you like.
-{% endhighlight %}
+> Simple cloud hosting, built for developers. A droplet is a KVM VPS which you get full root access to so you can install anything you like.
 
 [Tutorials]: https://www.digitalocean.com/community/tutorials
 
@@ -48,10 +46,8 @@ Simple cloud hosting, built for developers. A droplet is a KVM VPS which you get
 * 需要承担一些费用。比如，每月10美元(1GB Mem/1 Core processor/30GB SSD的配置)。使用[我的推荐码]注册，你可以得到`100美元`的奖励金额用于购买 VPS，如果以后继续付费的话，我也可能得到一些奖励。
 * 暂时没想到第二条。
 
-{% highlight text %}
-Give $100, Get $25
-Everyone you refer gets $100 in credit over 60 days. Once they’ve spent $25 with us, you'll get $25. There is no limit to the amount of credit you can earn through referrals.
-{% endhighlight %}
+> Give $100, Get $25
+> Everyone you refer gets $100 in credit over 60 days. Once they’ve spent $25 with us, you'll get $25. There is no limit to the amount of credit you can earn through referrals.
 
 [我的推荐码]: https://m.do.co/c/06b03cc8b6ca
 
@@ -68,9 +64,7 @@ Everyone you refer gets $100 in credit over 60 days. Once they’ve spent $25 wi
 
 注意，DO 创建完 droplet 就开始收费，即使你把它 power off (`sudo poweroff`)，它也同样在计费，因为 droplet 使用的资源没有释放。在 Billing 的选项里可以查看自己的 balance 和 usage 情况。如果不希望继续付费可以把 droplet 删除 (destroy)，但是会把这个 droplet 上的数据全部清除 (scrub up)。
 
-{% highlight text %}
-Note that when you power off your droplet you are still billed for it. This is because your diskspace, CPU, RAM, and IP address are all reserved while it is powered off.
-{% endhighlight %}
+> Note that when you power off your droplet you are still billed for it. This is because your diskspace, CPU, RAM, and IP address are all reserved while it is powered off.
 
 检查环境：
 
@@ -81,7 +75,7 @@ Ubuntu 14.04.1 LTS GNU Linux 3.13.0 37 generic x86_64
 
 查看 droplet 的 public ip：
 
-{% highlight text %}
+{% highlight bash %}
 ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//'
 curl http://icanhazip.com
 {% endhighlight %}
