@@ -64,6 +64,26 @@ This ancient Chinese proverb reflects my approach to learning and sharing knowle
 
 This site uses [jekyll-theme-chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) (see [Jekyll docs: overriding theme defaults](https://jekyllrb.com/docs/themes/#overriding-theme-defaults)).
 
+### Style stack (Chirpy + custom CSS)
+
+The **site chrome** (top bar, sidebar, post layout, theme toggle) comes from the Chirpy gem. The **article body** is intentionally tuned to look like **[GitHub-style Markdown](https://github.com/github/markup)**: neutral text grays, blue links, light gray code block panels, 6px rounding on code UI, and matching dark-mode equivalents.
+
+| Piece | Role |
+| --- | --- |
+| **Chirpy (gem)** | Global layout, typography baseline, TOC panel, `[data-theme="dark"]` / `.theme-dark` for dark mode. Version is pinned in `Gemfile` (currently **7.5.0**). |
+| **`_includes/metadata-hook.html`** | Theme hook: injects the stylesheets and `code-copy.js` below (load order matters). |
+| **`assets/css/markdown-extras.css`** | Main content layer: scoped to `.post-content`, `#post-content`, `.content`. Defines **`--md-*` CSS variables** (foreground, muted text, borders, canvas, link colors, inline-code background) for **light and dark**; vertical rhythm (`1rem` block spacing, `line-height: 1.65` on paragraphs); **h2** with bottom border; link underlines; footnotes, task lists, `details`/`summary`, `kbd`, `mark`, `hr`, images; **kramdown `{:toc}`** (`#markdown-toc`) — hidden when the theme TOC is on (`article[data-toc="true"]`), sticky side column on wide screens when per-post `toc: false`. |
+| **`assets/css/blockquote.css`** | Blockquotes: left accent border, muted body color (uses `var(--md-fg-muted)` when available). |
+| **`assets/css/inline-code.css`** | Backtick inline code: ~85% size, pill background, monospace stack; scoped with `#post-body` and post content selectors. |
+| **`assets/css/code-copy-btn.css`** | `.highlight` container (border, radius, padding) and **copy** button position; uses `var(--md-*)` with hex fallbacks. |
+| **`assets/css/rouge-highlight.css`** | Rouge token colors (reds/blues for keywords/strings, etc.) — **GitHub-flavored** palette. |
+| **`assets/css/table.css`** | Chirpy wraps tables in **`.table-wrapper`**; rules align with the theme’s table markup, including striped rows and dark-mode `--tb-*` variables. |
+| **`assets/js/code-copy.js`** | Copy-to-clipboard for code blocks (paired with `code-copy-btn.css`). |
+
+**Changing the look later:** adjust the **`--md-*` blocks** at the top of `markdown-extras.css` (light + dark) so links, borders, and code surfaces stay consistent; then review `table.css` / `inline-code.css` for any hard-coded colors that should follow. Shell colors (sidebar, navbar) live in the theme’s SCSS unless you add `_sass` overrides.
+
+**Unused asset:** `assets/css/home.css` defines classes like `.home-content` / `.category-grid` but nothing in the repo links it today (`index.html` only sets `layout: home`). Include it from a hook or layout if you adopt that markup.
+
 - **Requirements**: Ruby **>= 3.1** and Jekyll **~> 4.3** (Chirpy depends on Jekyll 4.3 and Ruby ~> 3.1).
 - **Home**: `index.html` uses layout `home` (rendered by the theme).
 - **Tabs**: Navigation pages are under `_tabs/` (Categories, Tags, Archives, About). Edit `_tabs/about.md` for the About page.
