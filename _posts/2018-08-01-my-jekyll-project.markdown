@@ -18,7 +18,7 @@ tags:
 > Any fool can write code that a computer can understand. Good programmers write code that humans can understand.
 
 
-就像[这篇博文]的作者一样，最早在接触互联网的时候就开始养成写博客的习惯，因为上中学的时候对化学老师的`好记性不如烂笔头`一句话铭记于心。当时互联网还没有微博，微信，逛论坛和博客是那时的主流。最早写博文是在沪江英语的博客上，因为经常逛沪江论坛，后来由于沪江英语转型博客服务已经不再提供，之前写的一些文章也找不到了。后来又经常逛CSDN论坛，就改为在[CSDN的博客]上继续写博客，因为是免费的服务，天下没有免费的午餐，博客上的广告投放越来越多，有时还经常显示网站在维护不能访问，故而觉得有必要搭建一个自己的博客。目前是在[DigitalOcean]上购买的[VPS]服务，主要用于公众号和博客。其中博客选择的[jekyll]，因为它的哲学思想就是注重内容，界面简单，可以像hacker一样写文章，正如你看到的样子。工作和生活中难免存在很多琐碎的事情，维护博客目的是将一些有价值的事情记录下来，让自己多一些思考。
+就像[这篇博文]的作者一样，最早在接触互联网的时候就开始养成写博客的习惯，因为上中学的时候对化学老师的`好记性不如烂笔头`一句话铭记于心。当时互联网还没有微博，微信，逛论坛和博客是那时的主流。最早写博文是在沪江英语的博客上，因为经常逛沪江论坛，后来由于沪江英语转型博客服务已经不再提供，之前写的一些文章也找不到了。后来又经常逛 [CSDN](https://www.csdn.net/) 论坛，就改为在[CSDN的博客]上继续写博客，因为是免费的服务，天下没有免费的午餐，博客上的广告投放越来越多，有时还经常显示网站在维护不能访问，故而觉得有必要搭建一个自己的博客。开始是在 [DigitalOcean] 上购买的 [VPS] 服务，后面切换到了性价比更高的[腾讯云](https://cloud.tencent.com/)服务，主要用于公众号和博客。其中博客选择的 [jekyll]，因为它的哲学思想就是注重内容，界面简单，可以像 Hacker 一样写文章，正如你看到的样子。工作和生活中难免存在很多琐碎的事情，维护博客目的是将一些有价值的事情记录下来，让自己多一些思考。
 
 
 [这篇博文]: http://tom.preston-werner.com/2008/11/17/blogging-like-a-hacker.html
@@ -27,16 +27,15 @@ tags:
 [VPS]: https://en.wikipedia.org/wiki/Virtual_private_server
 [jekyll]: https://github.com/jekyll/jekyll
 
-# VPS的选取
+# VPS 的选取
 
-通过[我为什么选择DigitalOcean VPS来做开发]一文的介绍，在DigitalOcean上创建了一个VPS。体验后有以下感受：
+通过[我为什么选择 DigitalOcean VPS 来做开发](https://timyang.net/container/why-digitalocean-coreos/)一文的介绍，在 DigitalOcean 上创建了一个 VPS。体验后有以下感受：
 
-[我为什么选择DigitalOcean VPS来做开发]: https://timyang.net/container/why-digitalocean-coreos/
 
 **优点：**
-* 下载速度快，由于是国外的服务器没有GFW的问题。在下载Dokcer官方镜像的时候可以体会到。
-* [Tutorials]丰富，很多分享经验的文章，简单易懂。
-* 官方的客服服务响应迅速。如果遇到问题可以向官方提issue获得帮助。
+* 下载速度快，由于是国外的服务器没有 GFW 的问题。在下载 Dokcer 官方镜像的时候可以体会到。
+* [Tutorials] 丰富，很多分享经验的文章，简单易懂。
+* 官方的客服服务响应迅速。如果遇到问题可以向官方提 issue 获得帮助。
 * 环境自由，可以各种折腾，为程序员而生。
 
 {% highlight text %}
@@ -46,7 +45,7 @@ Simple cloud hosting, built for developers. A droplet is a KVM VPS which you get
 [Tutorials]: https://www.digitalocean.com/community/tutorials
 
 **缺点：**
-* 需要承担一些费用。比如，每月10美元(1GB Mem/1 Core processor/30GB SSD的配置)。使用[我的推荐码]注册，你可以得到`100美元`的奖励金额用于购买VPS，如果以后继续付费的话，我也可能得到一些奖励。
+* 需要承担一些费用。比如，每月10美元(1GB Mem/1 Core processor/30GB SSD的配置)。使用[我的推荐码]注册，你可以得到`100美元`的奖励金额用于购买 VPS，如果以后继续付费的话，我也可能得到一些奖励。
 * 暂时没想到第二条。
 
 {% highlight text %}
@@ -59,17 +58,15 @@ Everyone you refer gets $100 in credit over 60 days. Once they’ve spent $25 wi
 
 ## DigitalOcean
 
-完成下面三步，就可以创建和体验自己的VPS服务了。
+完成下面三步，就可以创建和体验自己的 VPS 服务了。
 
 1. 完成注册
-2. 更新账单(可以使用DO赠送的金额)
-3. 创建Droplet(有多种image可以选择，比如Ubuntu)
+2. 更新账单 (可以使用 DO 赠送的金额)
+3. 创建 Droplet (有多种 image 镜像可以选择，比如 Ubuntu)
 
-创建完，就可以通过SSH的方式登陆到自己的云服务器了，DigitalOcean会把外网的IP和root密码通过邮件的方式通知我们。可以直接使用root和密码来登录，但更安全便捷(不用每次都输入密码)的方式是使用SSH keys的方式来登录([How to Add SSH Keys to Droplets])。
+创建完，就可以通过 SSH 的方式登陆到自己的云服务器了，DigitalOcean 会把外网的 IP 和 root 密码通过邮件的方式通知我们。可以直接使用 root 和密码来登录，但更安全便捷(不用每次都输入密码)的方式是使用 SSH keys 的方式来登录，可参考 [How to Add SSH Keys to Droplets](https://www.digitalocean.com/docs/droplets/how-to/add-ssh-keys/)。
 
-[How to Add SSH Keys to Droplets]: https://www.digitalocean.com/docs/droplets/how-to/add-ssh-keys/
-
-注意，DO创建完droplet就开始收费，即使你把它power off(sudo poweroff)，它也同样在计费，因为droplet使用的资源没有释放。在Billing的选项里可以查看自己的balance和usage情况。如果不希望继续付费可以把droplet删除(destroy)，但是会把这个droplet上的数据全部清除(scrub up)。
+注意，DO 创建完 droplet 就开始收费，即使你把它 power off (`sudo poweroff`)，它也同样在计费，因为 droplet 使用的资源没有释放。在 Billing 的选项里可以查看自己的 balance 和 usage 情况。如果不希望继续付费可以把 droplet 删除 (destroy)，但是会把这个 droplet 上的数据全部清除 (scrub up)。
 
 {% highlight text %}
 Note that when you power off your droplet you are still billed for it. This is because your diskspace, CPU, RAM, and IP address are all reserved while it is powered off.
@@ -82,7 +79,7 @@ cat /etc/issue
 Ubuntu 14.04.1 LTS GNU Linux 3.13.0 37 generic x86_64
 {% endhighlight %}
 
-查看droplet的public ip：
+查看 droplet 的 public ip：
 
 {% highlight text %}
 ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//'
@@ -96,7 +93,7 @@ curl http://icanhazip.com
 
 # VPS设置
 
-以`Ubuntu`为例，在申请到一个VPS后我们需要做哪些事情。
+以 `Ubuntu` 为例，在申请到一个 VPS 后我们需要做哪些事情。
 
 ## 账户初始化配置
 
@@ -104,7 +101,7 @@ curl http://icanhazip.com
 
 ## 系统安全配置
 
-* HTTPS证书设置
+* HTTPS 证书设置
 
 参考[证书安装指引](https://cloud.tencent.com/document/product/400/4143)。
 
@@ -192,7 +189,7 @@ alias his='history | tail -n 10'
 
 # Jekyll
 
-如何通过`jekyll`发表blog，基本的用法可参考官方文档[Posts章节](https://jekyllrb.com/docs/posts/)。
+如何通过 `jekyll` 发表 blog，基本的用法可参考官方文档 [Posts 章节](https://jekyllrb.com/docs/posts/)。
 
 ## Usage
 
@@ -217,7 +214,7 @@ https://kramdown.gettalong.org/syntax.html#footnotes
 
 ### 主题
 
-参考[Overriding theme defaultsPermalink](https://jekyllrb.com/docs/themes/#overriding-theme-defaults)实现如何修改主题。
+参考 [Overriding theme defaultsPermalink](https://jekyllrb.com/docs/themes/#overriding-theme-defaults) 实现如何修改主题。
 
 第三方主题：
 
@@ -284,7 +281,7 @@ More: https://support.apple.com/zh-cn/102650
 
 ### 常用设置
 
-* Mac触控板三指拖移功能
+* Mac 触控板三指拖移功能
 
 系统偏好设置 -> 辅助功能 -> 指针控制 -> 触控板选项 -> 启用拖移 -> 三指拖移
 
@@ -303,30 +300,30 @@ More: https://support.apple.com/zh-cn/102650
 
 ### 系统
 
-| 工具                                                                                                                                 | 功能                                                                                                                                                                                                                             |
-| ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Adobe Reader                                                                                                                         | Adobe Reader 为免费版 PDF 阅读软件，无需授权。如需编辑 PDF 文件的内容，请申请专业版使用                                                                                                                                          |
-| [有数](https://apps.apple.com/cn/app/%E6%9C%89%E6%95%B0-%E9%87%8D%E6%96%B0%E5%AE%9A%E4%B9%89%E8%AE%A1%E7%AE%97%E5%99%A8/id721606556) | 补充 MacOS 计算器的功能                                                                                                                                                                                                          |
-| [Cleaner One](https://apps.apple.com/cn/app/apple-store/id1133028347)                                                                | 磁盘清理(免费) [refer: Mac 存储空间里面的“其他”怎么清理](https://zhuanlan.zhihu.com/p/349862578)                                                                                                                                 |
-| [Homebrew](https://brew.sh/)                                                                                                         | 软件包管理，第二个AppStore                                                                                                                                                                                                       |
-| [Alfred 4 for Mac](https://www.alfredapp.com/)                                                                                       | 查找文件，搜索web等，默认通过快捷键`option + Space`来唤起，例如，`open xxx`打开一个目录或文件                                                                                                                                    |
-| [ITerm2](https://www.iterm2.com/)                                                                                                    | 相比系统默认的`Terminal`提供了更多高级的功能                                                                                                                                                                                     |
-| [Oh My ZSH](https://ohmyz.sh/)                                                                                                       | 兼容bash，并集成了很多插件，使用Terminal更加高效。`bash`和`zsh`之间的切换方法，通过`chsh`命令，然后重启session即可生效：`$chsh -s /bin/zsh`或则`$chsh -s /bin/bash`。常用插件：`autojump`用于目录跳转（`brew install autojump`） |
-| Easy New File                                                                                                                        | 添加右键新建文件                                                                                                                                                                                                                 |
-| [Itsycal](https://www.mowglii.com/itsycal/)                                                                                          | 比系统默认日期显示更全，同时可以添加事件通知，与系统的日历是打通的                                                                                                                                                               |
-| [Spectacle](https://www.spectacleapp.com/)                                                                                           | 窗口管理工具                                                                                                                                                                                                                     |
-| Cheatsheet                                                                                                                           | 通过长按`command键`显示当前应用的快捷键，并可将其保存为PDF文档                                                                                                                                                                   |
-| [Keka](https://www.keka.io/en/)                                                                                                      | 解压缩工具                                                                                                                                                                                                                       |
-| [IINA](https://iina.io/)                                                                                                             | The modern media player for macOS，比苹果自带quicktime player播放器功能强大                                                                                                                                                      |
-| Amphetamine                                                                                                                          | 可以保持系统一直处于awake状态，方便网络下载等不中断场景使用，点击它可以开启一个session来阻止系统进入休眠，同时可以设置这个session的生命周期，比系统默认的`节能`配置使用方便                                                      |
-| [Snip](https://snip.qq.com/)                                                                                                         | 默认mac可以通过`shift+command+5`来截图或录制屏幕。而Snip的优点是可以滚动截屏（从 Mac App Store 下载的 Snip 不支持滚动截屏）                                                                                                      |
-| [Aerial](https://github.com/JohnCoates/Aerial)                                                                                       | Apple TV Aerial Screensaver for Mac                                                                                                                                                                                              |
-| [Dozer](https://github.com/Mortennn/Dozer)                                                                                           | Hide status bar icons on macOS，用于隐藏状态栏上不必要的图标，通过`command + drag`将范围内的图标隐藏                                                                                                                             |
-| [LICEcap](https://github.com/justinfrankel/licecap)                                                                                  | LICEcap simple animated screen capture tool for Windows and OS X，用于屏幕录制并支持导出GIF                                                                                                                                      |
-| [超级右键 iRightMouse](https://apps.apple.com/cn/app/%E8%B6%85%E7%BA%A7%E5%8F%B3%E9%94%AE-irightmouse/id1497428978?mt=12)            | MacOS 上右键的扩展                                                                                                                                                                                                               |
-| [MacVim](https://macvim-dev.github.io/macvim/)                                                                                       | Vim - the text editor - for macOS                                                                                                                                                                                                |
-| [VS Code](https://code.visualstudio.com/)                                                                                            | For Windows, macOS and Linux, 扩展丰富                                                                                                                                                                                           |
-| [泼辣修图](https://apps.apple.com/cn/app/po-la-xiu-tu-jing-jian-ban/id1077124956?mt=12)                                              | Mac上的美图秀秀                                                                                                                                                                                                                  |
+| 工具 | 功能 |
+| --- | --- |
+| Adobe Reader | Adobe Reader 为免费版 PDF 阅读软件，无需授权。如需编辑 PDF 文件的内容，请申请专业版使用 |
+| [有数](https://apps.apple.com/cn/app/%E6%9C%89%E6%95%B0-%E9%87%8D%E6%96%B0%E5%AE%9A%E4%B9%89%E8%AE%A1%E7%AE%97%E5%99%A8/id721606556) | 补充 MacOS 计算器的功能 |
+| [Cleaner One](https://apps.apple.com/cn/app/apple-store/id1133028347) | 磁盘清理（免费）[refer: Mac 存储空间里面的「其他」怎么清理](https://zhuanlan.zhihu.com/p/349862578) |
+| [Homebrew](https://brew.sh/) | 软件包管理，第二个 App Store |
+| [Alfred 4 for Mac](https://www.alfredapp.com/) | 查找文件，搜索 Web 等；默认 `Option + Space` 唤起，例如 `open xxx` 打开目录或文件 |
+| [iTerm2](https://www.iterm2.com/) | 相比系统默认的 `Terminal` 提供更多高级功能 |
+| [Oh My Zsh](https://ohmyz.sh/) | 兼容 bash，集成多种插件，使用 Terminal 更高效。`bash` / `zsh` 切换：`chsh -s /bin/zsh` 或 `chsh -s /bin/bash` 后重启 session 生效。常用插件：`autojump` 目录跳转（`brew install autojump`） |
+| Easy New File | 添加右键新建文件 |
+| [Itsycal](https://www.mowglii.com/itsycal/) | 比系统默认日期显示更全，同时可以添加事件通知，与系统日历打通 |
+| [Spectacle](https://www.spectacleapp.com/) | 窗口管理工具 |
+| Cheatsheet | 长按 `Command` 显示当前应用的快捷键，并可将其保存为 PDF |
+| [Keka](https://www.keka.io/en/) | 解压缩工具 |
+| [IINA](https://iina.io/) | The modern media player for macOS，比苹果自带 QuickTime Player 功能强大 |
+| Amphetamine | 可保持系统一直处于 awake，方便网络下载等不中断场景；点击可开启 session 阻止休眠并设置生命周期，比系统「节能」配置使用方便 |
+| [Snip](https://snip.qq.com/) | 默认 Mac 可用 `Shift + Command + 5` 截图或录屏；Snip 支持滚动截屏（从 Mac App Store 下载的 Snip 不支持滚动截屏） |
+| [Aerial](https://github.com/JohnCoates/Aerial) | Apple TV Aerial Screensaver for Mac |
+| [Dozer](https://github.com/Mortennn/Dozer) | Hide status bar icons on macOS，用于隐藏状态栏上不必要的图标，通过 `Command + drag` 将范围内的图标隐藏 |
+| [LICEcap](https://github.com/justinfrankel/licecap) | LICEcap simple animated screen capture tool for Windows and OS X，用于屏幕录制并支持导出GIF |
+| [超级右键 iRightMouse](https://apps.apple.com/cn/app/%E8%B6%85%E7%BA%A7%E5%8F%B3%E9%94%AE-irightmouse/id1497428978?mt=12) | macOS 上右键的扩展 |
+| [MacVim](https://macvim-dev.github.io/macvim/) | Vim - the text editor - for macOS |
+| [VS Code](https://code.visualstudio.com/) | For Windows, macOS and Linux，扩展丰富 |
+| [泼辣修图](https://apps.apple.com/cn/app/po-la-xiu-tu-jing-jian-ban/id1077124956?mt=12) | Mac 上的美图秀秀 |
 
 More: https://github.com/hzlzh/Best-App
 
