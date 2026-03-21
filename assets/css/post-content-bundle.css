@@ -1,4 +1,4 @@
-/* post-content-bundle.css — concatenated for one HTTP request; regenerate: tools/bundle-post-content-css.sh */
+/* post-content-bundle.css — one request for post content styles; do not edit by hand */
 
 /* ==== rouge-highlight.css ==== */
 /* Rouge syntax highlighting for code blocks */
@@ -664,6 +664,14 @@ article[data-toc="true"] .content #markdown-toc {
 /* Keep long URLs from breaking layout */
 :where(.post-content, #post-content, .content) a {
   overflow-wrap: anywhere;
+}
+
+/* Categories tab: align with Chirpy _sass/pages/_categories.scss — .category-trigger is 1.7rem × 1.7rem; leaf rows use the same box so headers line up without implying a control. */
+.card.categories .category-leaf-spacer {
+  flex-shrink: 0;
+  width: 1.7rem;
+  height: 1.7rem;
+  pointer-events: none;
 }
 
 

@@ -426,3 +426,11 @@ article[data-toc="true"] .content #markdown-toc {
   overflow-wrap: anywhere;
 }
 
+/* Categories tab: align with Chirpy _sass/pages/_categories.scss — .category-trigger is 1.7rem × 1.7rem; leaf rows use the same box so headers line up without implying a control. */
+.card.categories .category-leaf-spacer {
+  flex-shrink: 0;
+  width: 1.7rem;
+  height: 1.7rem;
+  pointer-events: none;
+}
+
