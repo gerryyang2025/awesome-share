@@ -1,7 +1,8 @@
 source "https://rubygems.org"
 
 gem "jekyll", "~> 4.3"
-gem "jekyll-theme-chirpy"
+# Lock Chirpy to the version we patched (post.min.js toc headingSelector).
+gem "jekyll-theme-chirpy", "7.5.0"
 # Required for Kramdown 2.x to parse GFM fenced code blocks (```lang) correctly
 gem "kramdown-parser-gfm"
 
