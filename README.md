@@ -82,8 +82,6 @@ The **site chrome** (top bar, sidebar, post layout, theme toggle) comes from the
 
 **Changing the look later:** adjust the **`--md-*` blocks** at the top of `markdown-extras.css` (light + dark) so links, borders, and code surfaces stay consistent; then review `table.css` / `inline-code.css` for any hard-coded colors that should follow. Shell colors (sidebar, navbar) live in the theme’s SCSS unless you add `_sass` overrides.
 
-**Unused asset:** `assets/css/home.css` defines classes like `.home-content` / `.category-grid` but nothing in the repo links it today (`index.html` only sets `layout: home`). Include it from a hook or layout if you adopt that markup.
-
 - **Requirements**: Ruby **>= 3.1** and Jekyll **~> 4.3** (Chirpy depends on Jekyll 4.3 and Ruby ~> 3.1).
 - **Home**: `index.html` uses layout `home` (rendered by the theme).
 - **Tabs**: Navigation pages are under `_tabs/` (Categories, Tags, Archives, About). Edit `_tabs/about.md` for the About page.

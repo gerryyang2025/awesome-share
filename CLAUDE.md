@@ -22,17 +22,18 @@ bundle install
 
 ## Blog Structure
 
-- `_posts/` - Blog posts in Markdown with YAML front matter (title, date, layout, categories)
-- `_config.yml` - Jekyll configuration (title, URL, plugins, theme: minima)
-- `index.md` - Home page listing posts by category
-- `Gemfile` - Ruby dependencies (jekyll ~> 3.8.3, minima ~> 2.0, jekyll-feed)
-- `about.md` - About page
+- `_posts/` - Blog posts in Markdown with YAML front matter (title, date, layout, categories, tags)
+- `_config.yml` - Jekyll configuration (theme: **jekyll-theme-chirpy**, plugins, archives)
+- `index.html` - Home page (`layout: home` from the theme)
+- `_tabs/` - Nav tabs (About, Categories, Tags, Archives)
+- `Gemfile` - Ruby dependencies (Jekyll ~> 4.3, **jekyll-theme-chirpy** 7.5.0, kramdown-parser-gfm, jekyll-feed, jekyll-sitemap, jekyll-archives)
+- `_includes/metadata-hook.html` - Extra CSS/JS for post content (see README “Style stack”)
 
 ## Key Configuration
 
 The `_config.yml` sets:
-- Site title, author, description
-- URL: http://gerryyang.com
-- Markdown processor: kramdown
-- Plugins: jekyll-feed, jekyll-seo-tag
-- Development server runs on port 80 with IP 172.19.0.16
+
+- Site title, description, `url` / `share_base_url`
+- Markdown: kramdown with GFM input, Rouge highlighting (`css_class: highlight`)
+- Plugins: jekyll-feed, jekyll-seo-tag, jekyll-sitemap, jekyll-archives
+- Development server: see `_config.yml` (`port`, `host`; default via **optools** is port **8080**)
