@@ -18,7 +18,7 @@ tags:
 > Any fool can write code that a computer can understand. Good programmers write code that humans can understand.
 
 
-就像[这篇博文](http://tom.preston-werner.com/2008/11/17/blogging-like-a-hacker.html)的作者一样，最早在接触互联网的时候就开始养成写博客的习惯，因为上中学的时候对化学老师的`好记性不如烂笔头`一句话铭记于心。当时互联网还没有微博，微信，逛论坛和博客是那时的主流。最早写博文是在沪江英语的博客上，因为经常逛沪江论坛，后来由于沪江英语转型博客服务已经不再提供，之前写的一些文章也找不到了。后来又经常逛 [CSDN](https://www.csdn.net/) 论坛，就改为在 [CSDN 的博客](https://blog.csdn.net/delphiwcdj)上继续写博客，因为是免费的服务，天下没有免费的午餐，博客上的广告投放越来越多，有时还经常显示网站在维护不能访问，故而觉得有必要搭建一个自己的博客。开始是在 [DigitalOcean](https://www.digitalocean.com/) 上购买的 [VPS](https://en.wikipedia.org/wiki/Virtual_private_server) 服务，后面切换到了性价比更高的[腾讯云](https://cloud.tencent.com/)服务，主要用于公众号和博客。其中博客选择的 [jekyll](https://github.com/jekyll/jekyll) (推荐使用 [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) 主题)，因为它的哲学思想就是注重内容，界面简单，可以像 Hacker 一样写文章，正如你看到的样子。工作和生活中难免存在很多琐碎的事情，维护博客目的是将一些有价值的事情记录下来，让自己多一些思考。
+就像[这篇博文](http://tom.preston-werner.com/2008/11/17/blogging-like-a-hacker.html)的作者一样，最早在接触互联网的时候就开始养成写博客的习惯，因为上中学的时候对化学老师的`好记性不如烂笔头`一句话铭记于心。当时互联网还没有微博，微信，逛论坛和博客是那时的主流。最早写博文是在沪江英语的博客上，因为经常逛沪江论坛，后来由于沪江英语转型博客服务已经不再提供，之前写的一些文章也找不到了。后来又经常逛 [CSDN](https://www.csdn.net/) 论坛，就改为在 [CSDN 的博客](https://blog.csdn.net/delphiwcdj)上继续写博客，因为是免费的服务，天下没有免费的午餐，博客上的广告投放越来越多，有时还经常显示网站在维护不能访问，故而觉得有必要搭建一个自己的博客。开始是在 [DigitalOcean](https://www.digitalocean.com/) 上购买的 [VPS](https://en.wikipedia.org/wiki/Virtual_private_server) 服务，后面切换到了性价比更高的[腾讯云](https://cloud.tencent.com/)服务，主要用于公众号和博客。其中博客选择的 [Jekyll](https://github.com/jekyll/jekyll) (推荐使用面向技术写作的 Jekyll 主题 [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) 主题)，因为它的哲学思想就是注重内容，界面简单，可以像 Hacker 一样写文章，正如你看到的样子。工作和生活中难免存在很多琐碎的事情，维护博客目的是将一些有价值的事情记录下来，让自己多一些思考。
 
 
 
