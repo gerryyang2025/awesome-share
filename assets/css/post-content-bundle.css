@@ -1,0 +1,919 @@
+/* post-content-bundle.css — concatenated for one HTTP request; regenerate: tools/bundle-post-content-css.sh */
+
+/* ==== rouge-highlight.css ==== */
+/* Rouge syntax highlighting for code blocks */
+.figure .highlight,
+.highlight pre,
+.highlight table {
+  margin: 0;
+}
+
+/* Ensure code block line breaks are preserved (required when compress is disabled) */
+.highlight pre,
+.highlight pre code,
+.figure .highlight pre,
+.figure .highlight pre code {
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.highlight .c,
+.highlight .c1,
+.highlight .cm,
+.highlight .cp,
+.highlight .cs {
+  color: #6a737d;
+  font-style: italic;
+}
+
+.highlight .k,
+.highlight .kc,
+.highlight .kd,
+.highlight .kn,
+.highlight .kp,
+.highlight .kr,
+.highlight .kt {
+  color: #d73a49;
+}
+
+.highlight .s,
+.highlight .s1,
+.highlight .s2,
+.highlight .sb,
+.highlight .sc,
+.highlight .sd,
+.highlight .se,
+.highlight .sh,
+.highlight .si,
+.highlight .sx {
+  color: #032f62;
+}
+
+.highlight .na,
+.highlight .nb,
+.highlight .nc,
+.highlight .no,
+.highlight .nd,
+.highlight .ni,
+.highlight .ne,
+.highlight .nf,
+.highlight .nl,
+.highlight .nn,
+.highlight .nt,
+.highlight .nv,
+.highlight .vc,
+.highlight .vg,
+.highlight .vi {
+  color: #005cc5;
+}
+
+.highlight .m,
+.highlight .mf,
+.highlight .mh,
+.highlight .mi,
+.highlight .il,
+.highlight .mo {
+  color: #005cc5;
+}
+
+.highlight .o,
+.highlight .ow {
+  color: #d73a49;
+}
+
+.highlight .p {
+  color: #24292e;
+}
+
+.highlight .err {
+  color: #cb2431;
+  background-color: #fae6e6;
+}
+
+.highlight .gd {
+  color: #cb2431;
+  background-color: #ffdddd;
+}
+
+.highlight .gi {
+  color: #22863a;
+  background-color: #ddffdd;
+}
+
+.highlight .gh {
+  color: #6f42c1;
+  font-weight: bold;
+}
+
+.highlight .gu {
+  color: #6f42c1;
+}
+
+.highlight .w {
+  color: #6a737d;
+}
+
+/* ==== code-copy-btn.css ==== */
+/* Code block - GitHub style (match screenshot) */
+
+/* Container: #f6f8fa background, subtle border, rounded corners */
+.highlight {
+  position: relative;
+  margin: 1em 0;
+  padding: 1rem;
+  background-color: var(--md-canvas-subtle, #f6f8fa);
+  border: 1px solid var(--md-border, rgba(27, 31, 35, 0.12));
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.highlight pre {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.highlight pre code {
+  display: block;
+  padding: 0;
+  font-size: 0.875em;
+  line-height: 1.45;
+  color: var(--md-fg, #24292e);
+}
+
+/* Line number gutter - very subtle (Rouge: .gutter or .rouge-gutter) */
+.highlight .gutter,
+.highlight .rouge-gutter {
+  background-color: rgba(27, 31, 35, 0.05);
+  padding-right: 0.75rem;
+}
+
+/* Copy button - icon only, top-right, light gray like GitHub */
+.highlight .code-copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  color: #57606a;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.highlight .code-copy-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.highlight:hover .code-copy-btn {
+  opacity: 1;
+}
+
+.highlight .code-copy-btn:hover {
+  color: #24292e;
+  background: rgba(27, 31, 35, 0.06);
+}
+
+.highlight .code-copy-btn:active,
+.highlight .code-copy-btn:focus {
+  opacity: 1;
+  outline: none;
+}
+
+.highlight .code-copy-btn.copied {
+  color: #1a7f37;
+}
+
+.highlight .code-copy-btn.copied .code-copy-icon {
+  display: none;
+}
+
+.highlight .code-copy-btn.copied .code-copy-check {
+  display: block;
+}
+
+.highlight .code-copy-btn .code-copy-check {
+  display: none;
+}
+
+/* ----- Dark mode (Chirpy theme_mode / GitHub dark style) ----- */
+[data-theme="dark"] .highlight,
+.theme-dark .highlight {
+  background-color: var(--md-canvas-subtle, #161b22);
+  border-color: var(--md-border, rgba(255, 255, 255, 0.16));
+}
+
+[data-theme="dark"] .highlight .gutter,
+[data-theme="dark"] .highlight .rouge-gutter,
+.theme-dark .highlight .gutter,
+.theme-dark .highlight .rouge-gutter {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .highlight .code-copy-btn,
+.theme-dark .highlight .code-copy-btn {
+  color: #8b949e;
+  background: transparent;
+}
+
+[data-theme="dark"] .highlight .code-copy-btn:hover,
+.theme-dark .highlight .code-copy-btn:hover {
+  color: #c9d1d9;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .highlight .code-copy-btn.copied,
+.theme-dark .highlight .code-copy-btn.copied {
+  color: #3fb950;
+}
+
+/* ==== markdown-extras.css ==== */
+/* Markdown extras - GitHub-like polish for common elements not covered elsewhere */
+
+/*
+  Scope note:
+  Prefer scoping to common post containers first, with a global fallback.
+  Chirpy commonly uses .post-content / #post-content; some pages may use .content.
+*/
+
+:where(.post-content, #post-content, .content) {
+  --md-fg: #1f2328;
+  --md-fg-muted: #57606a;
+  --md-border: rgba(27, 31, 35, 0.12);
+  --md-border-strong: rgba(27, 31, 35, 0.18);
+  --md-canvas-subtle: #f6f8fa;
+  --md-canvas: #ffffff;
+  --md-link: #0969da;
+  --md-link-hover: #0550ae;
+  --md-inline-code-bg: rgba(175, 184, 193, 0.2);
+  /* Prevent margin collapsing causing content to visually escape background on mobile */
+  display: flow-root;
+}
+
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content),
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) {
+  --md-fg: #e6edf3;
+  --md-fg-muted: #8b949e;
+  --md-border: rgba(255, 255, 255, 0.16);
+  --md-border-strong: rgba(255, 255, 255, 0.22);
+  --md-canvas-subtle: #161b22;
+  --md-canvas: #0d1117;
+  --md-link: #58a6ff;
+  --md-link-hover: #79c0ff;
+  --md-inline-code-bg: rgba(110, 118, 129, 0.4);
+}
+
+/* Baseline typography rhythm inside article containers */
+:where(.post-content, #post-content, .content) :where(p, ul, ol, dl, table, pre, blockquote, details, figure) {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+:where(.post-content, #post-content, .content) :where(p, li) {
+  line-height: 1.65;
+}
+
+/* Inline images in paragraphs: center by default (GitHub-like) */
+:where(.post-content, #post-content, .content) p > img:only-child {
+  display: block;
+  margin: 0.75rem auto;
+}
+
+/* Ensure <pre> keeps rounded corners consistent with code-copy container */
+:where(.post-content, #post-content, .content) pre {
+  border-radius: 6px;
+}
+
+/* "Back to footnote" arrow alignment */
+:where(.post-content, #post-content, .content) .footnote-backref {
+  font-size: 0.9em;
+  margin-left: 0.25em;
+  color: var(--md-fg-muted);
+}
+
+:where(.post-content, #post-content, .content) .footnote-backref:hover {
+  color: var(--md-link-hover);
+}
+
+/* Selection color (subtle, readable) */
+:where(.post-content, #post-content, .content) ::selection {
+  background: rgba(9, 105, 218, 0.18);
+}
+
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) ::selection,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) ::selection {
+  background: rgba(88, 166, 255, 0.25);
+}
+
+/* Headings: spacing + subtle divider like GitHub */
+:where(.post-content, #post-content, .content) h1,
+:where(.post-content, #post-content, .content) h2,
+:where(.post-content, #post-content, .content) h3,
+:where(.post-content, #post-content, .content) h4,
+:where(.post-content, #post-content, .content) h5,
+:where(.post-content, #post-content, .content) h6 {
+  color: var(--md-fg);
+  scroll-margin-top: 5rem;
+}
+
+:where(.post-content, #post-content, .content) h2 {
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--md-border);
+}
+
+:where(.post-content, #post-content, .content) h1,
+:where(.post-content, #post-content, .content) h2 {
+  margin-top: 1.6em;
+  margin-bottom: 0.8em;
+}
+
+:where(.post-content, #post-content, .content) h3,
+:where(.post-content, #post-content, .content) h4,
+:where(.post-content, #post-content, .content) h5,
+:where(.post-content, #post-content, .content) h6 {
+  margin-top: 1.3em;
+  margin-bottom: 0.6em;
+}
+
+/* Links: consistent underline behavior */
+:where(.post-content, #post-content, .content) a {
+  color: var(--md-link);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+}
+
+:where(.post-content, #post-content, .content) a:hover {
+  color: var(--md-link-hover);
+  text-decoration: underline;
+}
+
+/* Paragraph/code mixed in blockquote: keep contrast */
+:where(.post-content, #post-content, .content) blockquote :where(code, kbd) {
+  background-color: var(--md-inline-code-bg);
+}
+
+/* Lists: GitHub-ish spacing and nested list stability */
+:where(.post-content, #post-content, .content) ul,
+:where(.post-content, #post-content, .content) ol {
+  padding-left: 1.5em;
+}
+
+:where(.post-content, #post-content, .content) li + li {
+  margin-top: 0.25em;
+}
+
+:where(.post-content, #post-content, .content) li > p {
+  margin: 0.35em 0;
+}
+
+:where(.post-content, #post-content, .content) li > :where(ul, ol) {
+  margin-top: 0.35em;
+  margin-bottom: 0.35em;
+}
+
+/* Definition lists (dl/dt/dd) */
+:where(.post-content, #post-content, .content) dl {
+  padding: 0;
+}
+
+:where(.post-content, #post-content, .content) dt {
+  padding: 0;
+  margin-top: 1em;
+  font-weight: 600;
+}
+
+:where(.post-content, #post-content, .content) dd {
+  padding: 0 0 0 1em;
+  margin: 0.3em 0 0.9em;
+  color: var(--md-fg);
+  border-left: 2px solid var(--md-border);
+}
+
+/* Markdown tables: Chirpy wraps them in .table-wrapper (horizontal scroll there).
+   Do not set display:block on <table> — it breaks table layout. */
+
+/* Images with captions (kramdown can emit <figcaption>) */
+:where(.post-content, #post-content, .content) figure {
+  margin: 0 0 1rem;
+}
+
+:where(.post-content, #post-content, .content) figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.9em;
+  color: var(--md-fg-muted);
+  text-align: center;
+}
+
+/* Horizontal rule */
+:where(.post-content, #post-content, .content) hr {
+  height: 1px;
+  padding: 0;
+  margin: 1rem 0;
+  border: 0;
+  background-color: rgba(27, 31, 35, 0.15);
+}
+
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) hr,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) hr {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Images: keep inside article width */
+:where(.post-content, #post-content, .content) img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* <kbd> */
+:where(.post-content, #post-content, .content) kbd {
+  display: inline-block;
+  padding: 0.15em 0.45em;
+  font-size: 0.85em;
+  line-height: 1;
+  color: #1f2328;
+  background-color: #f6f8fa;
+  border: 1px solid rgba(27, 31, 35, 0.12);
+  border-bottom-color: rgba(27, 31, 35, 0.2);
+  border-radius: 6px;
+  box-shadow: inset 0 -1px 0 rgba(27, 31, 35, 0.12);
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+}
+
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) kbd,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) kbd {
+  color: #e6edf3;
+  background-color: #161b22;
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* <mark> highlight */
+:where(.post-content, #post-content, .content) mark {
+  padding: 0.05em 0.2em;
+  border-radius: 4px;
+  background-color: rgba(255, 223, 93, 0.6);
+  color: inherit;
+}
+
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) mark,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) mark {
+  background-color: rgba(187, 128, 9, 0.45);
+}
+
+/* Task lists (kramdown GFM) */
+:where(.post-content, #post-content, .content) ul.task-list {
+  padding-left: 1.2em;
+}
+
+:where(.post-content, #post-content, .content) li.task-list-item {
+  list-style: none;
+  margin-left: -0.2em;
+}
+
+:where(.post-content, #post-content, .content) li.task-list-item input[type="checkbox"] {
+  margin: 0 0.5em 0 0;
+  transform: translateY(0.08em);
+}
+
+/* Footnotes (kramdown) */
+:where(.post-content, #post-content, .content) .footnotes {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--md-border);
+  font-size: 0.95em;
+}
+
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) .footnotes,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) .footnotes {
+  border-top-color: var(--md-border);
+}
+
+:where(.post-content, #post-content, .content) .footnotes ol {
+  padding-left: 1.25em;
+}
+
+:where(.post-content, #post-content, .content) .footnotes li {
+  margin: 0.4rem 0;
+}
+
+:where(.post-content, #post-content, .content) .footnote-backref,
+:where(.post-content, #post-content, .content) a.footnote {
+  text-decoration: none;
+}
+
+:where(.post-content, #post-content, .content) .footnote-backref:hover,
+:where(.post-content, #post-content, .content) a.footnote:hover {
+  text-decoration: underline;
+}
+
+/* Details/Summary callouts */
+:where(.post-content, #post-content, .content) details {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--md-border);
+  border-radius: 6px;
+  background: rgba(27, 31, 35, 0.02);
+}
+
+:where(.post-content, #post-content, .content) details > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+:where(.post-content, #post-content, .content) details[open] > summary {
+  margin-bottom: 0.5rem;
+}
+
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) details,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) details {
+  border-color: var(--md-border);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* kramdown {:toc} output (#markdown-toc)
+   Chirpy shows the real TOC in the right #panel-wrapper (tocbot); hide this duplicate when
+   article[data-toc="true"]. When toc is off per-post, keep {:toc} and mirror Chirpy layout on xl+. */
+
+article[data-toc="true"] .content #markdown-toc {
+  display: none !important;
+}
+
+@media (min-width: 1200px) {
+  /* Match Chirpy xl breakpoint where #panel-wrapper is shown */
+  article:not([data-toc="true"]) .content:has(> #markdown-toc) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) min(16rem, 28vw);
+    gap: 1.5rem 1.75rem;
+    align-items: start;
+  }
+
+  article:not([data-toc="true"]) .content:has(> #markdown-toc) > #markdown-toc {
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+    max-height: calc(100vh - 3.5rem);
+    overflow: auto;
+    margin: 0 !important;
+    z-index: 1;
+  }
+
+  article:not([data-toc="true"]) .content:has(> #markdown-toc) > *:not(#markdown-toc) {
+    grid-column: 1;
+  }
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc {
+  margin: 1rem 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--md-border);
+  border-radius: 8px;
+  background: var(--md-canvas-subtle);
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc::before {
+  content: "Contents";
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--md-fg);
+}
+
+/* Nested heading levels (Chirpy-like: no bullets, progressive indent) */
+:where(.post-content, #post-content, .content) #markdown-toc ul,
+:where(.post-content, #post-content, .content) #markdown-toc ol {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding-left: 0;
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc > ul {
+  margin-top: 0.25rem;
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc ul ul {
+  margin-top: 0.15rem;
+  margin-bottom: 0;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--md-border);
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc ul ul ul {
+  padding-left: 0.65rem;
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc li + li {
+  margin-top: 0.25em;
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc a {
+  display: block;
+  color: var(--md-link);
+  text-decoration: none;
+  padding: 0.15rem 0;
+}
+
+:where(.post-content, #post-content, .content) #markdown-toc a:hover {
+  text-decoration: underline;
+}
+
+/* Code blocks spacing (works with Rouge containers) */
+:where(.post-content, #post-content, .content) pre {
+  margin: 1rem 0;
+}
+
+:where(.post-content, #post-content, .content) .highlight {
+  margin: 1rem 0;
+}
+
+/* Heading anchor links (Chirpy/various plugins may emit these classnames) */
+:where(.post-content, #post-content, .content) :is(h1, h2, h3, h4, h5, h6) :is(a.anchor, a.anchorjs-link, a.heading-anchor, a.header-link) {
+  margin-left: 0.25em;
+  color: var(--md-fg-muted);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+:where(.post-content, #post-content, .content) :is(h1, h2, h3, h4, h5, h6):hover :is(a.anchor, a.anchorjs-link, a.heading-anchor, a.header-link) {
+  opacity: 1;
+}
+
+:where(.post-content, #post-content, .content) :is(h1, h2, h3, h4, h5, h6) :is(a.anchor, a.anchorjs-link, a.heading-anchor, a.header-link):hover {
+  color: var(--md-link-hover);
+}
+
+/* Blockquote/link tightness */
+:where(.post-content, #post-content, .content) blockquote {
+  margin: 1rem 0;
+}
+
+/* Keep long URLs from breaking layout */
+:where(.post-content, #post-content, .content) a {
+  overflow-wrap: anywhere;
+}
+
+
+/* ==== blockquote.css ==== */
+/* Blockquote - GitHub-like style (subtle, neutral) */
+
+:where(.post-content, #post-content, .content) blockquote {
+  margin: 1rem 0;
+  padding: 0 1rem;
+  color: var(--md-fg-muted, #57606a);
+  background: transparent;
+  border-left: 0.25em solid var(--md-border-strong, rgba(27, 31, 35, 0.18));
+}
+
+:where(.post-content, #post-content, .content) blockquote p:first-child {
+  margin-top: 0;
+}
+
+:where(.post-content, #post-content, .content) blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Dark mode */
+:where([data-theme="dark"] .post-content, [data-theme="dark"] #post-content, [data-theme="dark"] .content) blockquote,
+:where(.theme-dark .post-content, .theme-dark #post-content, .theme-dark .content) blockquote {
+  color: var(--md-fg-muted, #8b949e);
+  background: transparent;
+  border-left-color: var(--md-border-strong, rgba(255, 255, 255, 0.22));
+}
+
+/* ==== table.css ==== */
+/* Markdown tables — match Chirpy theme (.table-wrapper from refactor-content.html)
+   Ref: https://github.com/cotes2020/jekyll-theme-chirpy/blob/master/_sass/base/_typography.scss */
+
+.table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  margin: 0 0 1.5rem;
+  -webkit-overflow-scrolling: touch;
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.table-wrapper > table {
+  width: max-content;
+  min-width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 95%;
+  table-layout: auto;
+}
+
+.table-wrapper > table thead {
+  border-bottom: 2px solid rgb(210 215 217 / 75%);
+}
+
+.table-wrapper > table thead th {
+  padding: 0.4rem 1rem;
+  border: none;
+  font-weight: 600;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  vertical-align: top;
+  line-height: 1.5;
+  background: transparent;
+  color: inherit;
+}
+
+.table-wrapper > table tbody tr {
+  border-bottom: 1px solid var(--tb-border-color, #eaeaea);
+}
+
+.table-wrapper > table tbody tr:nth-child(odd) {
+  background-color: var(--tb-odd-bg, #fbfcfd);
+}
+
+.table-wrapper > table tbody tr:nth-child(even) {
+  background-color: var(--tb-even-bg, #ffffff);
+}
+
+.table-wrapper > table tbody td {
+  padding: 0.4rem 1rem;
+  border: none;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.table-wrapper > table th p,
+.table-wrapper > table td p {
+  margin: 0.35em 0;
+}
+
+.table-wrapper > table th p:first-child,
+.table-wrapper > table td p:first-child {
+  margin-top: 0;
+}
+
+.table-wrapper > table th p:last-child,
+.table-wrapper > table td p:last-child {
+  margin-bottom: 0;
+}
+
+/* Dark — use Chirpy vars when present */
+[data-theme="dark"] .table-wrapper > table thead,
+.theme-dark .table-wrapper > table thead {
+  border-bottom-color: rgba(255, 255, 255, 0.22);
+}
+
+[data-theme="dark"] .table-wrapper > table tbody tr:nth-child(odd),
+.theme-dark .table-wrapper > table tbody tr:nth-child(odd) {
+  background-color: var(--tb-odd-bg, #252526);
+}
+
+[data-theme="dark"] .table-wrapper > table tbody tr:nth-child(even),
+.theme-dark .table-wrapper > table tbody tr:nth-child(even) {
+  background-color: var(--tb-even-bg, rgb(31 31 34));
+}
+
+[data-theme="dark"] .table-wrapper > table tbody tr,
+.theme-dark .table-wrapper > table tbody tr {
+  border-bottom-color: var(--tb-border-color, rgba(255, 255, 255, 0.12));
+}
+
+/* Chirpy: slightly narrower min width on large screens */
+@media (min-width: 992px) {
+  .content .table-wrapper > table {
+    min-width: 70%;
+  }
+}
+
+/* ----- Optional: {: .table-cards } on <table> (narrow screens) ----- */
+@media (max-width: 960px) {
+  .table-wrapper:has(table.table-cards) {
+    overflow-x: visible;
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards {
+    width: 100%;
+    display: block;
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards thead {
+    display: none;
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody tr {
+    display: block;
+    margin-bottom: 1.25rem;
+    padding: 0.75rem;
+    background: var(--tb-odd-bg, var(--md-canvas-subtle, #f6f8fa));
+    border: 1px solid var(--tb-border-color, var(--md-border, rgba(27, 31, 35, 0.12)));
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td {
+    display: block;
+    padding: 0.4rem 0 0.5rem;
+    border: none;
+    border-bottom: 1px solid rgba(27, 31, 35, 0.08);
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td::before {
+    display: block;
+    font-weight: 600;
+    color: var(--md-fg-muted, #57606a);
+    margin-bottom: 0.2rem;
+    font-size: 0.85em;
+  }
+
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(1)::before { content: "算法"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(2)::before { content: "核心机制"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(3)::before { content: "查询速度"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(4)::before { content: "内存占用"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(5)::before { content: "均衡性 (负载分布)"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(6)::before { content: "扩缩容影响 (扰动)"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(7)::before { content: "实现复杂度"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(8)::before { content: "最大缺点"; }
+  .table-wrapper:has(table.table-cards) > table.table-cards tbody td:nth-child(9)::before { content: "最大优点"; }
+
+  [data-theme="dark"] .table-wrapper:has(table.table-cards) > table.table-cards tbody tr,
+  .theme-dark .table-wrapper:has(table.table-cards) > table.table-cards tbody tr {
+    background: var(--tb-odd-bg, var(--md-canvas-subtle, #21262d));
+    border-color: var(--tb-border-color, rgba(255, 255, 255, 0.12));
+  }
+
+  [data-theme="dark"] .table-wrapper:has(table.table-cards) > table.table-cards tbody td,
+  .theme-dark .table-wrapper:has(table.table-cards) > table.table-cards tbody td {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .table-wrapper:has(table.table-cards) > table.table-cards tbody td::before,
+  .theme-dark .table-wrapper:has(table.table-cards) > table.table-cards tbody td::before {
+    color: var(--md-fg-muted, #8b949e);
+  }
+}
+
+/* ==== inline-code.css ==== */
+/*
+ * Inline code (`...`) — match GitHub .markdown-body code (light/dark)
+ * Same article as: https://github.com/gerryyang2025/awesome-share/blob/master/_posts/2019-02-22-docker-in-action.markdown
+ */
+#post-body :not(pre) > code,
+.post-content :not(pre) > code,
+#post-content :not(pre) > code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  line-height: 1.45;
+  white-space: break-spaces;
+  word-break: break-word;
+  color: #24292e;
+  background-color: rgba(175, 184, 193, 0.2);
+  border: 0;
+  border-radius: 6px;
+  box-shadow: none;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-weight: 400;
+  vertical-align: text-bottom;
+}
+
+/* Blockquote: keep code “pill” ink like GitHub, not muted body text */
+:where(#post-body, .post-content, #post-content) blockquote :not(pre) > code {
+  color: #24292e;
+}
+
+[data-theme="dark"] #post-body :not(pre) > code,
+[data-theme="dark"] .post-content :not(pre) > code,
+[data-theme="dark"] #post-content :not(pre) > code,
+.theme-dark #post-body :not(pre) > code,
+.theme-dark .post-content :not(pre) > code,
+.theme-dark #post-content :not(pre) > code {
+  color: #e6edf3;
+  background-color: rgba(110, 118, 129, 0.4);
+}
+
+:where([data-theme="dark"] #post-body, [data-theme="dark"] .post-content, [data-theme="dark"] #post-content) blockquote :not(pre) > code,
+:where(.theme-dark #post-body, .theme-dark .post-content, .theme-dark #post-content) blockquote :not(pre) > code {
+  color: #e6edf3;
+}

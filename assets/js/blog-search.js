@@ -26,13 +26,26 @@
     return normalized.split(' ').filter(Boolean);
   }
 
-  /** Same rule as SimpleJekyllSearch LiteralSearchStrategy: every token must appear in this string. */
-  function wordsInField(text, words) {
-    if (text == null || text === '') return false;
-    const s = String(text).toLowerCase();
-    return words.every(function (w) {
-      return s.indexOf(w) !== -1;
-    });
+  /** `textL` is already lowercased; `words` are lowercased tokens. */
+  function wordsInLowerField(textL, words) {
+    if (textL == null || textL === '') return false;
+    for (let i = 0; i < words.length; i++) {
+      if (textL.indexOf(words[i]) === -1) return false;
+    }
+    return true;
+  }
+
+  /**
+   * One-time fields for hot path (avoid per-keystroke toLowerCase / Date.parse on huge strings).
+   */
+  function indexPostRow(p) {
+    p._titleL = (p.title || '').toLowerCase();
+    p._catL = String(p.categories || '').toLowerCase();
+    p._tagsL = String(p.tags || '').toLowerCase();
+    p._urlL = String(p.url || '').toLowerCase();
+    p._bodyL = String(p.content || '').toLowerCase();
+    const t = Date.parse(p.date || '');
+    p._dateMs = isNaN(t) ? 0 : t;
   }
 
   /**
@@ -41,26 +54,15 @@
   function matchRank(post, qNorm, words) {
     if (!words.length) return 99;
 
-    const title = (post.title || '').toLowerCase();
-    const cat = post.categories || '';
-    const tags = post.tags || '';
-    const url = post.url || '';
-    const body = post.content || '';
+    const title = post._titleL;
 
     if (title === qNorm) return 0;
     if (qNorm.length >= 2 && title.indexOf(qNorm) !== -1) return 1;
-    if (wordsInField(post.title, words)) return 2;
-    if (wordsInField(cat, words) || wordsInField(tags, words)) return 3;
-    if (wordsInField(url, words)) return 4;
-    if (wordsInField(body, words)) return 5;
+    if (wordsInLowerField(title, words)) return 2;
+    if (wordsInLowerField(post._catL, words) || wordsInLowerField(post._tagsL, words)) return 3;
+    if (wordsInLowerField(post._urlL, words)) return 4;
+    if (wordsInLowerField(post._bodyL, words)) return 5;
     return 99;
-  }
-
-  function parseDate(post) {
-    const d = post.date;
-    if (!d) return 0;
-    const t = Date.parse(d);
-    return isNaN(t) ? 0 : t;
   }
 
   function searchPosts(data, rawQuery, maxResults) {
@@ -77,7 +79,7 @@
 
     out.sort(function (a, b) {
       if (a.rank !== b.rank) return a.rank - b.rank;
-      return parseDate(b.post) - parseDate(a.post);
+      return b.post._dateMs - a.post._dateMs;
     });
 
     return out.slice(0, maxResults).map(function (x) {
@@ -139,6 +141,7 @@
       let data = null;
       let loadPromise = null;
       let debounceTimer = null;
+      let searchGeneration = 0;
 
       function loadData() {
         if (data) return Promise.resolve(data);
@@ -149,7 +152,11 @@
             return r.json();
           })
           .then(function (json) {
-            data = Array.isArray(json) ? json : [];
+            const rows = Array.isArray(json) ? json : [];
+            for (let i = 0; i < rows.length; i++) {
+              indexPostRow(rows[i]);
+            }
+            data = rows;
             return data;
           })
           .catch(function () {
@@ -167,7 +174,9 @@
           return;
         }
 
+        const myGen = ++searchGeneration;
         loadData().then(function (rows) {
+          if (myGen !== searchGeneration) return;
           const hits = searchPosts(rows, q, maxResults);
           if (hits.length === 0) {
             resultsEl.innerHTML = noResultsHtml;

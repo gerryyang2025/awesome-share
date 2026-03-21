@@ -1,5 +1,17 @@
 # tools
 
+## bundle-post-content-css.sh
+
+`metadata-hook` loads a **single** `assets/css/post-content-bundle.css` (fewer runtime requests). After editing any of:
+
+`rouge-highlight.css`, `code-copy-btn.css`, `markdown-extras.css`, `blockquote.css`, `table.css`, `inline-code.css`
+
+run from repo root:
+
+```bash
+./tools/bundle-post-content-css.sh
+```
+
 ## add_tags_to_posts.rb
 
 批量为 `_posts` 下的文章添加或更新 **tags**  front matter，标签由每篇文章的 **categories** 和 **title**（及文件名）推导。

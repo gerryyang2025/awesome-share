@@ -71,7 +71,8 @@ The **site chrome** (top bar, sidebar, post layout, theme toggle) comes from the
 | Piece | Role |
 | --- | --- |
 | **Chirpy (gem)** | Global layout, typography baseline, TOC panel, `[data-theme="dark"]` / `.theme-dark` for dark mode. Version is pinned in `Gemfile` (currently **7.5.0**). |
-| **`_includes/metadata-hook.html`** | Theme hook: injects the stylesheets and `code-copy.js` below (load order matters). |
+| **`_includes/metadata-hook.html`** | Theme hook: one **`post-content-bundle.css`** (concat of the six sources below, **one runtime request**) + `code-copy.js`. Regenerate the bundle after editing any source: **`./tools/bundle-post-content-css.sh`**. |
+| **`assets/css/post-content-bundle.css`** | Generated file — do not hand-edit; order: rouge-highlight → code-copy-btn → markdown-extras → blockquote → table → inline-code. |
 | **`assets/css/markdown-extras.css`** | Main content layer: scoped to `.post-content`, `#post-content`, `.content`. Defines **`--md-*` CSS variables** (foreground, muted text, borders, canvas, link colors, inline-code background) for **light and dark**; vertical rhythm (`1rem` block spacing, `line-height: 1.65` on paragraphs); **h2** with bottom border; link underlines; footnotes, task lists, `details`/`summary`, `kbd`, `mark`, `hr`, images; **kramdown `{:toc}`** (`#markdown-toc`) — hidden when the theme TOC is on (`article[data-toc="true"]`), sticky side column on wide screens when per-post `toc: false`. |
 | **`assets/css/blockquote.css`** | Blockquotes: left accent border, muted body color (uses `var(--md-fg-muted)` when available). |
 | **`assets/css/inline-code.css`** | Backtick inline code: ~85% size, pill background, monospace stack; scoped with `#post-body` and post content selectors. |
@@ -80,7 +81,7 @@ The **site chrome** (top bar, sidebar, post layout, theme toggle) comes from the
 | **`assets/css/table.css`** | Chirpy wraps tables in **`.table-wrapper`**; rules align with the theme’s table markup, including striped rows and dark-mode `--tb-*` variables. |
 | **`assets/js/code-copy.js`** | Copy-to-clipboard for code blocks (paired with `code-copy-btn.css`). |
 
-**Changing the look later:** adjust the **`--md-*` blocks** at the top of `markdown-extras.css` (light + dark) so links, borders, and code surfaces stay consistent; then review `table.css` / `inline-code.css` for any hard-coded colors that should follow. Shell colors (sidebar, navbar) live in the theme’s SCSS unless you add `_sass` overrides.
+**Changing the look later:** edit the source files under `assets/css/` (same order as above), then run **`./tools/bundle-post-content-css.sh`** so **`post-content-bundle.css`** picks up changes. Prefer adjusting **`--md-*`** at the top of `markdown-extras.css` first. Shell colors (sidebar, navbar) live in the theme’s SCSS unless you add `_sass` overrides.
 
 - **Requirements**: Ruby **>= 3.1** and Jekyll **~> 4.3** (Chirpy depends on Jekyll 4.3 and Ruby ~> 3.1).
 - **Home**: `index.html` uses layout `home` (rendered by the theme).
@@ -94,7 +95,7 @@ The **site chrome** (top bar, sidebar, post layout, theme toggle) comes from the
 
 Chirpy’s [demo site](https://chirpy.cotes.page/) uses the same panel markup and loads **`/assets/js/data/search.json`**. Upstream wires **[SimpleJekyllSearch](https://github.com/christian-fei/Simple-Jekyll-Search)** (no debounce, default **`limit: 10`**, results in post order), which caused **input lag** on large sites (full-text `indexOf` on every keystroke) and **buried title matches** (e.g. “CPP Lab” under many `content` hits such as `cpp` + *label*).
 
-This repo instead uses **`assets/js/blog-search.js`** from **`_includes/search-loader.html`**: **~280 ms debounce**, **one `fetch`** of the JSON, **`content` truncated to 5000 characters** per post in **`search.json.html`** (plain `strip_html`, no full `markdownify` of huge posts — faster builds and smaller downloads). Matching keeps the same rule as SimpleJekyllSearch (**all query words must appear in the same field**), then **sorts by relevance**: exact title → phrase in title → words in title → categories/tags → URL → body; ties by **newer `date`**. The theme still downloads SimpleJekyllSearch from its CDN but **does not run it** here. After upgrading Chirpy, diff **`search-loader.html`** against the gem; keep **`layout: null`** on `search.json.html` so JSON is not passed through HTML compress.
+This repo instead uses **`assets/js/blog-search.js`** from **`_includes/search-loader.html`**: **~280 ms debounce**, **one `fetch`** of the JSON, **`content` truncated to 5000 characters** per post in **`search.json.html`**. After load, each row is **indexed once** (lowercased title/body fields + `Date` ms); a **generation counter** drops stale `fetch` callbacks. Matching keeps the same rule as SimpleJekyllSearch (**all query words must appear in the same field**), then **sorts by relevance** (title-first); ties by **newer `date`**. **`_includes/js-selector.html`** overrides the theme and **drops `simple-jekyll-search` from the script list** so it is **not downloaded or parsed** (still diff this file when upgrading Chirpy). After upgrading Chirpy, diff **`search-loader.html`** too; keep **`layout: null`** on `search.json.html` so JSON is not passed through HTML compress.
 
 ### Using the Tags tab
 
