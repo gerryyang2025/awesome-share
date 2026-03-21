@@ -54,20 +54,6 @@ avatar: ""
 
 social_preview_image: ""
 
-# 首页「爱英语学习 - 墨小灵」虚拟形象与 AI 单词助手入口（见 _includes/moxiaoling-hero.html）
-moxiaoling:
-  enabled: true
-  heading: "爱英语学习 - 墨小灵"
-  subheading: "嗨，小朋友你好！我是墨小灵，可以陪你问单词、一起学英语。"
-  assistant_url: "http://english.gerryyang.com/"
-  assistant_label: "打开 AI 单词助手"
-  panel_label: "在这里问小灵"
-  parent_note: "请家长陪同使用；不要告诉小灵你的真实姓名、学校和家庭住址哦。"
-  quick_prompts:
-    - label: "我想学个新单词"
-    - label: "用英语打个招呼吧"
-    - label: "来玩单词小游戏"
-
 toc: true
 
 comments:
