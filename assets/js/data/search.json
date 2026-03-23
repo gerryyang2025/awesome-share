@@ -1,5 +1,8 @@
 ---
-# Keep layout null: output must stay valid JSON (do not use theme HTML compress layout).
+# Overrides Chirpy theme `assets/js/data/search.json` (theme uses layout: compress + post-summary include).
+# This file reproduces the former repo-root `search.json.html` generator byte-for-byte in behavior:
+# same URL `/assets/js/data/search.json`, same fields expected by `assets/js/blog-search.js`:
+# title, url, categories, tags, date, content (plain text, truncate 5000, rouge lineno stripped).
 layout: null
 permalink: /assets/js/data/search.json
 ---

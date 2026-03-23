@@ -117,6 +117,12 @@ defaults:
     values:
       layout: page
       permalink: /:title/
+  # Custom search index: same Liquid as former root search.json.html; must stay valid JSON (not layout: compress).
+  - scope:
+      path: "assets/js/data/search.json"
+    values:
+      layout: null
+      permalink: /assets/js/data/search.json
 
 sass:
   style: compressed
