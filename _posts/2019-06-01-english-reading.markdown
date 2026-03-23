@@ -59,6 +59,11 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* mascot /ˈmæskət/
+ + N-COUNT A **mascot** is an animal, toy, or symbol which is associated with a particular organization or event, and which is thought to bring good luck. 吉祥物
+   - the official **mascot** of the Detroit Tigers. 官方吉祥物：底特律虎
+
+
 * citation /saɪˈteɪʃ(ə)n/
   + N-COUNT A **citation** is an official document or speech which praises a person for something brave or special that they have done. 嘉奖; 奖状
     - His **citation** says he showed outstanding and exemplary courage. 他的嘉奖令中写道他表现出了与众不同和堪为楷模的英勇。
