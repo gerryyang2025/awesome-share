@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Linux inode 从元数据到硬链接"
-date:   2025-03-23 09:00:00 +0800
+date:   2026-03-23 09:00:00 +0800
 categories: Linux
 tags:
   - Linux
