@@ -4,6 +4,8 @@ theme: jekyll-theme-chirpy
 lang: en
 timezone: Asia/Shanghai
 
+future: true
+
 title: Gerry's blog
 tagline: 他山之石，可以攻玉
 description: >-
