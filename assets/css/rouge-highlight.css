@@ -109,3 +109,18 @@
 .highlight .w {
   color: #6a737d;
 }
+
+/* Hide language/title line above code blocks (e.g. "Shell") */
+.highlight figcaption,
+.highlight > figcaption,
+.highlight .filename,
+.highlight .code-header,
+.highlight .code-lang,
+.highlight .language {
+  display: none !important;
+}
+
+/* Ensure the visible top of the code block is tight */
+.highlight pre {
+  margin-top: 0 !important;
+}
