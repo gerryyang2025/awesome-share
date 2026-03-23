@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Chirpy 主题使用指南"
-date:   2026-03-21 12:00:00 +0800
+date:   2025-03-21 12:00:00 +0800
 categories: Tools
 tags:
   - Jekyll
@@ -117,7 +117,7 @@ image:                            # 顶部预览图；也可简写为 image: /pa
 
 ## 代码块：语言高亮与文件名
 
-主题推荐使用 **围栏代码块**（` ```语言 `），**不要用** Jekyll 的 `{% raw %}{% highlight %}{% endraw %}` 标签（Liquid 会先解析它，且与 Chirpy 文档建议不一致；见 [Writing a New Post — Code Block](https://chirpy.cotes.page/posts/write-a-new-post/)）。
+主题推荐使用 **围栏代码块**（` ```语言 `），**不要用** Jekyll 自带的 **`highlight` / `endhighlight` 这一对 Liquid 标签**（即文档里那种带花括号的代码高亮指令；Liquid 会先于 Markdown 解析这些标签，且与 Chirpy 文档建议不一致；见 [Writing a New Post — Code Block](https://chirpy.cotes.page/posts/write-a-new-post/)）。
 
 默认除 `plaintext`、`console`、`terminal` 外会显示行号。若要去掉行号，在代码块后加 `{: .nolineno }`：
 
