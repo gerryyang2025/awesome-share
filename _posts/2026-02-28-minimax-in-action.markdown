@@ -298,6 +298,11 @@ $ claude-minimax --version
 
 模型名改为 “MiniMax-M2.5”。其余方法参考 [在 Cursor 中使用 MiniMax-M2.1](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-cursor-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-1)。
 
+# [在 Cursor 中使用 MiniMax-M2.7](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-cursor-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-7)
+
+模型名改为 “MiniMax-M2.7”。其余方法参考 [在 Cursor 中使用 MiniMax-M2.1](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-cursor-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-1)。
+
+
 
 # [在 OpenClaw 中使用 MiniMax-M2.5](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-openclaw-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-5)
 
