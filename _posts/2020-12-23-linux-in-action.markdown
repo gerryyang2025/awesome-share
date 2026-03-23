@@ -15,6 +15,9 @@ tags:
 # Linux 操作系统
 
 ## 对 *nix 中 inode 的几点理解
+{: #linux-inode-notes }
+
+更系统的整理见 [Linux inode 从元数据到硬链接]({% post_url 2026-03-23-linux-inode %})。
 
 在 *nix 系统中，`inode` 和 `filename` 是分离的，`filename` 只是 `inode` 的一个 readable 的绰号，directory 文件通过一系列 dirent 记录了 `filename` 和 `inode` 的对应关系，用户读取一个文件通过 `filename->inode->data` 的 `3+n (n>=0)` 层索引找到要读取的 `block`。
 
