@@ -14,15 +14,113 @@ mermaid: true
 * Do not remove this line (it will not be displayed)
 {:toc}
 
-在类 Unix 系统里，你在终端里看到的「文件名、权限、大小、时间」等信息，并不和文件内容堆在同一块区域里：**内容在数据块里，描述文件本身的元数据则集中在 inode（index node，索引节点）里**。理解 inode，有助于解释硬链接为何不能跨分区、`df -i` 报满时磁盘却还有空间、以及目录权限里 `x` 为何如此关键。
+
+# 起因：凌晨的电话告警
+
+问题起因源于凌晨的一个电话告警，某机器磁盘空间不足。然后远程登陆确认问题，发现磁盘空间实际并没有用完，而是某个文件系统分区的 `inode` 被耗尽了，导致出现了 **No space left on device** 错误。
+
+![inode_issue](/assets/images/202603/inode_issue.png)
+
+![inode_issue2](/assets/images/202603/inode_issue2.png)
+
+**对于磁盘空间不足的问题，通常可以通过**：
+
+1. 首先检查磁盘空间，使用 `df -h` 命令查看哪个分区满了
+2. 如果空间显示还有剩余，再检查 inode 的占用情况，使用 `df -i` 命令查看，如果 `IUse%` 是 100%，说明文件系统无法创建新文件。
+
+**如果是磁盘空间不足，可参考下面的快速清理建议**：
+
+* 清理临时文件：`sudo rm -rf /tmp/*`
+* 清理软件包缓存
+  + Ubuntu/Debian: `sudo apt-get clean`
+  + CentOS/RHEL: `sudo yum clean all`
+* 查找并删除大日志：`sudo find /var/log -type f -size +100M`
+* 清理 Docker 镜像：`docker system prune -f`
+
+而当前显示 `/dev/vda1` 的 `Inode` 使用率已达到 100%。这意味着即使磁盘还有存储空间，系统也无法再创建任何新文件或目录。此时需要排查 `/` 根目录下哪个文件夹包含的文件数量最多。
+
+查找各目录下文件数量排名可通过下面的命令查看，在根目录下运行以下命令，它会**统计当前目录下每个子目录的文件总数（包括子目录中的文件）**，并按数量从大到小排序：`sudo find / -maxdepth 1 -type d | xargs -I {} sh -c "echo -n '{}: '; find '{}' | wc -l" | sort -n -t: -k2`，**但是如果文件数量非常多的情况下，执行此命令会非常慢。因此需要根据经验先排查可能出现问题的场景**。
+
+**根据经验，以下目录最容易导致 `inode` 耗尽**：
+
+* `/tmp/`：临时文件溢出。
+* `/var/log/`：某些应用程序产生大量细碎日志。
+* `/var/spool/postfix/maildrop/`：如果系统邮件服务配置不当，会产生大量零碎的未投递小邮件。
+* Docker 容器目录：某些容器（如 `OverlayFS`）会生成海量小文件，路径通常在 `/var/lib/docker/`。
+
+根据上面可能的目录分别进行排查，最后发现是 `/var/spool/postfix/maildrop/` 目录下的文件过多导致的。查看这个目录下的文件信息，发现无法输出说明目录下的文件太多了。
+
+![inode_issue3](/assets/images/202603/inode_issue3.png)
+
+
+已经定位到是 `/var/spool/postfix/maildrop` 目录下的文件过多导致的问题，如何解决？
+
+**可以使用以下方法删除文件**：
+
+1. 如果文件太多，直接用 `rm -rf *` 可能会报 “Argument list too long” 错误
+2. 建议使用，`sudo find /var/spool/postfix/maildrop -type f -delete`
+
+**然后检查是否有定期任务（Cron Job）失效**。当系统的 Cron 任务（定时任务）执行时，如果该任务有标准输出（stdout）或错误输出（stderr），系统默认会尝试将这些输出内容通过 sendmail 发送给该任务的属主。如果你的系统没有正确配置 Postfix（邮件传输代理），或者邮件发送功能失效，这些邮件就会堆积在 `/var/spool/postfix/maildrop/` 目录中。每个任务执行一次，就会产生一个几 KB 的小文件，时间一长就会耗尽 `inode`。
+
+
+导致 `/var/spool/postfix/maildrop/` 目录文件堆积常见的两个原因：
+
+1. **没有重定向输出**：定时任务在运行时产生了日志或报错信息。
+2. **Postfix 未运行或配置错误**：系统尝试发信但无法处理，导致队列溢出。
+
+通过 `crontab -l` 命令查看当前的定时任务配置，可以看到导致此问题的原因是：**没有重定向输出**。
+
+![inode_issue4](/assets/images/202603/inode_issue4.png)
+
+通过查看 maildrop 目录下某个文件的信息，也可以看到是哪个定时任务报错了：
+
+![inode_issue5](/assets/images/202603/inode_issue5.png)
+
+**修复此问题的方法**：
+
+1. 重定向输出。修改报错的 crontab 任务，在末尾加上 `>/dev/null 2>&1`，彻底禁止产生邮件。
+2. 禁用 Cron 的邮件功能。通过 `crontab -e` 命令编辑定时任务配置，在 crontab 文件的最顶端添加一行 `MAILTO=""`，将邮件接收人设为空。
+
+
+因为报错的定时任务是 `*/1`（每分钟执行一次），如果脚本持续失败，每分钟就会产生一个报错文件。
+
+* 一天 1440 分钟 = 1440 个文件。
+* 一个月就会积累 4.3 万个 小文件。
+* 这些小文件虽然体积小，但每个文件都要占用一个 `inode`，最终导致磁盘 `inode` 耗尽。
+
+一个文件系统的 inode 数量是在格式化（创建文件系统）时根据磁盘大小自动计算并固化下来的。
+
+当执行类似 `mkfs.ext4 /dev/vda1` 的命令时，文件系统会根据默认比例（通常是每 16KB 或 25KB 空间分配一个 `inode`）预分配好所有的 `inode`。一旦格式化完成，这个 **6,553,600 (约 655 万个)** 的总数就是上限。除非重新格式化或使用特殊工具（如 `resize2fs` 配合特定参数，但风险极高且通常不支持增加 `inode` 比例），否则无法动态增加。
+
+inode 的限制是基于文件系统（分区）的，而不是针对单个目录或整个系统。以问题场景为例，限制是针对 `/dev/vda1` 这个磁盘分区的。
+
+* **同分区共享**：只要在 `/dev/vda1` 下的所有目录（如 `/etc`、`/var`、`/root`、`/home` 等），它们都共享这 **6,553,600** 个 inode 额度。
+
+* **谁用得多，别人就没得用**：如果 `/var/spool/postfix/maildrop` 一个目录产生了几百万个小文件占满了 inode，那么在 `/root` 或 `/tmp` 下连创建一个 1 字节的空文件都做不到。
+
+* **跨分区隔离**。如果系统有多个分区（例如 `/dev/vda1` 挂载在 `/`，而 `/dev/vdb1` 挂载在 `/data`），那么 `/` 分区的 inode 满了，不会影响 `/data` 分区创建文件。**每个分区在格式化时都有自己独立的 inode 池，可以运行 `df -i` 输出查看**。
+
+
+通过以下命令查看你的文件系统当初是怎么定义的：
+
+* **查看分配的 inode 数量**：`sudo tune2fs -l /dev/vda1 | grep -i "Inode count"`
+* **每个 inode 的大小**：`sudo tune2fs -l /dev/vda1 | grep -i "Inode size"`
+
+![inode_issue6](/assets/images/202603/inode_issue6.png)
+
+
+
+# TL;DR
+
+在类 Unix 系统里，在终端里看到的「文件名、权限、大小、时间」等信息，并不和文件内容堆在同一块区域里：**内容在数据块里，描述文件本身的元数据则集中在 inode（index node，索引节点）里**。理解 inode，有助于解释硬链接为何不能跨分区、`df -i` 报满时磁盘却还有空间、以及目录权限里 `x` 为何如此关键。
 
 较早的笔记 [Linux in Action — inode 小节]({% post_url 2020-12-23-linux-in-action %}#linux-inode-notes)。
 
-**阅读线索**：先弄清「数据块 / inode / 目录项」分工与 inode 里有哪些字段（文中配有 **Mermaid 示意图**）→ 再讲 **目录文件** 如何存文件名、**路径如何解析到 inode** → 然后落到 **磁盘上的 inode 表大小、`df -i` 与耗尽** → 最后 **硬链接、软链接** 与日常推论。文末 **「图示补充」** 说明如何自制 SVG/PNG 替换或并存。页面侧栏/文内的 **TOC** 与上述块顺序一致，可按需跳读。
+**阅读线索**：先弄清「数据块 / inode / 目录项」分工与 inode 里有哪些字段（文中配有 **Mermaid 示意图**）→ 再讲 **目录文件** 如何存文件名、**路径如何解析到 inode** → 然后落到 **磁盘上的 inode 表大小、`df -i` 与耗尽** → 最后 **硬链接、软链接** 与日常推论。
 
 # inode 是什么
 
-从存储层次看：硬盘以扇区（sector）为物理最小单位（常见 512 字节），操作系统读写时往往按更大的 **块（block）** 聚合，常见为 4KB。文件的字节内容存放在这些块里；而 **谁拥有这个文件、权限、大小、时间戳、数据块在磁盘上的索引** 等，则记录在 inode 中。因此常说：**除文件名以外，与文件相关的大部分信息都在 inode 里**（文件名放在目录项里，见下文）。这一分层在 [阮一峰：理解 inode](https://www.ruanyifeng.com/blog/2011/12/inode.html) 里有很直观的「扇区—块—inode—数据」叙述。
+从存储层次看：硬盘以**扇区（sector）为物理最小单位**（常见 512 字节），操作系统读写时往往按更大的 **块（block）** 聚合，常见为 4KB。文件的字节内容存放在这些块里；而 **谁拥有这个文件、权限、大小、时间戳、数据块在磁盘上的索引** 等，则记录在 inode 中。因此常说：**除文件名以外，与文件相关的大部分信息都在 inode 里**（文件名放在目录项里，见下文）。这一分层在 [阮一峰：理解 inode](https://www.ruanyifeng.com/blog/2011/12/inode.html) 里有很直观的「扇区—块—inode—数据」叙述。
 
 从内核与手册的角度，每个文件对应一个 inode；应用可通过 `stat(2)` / `statx(2)` 取得与 inode 对应的元数据字段，手册 [`inode(7)`](https://man7.org/linux/man-pages/man7/inode.7.html) 逐项说明了这些字段的含义。
 
@@ -41,7 +139,7 @@ flowchart LR
   IM -->|"按指针读/写"| DB
 ```
 
-# 词源与 POSIX 术语（摘要）
+# 词源与 POSIX 术语
 
 英文 **inode** 一般读作 **index node（索引节点）** 的缩写。据 [Wikipedia: inode](https://en.wikipedia.org/wiki/Inode) 引用的 Dennis Ritchie 说明，早期 UNIX 里目录项只保存 **文件名** 和一个整数 **i-number（索引号）**；打开文件时用 i-number 到磁盘上已知的 **i-list** 里取出对应的 **i-node**，因此 **i** 多半就是 **index** 的含义。文献里也常见「inode 是 index node 的缩写」这类表述（同条目中引 Maurice J. Bach）。
 
@@ -51,7 +149,7 @@ flowchart LR
 
 # inode 里通常有什么
 
-一句话概括（与 [阮一峰：理解 inode](https://www.ruanyifeng.com/blog/2011/12/inode.html) 一致）：**除了文件名以外的、用来描述「这个文件对象」的信息，都放在 inode 里**——包括类型、权限、属主、大小、时间戳、硬链接数、数据块位置等。使用 `ls -li` 时，**第一列是 inode 号**，**最后一列是文件名**（来自目录项）；中间权限、链接数、属主、大小、时间等字段都来自 inode。plain `ls -l` 只是少了一列 inode 号，**文件名仍来自目录项**，不是从 inode 里读出来的。
+一句话概括：**除了文件名以外的、用来描述「这个文件对象」的信息，都放在 inode 里**——包括类型、权限、属主、大小、时间戳、硬链接数、数据块位置等。使用 `ls -li` 时，**第一列是 inode 号**，**最后一列是文件名**（来自目录项）；中间权限、链接数、属主、大小、时间等字段都来自 inode。使用 `ls -l` 只是少了一列 inode 号，**文件名仍来自目录项**，不是从 inode 里读出来的。
 
 下面按 [`inode(7)`](https://man7.org/linux/man-pages/man7/inode.7.html) / `stat(2)` 的常见字段归纳（具体文件系统可能多几项或少几项，例如 birth time）：
 
@@ -73,7 +171,9 @@ flowchart LR
 
 另外，**极小的内容**有时可 **内联（inline）** 进 inode 里为数据块预留的指针区域，从而少一次读盘：例如经典 ext 系对很短符号链接的 **fast symbolic link**，以及 ext4 可选的 `inline_data` 等（见 [Wikipedia: inode — Inlining](https://en.wikipedia.org/wiki/Inode#Inlining)）。因此「元数据在 inode、正文永远在独立块里」在工程上不能当成绝对规则。
 
-## 为什么 inode 里不存文件名
+![inode_issue7](/assets/images/202603/inode_issue7.png)
+
+# 为什么 inode 里不存文件名
 
 不是疏忽，而是 **刻意拆分角色**：
 
@@ -98,55 +198,6 @@ flowchart TB
   N1 -->|"inode 号"| INO
   N2 -->|"同一 inode 号"| INO
 ```
-
-## 查看某个文件的 inode 信息：命令示例
-
-下面以 **GNU coreutils** 环境（常见 Linux 发行版）为例；`stat(1)` 的格式串见 `man stat`。
-
-**1. 默认输出（最省事）**——字段与 inode 元数据一一对应，**不含「解释路径」以外的隐藏信息**；路径是你命令里传的，不是从 inode 读出来的：
-
-```bash
-stat /etc/passwd
-```
-
-典型会包含：`Device`、`Inode`、`Links`、`Access`、`Uid`、`Gid`、`Access/Modify/Change` 时间、`Size`、`IO Block` 等（locale 不同文案可能略异）。
-
-**2. 自定义一行输出（脚本友好）**：
-
-```bash
-stat -c 'path=%n inode=%i size=%s mode=%a links=%h uid=%u gid=%g' /etc/passwd
-```
-
-常用占位符：`%n` 路径，`%i` inode 号，`%s` 大小，`%a` 人类可读权限数字（如 644），`%A` `rwx` 权限，`%h` 硬链接数，`%U`/`%G` 用户名/组名，`%x`/`%y`/`%z` 访问/修改/改状态时间。
-
-**3. 只看 inode 号（与 `ls -i` 对照）**：
-
-```bash
-stat -c '%i' /etc/passwd
-ls -i /etc/passwd
-```
-
-**4. 长列表里隐含 inode 元数据**（第一列 inode 需 `-i`）：
-
-```bash
-ls -li /etc/passwd
-```
-
-**5. 需要 birth time（若文件系统支持）** 可用 `statx` 系接口；命令行可试：
-
-```bash
-stat --format='birth=%w' /path/to/file    # %w 在不支持时可能为 `-`
-```
-
-**6. 已知 inode 号、想找到路径**（在目录树下搜索，适合删怪名文件等场景）：
-
-```bash
-find /tmp -xdev -inum 1234567 -ls
-```
-
-`-xdev` 避免跨文件系统（inode 号只在单卷内唯一）。
-
-若你关心 **磁盘上 ext 系 inode 的原始记录**（调试/取证），可在卸载或只读前提下用 `debugfs` 等工具，日常排障用 `stat` / `ls` 即可。
 
 # 目录是一种特殊文件
 
@@ -225,14 +276,6 @@ flowchart TB
   IT -.->|"每条 inode 指向"| BK
 ```
 
-在 **ext2/ext3/ext4** 上查看 **Inode size**、**Inode count** 等（需对 **块设备** 有读权限，勿对正在读写的生产卷贸然操作）：
-
-```bash
-sudo dumpe2fs -h /dev/sdXN | egrep 'Inode count|Inode size|Block count'
-```
-
-阮一文中的示例类似：`sudo dumpe2fs -h /dev/… | grep "Inode size"`。不同发行版设备名可能是 `/dev/nvme0n1p2` 等，把路径换成你的分区即可。
-
 ## 每个文件都要占一个 inode：用光 inode 时「有空间却建不了文件」
 
 **在典型 Unix 文件语义下，每一个独立的文件系统对象（普通文件、目录、符号链接、设备节点等）都要消耗至少一个 inode。** 硬链接是多个目录项共用一个 inode，不额外增加 inode；软链接自己是单独文件，会占自己的 inode。
@@ -274,7 +317,7 @@ df -i /path   # 或 df -i /dev/sdXN
 - **硬链接**：多个 **目录项中的不同文件名** 指向 **同一个 inode**；`st_nlink` 递增。删除其中一个名字只减少链接数；**链接数减到 0** 时，目录里已没有任何名字指向该 inode，这类对象有时称为 **unlinked（已解除链接）** 的文件：若仍有进程持有打开的文件描述符（包括正在执行的程序镜像），内核通常会 **推迟** 真正回收数据块，直到最后一个引用关闭（与 [Wikipedia: inode — inode persistence and unlinked files](https://en.wikipedia.org/wiki/Inode#inode_persistence_and_unlinked_files) 一致）。无打开引用时，inode 与数据块可被回收。因为 inode 号仅在同一文件系统内唯一，**硬链接不能跨挂载点/分区**（[`inode(7)`](https://man7.org/linux/man-pages/man7/inode.7.html)）。
 - **符号链接**：自身是一个独立文件（自有 inode），内容多为目标路径字符串；删除目标后链接会悬空。不会增加目标 inode 的链接数。
 
-**对照图**（同一目标文件 `data.bin`）：左为 **硬链接**（两个路径共享 inode）；右为 **符号链接**（链接自己是独立 inode，里面是路径文本，需再次解析）。
+**对照图**（同一目标文件 `data.bin`）：右为 **硬链接**（两个路径共享 inode）；左为 **符号链接**（链接自己是独立 inode，里面是路径文本，需再次解析）。
 
 ```mermaid
 flowchart TB
@@ -297,13 +340,13 @@ ln target name          # 硬链接
 ln -s target name       # 符号链接
 ```
 
-目录的链接数：新建目录时 `.` 与 `..` 会使计数呈现固定规律（子目录数 + 2），阮一文中有归纳，日常用 `ls -ld` 观察即可。
+目录的链接数：新建目录时 `.` 与 `..` 会使计数呈现固定规律（子目录数 + 2），日常用 `ls -ld` 观察即可。
 
 # 若干实践上的推论
 
 1. **重命名、同文件系统内移动**：通常只改目录项里的名字或位置，**inode 号不变**（跨设备移动则往往是复制+删除，inode 会变）。
-2. **无法删除的怪异文件名**：若 shell 展开困难，可通过 `ls -i` 找到 inode，再用 `find` 等按 inode 删除（具体命令视环境而定，阮一文有思路）。
-3. **正在运行的程序与更新**：进程打开文件后依赖的是 inode 描述符；同名文件被替换为新 inode 时，已打开的旧 inode 仍可继续访问旧内容——这是无停机更新的一种常见底层原因（阮一文从 inode 角度做过说明）。这与上面「unlinked 但仍占用空间」同属 **按 inode 生命周期与引用计数管理存储** 这一脉络（[Wikipedia](https://en.wikipedia.org/wiki/Inode#Simplified_library_installation_with_inode_file_systems) 也从共享库替换角度讨论过类似机制）。
+2. **无法删除的怪异文件名**：若 shell 展开困难，可通过 `ls -i` 找到 inode，再用 `find` 等按 inode 删除。
+3. **正在运行的程序与更新**：进程打开文件后依赖的是 inode 描述符；同名文件被替换为新 inode 时，已打开的旧 inode 仍可继续访问旧内容——这是无停机更新的一种常见底层原因。这与上面「unlinked 但仍占用空间」同属 **按 inode 生命周期与引用计数管理存储** 这一脉络（[Wikipedia](https://en.wikipedia.org/wiki/Inode#Simplified_library_installation_with_inode_file_systems) 也从共享库替换角度讨论过类似机制）。
 
 以上现象都建立在 **「目录映射名字 → inode，inode 映射数据」** 这一模型上。
 
@@ -313,37 +356,6 @@ ln -s target name       # 符号链接
 - **唯一性** 是「设备 + 文件系统 + inode 号」层面的；跨文件系统则 inode 号可能重复，故硬链接不跨卷。
 - **盘上 inode 记录** 有固定 **Inode size**（常见 128/256 字节）；**每个文件对象通常占一个 inode**，故会出现 **inode 100% 用尽而 `df -h` 仍有余量、无法新建文件** 的情况；报错可能是 `ENOSPC`，需用 **`df -i`** 与 **`df -h`** 对照判断。
 
-# 图示补充：自制静态图（可选）
-
-文中 **Mermaid** 图在构建时会由主题加载脚本渲染（本帖 front matter 已设 `mermaid: true`）。若你希望 **印刷级示意图**、更贴近 ext4 块组的真实布局、或统一视觉风格，可自行导出 **SVG/PNG** 放到仓库并改用 `![说明](路径)` 引用。
-
-## 建议存放路径与内容要点
-
-| 建议文件名 | 建议画什么（与正文对应） |
-| :--- | :--- |
-| `assets/images/2026-03/inode-vs-data-blocks.svg` | 与开篇 Mermaid 同主题：左侧 inode 框、右侧数据块、箭头「指针」；可加上 **无文件名** 的标注。 |
-| `assets/images/2026-03/inode-disk-layout-ext4.svg` | 比文中分区示意图更细：超级块、块组、inode 表、inode 位图、数据块位图、数据块（可参考 [Wikipedia: inode](https://en.wikipedia.org/wiki/Inode) 或内核文档示意图 **自行重绘** 以避免版权争议）。 |
-| `assets/images/2026-03/hardlink-vs-symlink.svg` | 硬链接「两箭头合一 inode」与软链「经路径二次解析」对比，适合放大放在「硬链接与符号链接」一节。 |
-| `assets/images/2026-03/df-h-vs-df-i.svg` | 两个仪表盘或条形图：`Use%` 未满 vs `IUse%` 100%，配文 **ENOSPC**。 |
-
-插入 Markdown 示例（路径按你实际文件调整）：
-
-```markdown
-![inode 与数据块分工示意](/assets/images/2026-03/inode-vs-data-blocks.svg)
-*图：元数据在 inode，正文在数据块；文件名在目录项（图中可单独标出）。*
-```
-
-## 推荐做法（任选）
-
-1. **[Mermaid Live Editor](https://mermaid.live/)**
-   把本文某一 ```mermaid 代码块粘贴进去，**Export SVG/PNG**，再存到 `assets/images/2026-03/`，把图换成 `![alt](...)` 并保留简短说明文字。
-2. **命令行导出**（需 Node）：安装 `@mermaid-js/mermaid-cli` 后，将 `.mmd` 存盘执行 `mmdc -i fig.mmd -o fig.svg`；工具说明见官方文档。本站旧文 [我的 Jekyll 项目]({% post_url 2018-08-01-my-jekyll-project %}) 里也提到过 Mermaid Live / CLI，可作环境参考。
-3. **Excalidraw / draw.io / Keynote / OmniGraffle**
-   手绘风格或几何框图，导出 **SVG**（矢量放大清晰）或 **2× PNG**（防糊）。
-4. **从教材图改造**
-   以 [Understanding the Linux Kernel](https://www.oreilly.com/library/view/understanding-the-linux/0596005652/)、[TLPI 相关章节](https://man7.org/tlpi/) 的图为 **结构参考**，用自家素材重画，避免直接截取有版权限制的插图。
-
-插入静态图后，可在对应 Mermaid 块下方加一行「*亦可参见上图静态版。*」或删除 Mermaid 以免重复，按你的版式偏好即可。
 
 # 参考
 
