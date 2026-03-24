@@ -59,6 +59,13 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* evolve /ɪˈvɒlv/
+  + V-I When animals or plants **evolve**, they gradually change and develop into different forms. 进化
+    - Birds are widely believed to have **evolved** from dinosaurs. 鸟类普遍被认为是从恐龙进化而来的。
+  + V-T/V-I If something **evolves** or you evolve it, it gradually develops over a period of time into something different and usually more advanced. 使…逐步发展; 逐步发展
+    - Popular music **evolved** from folk songs. 流行音乐由民歌演变而来。
+
+
 * mascot /ˈmæskət/
  + N-COUNT A **mascot** is an animal, toy, or symbol which is associated with a particular organization or event, and which is thought to bring good luck. 吉祥物
    - the official **mascot** of the Detroit Tigers. 官方吉祥物：底特律虎
