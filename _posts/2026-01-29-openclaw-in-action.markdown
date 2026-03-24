@@ -1729,9 +1729,13 @@ https://www.tavily.com/
 
 # 微信 ClawBot
 
-在微信中与 OpenClaw 收发消息。在运行 OpenClaw 的设备安装插件，并开始与微信连接。
+微信 8.0.70 版本推出了官方龙虾插件（ClawBot），支持了微信与 OpenClaw 的连接。实现了在微信中与 OpenClaw 收发消息的功能。
 
-在安装 OpenClaw 的环境执行命令：`nрх -y @tencent-weixin/openclaw-weixin-cli@latest install`
+![openclaw99](/assets/images/202601/openclaw99.png)
+
+具体操作方式：在运行 OpenClaw 的设备安装插件，并开始与微信连接。
+
+在安装 OpenClaw 的环境执行命令：`npx -y @tencent-weixin/openclaw-weixin-cli@latest install`
 
 ![openclaw91](/assets/images/202601/openclaw91.png)
 
