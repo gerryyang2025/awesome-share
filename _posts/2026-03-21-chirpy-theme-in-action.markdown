@@ -192,6 +192,43 @@ flowchart LR
 
 本仓库 `_config.yml` 中 `kramdown.footnote_backlink` 可自定义返回正文符号样式。
 
+## 交叉引用（锚点与内部链接）
+
+Kramdown 支持为标题或任意位置定义锚点，实现同一文章内部或跨文章的引用。
+
+### 定义锚点
+
+在目标标题后添加 `{#anchor-id}`：
+
+````markdown
+## 我的章节标题
+{: #my-section }
+````
+
+### 同一文章内部引用
+
+````markdown
+跳转到[我的章节标题](#my-section)
+````
+
+### 跨文章引用
+
+使用 Jekyll 的 `post_url` 标签（需加 `relative_url` 或裸 `post_url`）：
+
+````markdown
+{% raw %}
+跳转到 [另一篇文章的章节]({% post_url 2026-02-28-minimax-in-action %}#在-openclaw-中使用-minimax-m2-5)
+{% endraw %}
+````
+
+（`post_url` 会自动生成文章的绝对路径，再拼接 `#锚点` 即可定位到目标章节。）
+
+### 注意事项
+
+- 锚点 ID 应使用**英文**且**不含空格**（空格会被转为连字符 `-`），建议全小写。
+- 链接中的锚点部分需与定义的 ID 匹配（连字符规则 Kramdown 会自动处理）。
+- 若不确定目标文章的 URL 格式，优先使用 `post_url` 方式，而非手写相对路径。
+
 ## 内嵌社交平台音视频
 
 统一形式为：`include` 主题的 `embed/<platform>.html`，并传入 `id='<ID>'`（`<platform>` 为小写平台名）。示例（YouTube）：
