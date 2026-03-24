@@ -1317,6 +1317,8 @@ Cursor 支持来自 OpenAI、Anthropic、Google 等的所有最新一代代码�
 
 这两个用量池都可以在你的编辑器设置和你的[用量仪表盘](https://cursor.com/cn/dashboard/usage)中查看。
 
+![cursor_price6](/assets/images/202603/cursor_price6.png)
+
 
 ### Auto + Composer 用量池
 
