@@ -362,6 +362,14 @@ OAuth 登录完成后，进入模型选择。系统会默认勾选 minimax-porta
 ![openclaw28](/assets/images/202601/openclaw28.png)
 
 
+
+# [在 OpenClaw 中使用 MiniMax-M2.7](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-openclaw-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-7)
+
+模型名改为 "MiniMax-M2.7"。其余方法参考 [在 OpenClaw 中使用 MiniMax-M2.5](#在-openclaw-中使用-minimax-m2-5)。
+
+
+
+
 # Refer
 
 * https://platform.minimaxi.com/user-center/payment/coding-plan
