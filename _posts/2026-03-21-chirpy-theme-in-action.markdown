@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Chirpy 主题使用指南"
-date:   2025-03-21 12:00:00 +0800
+date:   2026-03-21 12:00:00 +0800
 categories: Tools
 tags:
   - Jekyll
