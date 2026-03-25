@@ -86,12 +86,12 @@ See the [installation guide](https://helm.sh/docs/intro/install/) for more optio
 └── values.yaml                 # 定义 chart 模板中的自定义配置的默认值，可以在执行 helm install 或 helm update 的时候覆盖
 {% endhighlight %}
 
-* Chart.yaml：用于描述这个 Chart 的基本信息，包括名字、描述信息以及版本等
-* values.yaml ：用于存储 templates 目录中模板文件中用到变量的值。
-* templates： 目录里面存放所有 yaml 模板文件。
-* charts：目录里存放这个 chart 依赖的所有子 chart。
-* NOTES.txt ：用于介绍 Chart 帮助信息， helm install 部署后展示给用户。例如：如何使用这个 Chart、列出缺省的设置等。
-* _helpers.tpl：放置模板助手的地方，可以在整个 chart 中重复使用
+* `Chart.yaml`：用于描述这个 Chart 的基本信息，包括名字、描述信息以及版本等
+* `values.yaml` ：用于存储 templates 目录中模板文件中用到变量的值。
+* `templates`： 目录里面存放所有 yaml 模板文件。
+* `charts`：目录里存放这个 chart 依赖的所有子 chart。
+  + `NOTES.txt`：用于介绍 Chart 帮助信息， `helm install` 部署后展示给用户。例如：如何使用这个 Chart、列出缺省的设置等。
+  + `_helpers.tpl`：放置模板助手的地方，可以在整个 chart 中重复使用
 
 
 # Quickstart Guide
@@ -141,7 +141,7 @@ bitnami/aspnet-core              	1.2.3        	3.1.9        	ASP.NET Core is an
 
 ## Install an Example Chart
 
-To install a chart, you can run the `helm install` command. Helm has several ways to find and install a chart, but the easiest is to use the bitnami charts.
+To install a chart, you can run the `helm install` command. Helm has several ways to find and install a chart, but the easiest is to use the `bitnami` charts.
 
 {% highlight bash %}
 $ helm repo update              # Make sure we get the latest list of charts
@@ -207,8 +207,8 @@ $ helm get -h
 
 # Helm 4 新特性
 
-> [!TIP]
 > Helm 4 是继 Helm 3 之后的重大版本更新，引入了一系列新特性、架构改进和安全增强。
+{: .prompt-tip }
 
 ## 主要更新摘要
 
@@ -239,11 +239,11 @@ mindmap
 
 ## Breaking Changes
 
-> [!WARNING]
 > Helm 4 存在以下 Breaking Changes，升级前请注意：
 >
 > - **Post-renderers 作为插件实现**：`--post-renderer` 不再支持直接传递可执行文件，需传递插件名称
 > - **Registry 登录格式变更**：`helm registry login` 不再接受完整 URL，仅需传入域名
+{: .prompt-warning }
 
 ## CLI 标志重命名
 
@@ -281,8 +281,8 @@ helm install myapp oci://registry.example.com/charts/app@sha256:abc123...
 helm push mychart-1.0.0.tgz oci://registry.example.com/charts
 ```
 
-> [!NOTE]
 > OCI 支持使得 Chart 的分发与 Docker 镜像一致，便于统一的镜像仓库管理和签名验证。
+{: .prompt-info }
 
 ## 多文档 Values
 
@@ -307,7 +307,6 @@ kubectl rollout status deployment/myapp
 
 ## 升级检查清单
 
-> [!WARNING]
 > Helm 4 升级前检查清单：
 >
 > - [ ] 测试现有 Charts 与 Helm 4 的兼容性
@@ -315,6 +314,7 @@ kubectl rollout status deployment/myapp
 > - [ ] 测试 Post-renderer 工作流
 > - [ ] 验证 OCI Registry 认证
 > - [ ] 更新 CI/CD 管道配置
+{: .prompt-warning }
 
 ---
 
@@ -416,8 +416,8 @@ metadata:
 
 ### 3. 资源限制
 
-> [!TIP]
 > 生产环境必须设置资源限制，避免单个应用耗尽集群资源。
+{: .prompt-tip }
 
 ```yaml
 resources:
@@ -496,7 +496,6 @@ helm dependency build ./mychart
 
 ## 安全建议
 
-> [!CAUTION]
 > 生产环境务必遵循以下安全实践：
 
 1. **使用命名空间隔离**：每个应用使用独立命名空间
@@ -504,6 +503,7 @@ helm dependency build ./mychart
 3. **启用 Pod 安全策略**：使用 PodSecurityPolicy 或 Pod Security Standards
 4. **定期更新 Chart**：关注安全漏洞和依赖更新
 5. **验证 Chart 签名**：使用 `--verify` 验证 Chart 完整性
+{: .prompt-warning }
 
 ---
 
