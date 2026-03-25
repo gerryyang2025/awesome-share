@@ -8,7 +8,7 @@ tags:
   - ConfigMap
   - 运维
   - 容器
-description: "深入解析 Kubernetes ConfigMap 的原理、使用方法、最佳实践与注意事项，帮助你更好地管理容器配置。"
+description: "深入解析 Kubernetes ConfigMap 的原理、使用方法、最佳实践与注意事项，帮助更好地管理容器配置。"
 mermaid: true
 ---
 
@@ -30,8 +30,8 @@ mermaid: true
 
 > ConfigMap 是 Kubernetes 中用于存储非敏感配置数据的 API 对象，以键值对的形式保存数据。
 >
-> ConfigMap 允许你将配置数据从容器镜像中解耦出来，从而使应用程序具有更好的可移植性。
-> {: .prompt-tip }
+> ConfigMap 允许你将配置数据从容器镜像中解耦出来，**从而使应用程序具有更好的可移植性**。
+{: .prompt-tip }
 
 ### 为什么需要 ConfigMap
 
@@ -48,11 +48,11 @@ flowchart LR
     subgraph 生产环境
         CM3[ConfigMap]
     end
-    
+
     IMG[容器镜像] --> CM1
     IMG --> CM2
     IMG --> CM3
-    
+
     CM1 --> POD1[Pod]
     CM2 --> POD2[Pod]
     CM3 --> POD3[Pod]
@@ -71,7 +71,7 @@ flowchart LR
 | 大小限制 | 1 MiB | 1 MiB |
 
 > 警告：ConfigMap 不提供保密或加密功能。如果要存储敏感数据（如密码、API 密钥），请使用 Secret 或其他第三方工具来保护数据安全。
-> {: .prompt-warning }
+{: .prompt-warning }
 
 ## ConfigMap 的结构 {#configmap-structure}
 
@@ -87,11 +87,11 @@ data:
   # 类似属性的键；每个键映射到一个简单值
   player_initial_lives: "3"
   ui_properties_file_name: "user-interface.properties"
-  
+
   # 文件类键
   game.properties: |
     enemy.types=aliens,monsters
-    player.maximum-lives=5    
+    player.maximum-lives=5
   user-interface.properties: |
     color.good=purple
     color.bad=yellow
@@ -108,7 +108,7 @@ binaryData:
 - **`immutable`**（v1.21+）：设置为 `true` 可创建不可变 ConfigMap
 
 > 信息：每个 ConfigMap 的名称必须是有效的 DNS 子域名，由字母、数字、连字符 `-`、下划线 `_` 和点 `.` 组成。
-> {: .prompt-info }
+{: .prompt-info }
 
 ## 创建 ConfigMap {#creating-configmap}
 
@@ -183,7 +183,7 @@ flowchart TD
         E3[挂载为文件卷]
         E4[直接调用 Kubernetes API]
     end
-    
+
     E1 --> POD[Pod]
     E2 --> POD
     E3 --> POD
@@ -307,7 +307,7 @@ const configMap = await k8sApi.readNamespacedConfigMap('my-config', 'default');
 ## ConfigMap 更新机制 {#configmap-updates}
 
 > 重要：理解 ConfigMap 的更新机制对于避免生产环境问题至关重要。
-> {: .prompt-info }
+{: .prompt-info }
 
 ### 不同使用方式的更新行为
 
@@ -326,7 +326,7 @@ sequenceDiagram
     participant Kubelet as Kubelet
     participant Pod as Pod
     participant App as 应用
-    
+
     User->>API: 更新 ConfigMap
     API->>Kubelet: 通知配置变更
     Kubelet->>Kubelet: 检查本地缓存
@@ -336,7 +336,7 @@ sequenceDiagram
 ```
 
 > 信息：使用 `subPath` 挂载的 ConfigMap 不会自动接收更新。
-> {: .prompt-warning }
+{: .prompt-warning }
 
 ### 更新示例演示
 
@@ -350,7 +350,7 @@ sequenceDiagram
 ## 不可变 ConfigMap {#immutable-configmap}
 
 > Kubernetes v1.21+ 支持不可变 ConfigMap，提供更好的安全性和性能。
-> {: .prompt-info }
+{: .prompt-info }
 
 ### 创建不可变 ConfigMap
 
@@ -400,12 +400,12 @@ flowchart LR
         CM1[app-frontend-config]
         CM2[app-backend-config]
     end
-    
+
     subgraph 按环境划分
         CM3[app-config-dev]
         CM4[app-config-prod]
     end
-    
+
     subgraph 按功能划分
         CM5[db-connection-config]
         CM6[feature-flags-config]
@@ -418,7 +418,7 @@ flowchart LR
 > - 拆分为多个 ConfigMap
 > - 使用 PersistentVolume
 > - 使用分布式存储服务
-> {: .prompt-warning }
+{: .prompt-warning }
 
 ### 4. 环境特定配置
 
@@ -520,7 +520,7 @@ kubectl get configmap <name> -o json | jq -r '.data | to_entries | .[] | "\(.key
 ### 问题 4：无效的环境变量名
 
 > 警告：如果 ConfigMap 中的键不符合环境变量命名规则，这些键将被忽略，不会传递给容器。
-> {: .prompt-warning }
+{: .prompt-warning }
 
 ```bash
 # 查看相关事件
@@ -638,3 +638,5 @@ ConfigMap 是 Kubernetes 中管理配置的核心资源，具有以下关键特�
 - [Configure a Pod to Use a ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/)
 - [Updating Configuration via a ConfigMap](https://kubernetes.io/docs/tutorials/configuration/updating-configuration-via-a-configmap/)
 - [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)
+- [上篇：一文了解K8S的ConfigMap](https://developer.aliyun.com/article/1211871)
+
