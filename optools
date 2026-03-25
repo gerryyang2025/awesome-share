@@ -22,6 +22,8 @@ Usage:
   ./optools check         Check Ruby/Bundler/Gems readiness (no start)
   ./optools ruby-check    Print Ruby/Bundler paths and versions only (diagnostics)
   ./optools ruby-upgrade  Install/upgrade Ruby via rbenv on Ubuntu, then bundler + bundle install
+  ./optools shell-init    Append rbenv lines to ~/.bashrc (idempotent) so plain ruby/bundle use rbenv
+  ./optools run -- CMD    Run CMD with rbenv on PATH (e.g. bundle exec …) without fixing ~/.bashrc
   ./optools help          Show this help
 
 Env:
@@ -33,9 +35,9 @@ Env:
   DEBUG=0                       Set to 1 to add jekyll --trace (for debugging Liquid/build errors)
 EOF
   echo ""
-  echo "Note: check / ruby-check / start prepend rbenv (~/.rbenv) when it exists, so you get Ruby 3.x"
-  echo "even if your shell still has /usr/bin/ruby first. For bare terminals, add rbenv to ~/.bashrc"
-  echo "(see hint after ruby-upgrade)."
+  echo "Note: check / ruby-check / start load rbenv inside the script only. Your interactive shell"
+  echo "still uses system ruby until:  ./optools shell-init && source ~/.bashrc"
+  echo "Or run one-off:  ./optools run -- bundle exec ruby tools/check_liquid_posts.rb"
   echo ""
   echo "For Jekyll/Liquid errors, run with trace:  DEBUG=1 ./optools start"
   echo "Then check run.log or:  tail -f run.log"
@@ -136,14 +138,46 @@ prefer_rbenv_if_present() {
   return 0
 }
 
-rbenv_login_shell_hint() {
-  cat <<'HINT'
-[run] Interactive shells still see system Ruby until rbenv is initialized. Add to ~/.bashrc (then: source ~/.bashrc or new SSH session):
+RBENV_BASHRC_MARKER="# awesome-share optools: rbenv"
 
-  export PATH="$HOME/.rbenv/bin:$PATH"
-  eval "$(rbenv init - bash)"
+# Idempotently append rbenv init to ~/.bashrc so plain `ruby` / `bundle` match rbenv shims.
+install_rbenv_into_bashrc() {
+  local rc="${HOME}/.bashrc"
+  if [ ! -x "${RBENV_ROOT:-$HOME/.rbenv}/bin/rbenv" ]; then
+    echo "[run] shell-init skipped: ${RBENV_ROOT:-$HOME/.rbenv}/bin/rbenv not found"
+    return 1
+  fi
 
-HINT
+  if [ ! -f "$rc" ]; then
+    touch "$rc" || return 1
+  fi
+
+  if grep -qF "$RBENV_BASHRC_MARKER" "$rc" 2>/dev/null; then
+    echo "[run] rbenv block already in ${rc} (marker: ${RBENV_BASHRC_MARKER})"
+    return 0
+  fi
+
+  cat >>"$rc" <<RBENVEOF
+
+${RBENV_BASHRC_MARKER}
+export PATH="\$HOME/.rbenv/bin:\$PATH"
+eval "\$(rbenv init - bash)"
+RBENVEOF
+
+  echo "[run] appended rbenv initialization to ${rc}"
+  echo "[run] run:  source ~/.bashrc   (or open a new SSH session), then:  which ruby"
+  return 0
+}
+
+ruby_check_warn_interactive_path() {
+  if [ ! -x "${RBENV_ROOT:-$HOME/.rbenv}/bin/rbenv" ]; then
+    return 0
+  fi
+  if grep -qF "$RBENV_BASHRC_MARKER" "${HOME}/.bashrc" 2>/dev/null; then
+    return 0
+  fi
+  echo "[run] NOTE: this shell may still use /usr/bin/ruby until:  ./optools shell-init && source ~/.bashrc"
+  echo "[run]       or run tools via:  ./optools run -- bundle exec …"
 }
 
 # Print diagnostic lines; does not modify the system.
@@ -236,6 +270,7 @@ cmd_ruby_check() {
   fi
 
   echo "[run] ruby-check: OK"
+  ruby_check_warn_interactive_path
   return 0
 }
 
@@ -267,8 +302,26 @@ cmd_ruby_upgrade() {
 
   ruby_check_diagnostics
   echo "[run] ruby-upgrade: done"
-  rbenv_login_shell_hint
+  install_rbenv_into_bashrc || true
   return 0
+}
+
+cmd_shell_init() {
+  install_rbenv_into_bashrc
+}
+
+cmd_run() {
+  shift
+  if [ "${1:-}" = "--" ]; then
+    shift
+  fi
+  if [ "$#" -eq 0 ]; then
+    echo "[run] ERROR: missing command. Example:"
+    echo "  ./optools run -- bundle exec ruby tools/check_liquid_posts.rb"
+    exit 2
+  fi
+  prefer_rbenv_if_present
+  exec "$@"
 }
 
 check_env() {
@@ -465,6 +518,12 @@ case "$COMMAND" in
     ;;
   ruby-upgrade)
     cmd_ruby_upgrade
+    ;;
+  shell-init)
+    cmd_shell_init
+    ;;
+  run)
+    cmd_run "$@"
     ;;
   -h|--help|help)
     usage

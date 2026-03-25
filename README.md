@@ -177,7 +177,9 @@ Use the **optools** script for environment checks, start/stop, and status:
 ./optools status       # show if running and last log lines
 ./optools check        # check Ruby/Bundler/gems only (no start)
 ./optools ruby-check   # print Ruby/Bundler paths and versions (diagnostics)
-./optools ruby-upgrade # Ubuntu: rbenv + Ruby (RBENV_RUBY_VERSION), bundler, bundle install
+./optools ruby-upgrade # Ubuntu: rbenv + Ruby (RBENV_RUBY_VERSION), bundler, bundle install (+ ~/.bashrc rbenv block)
+./optools shell-init   # append rbenv to ~/.bashrc if missing (then: source ~/.bashrc)
+./optools run -- CMD   # run CMD with rbenv first, e.g.  ./optools run -- bundle exec ruby tools/check_liquid_posts.rb
 ./optools help         # show help
 ```
 

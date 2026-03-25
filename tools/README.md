@@ -81,13 +81,21 @@ ruby tools/convert_highlight_to_fenced.rb _posts/YYYY-MM-DD-文章名.markdown
 
 ### 运行方式
 
-在仓库根目录、已 `bundle install` 的前提下：
+在仓库根目录、已 `bundle install` 的前提下（Ruby 须为 3.1+，与 Jekyll 一致）：
 
 ```bash
 bundle exec ruby tools/check_liquid_posts.rb
 bundle exec ruby tools/check_liquid_posts.rb _posts/2023-09-09-etcd-in-action.markdown
 bundle exec ruby tools/check_liquid_posts.rb --verbose
 ```
+
+若交互式 shell 仍指向系统自带 Ruby（如 Ubuntu 上 `/usr/bin/ruby`），而 `bundle` 来自旧路径，可先用本站 **`optools`** 带上 rbenv 再执行：
+
+```bash
+./optools run -- bundle exec ruby tools/check_liquid_posts.rb
+```
+
+或执行 **`./optools shell-init`** 后 **`source ~/.bashrc`**，再直接使用 **`bundle exec …`**。
 
 退出码：全部通过为 `0`，任一文件解析失败为 `1`；缺少 `liquid`  gem 时为 `2`。
 
