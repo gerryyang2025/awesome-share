@@ -85,6 +85,19 @@ The **site chrome** (top bar, sidebar, post layout, theme toggle) and **syntax-h
 
 **Code blocks (official Chirpy):** use **fenced** blocks with a **language** (e.g. ` ```yaml `), not `{% highlight %}`. See [Writing a New Post · Syntax](https://chirpy.cotes.page/posts/write-a-new-post/#syntax). `_config.yml` uses **kramdown** + **Rouge** with **`css_class: highlight`** and block **`line_numbers: true`** so markup matches Chirpy’s **`refactor-content.html`** (code header + copy button).
 
+### Code syntax colors — root cause（语法着色 · 勿再踩坑）
+
+**What went wrong once:** custom CSS used **`.content code { color: var(--code-color); }`** (or **`color: inherit`** on **`.highlight > code`**) for “nice inline code.” That also applied to the **block** wrapper **`<code>`** inside **`.highlight`**. In CSS, **`color` inherits**: Rouge paints tokens with **`<span class="k">`**, **`<span class="s">`**, etc. Each span **defaults to inheriting** the parent **`code`**’s color unless a **more specific** rule sets its own. Forcing a **single** color on the block **`code`** makes **every token inherit the same color**, so the whole fence looks **monochrome** even though Rouge markup is correct.
+
+**Why theme rules did not always “save” us:** this site merges extras via **`@use 'post-content-bundle' as *`** after **`@use 'main'`**. Depending on **specificity**, **source order**, and whether the theme relies on **`@layer`**, token rules can lose the cascade. That is **in addition to** the inheritance trap above—not a substitute for fixing **`code`** styling.
+
+**What we do now (keep it this way):**
+
+1. **`assets/css/inline-code.css`** — **never** put a blanket **`color`** on **`.content code`**. Set **`color`** only for **inline** contexts (**`code.highlighter-rouge`**, **`p`/`li`/heading `code`**, etc.) and leave **`.highlight > code`** without a forced text color so tokens can differ.
+2. **`assets/css/rouge-syntax-tokens.css`** — high-specificity **`.content .highlight code .k`** (etc.), GitHub-like light/dark values, loaded **last** in the bundle as a **safety net** if theme token CSS is missing or overridden.
+
+**If colors disappear after an edit:** check for any new **`.content … code { color: … }`** or **`inherit`** on block **`code`**; regenerate **`./optools bundle-content-css`** and rebuild the site.
+
 - **Requirements**: Ruby **>= 3.1** and Jekyll **~> 4.3** (Chirpy depends on Jekyll 4.3 and Ruby ~> 3.1).
 - **Home**: `index.html` uses layout `home` (rendered by the theme).
 - **Tabs**: Navigation pages are under `_tabs/` (Categories, Tags, Archives, About). Edit `_tabs/about.md` for the About page.
