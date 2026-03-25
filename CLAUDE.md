@@ -22,6 +22,11 @@ bundle install
 # Ubuntu: Ruby/Bundler diagnostics and rbenv upgrade path
 # ./optools ruby-check
 # AUTO_FIX=1 ./optools ruby-upgrade
+
+# Liquid parse check for all posts (before/without full jekyll build)
+# ./optools liquid-check
+# ./optools liquid-check --verbose
+# ./optools liquid-check --encoding-report
 ```
 
 ## Blog Structure

@@ -97,13 +97,15 @@ bundle exec ruby tools/check_liquid_posts.rb --verbose
 bundle exec ruby tools/check_liquid_posts.rb --encoding-report
 ```
 
-若交互式 shell 仍指向系统自带 Ruby（如 Ubuntu 上 `/usr/bin/ruby`），而 `bundle` 来自旧路径，可先用本站 **`optools`** 带上 rbenv 再执行：
+也可在仓库根目录使用 **`optools`**（会先加载 rbenv，与 `start` / `check` 一致）：
 
 ```bash
-./optools run -- bundle exec ruby tools/check_liquid_posts.rb
+./optools liquid-check
+./optools liquid-check --verbose
+./optools liquid-check --encoding-report
 ```
 
-或执行 **`./optools shell-init`** 后 **`source ~/.bashrc`**，再直接使用 **`bundle exec …`**。
+若交互式 shell 仍指向系统自带 Ruby，还可使用 **`./optools run -- bundle exec ruby tools/check_liquid_posts.rb`**，或 **`./optools shell-init`** 后 **`source ~/.bashrc`** 再 **`bundle exec …`**。
 
 退出码：全部通过为 `0`，任一文件解析失败为 `1`；缺少 `liquid`  gem 时为 `2`。
 

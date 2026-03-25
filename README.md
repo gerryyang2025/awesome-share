@@ -179,9 +179,16 @@ Use the **optools** script for environment checks, start/stop, and status:
 ./optools ruby-check   # print Ruby/Bundler paths and versions (diagnostics)
 ./optools ruby-upgrade # Ubuntu: rbenv + Ruby (RBENV_RUBY_VERSION), bundler, bundle install (+ ~/.bashrc rbenv block)
 ./optools shell-init   # append rbenv to ~/.bashrc if missing (then: source ~/.bashrc)
-./optools run -- CMD   # run CMD with rbenv first, e.g.  ./optools run -- bundle exec ruby tools/check_liquid_posts.rb
+./optools liquid-check # Liquid syntax check for all _posts (see tools/check_liquid_posts.rb)
+./optools run -- CMD   # run CMD with rbenv first (alternative to liquid-check / manual bundle exec)
 ./optools help         # show help
 ```
+
+**注意事项（optools）**
+
+- **统一入口**：与环境、Ruby、Bundler、Jekyll 相关的**常用命令**（启停服务、依赖检查、Liquid 检查、在正确 Ruby 下执行 `bundle exec` 等）请尽量通过 **`./optools <子命令>`** 完成；脚本内会加载 rbenv（若已安装），与 **`./optools start`** 使用同一套 gem，减少「终端里 `ruby` / `bundle` 仍指向系统旧版」的问题。
+- **扩充约定**：在 `tools/` 或其它目录新增**需要经常手动执行**的维护脚本时，请**同时**在 **`optools`** 中增加对应子命令，并更新 **`./optools help`** 与本节命令列表，避免 README、`tools/README` 与口头约定各自一套命令。
+- **为准**：子命令以 **`./optools help`** 为准；若与上表不一致，以脚本为准，并请将 README 改到一致。
 
 - The dev server listens on **port 8080** by default (`_config.yml`). For debugging (e.g. Liquid/build errors), set `DEBUG=1` to append `--trace` to the serve command: `DEBUG=1 ./optools start`, then inspect `run.log` (or `tail -f run.log`).
 

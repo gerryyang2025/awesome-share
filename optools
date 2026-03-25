@@ -24,6 +24,7 @@ Usage:
   ./optools ruby-upgrade  Install/upgrade Ruby via rbenv on Ubuntu, then bundler + bundle install
   ./optools shell-init    Append rbenv lines to ~/.bashrc (idempotent) so plain ruby/bundle use rbenv
   ./optools run -- CMD    Run CMD with rbenv on PATH (e.g. bundle exec …) without fixing ~/.bashrc
+  ./optools liquid-check  Liquid-parse all _posts (tools/check_liquid_posts.rb); optional args after command
   ./optools help          Show this help
 
 Env:
@@ -37,7 +38,7 @@ EOF
   echo ""
   echo "Note: check / ruby-check / start load rbenv inside the script only. Your interactive shell"
   echo "still uses system ruby until:  ./optools shell-init && source ~/.bashrc"
-  echo "Or run one-off:  ./optools run -- bundle exec ruby tools/check_liquid_posts.rb"
+  echo "Or:  ./optools liquid-check   (same checker; supports --verbose, --encoding-report)"
   echo ""
   echo "For Jekyll/Liquid errors, run with trace:  DEBUG=1 ./optools start"
   echo "Then check run.log or:  tail -f run.log"
@@ -524,6 +525,11 @@ case "$COMMAND" in
     ;;
   run)
     cmd_run "$@"
+    ;;
+  liquid-check)
+    prefer_rbenv_if_present
+    echo "[run] bundle exec ruby tools/check_liquid_posts.rb ${*:2}"
+    bundle exec ruby tools/check_liquid_posts.rb "${@:2}"
     ;;
   -h|--help|help)
     usage
