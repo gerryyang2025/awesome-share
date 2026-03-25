@@ -1955,6 +1955,14 @@ openclaw update --tag 2026.2.22
 
 
 
+# 定时任务
+
+定时任务配置在 OpenClaw 内置的 Cron 系统，不是系统的 `crontab`。配置文件位置在 `/root/.openclaw/cron/jobs.json`。可以通过编辑 jobs.json 文件来管理定时任务，或者下达命令让 OpenClaw 根据需求进行修改。
+
+![openclaw101](/assets/images/202601/openclaw101.png)
+
+![openclaw102](/assets/images/202601/openclaw102.png)
+
 
 # Q&A
 
