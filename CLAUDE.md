@@ -36,7 +36,9 @@ bundle install
 - `index.html` - Home page (`layout: home` from the theme)
 - `_tabs/` - Nav tabs (About, Categories, Tags, Archives)
 - `Gemfile` - Ruby dependencies (Jekyll ~> 4.3, **jekyll-theme-chirpy** 7.5.0, kramdown-parser-gfm, jekyll-feed, jekyll-sitemap, jekyll-archives)
-- `_includes/metadata-hook.html` - `post-content-bundle.css` only (regenerate bundle: `./tools/bundle-post-content-css.sh`)
+- `assets/css/jekyll-theme-chirpy.scss` - official Chirpy custom entry: `@use 'main'` / `main.bundle`, then `@use 'post-content-bundle' as *`
+- `_sass/_post-content-bundle.scss` - generated from `assets/css/*.css` (run `./tools/bundle-post-content-css.sh`)
+- `_includes/metadata-hook.html` - optional head hook (post styles compile via `jekyll-theme-chirpy.scss`, not a separate `<link>`)
 - `_includes/js-selector.html` - Overrides theme; removes unused SimpleJekyllSearch from script bundle (site uses `blog-search.js`)
 
 ## Key Configuration

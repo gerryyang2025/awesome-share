@@ -2,7 +2,9 @@
 
 ## bundle-post-content-css.sh
 
-`metadata-hook` loads a **single** `assets/css/post-content-bundle.css` (fewer runtime requests). After editing any of:
+Concatenates post-body CSS into **`_sass/_post-content-bundle.scss`**, which **`assets/css/jekyll-theme-chirpy.scss`** loads with **`@use 'post-content-bundle' as *`** (same pattern as [chirpy-starter](https://github.com/cotes2020/chirpy-starter); compiles with the theme into **`/assets/css/jekyll-theme-chirpy.css`**).
+
+After editing any of:
 
 `markdown-extras.css`, `blockquote.css`, `table.css`, `chirpy-code-blocks.css`, `inline-code.css`
 
