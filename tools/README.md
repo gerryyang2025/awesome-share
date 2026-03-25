@@ -70,6 +70,32 @@ ruby tools/convert_highlight_to_fenced.rb _posts/YYYY-MM-DD-文章名.markdown
 
 转换后原文件会被覆盖；建议先提交或备份。若某段在 `{% raw %}` 内被错误地写成 `highlight` + `` ``` `` 混用，脚本可能无法配对，需手工整理（见仓库历史中已修复的样例）。
 
+## check_liquid_posts.rb
+
+对 `_posts` 下每篇文章**去掉 YAML front matter 后的正文**执行 **`Liquid::Template.parse`**，与 Jekyll 在生成页面前的 Liquid 阶段一致，用于提前发现：
+
+- 多余的 `{% endraw %}`、未闭合的 `{% raw %}`（`--verbose` 下会做简单的 raw/endraw 计数提示）
+- 非法的 `{{ … }}`、未知 Liquid 标签等
+
+**不**等同于完整 `jekyll build`（不跑插件、不渲染 Markdown），但足以捕获多数正文里的 Liquid 语法错误。
+
+### 运行方式
+
+在仓库根目录、已 `bundle install` 的前提下：
+
+```bash
+bundle exec ruby tools/check_liquid_posts.rb
+bundle exec ruby tools/check_liquid_posts.rb _posts/2023-09-09-etcd-in-action.markdown
+bundle exec ruby tools/check_liquid_posts.rb --verbose
+```
+
+退出码：全部通过为 `0`，任一文件解析失败为 `1`。
+
+### 写作提示（与 Liquid 相关）
+
+- Ansible / Helm / Jinja2 示例里若同一行出现多条 `{% … %}`（如 `{% for %}…{% if %}…{% endif %}{% endfor %}`），有时会导致 Liquid 对 `{% raw %}` 块的切分异常；可拆成**多个**连续的 `{% raw %}…{% endraw %}` 代码块，或改为不出现字面量 `{%` 的文字说明。
+- 正文里若需提到 `{%` / `%}`，避免在 `{% raw %}` 外直接写未配对的 `{%`；可用文字描述（如 “brace-percent 标签”）或确保整段包在成对的 `raw` 内且内部不再出现会提前结束 raw 的片段。
+
 ## 注意事项（文章写作）
 
 - **`_posts` 正文中不要使用 emoji 符号**（含标题、列表、代码块注释、提示块等）。统一用纯文字与标点表达语气或强调，避免字体回退不一致、无障碍与复制粘贴异常、以及部分终端或 RSS 阅读器显示问题。
