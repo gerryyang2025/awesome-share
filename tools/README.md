@@ -6,7 +6,7 @@ Concatenates post-body CSS into **`_sass/_post-content-bundle.scss`**, which **`
 
 After editing any of:
 
-`markdown-extras.css`, `blockquote.css`, `table.css`, `chirpy-code-blocks.css`, `inline-code.css`
+`markdown-extras.css`, `blockquote.css`, `table.css`, `chirpy-code-blocks.css`, `inline-code.css`, `rouge-syntax-tokens.css`
 
 run from repo root:
 

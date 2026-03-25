@@ -8,8 +8,8 @@ mkdir -p "$ROOT/_sass"
 cd "$ROOT/assets/css"
 {
   echo '/* _post-content-bundle.scss — generated; do not edit by hand */'
-  echo '/* Sources: markdown-extras.css, blockquote.css, table.css, chirpy-code-blocks.css, inline-code.css */'
-  for f in markdown-extras.css blockquote.css table.css chirpy-code-blocks.css inline-code.css; do
+  echo '/* Sources: markdown-extras.css, blockquote.css, table.css, chirpy-code-blocks.css, inline-code.css, rouge-syntax-tokens.css */'
+  for f in markdown-extras.css blockquote.css table.css chirpy-code-blocks.css inline-code.css rouge-syntax-tokens.css; do
     echo
     echo "/* ==== $f ==== */"
     cat "$f"

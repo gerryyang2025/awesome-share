@@ -1,0 +1,283 @@
+/*
+ * Rouge HTMLLegacy short token classes inside Chirpy blocks:
+ *   div.highlight > code > (table td.rouge-code pre)? span.n
+ * Palette ≈ Rouge::Themes::Github (light / dark) so colors work even if the
+ * theme bundle omits or loses token rules after @use ordering.
+ */
+.content .highlight code .hll {
+  background-color: #fff8c5;
+}
+
+.content .highlight code .c,
+.content .highlight code .ch,
+.content .highlight code .cm,
+.content .highlight code .cp,
+.content .highlight code .cpf,
+.content .highlight code .c1,
+.content .highlight code .cs {
+  color: #6e7781;
+}
+
+.content .highlight code .err {
+  color: #f6f8fa;
+  background-color: #82071e;
+}
+
+.content .highlight code .k,
+.content .highlight code .kc,
+.content .highlight code .kd,
+.content .highlight code .kn,
+.content .highlight code .kp,
+.content .highlight code .kr,
+.content .highlight code .kt {
+  color: #cf222e;
+}
+
+.content .highlight code .o,
+.content .highlight code .ow {
+  color: #24292f;
+}
+
+.content .highlight code .m,
+.content .highlight code .mb,
+.content .highlight code .mf,
+.content .highlight code .mh,
+.content .highlight code .mi,
+.content .highlight code .mo,
+.content .highlight code .il {
+  color: #0550ae;
+}
+
+.content .highlight code .s,
+.content .highlight code .sa,
+.content .highlight code .sb,
+.content .highlight code .sc,
+.content .highlight code .dl,
+.content .highlight code .sd,
+.content .highlight code .s2,
+.content .highlight code .se,
+.content .highlight code .sh,
+.content .highlight code .si,
+.content .highlight code .sx,
+.content .highlight code .sr,
+.content .highlight code .s1,
+.content .highlight code .ss {
+  color: #0a3069;
+}
+
+.content .highlight code .na,
+.content .highlight code .nb,
+.content .highlight code .bp {
+  color: #24292f;
+}
+
+.content .highlight code .nc,
+.content .highlight code .no,
+.content .highlight code .nd,
+.content .highlight code .ni,
+.content .highlight code .ne,
+.content .highlight code .nf,
+.content .highlight code .fm,
+.content .highlight code .nl,
+.content .highlight code .nn,
+.content .highlight code .nx {
+  color: #8250df;
+}
+
+.content .highlight code .nt,
+.content .highlight code .nv,
+.content .highlight code .vc,
+.content .highlight code .vg,
+.content .highlight code .vi,
+.content .highlight code .vm {
+  color: #116329;
+}
+
+.content .highlight code .gd {
+  color: #82071e;
+  background-color: #ffebe9;
+}
+
+.content .highlight code .gi {
+  color: #116329;
+  background-color: #dafbe1;
+}
+
+.content .highlight code .w {
+  color: #d0d7de;
+}
+
+/* Line numbers (Rouge table gutter) */
+.content .highlight code .lineno {
+  color: #6e7781;
+}
+
+/* ---- Dark (Chirpy [data-theme="dark"] / .theme-dark) ---- */
+[data-theme="dark"] .content .highlight code .hll,
+.theme-dark .content .highlight code .hll {
+  background-color: rgba(187, 128, 9, 0.25);
+}
+
+[data-theme="dark"] .content .highlight code .c,
+[data-theme="dark"] .content .highlight code .ch,
+[data-theme="dark"] .content .highlight code .cm,
+[data-theme="dark"] .content .highlight code .cp,
+[data-theme="dark"] .content .highlight code .cpf,
+[data-theme="dark"] .content .highlight code .c1,
+[data-theme="dark"] .content .highlight code .cs,
+.theme-dark .content .highlight code .c,
+.theme-dark .content .highlight code .ch,
+.theme-dark .content .highlight code .cm,
+.theme-dark .content .highlight code .cp,
+.theme-dark .content .highlight code .cpf,
+.theme-dark .content .highlight code .c1,
+.theme-dark .content .highlight code .cs {
+  color: #8b949e;
+}
+
+[data-theme="dark"] .content .highlight code .err,
+.theme-dark .content .highlight code .err {
+  color: #f0f6fc;
+  background-color: #8e1519;
+}
+
+[data-theme="dark"] .content .highlight code .k,
+[data-theme="dark"] .content .highlight code .kc,
+[data-theme="dark"] .content .highlight code .kd,
+[data-theme="dark"] .content .highlight code .kn,
+[data-theme="dark"] .content .highlight code .kp,
+[data-theme="dark"] .content .highlight code .kr,
+[data-theme="dark"] .content .highlight code .kt,
+.theme-dark .content .highlight code .k,
+.theme-dark .content .highlight code .kc,
+.theme-dark .content .highlight code .kd,
+.theme-dark .content .highlight code .kn,
+.theme-dark .content .highlight code .kp,
+.theme-dark .content .highlight code .kr,
+.theme-dark .content .highlight code .kt {
+  color: #ff7b72;
+}
+
+[data-theme="dark"] .content .highlight code .o,
+[data-theme="dark"] .content .highlight code .ow,
+.theme-dark .content .highlight code .o,
+.theme-dark .content .highlight code .ow {
+  color: #c9d1d9;
+}
+
+[data-theme="dark"] .content .highlight code .m,
+[data-theme="dark"] .content .highlight code .mb,
+[data-theme="dark"] .content .highlight code .mf,
+[data-theme="dark"] .content .highlight code .mh,
+[data-theme="dark"] .content .highlight code .mi,
+[data-theme="dark"] .content .highlight code .mo,
+[data-theme="dark"] .content .highlight code .il,
+.theme-dark .content .highlight code .m,
+.theme-dark .content .highlight code .mb,
+.theme-dark .content .highlight code .mf,
+.theme-dark .content .highlight code .mh,
+.theme-dark .content .highlight code .mi,
+.theme-dark .content .highlight code .mo,
+.theme-dark .content .highlight code .il {
+  color: #79c0ff;
+}
+
+[data-theme="dark"] .content .highlight code .s,
+[data-theme="dark"] .content .highlight code .sa,
+[data-theme="dark"] .content .highlight code .sb,
+[data-theme="dark"] .content .highlight code .sc,
+[data-theme="dark"] .content .highlight code .dl,
+[data-theme="dark"] .content .highlight code .sd,
+[data-theme="dark"] .content .highlight code .s2,
+[data-theme="dark"] .content .highlight code .se,
+[data-theme="dark"] .content .highlight code .sh,
+[data-theme="dark"] .content .highlight code .si,
+[data-theme="dark"] .content .highlight code .sx,
+[data-theme="dark"] .content .highlight code .sr,
+[data-theme="dark"] .content .highlight code .s1,
+[data-theme="dark"] .content .highlight code .ss,
+.theme-dark .content .highlight code .s,
+.theme-dark .content .highlight code .sa,
+.theme-dark .content .highlight code .sb,
+.theme-dark .content .highlight code .sc,
+.theme-dark .content .highlight code .dl,
+.theme-dark .content .highlight code .sd,
+.theme-dark .content .highlight code .s2,
+.theme-dark .content .highlight code .se,
+.theme-dark .content .highlight code .sh,
+.theme-dark .content .highlight code .si,
+.theme-dark .content .highlight code .sx,
+.theme-dark .content .highlight code .sr,
+.theme-dark .content .highlight code .s1,
+.theme-dark .content .highlight code .ss {
+  color: #a5d6ff;
+}
+
+[data-theme="dark"] .content .highlight code .na,
+[data-theme="dark"] .content .highlight code .nb,
+[data-theme="dark"] .content .highlight code .bp,
+.theme-dark .content .highlight code .na,
+.theme-dark .content .highlight code .nb,
+.theme-dark .content .highlight code .bp {
+  color: #c9d1d9;
+}
+
+[data-theme="dark"] .content .highlight code .nc,
+[data-theme="dark"] .content .highlight code .no,
+[data-theme="dark"] .content .highlight code .nd,
+[data-theme="dark"] .content .highlight code .ni,
+[data-theme="dark"] .content .highlight code .ne,
+[data-theme="dark"] .content .highlight code .nf,
+[data-theme="dark"] .content .highlight code .fm,
+[data-theme="dark"] .content .highlight code .nl,
+[data-theme="dark"] .content .highlight code .nn,
+[data-theme="dark"] .content .highlight code .nx,
+.theme-dark .content .highlight code .nc,
+.theme-dark .content .highlight code .no,
+.theme-dark .content .highlight code .nd,
+.theme-dark .content .highlight code .ni,
+.theme-dark .content .highlight code .ne,
+.theme-dark .content .highlight code .nf,
+.theme-dark .content .highlight code .fm,
+.theme-dark .content .highlight code .nl,
+.theme-dark .content .highlight code .nn,
+.theme-dark .content .highlight code .nx {
+  color: #d2a8ff;
+}
+
+[data-theme="dark"] .content .highlight code .nt,
+[data-theme="dark"] .content .highlight code .nv,
+[data-theme="dark"] .content .highlight code .vc,
+[data-theme="dark"] .content .highlight code .vg,
+[data-theme="dark"] .content .highlight code .vi,
+[data-theme="dark"] .content .highlight code .vm,
+.theme-dark .content .highlight code .nt,
+.theme-dark .content .highlight code .nv,
+.theme-dark .content .highlight code .vc,
+.theme-dark .content .highlight code .vg,
+.theme-dark .content .highlight code .vi,
+.theme-dark .content .highlight code .vm {
+  color: #7ee787;
+}
+
+[data-theme="dark"] .content .highlight code .gd,
+.theme-dark .content .highlight code .gd {
+  color: #ffdcd7;
+  background-color: #67060c;
+}
+
+[data-theme="dark"] .content .highlight code .gi,
+.theme-dark .content .highlight code .gi {
+  color: #aff5b4;
+  background-color: #033a16;
+}
+
+[data-theme="dark"] .content .highlight code .w,
+.theme-dark .content .highlight code .w {
+  color: #484f58;
+}
+
+[data-theme="dark"] .content .highlight code .lineno,
+.theme-dark .content .highlight code .lineno {
+  color: #8b949e;
+}

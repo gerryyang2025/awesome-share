@@ -1,15 +1,15 @@
 /*
  * Match Chirpy _sass/base/_syntax.scss:
- * - All `code` get base color + font; only `code.highlighter-rouge` gets the inline pill.
- * - Block Rouge lives under `.highlight > code`; do not apply pill or `color: inherit`
- *   (inherit collapses token colors from Rouge spans).
+ * - Do NOT set color on `.content code` globally — that makes `.highlight > code` inherit one
+ *   color and masks Rouge token spans when theme rules lose the cascade.
+ * - Pill only on `code.highlighter-rouge`.
+ * - Inline `` `code` `` (with or without highlighter-rouge): color via parent context below.
  */
 .content code {
   -webkit-hyphens: none;
   -ms-hyphens: none;
   hyphens: none;
   margin: 0;
-  color: var(--code-color, #3a3a3a);
   border: 0;
   box-shadow: none;
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
@@ -17,7 +17,9 @@
   vertical-align: baseline;
 }
 
+/* Inline / backtick — explicit body color (not used for `.highlight > code`) */
 .content code.highlighter-rouge {
+  color: var(--code-color, #3a3a3a);
   padding: 3px 5px;
   font-size: 0.85rem;
   line-height: 1.4rem;
@@ -28,7 +30,17 @@
   border-radius: 6px;
 }
 
-/* Block / Rouge — strip inline pill only */
+/* Plain `<code>` inside prose blocks (kramdown may omit highlighter-rouge on some inlines) */
+.content :is(p, li, td, th, dd, h1, h2, h3, h4, h5, h6) code {
+  color: var(--code-color, #3a3a3a);
+}
+
+/* Blockquote: match Chirpy `blockquote &` — muted body text, not --code-color */
+.content blockquote :is(p, li, td, th, dd, h1, h2, h3, h4, h5, h6) code {
+  color: inherit;
+}
+
+/* Block Rouge — strip inline pill; no `color` so Chirpy/Rouge span rules apply */
 .content pre code,
 .content .highlight > code {
   padding: 0;
@@ -43,6 +55,11 @@
   white-space: pre;
   overflow-wrap: normal;
   word-break: normal;
+}
+
+/* Undo prose `code` color inside Rouge blocks (rare nested markup) */
+.content .highlight :is(p, li, td, th, dd, h1, h2, h3, h4, h5, h6) code {
+  color: unset;
 }
 
 /* Chirpy: blockquote & { color: inherit; } — parent must not be pre */
