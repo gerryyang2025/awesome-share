@@ -20,7 +20,7 @@ In C programming, the functions `getaddrinfo()` and `getnameinfo()` convert **do
 
 Internally, the functions perform resolutions using the [Domain Name System](https://en.wikipedia.org/wiki/Domain_Name_System) (**DNS**) by calling other, lower level functions, such as `gethostbyname()`.
 
-{% highlight cpp %}
+```cpp
 int getaddrinfo(const char *node, const char *service,
                 const struct addrinfo *hints,
                 struct addrinfo **res);
@@ -28,11 +28,12 @@ int getaddrinfo(const char *node, const char *service,
 void freeaddrinfo(struct addrinfo *res);
 
 const char *gai_strerror(int errcode);
-{% endhighlight %}
+```
+
 
 The addrinfo structure used by `getaddrinfo()` contains the following fields:
 
-{% highlight cpp %}
+```cpp
 struct addrinfo {
     int              ai_flags;
     int              ai_family;
@@ -43,7 +44,8 @@ struct addrinfo {
     char            *ai_canonname;
     struct addrinfo *ai_next;
 };
-{% endhighlight %}
+```
+
 
 The `getaddrinfo()` function allocates and initializes a linked list of addrinfo structures, one for each network address that matches node and service, subject to any restrictions imposed by `hints`, and returns a pointer to the start of the list in `res`. The items in the linked list are linked by the `ai_next` field.
 
@@ -59,7 +61,7 @@ The `getaddrinfo` function call alone causes over 100 system calls! But getaddri
 
 `getaddrinfo` doesn’t know anything about files, DNS, or any other way to find the address for a host. Instead, `getaddrinfo` gets a list of these “sources” at runtime from another file, `/etc/nsswitch.conf`, the “Name Service Switch”.
 
-{% highlight text %}
+```text
 $cat /etc/nsswitch.conf
 #
 # /etc/nsswitch.conf
@@ -99,27 +101,30 @@ $cat /etc/nsswitch.conf
 hosts:      files dns
 
 ...
-{% endhighlight %}
+```
+
 
 Notice the line `hosts`: files dns. This says, “to find a host, first ask the library `libnss_files.so`. If that fails, ask the library `libnss_dns.so`.” The C standard library interpolates files, dns and so on into the pattern **libnss_%s.so** to find the libraries. As such, you could write a new library `libnss_imfeelinglucky`, and change your `nsswitch.conf` to hosts: `imfeelinglucky`. Enjoy the chaos.
 
 You might think we’re done. Not yet! Before getaddrinfo does any of this, we have these system calls:
 
 
-{% highlight text %}
+```text
 socket(PF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3
 connect(3, {sa_family=AF_LOCAL, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
 close(3)                                = 0
-{% endhighlight %}
+```
+
 
 What is `/var/run/nscd/socket` ..? Linux tells us, with `ENOENT`, that I don’t have that file! What is this supposed to be? As Google will tell you, this is a socket to talk to the **Northern School of Contemporary Dance**. But before your process can go to class, you have to install the daemon:
 
-{% highlight text %}
+```text
 $ sudo apt-get install nscd
 ...
 Setting up nscd (2.19-0ubuntu6.14) ...
  * Starting Name Service Cache Daemon
-{% endhighlight %}
+```
+
 
 Sorry, `nscd` is actually the “**name service cache daemon**”, “a daemon that provides a cache for the most common name service requests”. After installing it, the daemon starts, and your process can dance:
 
@@ -131,7 +136,7 @@ One last thing. You might think that `getaddrinfo` caches answers, so subsequent
 ## Example
 
 
-{% highlight cpp %}
+```cpp
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -163,16 +168,18 @@ int main(void)
   freeaddrinfo(addr);
   return 0;
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $./a.out
 142.251.42.238
 142.251.42.238
 142.251.42.238
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 int SelectIP(const std::string& strHostName, std::string& strIP)
 {
     char szIP[INET_ADDRSTRLEN] = {0};
@@ -198,9 +205,10 @@ int SelectIP(const std::string& strHostName, std::string& strIP)
     freeaddrinfo(addr);
     return 0;
 }
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include <stdio.h>
 #include <stdlib.h>
 #include <netdb.h>
@@ -243,7 +251,8 @@ int main(void)
     freeaddrinfo(result);
     return 0;
 }
-{% endhighlight %}
+```
+
 
 # C-ares
 
@@ -258,14 +267,15 @@ Current releases of c-ares introduce a CMake v3+ build system that has been test
 
 In the most basic form, building with CMake might look like:
 
-{% highlight text %}
+```text
 cd ~/tools/c-ares
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=~/tools/c-ares/c-ares-1.18.1-install ../c-ares-1.18.1
 make
 make install
-{% endhighlight %}
+```
+
 
 Options to CMake are passed on the command line using "-D${OPTION}=${VALUE}". The values defined are all boolean and take values like On, Off, True, False.
 
@@ -278,7 +288,7 @@ Options to CMake are passed on the command line using "-D${OPTION}=${VALUE}". Th
 
 ## ares_gethostbyaddr
 
-{% highlight cpp %}
+```cpp
 #include <time.h>
 #include <iostream>
 #include <netdb.h>
@@ -328,18 +338,20 @@ int main(int argc, char **argv)
         main_loop(channel);
         return 0;
 }
-{% endhighlight %}
+```
+
 
 g++ demo.cc -I deps/c-ares-1.18.1/include deps/c-ares-1.18.1/lib/libcares.a
 
-{% highlight text %}
+```text
 $./a.out 8.8.8.8
 dns.google
-{% endhighlight %}
+```
+
 
 ## ares_gethostbyname
 
-{% highlight cpp %}
+```cpp
 #include <time.h>
 #include <iostream>
 #include <netdb.h>
@@ -396,11 +408,12 @@ int main(int argc, char **argv)
         main_loop(channel);
         return 0;
 }
-{% endhighlight %}
+```
+
 
 g++ ares_gethostbyname.cc -o ares_gethostbyname -I deps/c-ares-1.18.1/include deps/c-ares-1.18.1/lib/libcares.a
 
-{% highlight text %}
+```text
 $./ares_gethostbyname google.cn
 google.cn
 58.63.4294967273.98
@@ -410,11 +423,12 @@ baidu.com
 s$./ares_gethostbyname gerryyang.com
 gerryyang.com
 119.28.41.102
-{% endhighlight %}
+```
+
 
 ## ares_process_fd + poll
 
-{% highlight cpp %}
+```cpp
 #include <sys/time.h>
 #include <sys/poll.h>
 #include <arpa/inet.h>
@@ -634,14 +648,16 @@ int main()
         return;
     }
 }
-{% endhighlight %}
+```
+
 
 g++ ares_gethostbyname2.cc -o ares_gethostbyname2 -I deps/c-ares-1.18.1/include deps/c-ares-1.18.1/lib/libcares.a
 
-{% highlight bash %}
+```bash
 $./ares_gethostbyname2
 119.28.41.102
-{% endhighlight %}
+```
+
 
 
 # Interface
@@ -651,11 +667,12 @@ More: [c-ares documentation](https://c-ares.org/docs.html)
 
 ## ares_init
 
-{% highlight cpp %}
+```cpp
 #include <ares.h>
 
 int ares_init(ares_channel *channelptr)
-{% endhighlight %}
+```
+
 
 The `ares_init` function initializes a communications channel for name service lookups. If it returns successfully, `ares_init` will set the variable pointed to by `channelptr` to a handle used to identify the name service channel. The caller should invoke `ares_destroy` on the handle when the channel is no longer needed.
 
@@ -670,12 +687,13 @@ When initializing from `/etc/resolv.conf`, `ares_init(3)` reads the domain and s
 
 ## ares_gethostbyaddr
 
-{% highlight cpp %}
+```cpp
 #include <ares.h>
 
 typedef void (*ares_host_callback)(void *arg, int status, int timeouts, struct hostent *hostent)
 void ares_gethostbyaddr(ares_channel channel, const void *addr, int addrlen, int family, ares_host_callback callback, void *arg)
-{% endhighlight %}
+```
+
 
 The `ares_gethostbyaddr` function initiates a host query by address on the name service channel identified by channel. The parameters addr and addrlen give the address as a series of bytes, and family gives the type of address. When the query is complete or has failed, the ares library will invoke callback. Completion or failure of the query may happen immediately, or may happen during a later call to ares_process(3), ares_destroy(3) or ares_cancel(3).
 
@@ -690,12 +708,13 @@ On successful completion of the query, the callback argument hostent points to a
 
 ## ares_gethostbyname
 
-{% highlight cpp %}
+```cpp
 #include <ares.h>
 
 typedef void (*ares_host_callback)(void *arg, int status, int timeouts, struct hostent *hostent)
 void ares_gethostbyname(ares_channel channel, const char *name, int family, ares_host_callback callback, void *arg)
-{% endhighlight %}
+```
+
 
 The `ares_gethostbyname` function initiates a host query by name on the name service channel identified by channel. The parameter `name` gives the hostname as a NUL-terminated C string, and family gives the desired type of address for the resulting host entry. When the query is complete or has failed, the ares library will invoke callback. Completion or failure of the query may happen immediately, or may happen during a later call to ares_process(3), ares_destroy(3) or ares_cancel(3).
 
@@ -710,12 +729,13 @@ On successful completion of the query, the callback argument hostent points to a
 
 ## ares_process
 
-{% highlight cpp %}
+```cpp
 #include <ares.h>
 
 void ares_process(ares_channel channel, fd_set *read_fds, fd_set *write_fds)
 void ares_process_fd(ares_channel channel, ares_socket_t read_fd, ares_socket_t write_fd)
-{% endhighlight %}
+```
+
 
 The `ares_process(3)` function handles input/output events and timeouts associated with queries pending on the name service channel identified by channel. The file descriptor sets pointed to by `read_fds` and `write_fds` should have file descriptors set in them according to whether the file descriptors specified by `ares_fds(3)` are ready for reading and writing. (The easiest way to determine this information is to invoke `select` with a timeout no greater than the timeout given by `ares_timeout(3)` ).
 
@@ -725,7 +745,7 @@ The `ares_process` function will invoke **callbacks** for pending queries if the
 
 The following code fragment waits for all pending queries on a `channel` to complete:
 
-{% highlight cpp %}
+```cpp
 int nfds, count;
 fd_set readers, writers;
 struct timeval tv, *tvp;
@@ -745,16 +765,18 @@ while (1)
     count = select(nfds, &readers, &writers, NULL, tvp);
     ares_process(channel, &readers, &writers);
 }
-{% endhighlight %}
+```
+
 
 * https://linux.die.net/man/3/ares_process
 
 ## ares_fds
 
-{% highlight cpp %}
+```cpp
 #include <ares.h>
 int ares_fds(ares_channel channel, fd_set *read_fds, fd_set *write_fds)
-{% endhighlight %}
+```
+
 
 The `ares_fds` function retrieves the set of file descriptors which the calling application should select on for reading and writing for the processing of name service queries pending on the name service channel identified by channel. File descriptors will be set in the file descriptor sets pointed to by `read_fds` and `write_fds` as appropriate. File descriptors already set in `read_fds` and `write_fds` will remain set; initialization of the file descriptor sets (using `FD_ZERO`) is the responsibility of the caller.
 
@@ -764,11 +786,12 @@ The `ares_fds` function retrieves the set of file descriptors which the calling 
 
 ## ares_timeout
 
-{% highlight cpp %}
+```cpp
 #include <ares.h>
 
 struct timeval *ares_timeout(ares_channel channel, struct timeval *maxtv, struct timeval *tv)
-{% endhighlight %}
+```
+
 
 The `ares_timeout` function determines the maximum time for which the caller should wait before invoking `ares_process(3)` to process `timeouts`. The parameter `maxtv` specifies a existing maximum timeout, or NULL if the caller does not wish to apply a maximum timeout. The parameter `tv` must point to a writable buffer of type `struct timeval`. It is valid for `maxtv` and `tv` to have the same value.
 
@@ -816,7 +839,7 @@ Loop: 100000
 
 ## c-ares 和文件相关的系统调用
 
-{% highlight text %}
+```text
 $strace -s1024 -tt -e trace=file ./performance_compare
 11:28:34.980050 execve("./performance_compare", ["./performance_compare"], [/* 788 vars */]) = 0
 11:28:34.981232 access("/etc/ld.so.preload", R_OK) = 0
@@ -835,11 +858,12 @@ $strace -s1024 -tt -e trace=file ./performance_compare
 11:28:34.989195 open("/etc/hosts", O_RDONLY) = 3
 resolve1 : 4248534 ns
 11:28:34.992087 +++ exited with 0 +++
-{% endhighlight %}
+```
+
 
 ## c-ares 和网络相关的调用情况
 
-{% highlight text %}
+```text
 $strace -s1024 -tt -e trace=network  ./performance_compare
 11:24:19.110979 socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 3
 11:24:19.111332 connect(3, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("9.166.31.254")}, 16) = 0
@@ -859,11 +883,12 @@ $strace -s1024 -tt -e trace=network  ./performance_compare
 11:24:19.113039 getsockname(4, {sa_family=AF_INET, sin_port=htons(59710), sin_addr=inet_addr("9.135.18.186")}, [16]) = 0
 resolve1 : 3858319 ns
 11:24:19.113629 +++ exited with 0 +++
-{% endhighlight %}
+```
+
 
 ## getaddrinfo 和文件相关的系统调用
 
-{% highlight text %}
+```text
 $strace -s1024 -tt -e trace=file ./performance_compare
 11:30:30.549208 execve("./performance_compare", ["./performance_compare"], [/* 788 vars */]) = 0
 11:30:30.550343 access("/etc/ld.so.preload", R_OK) = 0
@@ -888,11 +913,12 @@ $strace -s1024 -tt -e trace=file ./performance_compare
 11:30:30.558124 open("/lib64/libresolv.so.2", O_RDONLY|O_CLOEXEC) = 3
 resolve2 : 13396723 ns
 11:30:30.568509 +++ exited with 0 +++
-{% endhighlight %}
+```
+
 
 ## getaddrinfo 和网络相关的调用情况
 
-{% highlight text %}
+```text
 $strace -s1024 -tt -e trace=network  ./performance_compare
 11:32:46.239270 socket(PF_NETLINK, SOCK_RAW, 0) = 3
 11:32:46.239459 bind(3, {sa_family=AF_NETLINK, pid=0, groups=00000000}, 12) = 0
@@ -926,12 +952,13 @@ $strace -s1024 -tt -e trace=network  ./performance_compare
 11:32:46.247832 recvfrom(3, "n\225\205\200\0\1\0\1\0\0\0\0\tgerryyang\3com\0\0\1\0\1\tgerryyang\3com\0\0\1\0\1\0\0\0\32\0\4w\34)f", 1024, 0, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("9.166.31.254")}, [16]) = 60
 resolve2 : 8803496 ns
 11:32:46.248537 +++ exited with 0 +++
-{% endhighlight %}
+```
+
 
 
 ## 测试代码
 
-{% highlight cpp %}
+```cpp
 #include <sys/time.h>
 #include <sys/poll.h>
 #include <arpa/inet.h>
@@ -1190,7 +1217,8 @@ int main()
     resolve1();
     resolve2();
 }
-{% endhighlight %}
+```
+
 
 
 # Refer

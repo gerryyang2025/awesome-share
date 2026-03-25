@@ -49,7 +49,7 @@
   margin: 0.75rem auto;
 }
 
-/* Ensure <pre> keeps rounded corners consistent with code-copy container */
+/* <pre> rounding (complements Chirpy / Rouge blocks) */
 :where(.post-content, #post-content, .content) pre {
   border-radius: 6px;
 }

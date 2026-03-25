@@ -55,7 +55,7 @@ Docker 底层是基于成熟的 `Linux Container(LXC)` 技术实现。自 Docker
 
 ## TL;DR
 
-{% highlight bash %}
+```bash
 # 查看已下载镜像
 docker images
 
@@ -71,7 +71,8 @@ docker ps -l
 
 # 执行进入容器
 docker exec -it $container_id bash
-{% endhighlight %}
+```
+
 
 
 ## 生命周期管理
@@ -125,9 +126,10 @@ docker exec -it $container_id bash
 
 https://docs.docker.com/engine/reference/commandline/build/
 
-{% highlight bash %}
+```bash
 docker build -t vieux/apache:2.0 .
-{% endhighlight %}
+```
+
 
 # 容器指标
 
@@ -137,7 +139,7 @@ docker build -t vieux/apache:2.0 .
 # 测试使用 (CentOS)
 
 
-{% highlight text %}
+```text
 $docker version
 Client:
  Version:           18.09.7
@@ -157,9 +159,10 @@ Server: Docker Engine - Community
   Built:            Thu Jun 27 17:26:28 2019
   OS/Arch:          linux/amd64
   Experimental:     false
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $docker info
 Containers: 0
  Running: 0
@@ -212,14 +215,16 @@ Registry Mirrors:
  http://csighub.tencentyun.com/
 Live Restore Enabled: false
 Product License: Community Engine
-{% endhighlight %}
+```
+
 
 # 用户管理
 
-{% highlight text %}
+```text
 sudo service docker start         # 启动 docker 服务
 sudo usermod -aG docker ${USER}   # 当前用户加入 docker 组
-{% endhighlight %}
+```
+
 
 > 说明：
 >
@@ -235,11 +240,12 @@ sudo usermod -aG docker ${USER}   # 当前用户加入 docker 组
 
 The `CMD` instruction has three forms:
 
-{% highlight text %}
+```text
 CMD ["executable","param1","param2"] (exec form, this is the preferred form)
 CMD ["param1","param2"] (as default parameters to ENTRYPOINT)
 CMD command param1 param2 (shell form)
-{% endhighlight %}
+```
+
 
 There can only be one `CMD` instruction in a Dockerfile. If you list more than one `CMD` then only the last `CMD` will take effect.
 
@@ -251,17 +257,19 @@ If `CMD` is used to provide default arguments for the `ENTRYPOINT` instruction, 
 
 If you use the shell form of the `CMD`, then the `<command>` will execute in `/bin/sh -c`:
 
-{% highlight text %}
+```text
 FROM ubuntu
 CMD echo "This is a test." | wc -
-{% endhighlight %}
+```
+
 
 If you want to **run your `<command>` without a shell** then you must express the command as a JSON array and give the full path to the executable. **This array form is the preferred format of `CMD`**. Any additional parameters must be individually expressed as strings in the array:
 
-{% highlight text %}
+```text
 FROM ubuntu
 CMD ["/usr/bin/wc","--help"]
-{% endhighlight %}
+```
+
 
 If you would like your container to run the same executable every time, then you should consider using `ENTRYPOINT` in combination with `CMD`. See [ENTRYPOINT](https://docs.docker.com/engine/reference/builder/#entrypoint).
 
@@ -275,15 +283,17 @@ An `ENTRYPOINT` allows you to configure a container that will run as an executab
 
 * The exec form, which is the preferred form:
 
-{% highlight bash %}
+```bash
 ENTRYPOINT ["executable", "param1", "param2"]
-{% endhighlight %}
+```
+
 
 * The shell form:
 
-{% highlight bash %}
+```bash
 ENTRYPOINT command param1 param2
-{% endhighlight %}
+```
+
 
 For more information about the different forms, see [Shell and exec form](https://docs.docker.com/reference/dockerfile#shell-and-exec-form).
 
@@ -308,13 +318,14 @@ The `EXPOSE` instruction doesn't actually publish the port. It functions as a ty
 
 例如：
 
-{% highlight bash %}
+```bash
 # 使用 -P 时，EXPOSE 的 8080、9090、9091 会被映射到宿主机随机端口
 docker run -P namesvr
 
 # 使用 -p 时，需要自己指定映射，与 EXPOSE 无关
 docker run -p 8080:8080 -p 9090:9090 -p 9091:9091 namesvr
-{% endhighlight %}
+```
+
 
 
 ## [HEALTHCHECK](https://docs.docker.com/reference/dockerfile/#healthcheck)
@@ -330,10 +341,11 @@ When a container has a healthcheck specified, it has a health status in addition
 
 For example, to check every five minutes or so that a web-server is able to serve the site's main page within three seconds:
 
-{% highlight bash %}
+```bash
 HEALTHCHECK --interval=5m --timeout=3s \
   CMD curl -f http://localhost/ || exit 1
-{% endhighlight %}
+```
+
 
 
 
@@ -348,39 +360,43 @@ I try to locate one specific tag for a Docker image. How can I do it on the comm
 
 Answers:
 
-{% highlight bash %}
+```bash
 #!/usr/bin/bashs
 curl -s -S "https://registry.hub.docker.com/v2/repositories/library/$@/tags/" | jq '."results"[]["name"]' | sort
-{% endhighlight %}
+```
+
 
 ## 权限问题：dial unix /var/run/docker.sock: connect: permission denied
 
 **问题描述**：在当前用户权限下使用 docker 命令需要 sudo 否则出现以下问题：
 
-{% highlight text %}
+```text
 [user00@~]$ docker ps -l
 Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.39/containers/json?limit=1: dial unix /var/run/docker.sock: connect: permission denied
-{% endhighlight %}
+```
+
 
 **解决方案**：通过将当前用户添加到 docker 用户组可以将 sudo 去掉，命令如下：
 
-{% highlight bash %}
+```bash
 groupadd docker            # 添加 docker 用户组
 gpasswd -a 用户名 docker    # 将登陆用户加入到 docker 用户组中
 newgrp docker              # 更新用户组
 systemctl restart docker   # 最后重启 docker 生效
-{% endhighlight %}
+```
+
 
 
 ## 镜像过大导致根目录磁盘空间用完
 
 **问题描述**：由于系统初始分区的原因，操作系统中对应 `/` 分区不会太大，通常 `/var` 目录不会单独分区。如果上面运行 Docker 服务，经过长时间的使用，镜像下载过多会导致根目录磁盘空间用完。
 
-{% highlight text %}
+```text
 [user00@~]$ df -h
 Filesystem    Size  Used Avail Use% Mounted on
 /dev/vda1      99G   98G     0 100% /
-{% endhighlight %}
+```
+
 
 > 注意：1. 首先排除 root 用户的根目录下是否有不需要的数据，并进行清理。2. yum clean all 清理当前的 yum 缓存数据。
 
@@ -393,7 +409,7 @@ Filesystem    Size  Used Avail Use% Mounted on
 **清理不再使用的容器**。可以使用以下命令清理容器、网络文件、镜像和构建缓存：
 
 
-{% highlight text %}
+```text
 $docker system prune -a
 WARNING! This will remove:
         - all stopped containers
@@ -401,21 +417,23 @@ WARNING! This will remove:
         - all images without at least one container associated to them
         - all build cache
 Are you sure you want to continue? [y/N] y
-{% endhighlight %}
+```
+
 
 **清除不再使用的卷**：
 
 
-{% highlight text %}
+```text
 $docker volume prune
 WARNING! This will remove all local volumes not used by at least one container.
 Are you sure you want to continue? [y/N] y
-{% endhighlight %}
+```
+
 
 
 第二步：若不需要第一步清理空间，也可直接修改存储目录。解决默认存储容量不足的情况，最直接且最有效的方法就是挂载新的分区到该目录。但是在原有系统空间不变的情况下，可采用软链接的方式，修改镜像和容器的存放路径达到同样的目的。
 
-{% highlight bash %}
+```bash
 # 停止 Docker 服务
 service docker stop
 # 如果停止不了，可尝试 systemctl stop docker.socket docker.service
@@ -426,7 +444,8 @@ ln -sf /data/docker /var/lib/docker
 
 # 启动 Docker 服务
 service docker start
-{% endhighlight %}
+```
+
 
 
 # 历史文章

@@ -37,21 +37,23 @@ Go 提供了一种在运行时更新和检查变量的值、调用变量的方�
 
 Go 的接口是由两部分组成的，一部分是**类型信息**，另一部分是**数据信息**。
 
-{% highlight golang %}
+```go
 var a = 1
 var b interface{} = a
-{% endhighlight %}
+```
+
 
 `b`的类型信息是`int`，数据信息是`1`，这两部分信息都是存储 `b`里面。
 
 `b`的类型实际上是`eface`，它是一个**空接口**，在`src/runtime/runtime2.go`中，它的定义如下：
 
-{% highlight golang %}
+```go
 type eface struct {
     _type *_type
     data  unsafe.Pointer
 }
-{% endhighlight %}
+```
+
 
 也就是说，一个 `interface{}` 中实际上既包含了变量的**类型信息**，也包含了类型的**数据**。 正因为如此，才可以通过**反射**来获取到变量的类型信息，以及变量的数据信息。
 
@@ -62,19 +64,20 @@ type eface struct {
 * `reflect.TypeOf`: 返回**反射类型**（returns the reflection Type that represents the dynamic type of i）
 * `reflect.ValueOf`: 返回**反射值**（returns a new Value initialized to the concrete value）
 
-{% highlight golang %}
+```go
 var a = 1
 t := reflect.TypeOf(a)  // t = int
 
 var b = "hello"
 v := reflect.ValueOf(b)  // v = "hello"
-{% endhighlight %}
+```
+
 
 看一下 `TypeOf` 和 `ValueOf` 的源码会发现，这两个方法都接收一个 `interface{}` 类型的参数，然后返回一个 `reflect.Type` 和 `reflect.Value` 类型的值。这也就是为什么可以通过 `reflect.TypeOf` 和 `reflect.ValueOf` 来获取到一个变量的类型和值的原因。
 
 `reflect.TypeOf()` 源码：
 
-{% highlight golang %}
+```go
 func TypeOf(i any) Type {
     eface := *(*emptyInterface)(unsafe.Pointer(&i))
     return toType(eface.typ)
@@ -86,11 +89,12 @@ func toType(t *rtype) Type {
     }
     return t
 }
-{% endhighlight %}
+```
+
 
 `reflect.ValueOf()` 源码：
 
-{% highlight golang %}
+```go
 func ValueOf(i any) Value {
     if i == nil {
         return Value{}
@@ -118,7 +122,8 @@ var dummy struct {
     b bool
     x any
 }
-{% endhighlight %}
+```
+
 
 ## 反射定律
 
@@ -132,7 +137,7 @@ var dummy struct {
 
 可以通过 `reflect.Value.Interface` 来获取到反射对象的 `interface` 对象，也就是传递给 `reflect.ValueOf` 的那个变量本身。不过返回值类型是 `interface{}`，所以需要进行类型断言。
 
-{% highlight golang %}
+```go
 type Student struct {
     Name string `json:"name1" db:"name2"`
     Age  int    `json:"age1" db:"age2"`
@@ -146,13 +151,14 @@ func main() {
     i := v.Interface()
     fmt.Println(i.(*Student))
 }
-{% endhighlight %}
+```
+
 
 关于第 3 点：
 
 可以通过 `reflect.Value.CanSet` 来判断一个反射对象是否是可设置的。如果是可设置的，就可以通过 `reflect.Value.Set` 来修改反射对象的值。
 
-{% highlight golang %}
+```go
 func main() {
     s := &Student{
         Name: "zhangSan",
@@ -163,7 +169,8 @@ func main() {
     fmt.Println("set ability of v:", v.CanSet())           // false
     fmt.Println("set ability of Elem:", v.Elem().CanSet()) // true
 }
-{% endhighlight %}
+```
+
 
 **可设置要求：**
 
@@ -179,7 +186,7 @@ func main() {
 v 是一个指针，而 v.Elem() 是指针指向的值，对于这个指针本身，修改它是没有意义的，可以设想一下，如果修改了指针变量（也就是修改了指针变量指向的地址），那会发生什么呢？那样指针变量就不是指向 x 了， 而是指向了其他的变量，这样就不符合预期了。所以 `v.CanSet()` 返回的是 `false`。
 
 
-{% highlight golang %}
+```go
 package demo
 
 import (
@@ -217,9 +224,10 @@ func Test3(t *testing.T) {
 	fmt.Println("v: ", v)
 	fmt.Println("student: ", v.Interface().(*Student3))
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $go test -v demo3_test.go
 === RUN   Test3
 set ability of v: false
@@ -229,12 +237,13 @@ student:  &{lisi 20}
 --- PASS: Test3 (0.00s)
 PASS
 ok      command-line-arguments  0.002s
-{% endhighlight %}
+```
+
 
 
 # 测试代码
 
-{% highlight golang %}
+```go
 package demo1
 
 import (
@@ -279,16 +288,18 @@ func TestReflect(t *testing.T) {
 		read.(func(str string))("I am reading!")
 	}
 }
-{% endhighlight %}
+```
+
 
 测试：
 
-{% highlight text %}
+```text
 $go mod init github.com/gerryyang/goinaction/src/reflect
 $go mod tidy
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $go test -v demo1_test.go
 === RUN   Test1
 infos type: map[string]interface {}
@@ -303,9 +314,10 @@ I am reading!
 --- PASS: Test1 (0.00s)
 PASS
 ok      command-line-arguments  0.003s
-{% endhighlight %}
+```
 
-{% highlight golang %}
+
+```go
 package demo
 
 import (
@@ -333,9 +345,10 @@ func Test2(t *testing.T) {
 		fmt.Println(f.Tag.Get("db"))
 	}
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $go test -v demo2_test.go
 === RUN   Test2
 name1
@@ -345,5 +358,6 @@ age2
 --- PASS: Test2 (0.00s)
 PASS
 ok      command-line-arguments  0.003s
-{% endhighlight %}
+```
+
 

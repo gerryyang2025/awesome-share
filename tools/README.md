@@ -4,7 +4,7 @@
 
 `metadata-hook` loads a **single** `assets/css/post-content-bundle.css` (fewer runtime requests). After editing any of:
 
-`rouge-highlight.css`, `code-copy-btn.css`, `markdown-extras.css`, `blockquote.css`, `table.css`, `inline-code.css`
+`markdown-extras.css`, `blockquote.css`, `table.css`, `inline-code.css`
 
 run from repo root:
 
@@ -54,16 +54,18 @@ ruby tools/add_tags_to_posts.rb --force
 - 使用 `--force` 会**覆盖**当前 front matter 中的 `tags`，按上述规则重新生成。
 - 生成后可在站点 **Tags** 页或 `/tags/` 查看效果；单 tag 页面路径为 `/tags/<tag名>/`（依赖 `jekyll-archives`）。
 
-## convert_fenced_to_highlight.rb
+## convert_highlight_to_fenced.rb
 
-将文章中的 **Markdown 围栏代码块**（`` ```lang … ``` ``）批量替换为 Jekyll 的 **`{% highlight lang %}…{% endhighlight %}`**，以保证代码块换行与高亮正常显示（避免主题/压缩导致单行显示）。
+将文章中的 Jekyll **`{% highlight lang %}…{% endhighlight %}`** 批量替换为 **Markdown 围栏代码块**（与 [Chirpy — Writing a New Post](https://chirpy.cotes.page/posts/write-a-new-post/) 一致）。若块内含有 `{{` 或 `{%`，会自动外包一层 **`{% raw %}…{% endraw %}`**。
 
 ### 运行方式
 
 在仓库根目录执行：
 
 ```bash
-ruby tools/convert_fenced_to_highlight.rb _posts/YYYY-MM-DD-文章名.markdown
+ruby tools/convert_highlight_to_fenced.rb _posts
+# 或单文件
+ruby tools/convert_highlight_to_fenced.rb _posts/YYYY-MM-DD-文章名.markdown
 ```
 
-仅支持单文件；转换后原文件会被覆盖，建议先提交或备份。
+转换后原文件会被覆盖；建议先提交或备份。若某段在 `{% raw %}` 内被错误地写成 `highlight` + `` ``` `` 混用，脚本可能无法配对，需手工整理（见仓库历史中已修复的样例）。

@@ -52,7 +52,7 @@ STL的实现版本百花齐放。`HP`版本是所有STL实现版本的始祖。�
 
 所谓临时对象，就是一种无名对象。它的出现如果不在程序员的预期之下，往往造成效率上的负担。但有时刻意制造一些临时对象，却又是使程序干净清爽的技巧。STL最常将此技巧应用于仿函数functor与算法的搭配上。
 
-{% highlight cpp %}
+```cpp
 // overload operator()
 template <typename T>
 class print
@@ -66,13 +66,14 @@ public:
 int a[] = {0, 1, 2, 3, 4, 5};
 std::vector<int> v(a, a + 6);
 for_each(v.begin(), v.end(), print<int>());// print<int>() 是一个临时对象，不是一个函数调用操作。当for_each结束时，这个临时对象也就结束了它的生命
-{% endhighlight %}
+```
+
 
 ## 语法2 - 静态常量整数成员在class内部直接初始化
 
 如果class内含const static integral data member，那么根据C++的标准，我们可以在class之内直接给予初值。
 
-{% highlight cpp %}
+```cpp
 // in-class static constant integer initialization
 template <typename T>
 class testClass
@@ -85,13 +86,14 @@ public:
 std::cout << testClass<int>::_x << std::endl;
 std::cout << testClass<int>::_y << std::endl;
 std::cout << testClass<int>::_z << std::endl;
-{% endhighlight %}
+```
+
 
 ## 语法3 - increment/decrement/dereference 操作符
 
 任何迭代器都必须实现`increment, operator++`和取值`dereference, operator*`的功能。前者还分为`前置式prefix`和`后置式postfix`两种，有非常规律的写法。有些迭代器具备双向移动功能，就必须再提供`decrement`，也分前置式和后置式两种。
 
-{% highlight cpp %}
+```cpp
 class INT
 {
     friend std::ostream& operator<<(std::ostream& os, const INT& i);
@@ -154,7 +156,8 @@ std::cout << ++i_obj;
 std::cout << i_obj--;
 std::cout << --i_obj;
 std::cout << *i_obj;
-{% endhighlight %}
+```
+
 
 ## 语法4 - 前闭后开区间表示法 [)
 
@@ -163,7 +166,7 @@ std::cout << *i_obj;
 > 1. 这种`off by one`或者`pass the end`的标示法，带来了许多方便。
 > 2. 前闭后开区间，元素之间无需占用连续内存空间。
 
-{% highlight cpp %}
+```cpp
 template<class InputIterator, class T>
 InputIterator find(InputIterator first, InputIterator last, const T& value)
 {
@@ -178,13 +181,14 @@ Function for_each(InputIterator first, InputIterator last, Function f)
         f(*first);
     return f;
 }
-{% endhighlight %}
+```
+
 
 ## 语法5 - function call 操作符 operator()
 
 函数调用操作`()`也可以被重载。过去C语言时代，欲将函数当做参数传递，唯有通过`函数指针`才能达成。
 
-{% highlight cpp %}
+```cpp
 int fcmp(const void* elem1, const void* elem2)
 {
     const int* i1 = (const int*)elem1;
@@ -201,7 +205,8 @@ for (int i = 0; i < 10; i++)
 qsort(ia, sizeof(ia)/sizeof(int), sizeof(int), util::fcmp);
 for (int i = 0; i < 10; i++)
     std::cout << ia[i] << " ";
-{% endhighlight %}
+```
+
 
 但是，函数指针有缺点：它无法持有自己的状态，也无法达到组件技术中的可适配性(adaptability)，即无法再将某些修饰条件加诸于其上而改变其状态。
 
@@ -209,7 +214,7 @@ for (int i = 0; i < 10; i++)
 
 > 所谓仿函数(functor)，就是使用起来像函数一样的东西，如果你针对某个class进行operator()重载，它就成为一个仿函数。至于要成为一个可配接的仿函数，还需要做一些额外的努力。
 
-{% highlight cpp %}
+```cpp
 // 由于将operator()重载了，因此plus成了一个仿函数
 template <class T>
 struct plus
@@ -231,7 +236,8 @@ std::cout << minus_obj(1, 2) << std::endl;
 
 std::cout << plus<int>(1, 2) << std::endl;
 std::cout << minus<int>(1, 2) << std::endl;
-{% endhighlight %}
+```
+
 
 上述的`plus<T>`和`minus<T>`已经非常接近STL的实现了。唯一的差别在它缺乏可配接能力。
 
@@ -246,7 +252,7 @@ std::cout << minus<int>(1, 2) << std::endl;
 
 根据STL的规范，以下是`allocator`的必要接口：
 
-{% highlight cpp %}
+```cpp
 allocator::value_type
 allocator::pointer
 allocator::const_pointer
@@ -269,7 +275,8 @@ size_type allocator::max_size() const
 
 void allocator::construct(pointer p, const T& x)            // 等同于 new((void*) p) T(x)
 void allocator::destroy(pointer p)                          // 等同于 p->~T()
-{% endhighlight %}
+```
+
 
 ## SGI特殊的空间适配器
 
@@ -277,11 +284,12 @@ void allocator::destroy(pointer p)                          // 等同于 p->~T()
 
 一般而言，C++内存配置和释放操作是这样的：
 
-{% highlight cpp %}
+```cpp
 class Foo {...};
 Foo* pf = new Foo;    // 配置内存，然后构造对象
 delete pf;            // 将对象析构，然后释放内存
-{% endhighlight %}
+```
+
 
 `new`算式内含两阶段操作：
 
@@ -326,16 +334,17 @@ STL的`allocator`为了精密分工，将这两个阶段操作区分开来：
 > 2. 实际上，联合就是一个结构，它的所有成员相对于基地址的偏移量都为0，此结构空间要大到足够容纳最“宽”的成员，并且，其对齐方式要适合于联合中所有类型的成员。
 > 3. 联合只能用其第一个成员类型的值进行初始化。
 
-{% highlight cpp %}
+```cpp
 union obj {
     union obj * free_list_link;
     char client_data[1];          // the client sees this
 };
-{% endhighlight %}
+```
+
 
 ### 第二级配置器的部分实现
 
-{% highlight cpp %}
+```cpp
 enum {
     __ALIGN = 8  // 小型区块的上调边界
 };
@@ -397,13 +406,14 @@ template <bool threads, int inst>
 __default_alloc_template<threads, inst>::obj * volatile
 __default_alloc_template<threads, inst>::free_list[__NFREELISTS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // 16个自由链表
 
-{% endhighlight %}
+```
+
 
 ### 空间配置函数的实现 - allocate
 
 ![sgi_allocate_func](/assets/images/201809/sgi_allocate_func.jpg)
 
-{% highlight cpp %}
+```cpp
 static void * allocate(size_t n)
 {
     obj * volatile * my_free_list;
@@ -465,14 +475,15 @@ void * __default_alloc_template<threads, inst>::refill(size_t n)
     }
     return result;
 }
-{% endhighlight %}
+```
+
 
 
 ### 空间释放函数的实现 - deallocate
 
 ![sgi_deallocate_func](/assets/images/201809/sgi_deallocate_func.jpg)
 
-{% highlight cpp %}
+```cpp
 static void deallocate(void *p, size_t n)
 {
     obj * q = (obj *)p;
@@ -491,14 +502,15 @@ static void deallocate(void *p, size_t n)
     q->free_list_link = *my_free_list;
     *my_free_list = q;
 }
-{% endhighlight %}
+```
+
 
 
 ## 内存池 (memory pool)
 
 ![sgi_allocate](/assets/images/201809/sgi_allocate.jpg)
 
-{% highlight cpp %}
+```cpp
 template <bool threads, int inst>
 char * __default_alloc_template<threads, inst>::chunk_alloc(size_t size, int& nobjs)
 {
@@ -567,7 +579,8 @@ char * __default_alloc_template<threads, inst>::chunk_alloc(size_t size, int& no
         return (chunk_alloc(size, nobjs));
     }
 }
-{% endhighlight %}
+```
+
 
 
 # [C++ named requirements: Compare](https://en.cppreference.com/w/cpp/named_req/Compare)

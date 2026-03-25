@@ -23,18 +23,20 @@ ClangFormat describes a set of tools that are built on top of LibFormat. It can 
 
 clang-format is located in clang/tools/clang-format and can be used to format C/C++/Obj-C code.
 
-{% highlight text %}
+```text
 $ clang-format -help
 OVERVIEW: A tool to format C/C++/Obj-C code.
-{% endhighlight %}
+```
+
 
 When the desired code formatting style is different from the available options, the style can be customized using the `-style="{key: value, ...}"` option or by putting your style configuration in the `.clang-format` or `_clang-format` file in your project’s directory and using `clang-format -style=file`.
 
 An easy way to create the `.clang-format` file is:
 
-{% highlight text %}
+```text
 clang-format -style=llvm -dump-config > .clang-format
-{% endhighlight %}
+```
+
 
 Available style options are described in [Clang-Format Style Options](https://releases.llvm.org/3.4/tools/clang/docs/ClangFormatStyleOptions.html).
 
@@ -53,7 +55,7 @@ Download the latest Visual Studio plugin from the [alpha build site](http://llvm
 
 The python script `clang/tools/clang-format-diff.py` parses the output of a unified diff and reformats all contained lines with clang-format.
 
-{% highlight text %}
+```text
 usage: clang-format-diff.py [-h] [-p P] [-style STYLE]
 
 Reformat changed lines in diff.
@@ -63,13 +65,15 @@ optional arguments:
   -p P          strip the smallest prefix containing P slashes
   -style STYLE  formatting style to apply (LLVM, Google, Chromium, Mozilla,
                 WebKit)
-{% endhighlight %}
+```
+
 
 So to reformat all the lines in the latest git commit, just do:
 
-{% highlight text %}
+```text
 git diff -U0 HEAD^ | clang-format-diff.py -p1
-{% endhighlight %}
+```
+
 
 The `-U0` will create a diff without context lines (the script would format those as well).
 
@@ -78,16 +82,17 @@ The `-U0` will create a diff without context lines (the script would format thos
 
 The `.clang-format` file uses `YAML` format:
 
-{% highlight yaml %}
+```yaml
 key1: value1
 key2: value2
 # A comment.
 ...
-{% endhighlight %}
+```
+
 
 An example of a configuration file for multiple languages:
 
-{% highlight yaml %}
+```yaml
 ---
 # We'll use defaults from the LLVM style, but with 4 columns indentation.
 BasedOnStyle: LLVM
@@ -106,11 +111,12 @@ Language: Proto
 # Don't format .proto files.
 DisableFormat: true
 ...
-{% endhighlight %}
+```
+
 
 执行 clang-format -style=google -dump-config 命令的输出：
 
-{% highlight yaml %}
+```yaml
 ---
 Language:        Cpp
 # BasedOnStyle:  Google
@@ -167,7 +173,8 @@ ForEachMacros:   [ foreach, Q_FOREACH, BOOST_FOREACH ]
 SpaceBeforeParens: ControlStatements
 DisableFormat:   false
 ...
-{% endhighlight %}
+```
+
 
 业务实际使用的配置可以参考`clang-format -style=google -dump-config`的默认配置，并在其基础上修改或增加新的选项。
 
@@ -177,13 +184,14 @@ DisableFormat:   false
 
 Clang-format understands also special comments that switch formatting in a delimited range. The code between a comment `// clang-format off` or `/* clang-format off */` up to a comment `// clang-format on` or `/* clang-format on */` will not be formatted. The comments themselves will be formatted (aligned) normally.
 
-{% highlight cpp %}
+```cpp
 int formatted_code;
 // clang-format off
     void    unformatted_code  ;
 // clang-format on
 void formatted_code_again;
-{% endhighlight %}
+```
+
 
 # Configurable Format Style Options
 

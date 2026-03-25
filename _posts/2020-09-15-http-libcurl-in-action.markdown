@@ -82,17 +82,18 @@ After the performance is made, you may [get information](https://curl.se/libcurl
 
 See also the [easy interface overview](https://curl.se/libcurl/c/libcurl-easy.html).
 
-{% highlight cpp %}
+```cpp
 curl_easy_init()
 curl_easy_cleanup()
 curl_easy_setopt()
 curl_easy_perform()
 curl_easy_getinfo()
-{% endhighlight %}
+```
+
 
 While the above functions are the main functions to use in the easy interface, there is a series of other helpful functions too including:
 
-{% highlight cpp %}
+```cpp
 curl_version()	// returns a pointer to the libcurl version string
 curl_getdate()	// converts a date string to time_t
 curl_mime_init()	// ... and family, to build multipart form-data posts
@@ -101,7 +102,8 @@ curl_slist_append()	// builds a linked list
 curl_slist_free_all()	// frees a whole curl_slist as made with curl_slist_append()
 curl_easy_escape()	// URL encodes a string
 curl_easy_unescape()	// URL decodes a string
-{% endhighlight %}
+```
+
 
 # multi interface overview
 
@@ -182,7 +184,7 @@ A few areas in the code are still using blocking code, even when used from the m
 
 ## Compile
 
-{% highlight text %}
+```text
 ./configure --prefix=/data/home/gerryyang/tools/curl/curl-7.82.0-install --with-ssl
 make && make install
 
@@ -210,15 +212,17 @@ SSL
 UnixSockets
 alt-svc
 libz
-{% endhighlight %}
+```
+
 
 ## Global preparation
 
 The program must initialize some of the libcurl functionality globally. That means it should be done exactly once, no matter how many times you intend to use the library. Once for your program's entire life time. This is done using
 
-{% highlight cpp %}
+```cpp
 curl_global_init()
-{% endhighlight %}
+```
+
 
 and it takes one parameter which is a bit pattern that tells libcurl what to initialize. Using `CURL_GLOBAL_ALL` will make it initialize all known internal sub modules, and might be a good default option. The current two bits that are specified are:
 
@@ -266,7 +270,7 @@ The callbacks CANNOT be non-static class member functions
 
 Example C++ code:
 
-{% highlight cpp %}
+```cpp
 class AClass {
     static size_t write_data(void *ptr, size_t size, size_t nmemb,
                              void *ourpointer)
@@ -274,7 +278,8 @@ class AClass {
       /* do what you want with the data */
     }
 }
-{% endhighlight %}
+```
+
 
 # Q&A
 
@@ -282,7 +287,7 @@ class AClass {
 
 I compiled curl from the github repository with `--with-openssl` then I compiled multi-app.c. When I run the program in gdb and add a breakpoint for pthread_create I see:
 
-{% highlight text %}
+```text
 > gdb) bt
 > #0 __pthread_create_2_1 (newthread=0x555555590d50, attr=0x0,
 > start_routine=0x7ffff7f61d20, arg=0x555555590fe0) at pthread_create.c:625
@@ -295,7 +300,8 @@ I compiled curl from the github repository with `--with-openssl` then I compiled
 > /lib/x86_64-linux-gnu/libcurl.so.4
 > #7 0x00005555555554ec in main () at main.c:45
 >
-{% endhighlight %}
+```
+
 Is this expected?
 
 Thanks
@@ -314,9 +320,10 @@ When talking to an `HTTP 1.1` server, you can tell curl to send the request body
 
 You send a chunked POST with curl like this:
 
-{% highlight text %}
+```text
 curl -H "Transfer-Encoding: chunked" -d @file http://example.com
-{% endhighlight %}
+```
+
 
 ## [How does HTTP Deliver a Large File?](https://cabulous.medium.com/how-http-delivers-a-large-file-78af8840aad5)
 

@@ -25,9 +25,10 @@ Try the [online playground](https://ast-grep.github.io/playground.html) for a ta
 
 `ast-grep` is a code tool for structural search and replace. It is like syntax-aware `grep`/`sed`! You can write code [patterns](https://ast-grep.github.io/guide/pattern-syntax.html) to locate and modify code, based on AST, in thousands of files, [interactively](https://ast-grep.github.io/guide/tooling-overview.html#interactive-mode).
 
-{% highlight bash %}
+```bash
 ast-grep -p '$A && $A()' -r '$A?.()'
-{% endhighlight %}
+```
+
 
 ![astgrep1](/assets/images/202507/astgrep1.png)
 
@@ -36,9 +37,10 @@ ast-grep -p '$A && $A()' -r '$A?.()'
 
 `ast-grep` is a versatile and flexible tool for [linting](https://ast-grep.github.io/guide/scan-project.html) code with AST patterns. You can easily add new customized rules with [intuitive syntax](https://ast-grep.github.io/guide/rule-config.html) and enjoy pretty error reporting out of box.
 
-{% highlight bash %}
+```bash
 ast-grep scan
-{% endhighlight %}
+```
+
 
 ![astgrep2](/assets/images/202507/astgrep2.png)
 
@@ -47,9 +49,10 @@ ast-grep scan
 
 `ast-grep` also provides [node-js binding](https://ast-grep.github.io/guide/api-usage/js-api.html) to access syntax trees programmatically. You can use jQuery like [utility methods](https://ast-grep.github.io/reference/api.html#napi) to traverse syntax tree nodes. Node API also has opt-in [type safety](https://ast-grep.github.io/blog/typed-napi.html).
 
-{% highlight bash %}
+```bash
 npm install @ast-grep/napi
-{% endhighlight %}
+```
+
 
 ![astgrep3](/assets/images/202507/astgrep3.png)
 
@@ -68,7 +71,7 @@ Our task is to rewrite old defensive code that checks nullable nested method cal
 
 First, install `ast-grep`. It is distributed by [npm](https://www.npmjs.com/package/@ast-grep/cli), [cargo](https://crates.io/crates/ast-grep), [homebrew](https://formulae.brew.sh/formula/ast-grep) and [macports](https://ports.macports.org/port/ast-grep/). You can also build it [from source](https://github.com/ast-grep/ast-grep#installation).
 
-{% highlight bash %}
+```bash
 # install via pip
 $ pip install ast-grep-cli
 
@@ -109,7 +112,8 @@ Options:
 
   -V, --version
           Print version
-{% endhighlight %}
+```
+
 
 > Note: Use `sg` on Linux
 >
@@ -118,9 +122,10 @@ Options:
 
 Optionally, you can grab `TypeScript` source code if you want to follow the tutorial. Or you can apply the magic to your own code.
 
-{% highlight bash %}
+```bash
 git clone https://github.com/microsoft/TypeScript --depth 1
-{% endhighlight %}
+```
+
 
 ## Pattern
 
@@ -128,32 +133,35 @@ Then search the occurrence of looking up a method from a nested structure. `ast-
 
 For example, the following pattern code
 
-{% highlight js %}
+```js
 obj.val && obj.val()
-{% endhighlight %}
+```
+
 
 will match all the following code, regardless of white spaces or new lines.
 
-{% highlight js %}
+```js
 obj.val && obj.val() // verbatim match, of course
 obj.val    &&     obj.val() // this matches, too
 
 // this matches as well!
 const result = obj.val &&
    obj.val()
-{% endhighlight %}
+```
+
 
 Matching based exactly on AST is cool, but we certainly want to use flexible pattern to match code with infinite possibility. We can use **meta variable** to match any single AST node. Meta variable begins with `$` sign with upper case letters following, e.g. `$METAVAR`. **Think it as REGEX dot `.`, except it is not textual**.
 
 We can write this pattern to find all property checking code.
 
-{% highlight js %}
+```js
 $PROP && $PROP()
-{% endhighlight %}
+```
+
 
 It is a valid `ast-grep` pattern! We can use it in command line! Use `pattern` argument to specify our target. Optionally, we can use `lang` to tell `ast-grep` our target code language.
 
-{% highlight bash %}
+```bash
 # Full Command
 ast-grep --pattern '$PROP && $PROP()' --lang ts TypeScript/src
 
@@ -163,7 +171,8 @@ ast-grep -p '$PROP && $PROP()' -l ts TypeScript/src
 # Without Lang
 # ast-grep will infer languages based on file extensions
 ast-grep -p '$PROP && $PROP()' TypeScript/src
-{% endhighlight %}
+```
+
 
 ![astgrep4](/assets/images/202507/astgrep4.png)
 
@@ -174,14 +183,15 @@ ast-grep -p '$PROP && $PROP()' TypeScript/src
 
 Cool? Now we can use this pattern to refactor TypeScript source!
 
-{% highlight bash %}
+```bash
 # pattern and language argument support short form
 ast-grep -p '$PROP && $PROP()' \
    --rewrite '$PROP?.()' \
    --interactive \
    -l ts \
    TypeScript/src
-{% endhighlight %}
+```
+
 
 `ast-grep` will start an interactive session to let you choose if you want to apply the patch. Press `y` to accept the change!
 
@@ -200,7 +210,7 @@ In this guide we will walk through ast-grep's pattern syntax. The example will b
 
 `ast-grep` uses pattern code to construct AST tree and match that against target code. The pattern code can search through the full syntax tree, so pattern can also match nested expression. For example, the pattern `a + 1` can match all the following code.
 
-{% highlight js %}
+```js
 const b = a + 1
 
 funcCall(a + 1)
@@ -208,7 +218,8 @@ funcCall(a + 1)
 deeplyNested({
   target: a + 1
 })
-{% endhighlight %}
+```
+
 
 > **WARNING**
 >
@@ -241,7 +252,7 @@ Think it as REGEX dot `.`, except it is not textual.
 
 The pattern `console.log($GREETING)` will match all the following.
 
-{% highlight js %}
+```js
 function tryAstGrep() {
   console.log('Hello World')
 }
@@ -249,16 +260,18 @@ function tryAstGrep() {
 const multiLineExpression =
   console
    .log('Also matched!')
-{% endhighlight %}
+```
+
 
 But it will not match these.
 
-{% highlight js %}
+```js
 // console.log(123) in comment is not matched
 'console.log(123) in string' // is not matched as well
 console.log() // mismatch argument
 console.log(a, b) // too many arguments
-{% endhighlight %}
+```
+
 
 **Note**, one meta variable `$MATCH` will match **one single AST node**, so the last two `console.log` calls do not match the pattern. Let's see how we can match **multiple AST nodes**.
 
@@ -272,18 +285,19 @@ We can use `$$$` to match **zero or more AST nodes**, including function argumen
 
 For example, `console.log($$$)` can match
 
-{% highlight js %}
+```js
 console.log()                       // matches zero AST node
 console.log('hello world')          // matches one node
 console.log('debug: ', key, value)  // matches multiple nodes
 console.log(...args)                // it also matches spread
-{% endhighlight %}
+```
+
 
 ### Function Parameters
 
 `function $FUNC($$$ARGS) { $$$ }` will match
 
-{% highlight js %}
+```js
 function foo(bar) {
   return bar
 }
@@ -293,7 +307,8 @@ function noop() {}
 function add(a, b, c) {
   return a + b + c
 }
-{% endhighlight %}
+```
+
 
 ![astgrep7](/assets/images/202507/astgrep7.png)
 
@@ -304,20 +319,21 @@ Meta variable is also similar to [capture group](https://developer.mozilla.org/e
 
 For example, the pattern `$A == $A` will have the following result.
 
-{% highlight js %}
+```js
 // will match these patterns
 a == a
 1 + 1 == 1 + 1
 // but will not match these
 a == b
 1 + 1 == 2
-{% endhighlight %}
+```
+
 
 ### Non Capturing Match
 
 You can also suppress meta variable capturing. All meta variables with name starting with underscore `_` will not be captured.
 
-{% highlight js %}
+```js
 // Given this pattern
 
 $_FUNC($_FUNC)
@@ -326,7 +342,8 @@ $_FUNC($_FUNC)
 test(a)
 testFunc(1 + 1)
 testFunc(...args)
-{% endhighlight %}
+```
+
 
 > **Note** in the example above, even if two meta variables have the same name `$_FUNC`, each occurrence of `$_FUNC` can match different content because they are not captured.
 
@@ -368,7 +385,7 @@ Now you have learnt the basic of ast-grep's pattern syntax and searching. Patter
 
 A minimal ast-grep rule looks like this.
 
-{% highlight yaml %}
+```yaml
 id: no-await-in-promise-all
 language: TypeScript
 rule:
@@ -376,7 +393,8 @@ rule:
   has:
     pattern: await $_
     stopBy: end
-{% endhighlight %}
+```
+
 
 The `TypeScript` rule, `no-await-in-promise-all`, will find `Promise.all` that has `await` expression in it.
 
@@ -402,21 +420,23 @@ The `scan` subcommand of ast-grep CLI can run one rule at a time.
 To do so, you need to save the rule above in a file on the disk, say `no-await-in-promise-all.yml`. Then you can run the following command to scan your codebase. In the example below, we are scanning a `test.ts` file.
 
 
-{% highlight bash %}
+```bash
 ast-grep scan --rule no-await-in-promise-all.yml test.ts
-{% endhighlight %}
+```
 
-{% highlight ts %}
+
+```ts
 await Promise.all([
   await foo(),
 ])
-{% endhighlight %}
+```
+
 
 ### ast-grep scan --inline-rules
 
 You can also run the rule directly from the command line without saving the rule to a file. The `--inline-rules` option is useful for ad-hoc search or calling `ast-grep` from another program.
 
-{% highlight bash %}
+```bash
 ast-grep scan --inline-rules '
 id: no-await-in-promise-all
 language: TypeScript
@@ -426,7 +446,8 @@ rule:
     pattern: await $_
     stopBy: end
 ' test.ts
-{% endhighlight %}
+```
+
 
 ### Online Playground
 
@@ -443,7 +464,7 @@ Below is the full list of fields in a rule object. Every rule field is optional 
 
 The equivalent rule object interface in `TypeScript` is also provided for reference.
 
-{% highlight yaml %}
+```yaml
 rule:
   # atomic rule
   pattern: 'search.pattern'
@@ -459,9 +480,10 @@ rule:
   any: [ {pattern: 'match.any'}, {kind: 'match_any'} ]
   not: { pattern: 'not.this' }
   matches: 'utility-rule'
-{% endhighlight %}
+```
 
-{% highlight ts %}
+
+```ts
 interface RuleObject {
   // atomic rule
   pattern?: string | Pattern
@@ -499,7 +521,8 @@ interface Relation {
   stopBy?: 'neighbor' | 'end' | RuleObject
   field?: string
 }
-{% endhighlight %}
+```
+
 
 
 A node must **satisfies all fields** in the rule object to be considered as a match. So the rule object can be seen as an abbreviated and **unordered** `all` rule.
@@ -539,10 +562,11 @@ But for a quick primer, a rule can have a pattern and we can extract meta variab
 
 For example, the rule below will match the `console.log('Hello World')`.
 
-{% highlight yaml %}
+```yaml
 rule:
   pattern: console.log($GREET)
-{% endhighlight %}
+```
+
 
 
 And we can get `$GREET` set to `'Hello World'`.
@@ -578,10 +602,11 @@ Atomic rule defines the most basic matching rule that determines whether one syn
 
 Pattern will match one single syntax node according to the [pattern syntax](https://ast-grep.github.io/guide/pattern-syntax.html).
 
-{% highlight yaml %}
+```yaml
 rule:
   pattern: console.log($GREETING)
-{% endhighlight %}
+```
+
 
 The above rule will match code like `console.log('Hello World')`.
 
@@ -606,11 +631,12 @@ Let's see how **pattern object** can solve the ambiguity(模棱两可) in the cl
 
 The **pattern object** below instructs ast-grep to select the `field_definition` node as the pattern target.
 
-{% highlight yaml %}
+```yaml
 pattern:
   selector: field_definition
   context: class A { $FIELD = $INIT }
-{% endhighlight %}
+```
+
 
 `ast-grep` works like this:
 
@@ -621,12 +647,13 @@ pattern:
 
 In this way, the pattern is parsed as `field_definition` instead of `assignment_expression`. See [playground](https://ast-grep.github.io/playground.html#eyJtb2RlIjoiQ29uZmlnIiwibGFuZyI6ImphdmFzY3JpcHQiLCJxdWVyeSI6IiRGSUVMRCA9ICRJTklUIiwicmV3cml0ZSI6IkRlYnVnLmFzc2VydCIsImNvbmZpZyI6InJ1bGU6XG4gIHBhdHRlcm46XG4gICAgc2VsZWN0b3I6IGZpZWxkX2RlZmluaXRpb25cbiAgICBjb250ZXh0OiBjbGFzcyBBIHsgJEZJRUxEID0gJElOSVQgfVxuIiwic291cmNlIjoiYSA9IDEyM1xuY2xhc3MgQSB7XG4gIGEgPSAxMjNcbn0ifQ==) in action.
 
-{% highlight yaml %}
+```yaml
 rule:
   pattern:
     selector: field_definition
     context: class A { $FIELD = $INIT }
-{% endhighlight %}
+```
+
 
 ![astgrep9](/assets/images/202507/astgrep9.png)
 
@@ -646,11 +673,12 @@ For the definition of **named** and **unnamed** nodes, please refer to the [core
 For example, the following pattern `function $A() {}` will match both plain function and async function in JavaScript. See [playground](https://ast-grep.github.io/playground.html#eyJtb2RlIjoiUGF0Y2giLCJsYW5nIjoiamF2YXNjcmlwdCIsInF1ZXJ5IjoiZnVuY3Rpb24gJEEoKSB7fSIsInJld3JpdGUiOiJEZWJ1Zy5hc3NlcnQiLCJjb25maWciOiJydWxlOlxuICBwYXR0ZXJuOiBcbiAgICBjb250ZXh0OiAneyAkTTogKCQkJEEpID0+ICRNQVRDSCB9J1xuICAgIHNlbGVjdG9yOiBwYWlyXG4iLCJzb3VyY2UiOiJmdW5jdGlvbiBhKCkge31cbmFzeW5jIGZ1bmN0aW9uIGEoKSB7fSJ9)
 
 
-{% highlight js %}
+```js
 // function $A() {}
 function foo() {}    // matched
 async function bar() {} // matched
-{% endhighlight %}
+```
+
 
 ![astgrep10](/assets/images/202507/astgrep10.png)
 
@@ -683,18 +711,20 @@ Instead, we can use `kind` to specify the AST node type defined in [tree-sitter 
 
 Back to our example, we can look up class property's kind from the playground.
 
-{% highlight yaml %}
+```yaml
 rule:
   kind: field_definition
-{% endhighlight %}
+```
+
 
 It will match the following code successfully ([playground link](https://ast-grep.github.io/playground.html#eyJtb2RlIjoiQ29uZmlnIiwibGFuZyI6ImphdmFzY3JpcHQiLCJxdWVyeSI6ImEgPSAxMjMiLCJyZXdyaXRlIjoibG9nZ2VyLmxvZygkTUFUQ0gpIiwiY29uZmlnIjoiIyBDb25maWd1cmUgUnVsZSBpbiBZQU1MXG5ydWxlOlxuICBraW5kOiBmaWVsZF9kZWZpbml0aW9uIiwic291cmNlIjoiY2xhc3MgVGVzdCB7XG4gIGEgPSAxMjNcbn0ifQ==)).
 
-{% highlight js %}
+```js
 class Test {
   a = 123 // match this line
 }
-{% endhighlight %}
+```
+
 
 ![astgrep11](/assets/images/202507/astgrep11.png)
 
@@ -717,10 +747,11 @@ Here are some situations that you can effectively use `kind`:
 
 The `regex` atomic rule will match the AST node by its text against a Rust regular expression.
 
-{% highlight yaml %}
+```yaml
 rule:
   regex: "\w+"
-{% endhighlight %}
+```
+
 
 > **TIP**
 >
@@ -736,7 +767,7 @@ You should almost always combine `regex` with other atomic rules to make sure th
 
 `nthChild` is heavily inspired by CSS's [nth-child pseudo-class](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child), and it accepts similar forms of arguments.
 
-{% highlight yaml %}
+```yaml
 # a number to match the exact nth child
 nthChild: 3
 
@@ -752,7 +783,8 @@ nthChild:
   # optional, filter the sibling node list based on rule
   ofRule:
     kind: function_declaration # accepts ast-grep rule
-{% endhighlight %}
+```
+
 
 > **TIP**
 >
@@ -761,18 +793,20 @@ nthChild:
 
 The following rule will match the second number in the JavaScript array.
 
-{% highlight yaml %}
+```yaml
 rule:
   kind: number
   nthChild: 2
-{% endhighlight %}
+```
+
 
 It will match the following code:
 
-{% highlight js %}
+```js
 const arr = [ 1, 2, 3, ]
             //   |- match this number
-{% endhighlight %}
+```
+
 
 ![astgrep12](/assets/images/202507/astgrep12.png)
 
@@ -783,7 +817,7 @@ const arr = [ 1, 2, 3, ]
 
 `range` rule accepts a range object with `start` and `end` fields. Each field is an object with `line` and `column` fields.
 
-{% highlight yaml %}
+```yaml
 rule:
   range:
     start:
@@ -792,7 +826,8 @@ rule:
     end:
       line: 1
       column: 5
-{% endhighlight %}
+```
+
 
 The above example will match an AST node having the first three characters of the first line like `foo` in `foo.bar()`.
 
@@ -805,11 +840,12 @@ The above example will match an AST node having the first three characters of th
 
 Suppose we want to write a rule which finds functions without a return type. For example, this code would trigger an error:
 
-{% highlight ts %}
+```ts
 const foo = () => {
 	return 1;
 }
-{% endhighlight %}
+```
+
 
 The first step to compose a rule is to find the target. In this case, we can first use kind: `arrow_function` to find function node. Then we can use other rules to filter candidate nodes that does have return type.
 

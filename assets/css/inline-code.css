@@ -1,7 +1,7 @@
 /*
  * Inline `code` in post body — Chirpy _syntax.scss (code.highlighter-rouge).
  * Use .content code so `p`/`li`/heading inline code is covered (Chirpy uses `article > .content > p > code`, not `.content > code`).
- * Reset pre/.highlight code so code blocks keep Rouge + theme block chrome.
+ * Reset pre/.highlight code so block Rouge output matches Chirpy theme chrome.
  */
 .content code {
   -webkit-hyphens: none;
@@ -24,7 +24,7 @@
   vertical-align: baseline;
 }
 
-/* Block / Rouge — strip pill only; font metrics stay with pre / code-copy-btn */
+/* Block / Rouge — strip inline-code pill inside pre.highlight */
 .content pre code,
 .content .highlight code {
   padding: 0;

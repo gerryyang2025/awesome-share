@@ -71,7 +71,7 @@ See the [installation guide](https://helm.sh/docs/intro/install/) for more optio
 使用 `helm create mychart` 创建一个名为 `mychart` 的示例，再使用 `tree mychart` 命令看一下 chart 的目录结构。
 
 
-{% highlight mychart %}
+```mychart
 ├── Chart.yaml
 ├── charts                      # 该目录保存其他依赖的 chart（子 chart）
 ├── templates                   # chart 配置模板，用于渲染最终的 Kubernetes YAML 文件
@@ -84,7 +84,8 @@ See the [installation guide](https://helm.sh/docs/intro/install/) for more optio
 │   └── tests
 │       └── test-connection.yaml
 └── values.yaml                 # 定义 chart 模板中的自定义配置的默认值，可以在执行 helm install 或 helm update 的时候覆盖
-{% endhighlight %}
+```
+
 
 * `Chart.yaml`：用于描述这个 Chart 的基本信息，包括名字、描述信息以及版本等
 * `values.yaml` ：用于存储 templates 目录中模板文件中用到变量的值。
@@ -123,13 +124,14 @@ For more details, or for other options, see [the installation guide](https://hel
 
 Once you have Helm ready, you can add a chart repository. Check [Artifact Hub](https://artifacthub.io/packages/search?kind=0) for available Helm chart repositories.
 
-{% highlight bash %}
+```bash
 $ helm repo add bitnami https://charts.bitnami.com/bitnami
-{% endhighlight %}
+```
+
 
 Once this is installed, you will be able to list the charts you can install:
 
-{% highlight bash %}
+```bash
 $ helm search repo bitnami
 NAME                             	CHART VERSION	APP VERSION  	DESCRIPTION
 bitnami/bitnami-common           	0.0.9        	0.0.9        	DEPRECATED Chart with custom templates used in ...
@@ -137,13 +139,14 @@ bitnami/airflow                  	8.0.2        	2.0.0        	Apache Airflow is 
 bitnami/apache                   	8.2.3        	2.4.46       	Chart for Apache HTTP Server
 bitnami/aspnet-core              	1.2.3        	3.1.9        	ASP.NET Core is an open-source framework create...
 # ... and many more
-{% endhighlight %}
+```
+
 
 ## Install an Example Chart
 
 To install a chart, you can run the `helm install` command. Helm has several ways to find and install a chart, but the easiest is to use the `bitnami` charts.
 
-{% highlight bash %}
+```bash
 $ helm repo update              # Make sure we get the latest list of charts
 $ helm install bitnami/mysql --generate-name
 NAME: mysql-1612624192
@@ -153,7 +156,8 @@ STATUS: deployed
 REVISION: 1
 TEST SUITE: None
 NOTES: ...
-{% endhighlight %}
+```
+
 
 In the example above, the `bitnami/mysql` chart was released, and the name of our new release is `mysql-1612624192`.
 
@@ -168,11 +172,12 @@ The `helm install` command is a very powerful command with many capabilities. To
 
 It's easy to see what has been released using Helm:
 
-{% highlight bash %}
+```bash
 $ helm list
 NAME            	NAMESPACE	REVISION	UPDATED                             	STATUS  	CHART      	APP VERSION
 mysql-1612624192	default  	1       	2021-02-06 16:09:56.283059 +0100 CET	deployed	mysql-8.3.0	8.0.23
-{% endhighlight %}
+```
+
 
 The `helm list` (or `helm ls`) function will show you a list of all deployed releases.
 
@@ -180,20 +185,22 @@ The `helm list` (or `helm ls`) function will show you a list of all deployed rel
 
 To uninstall a release, use the `helm uninstall` command:
 
-{% highlight bash %}
+```bash
 $ helm uninstall mysql-1612624192
 release "mysql-1612624192" uninstalled
-{% endhighlight %}
+```
+
 
 This will uninstall `mysql-1612624192` from Kubernetes, which will remove all resources associated with the release as well as the release history.
 
 If the flag `--keep-history` is provided, release history will be kept. You will be able to request information about that release:
 
-{% highlight bash %}
+```bash
 $ helm status mysql-1612624192
 Status: UNINSTALLED
 ...
-{% endhighlight %}
+```
+
 
 Because Helm tracks your releases even after you've uninstalled them, you can audit a cluster's history, and even undelete a release (with `helm rollback`).
 
@@ -201,9 +208,10 @@ Because Helm tracks your releases even after you've uninstalled them, you can au
 
 To learn more about the available Helm commands, use `helm help` or type a command followed by the `-h` flag:
 
-{% highlight bash %}
+```bash
 $ helm get -h
-{% endhighlight %}
+```
+
 
 # Helm 4 新特性
 

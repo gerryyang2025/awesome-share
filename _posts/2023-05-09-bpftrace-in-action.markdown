@@ -28,7 +28,7 @@ The `bpftrace` language is inspired by awk and C, and predecessor tracers such a
 To learn more about bpftrace, see the [Manual](https://github.com/iovisor/bpftrace/blob/master/man/adoc/bpftrace.adoc) the [Reference Guide](https://github.com/iovisor/bpftrace/blob/master/docs/reference_guide.md) and [One-Liner Tutorial](https://github.com/iovisor/bpftrace/blob/master/docs/tutorial_one_liners.md).
 
 
-{% highlight text %}
+```text
 $bpftrace -h
 USAGE:
     bpftrace [options] filename
@@ -78,7 +78,8 @@ bpftrace -e 'kprobe:do_nanosleep { printf("PID %d sleeping...\n", pid); }'
     trace processes calling sleep
 bpftrace -e 'tracepoint:raw_syscalls:sys_enter { @[comm] = count(); }'
     count syscalls by process name
-{% endhighlight %}
+```
+
 
 # bpftrace Probe types
 
@@ -91,7 +92,7 @@ See the [Manual](https://github.com/bpftrace/bpftrace/blob/master/man/adoc/bpftr
 
 The following one-liners demonstrate different capabilities:
 
-{% highlight text %}
+```text
 # Files opened by thread name
 bpftrace -e 'tracepoint:syscalls:sys_enter_open { printf("%s %s\n", comm, str(args->filename)); }'
 
@@ -121,7 +122,8 @@ bpftrace -e 'profile:hz:99 /pid == 189/ { @[ustack] = count(); }'
 
 # Files opened in the root cgroup-v2
 bpftrace -e 'tracepoint:syscalls:sys_enter_openat /cgroup == cgroupid("/sys/fs/cgroup/unified/mycg")/ { printf("%s\n", str(args->filename)); }'
-{% endhighlight %}
+```
+
 
 More powerful scripts can easily be constructed. See [Tools](https://github.com/bpftrace/bpftrace/blob/master/tools/README.md) for examples.
 
@@ -130,7 +132,7 @@ More powerful scripts can easily be constructed. See [Tools](https://github.com/
 
 
 
-{% highlight text %}
+```text
 $uprobe -h
 USAGE: uprobe [-FhHsv] [-d secs] [-p PID] [-L TID] {-l target |
               uprobe_definition [filter]}
@@ -165,7 +167,8 @@ version's function names and platform's register usage.
            uprobe 'r:libc:fopen file=$retval' 'file == 0'
 
 See the man page and example file for more info.
-{% endhighlight %}
+```
+
 
 # [bpftrace Reference Guide](https://github.com/iovisor/bpftrace/blob/master/docs/reference_guide.md)
 
@@ -173,12 +176,13 @@ See the man page and example file for more info.
 
 The most basic example of a bpftrace program:
 
-{% highlight text %}
+```text
 # bpftrace -e 'BEGIN { printf("Hello, World!\n"); }'
 Attaching 1 probe...
 Hello, World!
 ^C
-{% endhighlight %}
+```
+
 
 The syntax to this program will be explained in the [Language](https://github.com/iovisor/bpftrace/blob/master/docs/reference_guide.md#language) section. In this section, we'll cover tool usage.
 
@@ -189,7 +193,7 @@ A program will continue running until Ctrl-C is hit, or an `exit()` function is 
 
 ## 函数插桩
 
-{% highlight cpp %}
+```cpp
 // test.cc
 #include <cstdio>
 
@@ -198,9 +202,10 @@ int main(int argc, char **argv)
     printf("hello world\n");
     return 0;
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $ g++ test.cc
 $ bpftrace -v -e 'uprobe:./a.out:main {printf("test\n");}'
 BTF: failed to read data (No such file or directory) from: /boot/vmlinux-5.4.32-1-tlinux4-0001
@@ -233,11 +238,12 @@ Attaching uprobe:./a.out:main
 Running...
 test
 ^C
-{% endhighlight %}
+```
+
 
 ## 统计函数时耗
 
-{% highlight cpp %}
+```cpp
 // test.cc
 #include <cstdio>
 #include <unistd.h>
@@ -253,9 +259,10 @@ int main(int argc, char **argv)
     hello();
     return 0;
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $ g++ test.cc
 $ bpftrace -e 'uprobe:./a.out:hello { @start[tid] = nsecs; } uretprobe:./a.out:hello { @elapsed = nsecs - @start[tid]; @start[tid] = 0; printf("hello took %d ns\n", @elapsed); }'
 Attaching 2 probes...
@@ -265,11 +272,12 @@ hello took 2000123088 ns
 @elapsed: 2000123088
 
 @start[1169845]: 0
-{% endhighlight %}
+```
+
 
 ## 正则匹配多个函数
 
-{% highlight cpp %}
+```cpp
 // test.cc
 #include <cstdio>
 #include <unistd.h>
@@ -292,9 +300,10 @@ int main(int argc, char **argv)
     hello2(2);
     return 0;
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $ g++ test.cc
 $ bpftrace -e 'uprobe:./a.out:*hello* { @start[tid] = nsecs; } uretprobe:./a.out:*hello* { @elapsed = nsecs - @start[tid]; @start[tid] = 0; printf("%s took %d ns\n", probe, @elapsed); }'
 Attaching 4 probes...
@@ -305,7 +314,8 @@ uretprobe:./a.out:_Z6hello2i took 2000082869 ns
 @elapsed: 2000082869
 
 @start[1502541]: 0
-{% endhighlight %}
+```
+
 
 
 # Refer

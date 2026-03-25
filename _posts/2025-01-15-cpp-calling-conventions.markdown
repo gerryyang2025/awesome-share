@@ -33,11 +33,12 @@ What exactly does putting `extern "C"` into `C++` code do?
 
 For example:
 
-{% highlight cpp %}
+```cpp
 extern "C" {
    void foo();
 }
-{% endhighlight %}
+```
+
 
 ## Answer0: Why
 
@@ -60,14 +61,15 @@ Since `C++` has overloading of function names and `C` does not, **the C++ compil
 
 Just so you know, you can specify extern "C" linkage to each individual declaration/definition explicitly or use a block to group a sequence of declarations/definitions to have a certain linkage:
 
-{% highlight c %}
+```c
 extern "C" void foo(int);
 extern "C"
 {
    void g(char);
    int i;
 }
-{% endhighlight %}
+```
+
 
 If you care about the technicalities, they are listed in section 7.5 of the C++03 standard, here is a brief summary (with emphasis on **extern "C"**):
 
@@ -84,7 +86,7 @@ If you care about the technicalities, they are listed in section 7.5 of the C++0
 
 You'll very often see code in C headers like so:
 
-{% highlight cpp %}
+```cpp
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -94,17 +96,19 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-{% endhighlight %}
+```
+
 
 What this accomplishes is that **it allows you to use that C header file with your C++ code**, because the macro `__cplusplus` will be defined. But you can also still use it with your legacy C code, where the macro is NOT defined, so it won't see the uniquely C++ construct.
 
 Although, I have also seen C++ code such as:
 
-{% highlight cpp %}
+```cpp
 extern "C" {
 #include "legacy_C_header.h"
 }
-{% endhighlight %}
+```
+
 
 which I imagine accomplishes much the same thing.
 
@@ -113,7 +117,7 @@ Not sure which way is better, but I have seen both.
 
 ## Answer3: Decompile a g++ generated binary to see what is going on
 
-{% highlight cpp %}
+```cpp
 // main.cpp
 
 void f() {}
@@ -126,14 +130,16 @@ extern "C" {
 
 /* Prevent g and eg from being optimized away. */
 void h() { g(); eg(); }
-{% endhighlight %}
+```
+
 
 Compile and disassemble the generated [ELF](https://stackoverflow.com/questions/26294034/how-to-make-an-executable-elf-file-in-linux-using-a-hex-editor/30648229#30648229) output:
 
-{% highlight text %}
+```text
 g++ -c -std=c++11 -Wall -Wextra -pedantic -o main.o main.cpp
 readelf -s main.o
-{% endhighlight %}
+```
+
 
 The output contains:
 
@@ -160,7 +166,7 @@ So you will need `extern "C"` both when calling:
 
 It becomes obvious that any C++ feature that requires name mangling will not work inside `extern C`:
 
-{% highlight cpp %}
+```cpp
 extern "C" {
     // Overloading.
     // error: declaration of C function ‘void f(int)’ conflicts with
@@ -171,7 +177,8 @@ extern "C" {
     // error: template with C linkage
     template <class C> void f(C i) { }
 }
-{% endhighlight %}
+```
+
 
 > Minimal runnable C from C++ example
 
@@ -179,7 +186,7 @@ For the sake of completeness and for the newbs out there, see also: [How to use 
 
 Calling C from C++ is pretty easy: each C function only has one possible non-mangled symbol, so no extra work is required.
 
-{% highlight cpp %}
+```cpp
 // main.cpp
 
 #include <cassert>
@@ -189,9 +196,10 @@ Calling C from C++ is pretty easy: each C function only has one possible non-man
 int main() {
     assert(f() == 1);
 }
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 // c.h
 
 #ifndef C_H
@@ -208,30 +216,34 @@ int f();
 #endif
 
 #endif
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 // c.c
 
 #include "c.h"
 
 int f(void) { return 1; }
-{% endhighlight %}
+```
+
 
 Run:
 
-{% highlight text %}
+```text
 g++ -c -o main.o -std=c++98 main.cpp
 gcc -c -o c.o -std=c89 c.c
 g++ -o main.out main.o c.o
 ./main.out
-{% endhighlight %}
+```
+
 
 Without `extern "C"` the link fails with:
 
-{% highlight text %}
+```text
 main.cpp:6: undefined reference to `f()'
-{% endhighlight %}
+```
+
 
 because g++ expects to find a mangled `f`, which gcc did not produce.
 
@@ -243,7 +255,7 @@ Calling C++ from C is a bit harder: we have to manually create non-mangled versi
 
 Here we illustrate how to expose C++ function overloads to C.
 
-{% highlight cpp %}
+```cpp
 // main.c
 
 #include <assert.h>
@@ -255,9 +267,10 @@ int main(void) {
     assert(f_float(1.0) == 3);
     return 0;
 }
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 // cpp.h
 
 #ifndef CPP_H
@@ -276,9 +289,10 @@ int f_float(float i);
 #endif
 
 #endif
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 // cpp.cpp
 
 #include "cpp.h"
@@ -298,23 +312,26 @@ int f_int(int i) {
 int f_float(float i) {
     return f(i);
 }
-{% endhighlight %}
+```
+
 
 Run:
 
-{% highlight text %}
+```text
 gcc -c -o main.o -std=c89 -Wextra main.c
 g++ -c -o cpp.o -std=c++98 cpp.cpp
 g++ -o main.out main.o cpp.o
 ./main.out
-{% endhighlight %}
+```
+
 
 Without `extern "C"` it fails with:
 
-{% highlight text %}
+```text
 main.c:6: undefined reference to `f_int'
 main.c:7: undefined reference to `f_float'
-{% endhighlight %}
+```
+
 
 because g++ generated mangled symbols which gcc cannot find.
 

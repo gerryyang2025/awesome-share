@@ -14,7 +14,7 @@ tags:
 
 # 示例
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 #include <string>
 
@@ -26,25 +26,28 @@ int main()
     std::string s2 = s1;
     printf("%p\n%p", s1.c_str(), s2.c_str());
 }
-{% endhighlight %}
+```
+
 
 GCC 4.8.5 输出：
 
-{% highlight 8 %}
+```8
 0x109cd88
 0x109cd88
-{% endhighlight %}
+```
+
 
 GCC 5.1.0 输出：
 
-{% highlight 32 %}
+```32
 0x7ffe01afc030
 0x7ffe01afc010
-{% endhighlight %}
+```
+
 
 内存分配：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <cstdlib>
 #include <string>
@@ -78,7 +81,8 @@ int main()
     }
     print("after push_back", s);
 }
-{% endhighlight %}
+```
+
 
 # 实现
 
@@ -91,7 +95,7 @@ int main()
 * 对于新的`std::string`实现导致的不同版本GCC编译导致的二进制不兼容问题，GCC5 提供了相应的二进制兼容宏开关`_GLIBCXX_USE_CXX11_ABI`。若`_GLIBCXX_USE_CXX11_ABI=0`，则链接旧版本；若`_GLIBCXX_USE_CXX11_ABI=1`，则链接新版本。
 
 
-{% highlight cpp %}
+```cpp
 // GCC 4.8.5
 template<typename _CharT, typename _Traits = char_traits<_CharT>,
          typename _Alloc = allocator<_CharT> >
@@ -133,9 +137,10 @@ class basic_string
   _Rep* _M_rep() const
   { return &((reinterpret_cast<_Rep*> (_M_data()))[-1]); }
 };
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 // GCC 5.1
 template<typename _CharT, typename _Traits, typename _Alloc>
 class basic_string
@@ -161,7 +166,8 @@ class basic_string
       size_type        _M_allocated_capacity;
   };
 };
-{% endhighlight %}
+```
+
 
 # libstdc++ vs libc++
 

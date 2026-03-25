@@ -48,7 +48,7 @@ Go 语言支持自动内存管理，那还存在内存泄漏问题吗？
 
 在 Go 语言中，可以通过在程序中导入 `net/http/pprof` 包来启用性能分析。这个包提供了一个 HTTP 服务器，可以通过浏览器访问并查看程序的性能分析结果。在程序中导入 `net/http/pprof` 包后，可以在程序中添加一些代码来启动 HTTP 服务器，例如：
 
-{% highlight golang %}
+```go
 import (
     "net/http"
     _ "net/http/pprof"
@@ -63,7 +63,8 @@ func main() {
     // 程序的其他代码
     // ...
 }
-{% endhighlight %}
+```
+
 
 在程序中添加这些代码后，可以通过访问 `http://localhost:6060/debug/pprof/` 来查看程序的性能分析结果。
 
@@ -72,7 +73,7 @@ func main() {
 
 测试代码：
 
-{% highlight go %}
+```go
 package main
 
 import (
@@ -91,7 +92,8 @@ func main() {
 
 	fmt.Println("Hello World")
 }
-{% endhighlight %}
+```
+
 
 通过 `http://localhost:8080/debug/pprof/` 查看：
 
@@ -103,7 +105,7 @@ func main() {
 
 测试代码：
 
-{% highlight go %}
+```go
 package main
 
 import (
@@ -183,32 +185,36 @@ func main() {
 
 	time.Sleep(10 * time.Minute)
 }
-{% endhighlight %}
+```
+
 
 上面的代码每分钟会生成一个 pprof 文件，结果如下：
 
-{% highlight text %}
+```text
 -rw-r--r--  1 gerry  staff   108B  5 31 22:48 pprof_cpu_47
 -rw-r--r--  1 gerry  staff   807B  5 31 22:48 pprof_mem_48
 -rw-r--r--  1 gerry  staff   104B  5 31 22:48 pprof_block_48
 -rw-r--r--  1 gerry  staff   108B  5 31 22:49 pprof_cpu_48
 -rw-r--r--  1 gerry  staff   1.3K  5 31 22:49 pprof_mem_49
 -rw-r--r--  1 gerry  staff   104B  5 31 22:49 pprof_block_49
-{% endhighlight %}
+```
+
 
 进行性能分析：
 
-{% highlight bash %}
+```bash
 # 自动弹出浏览器窗口查看
 go tool pprof -http=":8080" [binary] [profile]
-{% endhighlight %}
+```
+
 
 查看内存分配：
 
-{% highlight bash %}
+```bash
 go tool pprof -http=":8080" ../test2 pprof_mem_48
 Serving web UI on http://localhost:8080
-{% endhighlight %}
+```
+
 
 ![pprof2](/assets/images/202305/pprof2.png)
 
@@ -228,13 +234,14 @@ Serving web UI on http://localhost:8080
 
 
 
-{% highlight bash %}
+```bash
 # Linux
 sudo yum install graphviz
 
 # MacOS
 brew install graphviz
-{% endhighlight %}
+```
+
 
 # Refer
 

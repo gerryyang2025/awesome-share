@@ -67,7 +67,7 @@ tags:
     3. 含完整文档/案例
 + 输出格式
 
-{% highlight json %}
+```json
 {
   "project_name": "",
   "description": "",
@@ -78,7 +78,8 @@ tags:
   },
   "relevance_score": 0-1
 }
-{% endhighlight %}
+```
+
 
 模块二：学术论文追踪
 
@@ -97,16 +98,19 @@ tags:
 
 + 输出样例
 
-{% highlight markdown %}
+{% raw %}
+```markdown
 ## [论文标题]
 **评分**：★★★★☆ (4.2/5)
 **核心贡献**：
 - 创新点1
 - 创新点2
 **关键技术**：
-{% highlight python %}
+```python
 # 关键代码片段
-{% endhighlight %}
+```
+{% endraw %}
+
 
 **系统架构约束：**
 
@@ -961,4 +965,3 @@ AI行为设计：
 * https://github.com/harry0703/MoneyPrinterTurbo
 * https://github.com/FujiwaraChoki/MoneyPrinterV2
 
-{% endhighlight %}

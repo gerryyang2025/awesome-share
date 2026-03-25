@@ -135,31 +135,36 @@ Features:
 
 ### 手办 (Prompt)
 
-{% highlight text %}
+```text
 Use the nano-banana model to create a 1/7 scale commercialized figure of thecharacter in the illustration, in a realistic style and environment. Place the figure on a computer desk, using a circular transparent acrylic base without any text.On the computer screen, display the ZBrush modeling process of the figure. Next to the computer screen, place a BANDAI-style toy packaging box printed with the original artwork.
 
 中文含义：使用 nano-banana 模型制作一个 1/7 比例的实体模型，风格和环境保持写实。将模型摆放在电脑桌上，底座为圆形透明亚克力材质，且不带任何文字。电脑屏幕上显示的是该模型在 ZBrush 中的建模过程。在电脑屏幕旁边，放置一个 TAMIYA 风格的玩具包装盒，包装盒上印有原始插画。
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 transform this image into: A casual photograph of a collectible figure/model kit on a workspace desk with its original packaging box. Scattered hobby tools and supplies around. Background shelves with collections. Natural indoor lighting, soft shadows, smartphone camera quality, warm room ambiance, realistic color temperature, candid photography style.
-{% endhighlight %}
+```
+
 
 进一步，可以用[即梦](https://jimeng.jianying.com/)或[通义万相](https://tongyi.aliyun.com/wanxiang/)把图片转成视频。
 
 ### 自拍照 (Prompt)
 
-{% highlight text %}
+```text
 将上传的人物照片转换成高分辨率的肖像艺术作品，采用编辑类和现代艺术摄影风格。可以改变人物的动作姿势、表情、服饰、造型，增强画面张力。突出人物面部和光影质感。背景呈现柔和渐变效果，从中灰过渡到近乎纯白，营造出层次感与氛围感。细腻的胶片颗粒质感为画面增添了一种柔和质地，让人联想到经典的肖像摄影
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 将上传的人物照片转换成高分辨率的黑白肖像艺术作品，采用编辑类和现代艺术摄影风格。可以改变人物的动作姿势、表情、服饰、造型，增强画面张力。突出人物面部和光影质感。背景呈现柔和渐变效果，从中灰过渡到近乎纯白，营造出层次感与氛围感。细腻的胶片颗粒质感为画面增添了一种柔和质地，让人联想到经典的黑白摄影
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 将上传的照片转换成高分辨率的彩色肖像摄影作品，采用编辑类和现代艺术摄影风格。背景呈现柔和渐变效果，从中灰过渡到近乎纯白，营造出层次感与氛围感。细腻的胶片颗粒质感为画面增添了一种柔和质地
-{% endhighlight %}
+```
+
 
 ### 万圣节
 

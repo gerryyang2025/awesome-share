@@ -22,17 +22,18 @@ tags:
   + 可以适当使用宏来定义代码中的常量，消除**魔术数字**（magic number）。
   + 用宏来代替直接定义名字空间。
 
-{% highlight cpp %}
+```cpp
 // 通过 #define 指令定义一个宏：#define NAME_OF_MACRO value
 #define BUFFER_SIZE 1024
 auto foo = (char *)malloc(BUFFER_SIZE);
-{% endhighlight %}
+```
+
 
 * **条件编译**`#if/#else/#endif`。可以在预处理阶段实现分支处理，通过判断宏的数值来产生不同的源码，改变源文件的形态，这就是**条件编译**。
   + 通常编译环境都会有一些预定义宏，比如 CPU 支持的特殊指令集、操作系统 / 编译器 / 程序库的版本、语言特性等，使用它们就可以早于运行阶段，提前在预处理阶段做出各种优化，产生出最适合当前系统的源码。
   + 与优化更密切相关的底层系统信息在 C++ 语言标准里没有定义，但编译器通常都会提供，比如 GCC 可以使用一条简单的命令查看`g++ -E -dM - < /dev/null`。基于它们，你就可以更精细地根据具体的语言、编译器、系统特性来改变源码，有，就用新特性；没有，就采用变通实现。
 
-{% highlight cpp %}
+```cpp
 // Here, expression is an expression of integer type (can be integers, characters, arithmetic expression, macros and so on).
 #if expression
    // conditional codes
@@ -69,7 +70,8 @@ auto foo = (char *)malloc(BUFFER_SIZE);
 #else
 #  define assert(condition) /*implementation defined*/
 #endif
-{% endhighlight %}
+```
+
 
 * Variadic Macros (可变参宏)
 
@@ -79,7 +81,7 @@ https://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
 https://en.wikipedia.org/wiki/Variadic_macro_in_the_C_preprocessor
 
 
-{% highlight cpp %}
+```cpp
 #ifdef DEBUG_THRU_UART0
 #   define DEBUG(...)  printString (__VA_ARGS__)
 #else
@@ -88,17 +90,19 @@ void dummyFunc(void);
 #endif
 DEBUG(1,2,3); //calls printString(1,2,3) or dummyFunc() depending on
               //-DDEBUG_THRU_UART0 compiler define was given or not, when compiling.
-{% endhighlight %}
+```
+
 
 `##__VA_ARGS__`的作用？
 
-{% highlight cpp %}
+```cpp
 #define FOO(...)       printf(__VA_ARGS__)
 #define BAR(fmt, ...)  printf(fmt, __VA_ARGS__)
 
 FOO("this works fine");
 BAR("this breaks!");
-{% endhighlight %}
+```
+
 
 refer:
 
@@ -112,7 +116,7 @@ refer:
 
 # 用法示例
 
-{% highlight cpp %}
+```cpp
 #ifndef _XXX_H_INCLUDED_
 #define _XXX_H_INCLUDED_
 
@@ -181,11 +185,12 @@ END_NAMESPACE(my_own)
 #define print(x) print ## x
 print(f)("hello\n"); // printf("hello\n");
 
-{% endhighlight %}
+```
 
 
 
-{% highlight cpp %}
+
+```cpp
 $ g++ -E -dM - < /dev/null
 #define __SSP_STRONG__ 3
 #define __DBL_MIN_EXP__ (-1021)
@@ -534,10 +539,11 @@ $ g++ -E -dM - < /dev/null
 #define __UINT_FAST8_TYPE__ unsigned char
 #define __ATOMIC_ACQ_REL 4
 #define __ATOMIC_RELEASE 3
-{% endhighlight %}
+```
 
 
-{% highlight cpp %}
+
+```cpp
 #if defined(__cpp_decltype_auto)        //检查是否支持decltype(auto)
     cout << "decltype(auto) enable" << endl;
 #else
@@ -555,7 +561,8 @@ $ g++ -E -dM - < /dev/null
 #endif  // defined(__SSE4_2__) && defined(__x86_64)
 
 
-{% endhighlight %}
+```
+
 
 # Tips
 
@@ -577,7 +584,7 @@ The [gcc manual](https://gcc.gnu.org/onlinedocs/gcc-4.8.5/gcc/Function-Names.htm
 
 Note that since `__func__` and `__FUNCTION__` **are predefined identifiers, not macros**, you only need the `#define` once, not in each function. On the other hand, you **can't use** `#ifdef __func__` or `#ifdef __FUNCTION__` to detect the level of support.
 
-{% highlight cpp %}
+```cpp
  #if __STDC_VERSION__ < 199901L
  # if __GNUC__ >= 2
  #  define __func__ __FUNCTION__
@@ -585,11 +592,12 @@ Note that since `__func__` and `__FUNCTION__` **are predefined identifiers, not 
  #  define __func__ "<unknown>"
  # endif
  #endif
-{% endhighlight %}
+```
+
 
 测试代码
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 template<typename T>
@@ -621,9 +629,10 @@ void func(T&&) [with T = int&]
 void func(T&&) [with T = int]
 100
 */
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include <iostream>
 
 void myFunction(int a, double b)
@@ -637,11 +646,12 @@ int main()
     return 0;
 }
 // Function name: myFunction
-{% endhighlight %}
+```
+
 
 ## 通过编译期提取类名和函数名
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <string_view>
 
@@ -670,12 +680,13 @@ int main()
 /*
 Function name: A::myFunction
 */
-{% endhighlight %}
+```
+
 
 
 # 测试代码
 
-{% highlight cpp %}
+```cpp
 // demo.cpp
 #include <iostream>
 
@@ -689,7 +700,8 @@ int main()
   std::cout << "HAS_LINUX: " << HAS_LINUX << std::endl;
   return 0;
 }
-{% endhighlight %}
+```
+
 
 执行`g++ -E demo.cpp -o demo.cxx`，可以得到预处理后的cpp代码，然后查看`demo.cxx`(文件比较大，28160L, 665409C)
 
@@ -699,7 +711,7 @@ int main()
 * `533 "/usr/include/x86_64-linux-gnu/c++/7/bits/c++config.h" 3`表示将`bits/c++config.h`第533行的`#include <bits/os_defines.h>`，通过`#include`包含展开另一个文件的内容。
 
 
-{% highlight cpp %}
+```cpp
 // ...
 
 # 229 "/usr/include/x86_64-linux-gnu/c++/7/bits/c++config.h" 3
@@ -736,7 +748,8 @@ int main()
 
  return 0;
 }
-{% endhighlight %}
+```
+
 
 
 
@@ -747,7 +760,7 @@ int main()
 * `_GLIBCXX_RELEASE`对应`gcc -v`查看的gcc版本号
 
 
-{% highlight cpp %}
+```cpp
 /** @file bits/c++config.h
  *  This is an internal header file, included by other library headers.
  *  Do not attempt to use it directly. @headername{iosfwd}
@@ -860,7 +873,8 @@ namespace std
 
 
 #endif // _GLIBCXX_CXX_CONFIG_H
-{% endhighlight %}
+```
+
 
 
 

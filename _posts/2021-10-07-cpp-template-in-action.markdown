@@ -21,12 +21,13 @@ tags:
 
 查看当前环境C++版本：
 
-{% highlight text %}
+```text
 $ ls -l /lib64/libstdc++.so.6
 lrwxrwxrwx 1 root root 19 Aug 18  2020 /lib64/libstdc++.so.6 -> libstdc++.so.6.0.25
 $ rpm -qf /lib64/libstdc++.so.6
 libstdc++-8.3.1-5.el8.0.2.x86_64
-{% endhighlight %}
+```
+
 
 # Basic
 
@@ -39,7 +40,7 @@ libstdc++-8.3.1-5.el8.0.2.x86_64
 
 在类模版/函数模板定义之前，声明模板参数列表。
 
-{% highlight cpp %}
+```cpp
 // 类模板
 template <class T1, class T2>
 class A
@@ -54,13 +55,14 @@ T max(const T lhs, const T rhs)
 {
     return lhs > rhs ? lhs : rhs;
 }
-{% endhighlight %}
+```
+
 
 ## Explicit (full) template specialization
 
 **Explicit specialization** may be declared in any scope where its **primary template** may be defined (which may be different from the scope where the primary template is defined; such as with out-of-class specialization of a member template) . **Explicit specialization has to appear after the non-specialized template declaration.** (特化版本可以声明在主模版作用域之外，特化版本的声明必须出现在非实例化模版声明之后)
 
-{% highlight cpp %}
+```cpp
 namespace N {
     template<class T> class X { /*...*/ }; // primary template
     template<> class X<int> { /*...*/ }; // specialization in same namespace
@@ -71,11 +73,12 @@ namespace N {
 
 template<>
 class N::Y<double> { /*...*/ }; // OK: specialization in same namespace
-{% endhighlight %}
+```
+
 
 Specialization must be declared before the first use that would cause implicit instantiation, in every translation unit where such use occurs: (在每一个翻译单元若要使用特化版本，则需要在第一次使用时先对其声明，否则会导致隐式的实例化)
 
-{% highlight cpp %}
+```cpp
 class String {};
 template<class T> class Array { /*...*/ };
 template<class T> void sort(Array<T>& v) { /*...*/ } // primary template
@@ -86,37 +89,40 @@ void f(Array<String>& v) {
 
 template<>  // ERROR: explicit specialization of sort(Array<String>)
 void sort<String>(Array<String>& v); // after implicit instantiation
-{% endhighlight %}
+```
+
 
 A template specialization that was declared but not defined can be used just like any other [incomplete type](https://en.cppreference.com/w/cpp/language/incomplete_type) (e.g. pointers and references to it may be used)
 
-{% highlight cpp %}
+```cpp
 template<class T> class X; // primary template
 template<> class X<int>; // specialization (declared, not defined)
 
 X<int>* p; // OK: pointer to incomplete type
 X<int> x; // error: object of incomplete type
-{% endhighlight %}
+```
+
 
 
 ## Explicit specializations of function templates
 
 When specializing a function template, its template arguments can be omitted if [template argument deduction](https://en.cppreference.com/w/cpp/language/template_argument_deduction) can provide them from the function arguments: (函数模版实例化时，通过对函数参数的推导，函数模版参数可以省略)
 
-{% highlight cpp %}
+```cpp
 template<class T> class Array { /*...*/ };
 template<class T> void sort(Array<T>& v); // primary template
 template<> void sort(Array<int>&); // specialization for T = int
 
 // no need to write
 // template<> void sort<int>(Array<int>&);
-{% endhighlight %}
+```
+
 
 ## Members of specializations
 
 When defining a member of an explicitly specialized class template outside the body of the class, the syntax `template <>` is not used, except if it's a member of an explicitly specialized member class template, which is specialized as a class template, because otherwise, the syntax would require such definition to begin with `template<parameters>` required by the nested template.
 
-{% highlight cpp %}
+```cpp
 template< typename T>
 struct A {
     struct B {};  // member class
@@ -146,11 +152,12 @@ template<class U> struct A<char>::C {
 // specialized member class template specialized as a class template
 template<>
 template<class U> void A<char>::C<U>::f() { /* ... */ }
-{% endhighlight %}
+```
+
 
 A member or a member template of a class template may be explicitly specialized for a given implicit instantiation of the class template, even if the member or member template is defined in the class template definition.
 
-{% highlight cpp %}
+```cpp
 template<typename T>
 struct A {
     void f(T); // member, declared in the primary template
@@ -178,11 +185,12 @@ template<> void A<int>::g2<char>(int, char); // for X2 = char
 // same, using template argument deduction (X1 = char)
 template<>
 template<> void A<int>::g1(int, char);
-{% endhighlight %}
+```
+
 
 Member or a member template may be nested within many enclosing class templates. In an explicit specialization for such a member, there's a `template<>` for every enclosing class template that is explicitly specialized.
 
-{% highlight cpp %}
+```cpp
 template<class T1> struct A {
     template<class T2> struct B {
       template<class T3>
@@ -192,7 +200,8 @@ template<class T1> struct A {
 template<> struct A<int>;
 template<> template<> struct A<char>::B<double>;
 template<> template<> template<> void A<char>::B<char>::mf<double>();
-{% endhighlight %}
+```
+
 
 
 
@@ -200,11 +209,12 @@ template<> template<> template<> void A<char>::B<char>::mf<double>();
 
 通过[全特化一个模板](https://en.cppreference.com/w/cpp/language/template_specialization)，可以对一个**特定参数集合**自定义当前模板(Allows customizing the template code for a given set of template arguments)，**类模板和函数模板都可以全特化**。 全特化的模板参数列表应当是空的，并且应当给出"模板实参"列表：
 
-{% highlight cpp %}
+```cpp
 template <> declaration
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 // 全特化 类模板
 template <>
 class A<int, double>{
@@ -219,11 +229,12 @@ template <>
 int max(const int lhs, const int rhs){
     return lhs > rhs ? lhs : rhs;
 }
-{% endhighlight %}
+```
+
 
 例外情况：函数模板不需指定"模板实参"是因为编译器可以通过函数签名来推导，但有时这一过程是有歧义的：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 template <class T>
@@ -254,7 +265,8 @@ int main()
 {
     f<int>(); // template <> void f()
 }
-{% endhighlight %}
+```
+
 
 Any of the following can be fully specialized:
 
@@ -268,7 +280,7 @@ Any of the following can be fully specialized:
 * [member class template](https://en.cppreference.com/w/cpp/language/member_template) of a class or class template
 * [member function template](https://en.cppreference.com/w/cpp/language/member_template#Member_function_templates) of a class or class template
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 template<typename T>   // primary template
 struct is_void : std::false_type
@@ -288,7 +300,8 @@ int main()
     // but when T is void, the class is derived from true_type
     std::cout << is_void<void>::value << '\n'; // 1
 }
-{% endhighlight %}
+```
+
 
 * https://stackoverflow.com/questions/58694521/what-is-stdfalse-type-or-stdtrue-type
 
@@ -298,18 +311,19 @@ int main()
 * 类似于全特化，偏特化也是为了给自定义一个参数集合的模板，但偏特化后的模板需要进一步的实例化才能形成确定的签名
 * 偏特化也是以`template`来声明的，需要给出剩余的"模板形参"和必要的"模板实参"
 
-{% highlight cpp %}
+```cpp
 template <class T2>
 class A<int, T2>{
     // ...
 };
-{% endhighlight %}
+```
+
 
 ## 例子
 
 ### 类模版的特化版本
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -338,11 +352,12 @@ int main()
 {
     A<int>::f(1); // A<int>::f(int a)
 }
-{% endhighlight %}
+```
+
 
 ### 类模版的成员函数特化版本
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -371,11 +386,12 @@ int main()
 {
     A<int>::f(1); // A<int>::f(int a)
 }
-{% endhighlight %}
+```
+
 
 ### 使用静态断言显式控制必须定义特化版本
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -419,9 +435,10 @@ int main()
     PlaceHolder a;
     A<PlaceHolder>::f(a); // A<PlaceHolder>::f(PlaceHolder a)
 }
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include <type_traits>
 
 class PlaceHolder{};
@@ -452,7 +469,8 @@ int main()
     A<PlaceHolder> a;
     return 0;
 }
-{% endhighlight %}
+```
+
 
 # Variadic templates
 
@@ -463,7 +481,7 @@ int main()
 * In practice, the use of an **ellipsis** operator in the code causes the whole expression that precedes the ellipsis to be repeated for every subsequent argument unpacked from the argument pack, with the expressions separated by commas.
 * The use of **variadic templates** is often **recursive**. The variadic parameters themselves are not readily available to the implementation of a function or class. Therefore, the typical mechanism for defining something like a C++11 variadic `printf` replacement would be as follows:
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <vector>
 #include <type_traits>
@@ -500,14 +518,15 @@ int main()
 {
     func("1", "2", "a");
 }
-{% endhighlight %}
+```
+
 
 * https://en.wikipedia.org/wiki/Variadic_template
 * https://www.ibm.com/docs/en/zos/2.4.0?topic=only-variadic-templates-c11
 
 ## 数字转换为字符串
 
-{% highlight cpp %}
+```cpp
 namespace detail
 {
 	template<uint8_t... digits> struct positive_to_chars {
@@ -548,12 +567,13 @@ int main()
 {
     auto str = string_from<unsigned, 1>::value;
 }
-{% endhighlight %}
+```
+
 
 
 # SFINAE
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 // has_member_gc用来判断一个类T是否定义了成员函数void __gc()
@@ -593,9 +613,10 @@ int main()
 	std::cout << has_member_gc<foo>::value << " ";
 	std::cout << has_member_gc<int>::value;
 }
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include <type_traits>
 #include <iostream>
 
@@ -628,12 +649,13 @@ int main()
     std::cout << STIgnoreTest<CBase>::value << std::endl;
     std::cout << STIgnoreTest<CDerived>::value << std::endl;
 }
-{% endhighlight %}
+```
+
 
 
 # std::conditional
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 #include <typeinfo>
@@ -653,7 +675,8 @@ i
 d
 d
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/types/conditional
 
@@ -661,16 +684,17 @@ d
 
 # [std::is_same](https://en.cppreference.com/w/cpp/types/is_same)
 
-{% highlight cpp %}
+```cpp
 #include <type_traits>
 
 template< class T, class U >
 struct is_same;
-{% endhighlight %}
+```
+
 
 * If `T` and `U` name the same type (taking into account `const`/`volatile` qualifications), provides the member constant value equal to `true`. Otherwise value is `false`.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -684,11 +708,12 @@ int main()
 /*
 1 0
 */
-{% endhighlight %}
+```
+
 
 `is_same`的实现方式：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 // 定义is_same模板类，它接受两个模板参数T和U，它在类内定义了一个叫value的bool静态常量字段，值总是false
@@ -720,13 +745,14 @@ int main()
   std::cout << Result2::value << " ";
 
 }
-{% endhighlight %}
+```
+
 
 # [std::is_pointer](https://en.cppreference.com/w/cpp/types/is_pointer)
 
 * Checks whether `T` is a **pointer to object** or **a pointer to function** (**but not a pointer to member/member function**). Provides the member constant value which is equal to `true`, if T is a object/function pointer type. Otherwise, value is equal to `false`.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -754,14 +780,15 @@ true
 false
 false
 */
-{% endhighlight %}
+```
+
 
 
 # [std::remove_cv/std::remove_const/std::remove_volatile](https://en.cppreference.com/w/cpp/types/remove_cv)
 
 * removes the topmost `const`, or the topmost `volatile`, or both, if present.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -790,13 +817,14 @@ test3 passed
 test4 passed
 test5 passed
 */
-{% endhighlight %}
+```
+
 
 # std::decay
 
 Applies lvalue-to-rvalue, array-to-pointer, and function-to-pointer implicit conversions to the type T, removes cv-qualifiers, and defines the resulting type as the member typedef type.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -823,7 +851,8 @@ true
 true
 true
 */
-{% endhighlight %}
+```
+
 
 * https://stackoverflow.com/questions/25732386/what-is-stddecay-and-when-it-should-be-used
 
@@ -831,7 +860,7 @@ true
 
 Conditionally executes another statement. Used where code needs to be executed based on a `run-time` or `compile-time` condition.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 template <typename T>
@@ -859,11 +888,12 @@ other
 if constexpr
 1
 */
-{% endhighlight %}
+```
+
 
 使用[cppinsights](https://cppinsights.io/)实例化后的代码：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 template <typename T>
@@ -910,12 +940,13 @@ int main()
   std::cout.operator<<(get_value(a)).operator<<(std::endl);
   std::cout.operator<<(get_value(b)).operator<<(std::endl);
 }
-{% endhighlight %}
+```
+
 
 
 # 完美转发
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -932,33 +963,36 @@ int main()
 	func(a); // ok
 	func(100); // ok
 }
-{% endhighlight %}
+```
+
 
 这里的 `T&& param` 表示 `param` 是一个万能引用，如果传入的参数是左值，那么 `param` 就是左值 (比如`int&`)，外部传入的是右值，`param` 就是右值 (比如 `int&&`)。
 
-{% highlight cpp %}
+```cpp
 template<typename T>
 void func(const T& param) {
 	vector<T> v;
 	v.emplace_back(param);
 }
-{% endhighlight %}
+```
+
 
 在模版函数 `func` 内部，调用了 `v.emplace_back(param)`，`vector.emplace_back` 为左值和右值有两个不同的实现，左值会调用拷贝构造函数，而右值会调用移动构造函数，性能更好。那么按上面这个实现，因为 `func` 的参数类型是 `const T&`，一定是左值引用，那么传给 `vector.emplace_back` 的也是左值，所以即使调用 `func` 时传的参数是右值，在调用 `vector.emplace_back` 的时候也只会调用到左值的版本。
 
 有了万能引用后，可改进为：
 
-{% highlight cpp %}
+```cpp
 template<typename T>
 void func(T&& param) {
 	vector<T> v;
 	v.emplace_back(param);
 }
-{% endhighlight %}
+```
+
 
 **注意：一个右值引用变量本身是一个左值**，例如：
 
-{% highlight cpp %}
+```cpp
 void Test(const Demo&) {
     cout << "normal version" << endl;
 }
@@ -969,17 +1003,19 @@ void Test(Demo&&) {
 Demo&& s = Demo{};
 Test(s); // normal version!
 Test(Demo{});
-{% endhighlight %}
+```
+
 
 这里的 `v.emplace_back(param)` 依然会调用左值的版本! 这里就需要 `std::forward` 了，和 `std::move` 类似，`std::forward` 其实也是一个类型转换，当实参是左值时候，它返回的是左值引用，也就是没做任何事；实参是右值的时候，它返回的是右值引用。所以，最终正确的版本应该是:
 
-{% highlight cpp %}
+```cpp
 template<typename T>
 void func(T&& param) {
 	vector<T> v;
 	v.emplace_back(std::forward<T>(param));
 }
-{% endhighlight %}
+```
+
 
 这就是所谓的完美转发 (perfect forwarding)。
 
@@ -1005,7 +1041,7 @@ More: [template_specialization, In detail](https://en.cppreference.com/w/cpp/lan
 
 https://wandbox.org/permlink/FAu1kZMDGPW1u9Eg
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -1056,7 +1092,8 @@ int main()
 1
 0
 */
-{% endhighlight %}
+```
+
 
 # Refer
 

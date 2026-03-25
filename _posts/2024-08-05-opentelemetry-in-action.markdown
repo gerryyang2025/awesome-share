@@ -234,9 +234,10 @@ A **log** is a timestamped message emitted by services or other components. Unli
 
 Sample log:
 
-{% highlight text %}
+```text
 I, [2021-02-23T13:26:23.505892 #22473]  INFO -- : [6459ffe1-ea53-4044-aaa3-bf902868f730] Started GET "/" for ::1 at 2021-02-23 13:26:23 -0800
-{% endhighlight %}
+```
+
 
 Logs aren’t enough for tracking code execution, as they usually lack contextual information, such as where they were called from.
 
@@ -323,7 +324,7 @@ Let’s explore this with three units of work, represented as [Spans](https://op
 
 `hello` span:
 
-{% highlight json %}
+```json
 {
   "name": "hello",
   "context": {
@@ -346,13 +347,14 @@ Let’s explore this with three units of work, represented as [Spans](https://op
     }
   ]
 }
-{% endhighlight %}
+```
+
 
 This is the root span, denoting the beginning and end of the entire operation. Note that it has a `trace_id` field indicating the trace, but has no `parent_id`. That’s how you know it’s the root span.
 
 `hello-greetings` span:
 
-{% highlight json %}
+```json
 {
   "name": "hello-greetings",
   "context": {
@@ -382,13 +384,14 @@ This is the root span, denoting the beginning and end of the entire operation. N
     }
   ]
 }
-{% endhighlight %}
+```
+
 
 This span encapsulates specific tasks, like saying greetings, and its parent is the `hello` span. Note that it shares the same `trace_id` as the root span, indicating it’s a part of the same trace. Additionally, it has a `parent_id` that matches the `span_id` of the `hello` span.
 
 `hello-salutations` span:
 
-{% highlight json %}
+```json
 {
   "name": "hello-salutations",
   "context": {
@@ -411,7 +414,8 @@ This span encapsulates specific tasks, like saying greetings, and its parent is 
     }
   ]
 }
-{% endhighlight %}
+```
+
 
 This span represents the third operation in this trace and, like the previous one, it’s a child of the `hello` span. That also makes it a sibling of the `hello-greetings` span.
 
@@ -474,7 +478,7 @@ The following section explains the differences between structured, unstructured,
 
 A structured log is a log whose textual format follows a consistent, machine-readable format. For applications, one of the most common formats is JSON:
 
-{% highlight json %}
+```json
 {
   "timestamp": "2024-08-04T12:34:56.789Z",
   "level": "INFO",
@@ -509,19 +513,22 @@ A structured log is a log whose textual format follows a consistent, machine-rea
     }
   }
 }
-{% endhighlight %}
+```
+
 
 and for infrastructure components, Common Log Format (CLF) is commonly used:
 
-{% highlight text %}
+```text
 127.0.0.1 - johndoe [04/Aug/2024:12:34:56 -0400] "POST /api/v1/login HTTP/1.1" 200 1234
-{% endhighlight %}
+```
+
 
 It is also common to have different structured log formats mixed together. For example, an Extended Log Format (ELF) log can mix JSON with the whitespace-separated data in a CLF log.
 
-{% highlight json %}
+```json
 192.168.1.1 - johndoe [04/Aug/2024:12:34:56 -0400] "POST /api/v1/login HTTP/1.1" 200 1234 "http://example.com" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36" {"transactionId": "abcd-efgh-ijkl-mnop", "responseTime": 150, "requestBody": {"username": "johndoe"}, "responseHeaders": {"Content-Type": "application/json"}}
-{% endhighlight %}
+```
+
 
 To make the most use of this log, parse both the JSON and the ELF-related pieces into a shared format to make analysis on an observability backend easier. The filelogreceiver in the [OpenTelemetry Collector](https://opentelemetry.io/docs/collector) contains standardized ways to parse logs like this.
 
@@ -533,13 +540,14 @@ Unstructured logs are logs that don’t follow a consistent structure. They may 
 
 Examples of unstructured logs:
 
-{% highlight text %}
+```text
 [ERROR] 2024-08-04 12:45:23 - Failed to connect to database. Exception: java.sql.SQLException: Timeout expired. Attempted reconnect 3 times. Server: db.example.com, Port: 5432
 
 System reboot initiated at 2024-08-04 03:00:00 by user: admin. Reason: Scheduled maintenance. Services stopped: web-server, database, cache. Estimated downtime: 15 minutes.
 
 DEBUG - 2024-08-04 09:30:15 - User johndoe performed action: file_upload. Filename: report_Q3_2024.pdf, Size: 2.3 MB, Duration: 5.2 seconds. Result: Success
-{% endhighlight %}
+```
+
 
 It is possible to store and analyze Unstructured logs in production, although you may need to do substantial work to parse or otherwise pre-process them to be machine-readable. For example, the above three logs will require a regular expression to parse their timestamps and custom parsers to consistently extract the bodies of the log message. This will typically be necessary for a logging backend to know how to sort and organize the logs by timestamp. Although it’s possible to parse unstructured logs for analysis purposes, doing this may be more work than switching to structured logging, such as via a standard logging framework in your applications.
 
@@ -549,9 +557,10 @@ A semistructured log is a log that does use some self-consistent patterns to dis
 
 Example of a semistructured log:
 
-{% highlight text %}
+```text
 2024-08-04T12:45:23Z level=ERROR service=user-authentication userId=12345 action=login message="Failed login attempt" error="Invalid password" ipAddress=192.168.1.1 userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
-{% endhighlight %}
+```
+
 
 Although machine-readable, semistructured logs may require several different parsers to allow for analysis at scale.
 

@@ -24,7 +24,7 @@ tags:
       + `option go_package = "server/api/trpc/proto";` 表示在本地目录 `server/api/trpc/proto` 下生成 `pb.go` 文件
     * 定义 `service rpc` 方法，一个 `server` 可以有多个 `service`，一般都是一个 `server` 一个 `service`
 
-{% highlight proto %}
+```proto
 syntax = "proto3";
 
 package trpc.test.helloworld;
@@ -41,27 +41,30 @@ message HelloRequest {
 message HelloReply {
     string msg = 1;
 }
-{% endhighlight %}
+```
+
 
 * 通过命令行生成服务模型：`trpc create --protofile=helloworld.proto`（首先需要先[安装 trpc 工具](https://git.woa.com/trpc-go/trpc-go-cmdline)）
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 # 只生成协议代码
 trpc create --protofile=qqchatsvr.proto --rpconly
-{% endhighlight %}
+```
+
 
 * 可以在 `trpc_go.yaml` 的 server service 中额外添加 HTTP RPC 服务：
 
-{% highlight yaml %}
+```yaml
     - name: trpc.test.helloworld.Greeter  # service 的名字服务路由名称
       ip: 127.0.0.1                       # 服务监听 ip 地址
       port: 8080                          # 服务监听端口
       network: tcp                        # 网络监听类型 tcp udp
       protocol: http                      # 应用层协议 trpc http
       timeout: 1000                       # 请求最长处理时间 单位 毫秒
-{% endhighlight %}
+```
+
 
 * 开发具体业务逻辑
 * 开发完成，开始编译，根目录执行：`go build`
@@ -91,7 +94,7 @@ tRPC-Go 框架的拦截器，也称之为过滤器。tRPC 框架利用拦截器�
 
 ### 定义处理逻辑函数
 
-{% highlight golang %}
+```go
 func ServerFilter() filter.ServerFilter {
 	return func(ctx context.Context, req interface{}, handler filter.ServerHandleFunc) (rsp interface{}, err error) {
 
@@ -128,20 +131,22 @@ func ClientFilter() filter.ClientFilter {
 		return err
 	}
 }
-{% endhighlight %}
+```
+
 
 ### 注册到框架中
 
-{% highlight golang %}
+```go
 filter1 := ServerFilter()
 filter2 := ClientFilter()
 
 filter.Register("name", filter1, filter2) // 拦截器名字自己随便定义，供后续配置文件使用，必须放在 trpc.NewServer() 之前
-{% endhighlight %}
+```
+
 
 ### 配置文件开启使用
 
-{% highlight yaml %}
+```yaml
 server:
  filter:  # 对所有 service 全部生效
    - name1  # 上面第三步注册到框架中的 server 拦截器名字
@@ -155,11 +160,13 @@ client:
   ...
   - name
 
-{% endhighlight %}
+```
+
 
 ### 完整拦截器代码示例
 
-{% highlight golang %}
+{% raw %}
+```go
 // Package metirc is a tRPC filter used to report service metrics to monitor
 package metric
 
@@ -211,6 +218,5 @@ func ClientFilter() filter.ClientFilter {
 		return err
 	}
 }
-{% highlight text %}
-{% endhighlight %}
-{% endhighlight %}
+```
+{% endraw %}

@@ -24,7 +24,7 @@ Please note that these are just a collection of questions and answers. They are 
 
 ## How do I write this very simple program?
 
-{% highlight cpp %}
+```cpp
 #include<iostream>
 #include<vector>
 #include<algorithm>
@@ -49,7 +49,8 @@ int main()
 
 	return 0; // success return
 }
-{% endhighlight %}
+```
+
 
 Here are a few observations about this program:
 
@@ -64,7 +65,7 @@ Here are a few observations about this program:
 * for reading in strings, see [How do I read a string from input?](https://www.stroustrup.com/bs_faq2.html#read-string).
 * The program ends reading input when it sees "end of file". If you run the program from the keybord on a Unix machine "end of file" is `Ctrl-D`. If you are on a Windows machine that because of a bug doesn't recognize an end-of-file character, you might prefer this slightly more complicated version of the program that terminates input with the word "end":
 
-{% highlight cpp %}
+```cpp
 #include<iostream>
 #include<vector>
 #include<algorithm>
@@ -95,7 +96,8 @@ int main()
 
 	return 0; // success return
 }
-{% endhighlight %}
+```
+
 
 For more examples of how to use the standard library to do simple things simply, see the "Tour of the Standard Library" Chapter of [TC++PL4](https://www.stroustrup.com/4th.html).
 
@@ -115,7 +117,7 @@ Don't use C coding standards (even if slightly modified for C++) and don't use t
 
 You can read a single, whitespace terminated word like this:
 
-{% highlight cpp %}
+```cpp
 #include<iostream>
 #include<string>
 using namespace std;
@@ -129,13 +131,14 @@ int main()
 
 	cout << "You entered " << s << '\n';
 }
-{% endhighlight %}
+```
+
 
 Note that there is no explicit memory management and no fixed-sized buffer that you could possibly overflow.
 
 If you really need a whole line (and not just a single word) you can do this:
 
-{% highlight cpp %}
+```cpp
 #include<iostream>
 #include<string>
 using namespace std;
@@ -149,7 +152,8 @@ int main()
 
 	cout << "You entered " << s << '\n';
 }
-{% endhighlight %}
+```
+
 
 For a brief introduction to standard library facilities, such as iostream and string, see Chaper 3 of [TC++PL3](https://www.stroustrup.com/3rd.html) (available online). For a detailed comparison of simple uses of C and C++ I/O, see "Learning Standard C++ as a New Language", which you can download from my [publications list](https://www.stroustrup.com/papers.html)
 
@@ -158,7 +162,7 @@ For a brief introduction to standard library facilities, such as iostream and st
 
 The simplest way is to use a stringstream:
 
-{% highlight cpp %}
+```cpp
 #include<iostream>
 #include<string>
 #include<sstream>
@@ -179,7 +183,8 @@ int main()
 
 	cout << ss << " " << p << "\n";
 }
-{% endhighlight %}
+```
+
 
 Naturally, this technique works for converting any type that you can output using << to a string. For a description of string streams, see 21.5.3 of [The C++ Programming Language](https://www.stroustrup.com/3rd.html).
 
@@ -192,15 +197,17 @@ Like C, C++ doesn't define layouts, just semantic constraints that must be met. 
 
 Basically, C++ constructs objects simply by concatenating sub objects. Thus
 
-{% highlight cpp %}
+```cpp
 struct A { int a,b; };
-{% endhighlight %}
+```
+
 
 is represented by two ints next to each other, and
 
-{% highlight cpp %}
+```cpp
 struct B : A { int c; };
-{% endhighlight %}
+```
+
 
 is represented by an A followed by an int; that is, by three ints next to each other.
 
@@ -218,7 +225,7 @@ Because "this" was introduced into C++ (really into C with Classes) before refer
 
 To ensure that the addresses of two different objects will be different. For the same reason, "new" always returns pointers to distinct objects. Consider:
 
-{% highlight cpp %}
+```cpp
 class Empty { };
 
 void f()
@@ -230,11 +237,12 @@ void f()
 	Empty* p2 = new Empty;
 	if (p1 == p2) cout << "impossible: report error to compiler supplier";
 }
-{% endhighlight %}
+```
+
 
 There is an interesting rule that says that an empty base class need not be represented by a separate byte:
 
-{% highlight cpp %}
+```cpp
 struct X : Empty {
 	int a;
 	// ...
@@ -246,7 +254,8 @@ void f(X* p)
 	void* p2 = &p->a;
 	if (p1 == p2) cout << "nice: good optimizer";
 }
-{% endhighlight %}
+```
+
 
 This optimization is safe and can be most useful. It allows a programmer to use empty classes to represent very simple concepts without overhead. Some current compilers provide this "empty base class optimization".
 
@@ -256,7 +265,7 @@ This optimization is safe and can be most useful. It allows a programmer to use 
 
 If you want a constant that you can use in a constant expression, say as an array bound, you have two choices:
 
-{% highlight cpp %}
+```cpp
 class X {
 	static const int c1 = 7;
 	enum { c2 = 19 };
@@ -266,17 +275,19 @@ class X {
 
 	// ...
 };
-{% endhighlight %}
+```
+
 
 At first glance, the declaration of c1 seems cleaner, but note that to use that in-class initialization syntax, the constant must be a static const of integral or enumeration type initialized by a constant expression. That's quite restrictive:
 
-{% highlight cpp %}
+```cpp
 class Y {
 	const int c3 = 7;		// error: not static
 	static int c4 = 7;		// error: not const
 	static const float c5 = 7;	// error: not integral
 };
-{% endhighlight %}
+```
+
 
 I tend to use the "enum trick" because it's portable and doesn't tempt me to use non-standard extensions of the in-class initialization syntax.
 
@@ -284,7 +295,7 @@ I tend to use the "enum trick" because it's portable and doesn't tempt me to use
 
 You have more flexibility if the const isn't needed for use in a constant expression:
 
-{% highlight cpp %}
+```cpp
 class Z {
 	static char* p;		// initialize in definition
 	const int i;		// initialize in constructor
@@ -293,11 +304,12 @@ public:
 };
 
 char* Z::p = "hello, there";
-{% endhighlight %}
+```
+
 
 You can take the address of a static member if (and only if) it has an out-of-class definition:
 
-{% highlight cpp %}
+```cpp
 class AE {
 // ...
 public:
@@ -313,25 +325,27 @@ int f()
 	const int* p2 = &AE::c7;	// ok
 	// ...
 }
-{% endhighlight %}
+```
+
 
 ## Why isn't the destructor called at the end of scope? TODO
 
 The simple answer is "of course it is!", but have a look at the kind of example that often accompany that question:
 
-{% highlight cpp %}
+```cpp
 void f()
 {
 	X* p = new X;
 	// use p
 }
-{% endhighlight %}
+```
+
 
 That is, there was some (mistaken) assumption that the object created by "new" would be destroyed at the end of a function.
 
 Basically, you should only use "new" if you want an object to live beyond the lifetime of the scope you create it in. That done, you need to use "delete" to destroy it. For example:
 
-{% highlight cpp %}
+```cpp
 X* g(int i) { /* ... */ return new X(i); }	// the X outlives the call of g()
 
 void h(int i)
@@ -340,35 +354,38 @@ void h(int i)
 	// ...
 	delete p;
 }
-{% endhighlight %}
+```
+
 
 If you want an object to live in a scope only, don't use "new" but simply define a variable:
 
-{% highlight cpp %}
+```cpp
 {
 	ClassName x;
 	// use x
 }
-{% endhighlight %}
+```
+
 
 The variable is implicitly destroyed at the end of the scope.
 
 Code that creates an object using new and then deletes it at the end of the same scope is ugly, error-prone, and inefficient. For example:
 
-{% highlight cpp %}
+```cpp
 void fct()	// ugly, error-prone, and inefficient
 {
 	X* p = new X;
 	// use p
 	delete p;
 }
-{% endhighlight %}
+```
+
 
 ## Does "friend" violate encapsulation?
 
 No. It does not. "Friend" is an explicit mechanism for granting access, just like membership. You cannot (in a standard conforming program) grant yourself access to a class without modifying its source. For example:
 
-{% highlight cpp %}
+```cpp
 class X {
 	int i;
 public:
@@ -380,7 +397,8 @@ public:
 void X::m() { i++; /* X::m() can access X::i */ }
 
 void f(X& x) { x.i++; /* f(X&) can access X::i */ }
-{% endhighlight %}
+```
+
 
 For a description on the C++ protection model, see [D&E](https://www.stroustrup.com/dne.html) sec 2.10 and [TC++PL](https://www.stroustrup.com/3rd.html) sec 11.5, 15.3, and C.11.
 
@@ -396,7 +414,7 @@ This is a question that comes in many forms. Such as:
 
 By default a class is given a copy constructor and a copy assignment that copy all elements. For example:
 
-{% highlight cpp %}
+```cpp
 struct Point {
 	int x,y;
 	Point(int xx = 0, int yy = 0) :x(xx), y(yy) { }
@@ -404,11 +422,12 @@ struct Point {
 
 Point p1(1,2);
 Point p2 = p1;
-{% endhighlight %}
+```
+
 
 Here we get `p2.x==p1.x` and `p2.y==p1.y`. That's often exactly what you want (and essential for C compatibility), but consider:
 
-{% highlight cpp %}
+```cpp
 class Handle {
 private:
 	string name;
@@ -426,13 +445,14 @@ void f(const string& hh)
 	Handle h2 = h1;	// leads to disaster!
 	// ...
 }
-{% endhighlight %}
+```
+
 
 Here, the default copy gives us `h2.name==h1.name` and `h2.p==h1.p`. This leads to disaster: when we exit f() the destructors for h1 and h2 are invoked and the object pointed to by `h1.p` and `h2.p` is deleted twice.
 
 How do we avoid this? The simplest solution is to prevent copying by making the operations that copy private:
 
-{% highlight cpp %}
+```cpp
 class Handle {
 private:
 	string name;
@@ -453,13 +473,14 @@ void f(const string& hh)
 	Handle h2 = h1;	// error (reported by compiler)
 	// ...
 }
-{% endhighlight %}
+```
+
 
 If we need to copy, we can of course define the copy initializer and the copy assignment to provide the desired semantics.
 
 Now return to `Point`. For Point the default copy semantics is fine, the problem is the constructor:
 
-{% highlight cpp %}
+```cpp
 struct Point {
 	int x,y;
 	Point(int xx = 0, int yy = 0) :x(xx), y(yy) { }
@@ -473,11 +494,12 @@ void g()
 	Point p1(2);	// create p1 with the default y-coordinate 0
 	f(2);		// calls Point(2,0);
 }
-{% endhighlight %}
+```
+
 
 People provide default arguments to get the convenience used for orig and p1. Then, some are surprised by the conversion of 2 to Point(2,0) in the call of f(). A constructor taking a single argument defines a conversion. By default that's an implicit conversion. To require such a conversion to be explicit, declare the constructor `explicit`:
 
-{% highlight cpp %}
+```cpp
 struct Point {
 	int x,y;
 	explicit Point(int xx = 0, int yy = 0) :x(xx), y(yy) { }
@@ -494,7 +516,8 @@ void g()
 	Point p2 = 2;	// error (attmpted implicit conversion)
 	Point p3 = Point(2);	// ok (explicit conversion)
 }
-{% endhighlight %}
+```
+
 
 > Comment: 关于类的初始化建议
 
@@ -508,7 +531,7 @@ However, it is more likely that the program that you are trying to compile is po
 
 Consider a classical example of an object-oriented program:
 
-{% highlight cpp %}
+```cpp
 class Shape {
 public:		// interface to users of Shapes
 	virtual void draw() const;
@@ -539,7 +562,8 @@ protected:
 	Point a, b, c;
 	// ...
 };
-{% endhighlight %}
+```
+
 
 The idea is that users manipulate shapes through Shape's public interface, and that implementers of derived classes (such as Circle and Triangle) share aspects of the implementation represented by the protected members.
 
@@ -554,7 +578,7 @@ Thus, the presence of "information helpful to implementers" in the base class th
 
 The obvious solution is to omit the "information helpful to implemeters" for classes that are used as interfaces to users. That is, to make interfaces, pure interfaces. That is, to represent interfaces as abstract classes:
 
-{% highlight cpp %}
+```cpp
 class Shape {
 public:		// interface to users of Shapes
 	virtual void draw() const = 0;
@@ -589,13 +613,14 @@ protected:
 	Point a, b, c;
 	// ...
 };
-{% endhighlight %}
+```
+
 
 The users are now insulated(隔离) from changes to implementations of derived classes. **I have seen this technique decrease build times by orders of magnitudes.**
 
 But what if there really is some information that is common to all derived classes (or simply to several derived classes)? Simply make that information a class and derive the implementation classes from that also:
 
-{% highlight cpp %}
+```cpp
 class Shape {
 public:		// interface to users of Shapes
 	virtual void draw() const = 0;
@@ -631,7 +656,8 @@ public:
 protected:
 	Point a, b, c;
 };
-{% endhighlight %}
+```
+
 
 > Comment: 继承体系的合理性设计，会影响编译器的执行时常。
 
@@ -641,7 +667,7 @@ You don't. If you don't want data in an interface, don't put it in the class tha
 
 Sometimes, you do want to have representation data in a class. Consider class complex:
 
-{% highlight cpp %}
+```cpp
 template<class Scalar> class complex {
 public:
 	complex() : re(0), im(0) { }
@@ -655,7 +681,8 @@ public:
 private:
 	Scalar re, im;
 };
-{% endhighlight %}
+```
+
 
 This type is designed to be used much as a built-in type and the representation is needed in the declaration to make it possible to create genuinely local objects (i.e. objects that are allocated on the stack and not on a heap) and to ensure proper inlining of simple operations. Genuinely local objects and inlining is necessary to get the performance of complex close to what is provided in languages with a built-in complex type.
 
@@ -676,7 +703,7 @@ Techniques for using an indirection when you ask to create an object are often r
 
 For example, here is a technique for generating an object of an appropriate type using an abstract class:
 
-{% highlight cpp %}
+```cpp
 struct F {	// interface to object creation functions
 	virtual A* make_an_A() const = 0;
 	virtual B* make_a_B() const = 0;
@@ -710,7 +737,8 @@ int main()
 	user(FY());	// this user makes AYs and BYs
 	// ...
 }
-{% endhighlight %}
+```
+
 
 **This is a variant of what is often called "the factory pattern"(工厂模式). The point is that user() is completely isolated from knowledge of classes such as AX and AY**.
 
@@ -723,7 +751,7 @@ Because many classes are not designed to be used as base classes. Virtual functi
 So when should I declare a destructor virtual? **Whenever the class has at least one virtual function. Having virtual functions indicate that a class is meant to act as an interface to derived classes, and when it is, an object of a derived class may be destroyed through a pointer to the base.** For example:
 
 
-{% highlight cpp %}
+```cpp
 class Base {
 	// ...
 	virtual ~Base();
@@ -739,7 +767,8 @@ void f()
 	Base* p = new Derived;
 	delete p;	// virtual destructor used to ensure that ~Derived is called
 }
-{% endhighlight %}
+```
+
 
 **Had Base's destructor not been virtual, Derived's destructor would not have been called - with likely bad effects, such as resources owned by Derived not being freed.**
 
@@ -747,7 +776,7 @@ void f()
 
 ## What is a pure virtual function?
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 class Base
@@ -776,11 +805,12 @@ int main()
 
     pb->Base::f(); // Base::f()
 }
-{% endhighlight %}
+```
+
 
 A pure virtual function is a function that must be overridden in a derived class and need not be defined. A virtual function is declared to be "pure" using the curious "=0" syntax. For example:
 
-{% highlight cpp %}
+```cpp
 class Base {
 public:
 	void f1();		// not virtual
@@ -789,11 +819,12 @@ public:
 };
 
 Base b;	// error: pure virtual f3 not overridden
-{% endhighlight %}
+```
+
 
 Here, Base is an abstract class (because it has a pure virtual function), so no objects of class Base can be directly created: Base is (explicitly) meant to be a base class. For example:
 
-{% highlight cpp %}
+```cpp
 class Derived : public Base {
 	// no f1: fine
 	// no f2: fine, we inherit Base::f2
@@ -801,21 +832,23 @@ class Derived : public Base {
 };
 
 Derived d;	// ok: Derived::f3 overrides Base::f3
-{% endhighlight %}
+```
+
 
 Abstract classes are immensely useful for defining interfaces. In fact, a class with only pure virtual functions is often called an interface.
 
 You can define a pure virtual function:
 
-{% highlight cpp %}
+```cpp
 Base::f3() { /* ... */ }
-{% endhighlight %}
+```
+
 
 This is very occasionally useful (to provide some simple common implementation detail for derived classes), but Base::f3() must still be overridden in some derived class.
 
 If you don't override a pure virtual function in a derived class, that derived class becomes abstract:
 
-{% highlight cpp %}
+```cpp
 class D2 : public Base {
 	// no f1: fine
 	// no f2: fine, we inherit Base::f2
@@ -823,7 +856,8 @@ class D2 : public Base {
 };
 
 D2 d;	// error: pure virtual Base::f3 not overridden
-{% endhighlight %}
+```
+
 
 > Comment: 抽象类用于定义接口，抽象类不能够直接实例化对象
 
@@ -837,7 +871,7 @@ Yes, but be careful. It may not do what you expect. In a constructor, the virtua
 
 Consider:
 
-{% highlight cpp %}
+```cpp
 #include<string>
 #include<iostream>
 using namespace std;
@@ -860,15 +894,17 @@ int main()
 {
 	D d("Hello");
 }
-{% endhighlight %}
+```
+
 
 the program compiles and produce
 
-{% highlight text %}
+```text
 B constructor
 B::f
 D constructor
-{% endhighlight %}
+```
+
 
 Note not `D::f`. Consider what would happen if the rule were different so that `D::f()` was called from `B::B()`: Because the constructor `D::D()` hadn't yet been run, **`D::f()` would try to assign its argument to an uninitialized string s. The result would most likely be an immediate crash**.
 
@@ -893,7 +929,7 @@ If there is a genuine need for "capping" a class hierarchy to avoid virtual func
 
 The other variant of this problem, **how to prevent derivation for logical reasons, has a solution in C++11**. For example:
 
-{% highlight cpp %}
+```cpp
 struct Base {
 	virtual void f();
 };
@@ -906,11 +942,12 @@ struct DD: Derived {// error: Derived is final
 
 	// ...
 };
-{% endhighlight %}
+```
+
 
 For older compilers, you can use a somewhat clumsy technique:
 
-{% highlight cpp %}
+```cpp
 class Usable;
 
 class Usable_lock {
@@ -934,7 +971,8 @@ class DD : public Usable { };
 
 DD dd;  // error: DD::DD() cannot access
 		// Usable_lock::Usable_lock(): private  member
-{% endhighlight %}
+```
+
 
 ## Why doesn't C++ have a universal class Object?
 
@@ -954,7 +992,7 @@ Not really. We can do without multiple inheritance by using workarounds(变通�
 
 That question (in many variations) are usually prompted by an example like this:
 
-{% highlight cpp %}
+```cpp
 #include<iostream>
 using namespace std;
 
@@ -977,21 +1015,24 @@ int main()
 	cout << pd->f(2) << '\n';
 	cout << pd->f(2.3) << '\n';
 }
-{% endhighlight %}
+```
+
 
 which will produce:
 
-{% highlight text %}
+```text
 f(double): 3.3
 f(double): 3.6
-{% endhighlight %}
+```
+
 
 rather than the
 
-{% highlight text %}
+```text
 f(int): 3
 f(double): 3.6
-{% endhighlight %}
+```
+
 
 that some people (wrongly) guessed.
 
@@ -999,21 +1040,23 @@ In other words, there is no overload resolution between D and B. The compiler lo
 
 But what if I want to create an overload set of all my f() functions from my base and derived class? That's easily done using a using-declaration:
 
-{% highlight cpp %}
+```cpp
 class D : public B {
 public:
 	using B::f;	// make every f from B available
 	double f(double d) { cout << "f(double): "; return d+1.3; }
 	// ...
 };
-{% endhighlight %}
+```
+
 
 Give that modification, the output will be
 
-{% highlight text %}
+```text
 f(int): 3
 f(double): 3.6
-{% endhighlight %}
+```
+
 
 **That is, overload resolution was applied to B's f() and D's f() to select the most appropriate f() to call.**
 
@@ -1023,7 +1066,7 @@ f(double): 3.6
 
 Sort of, but don't do it blindly and there are often superior alternatives. Consider:
 
-{% highlight cpp %}
+```cpp
 void compute(cmplx z, double d)
 {
 	cmplx z2 = z+d;	// c++ style
@@ -1033,7 +1076,8 @@ void compute(cmplx z, double d)
 	z3 = f(z3);
 	delete &z3;
 }
-{% endhighlight %}
+```
+
 
 The clumbsy use of "new" for z3 is unnecessary and slow compared with the idiomatic use of a local variable (z2). You don't need to use "new" to create an object if you also "delete" that object in the same scope; such an object should be a local variable.
 
@@ -1046,13 +1090,14 @@ Well, you can, and it's quite easy and general.
 
 Consider:
 
-{% highlight cpp %}
+```cpp
 template<class Container>
 void draw_all(Container& c)
 {
 	for_each(c.begin(),c.end(),mem_fun(&Shape::draw));
 }
-{% endhighlight %}
+```
+
 
 If there is a type error, it will be in the resolution of the fairly complicated for_each() call. For example, if the element type of the container is an int, then we get some kind of obscure error related to the for_each() call (because we can't invoke Shape::draw() for an int).
 
@@ -1080,19 +1125,21 @@ A less desirable result of the flexibility is late detection of errors and horre
 
 To a novice,
 
-{% highlight cpp %}
+```cpp
 qsort(array,asize,sizeof(elem),elem_compare);
-{% endhighlight %}
+```
+
 
 looks pretty weird, and is harder to understand than
 
-{% highlight cpp %}
+```cpp
 sort(vec.begin(),vec.end());
-{% endhighlight %}
+```
+
 
 To an expert, the fact that `sort()` tends to be faster than `qsort()` for the same elements and the same comparison criteria is often significant. Also, `sort()` is generic, so that it can be used for any reasonable combination of container type, element type, and comparison criterion. For example:
 
-{% highlight cpp %}
+```cpp
 struct Record {
 	string name;
 	// ...
@@ -1108,7 +1155,8 @@ void f(vector<Record>& vs)
 	sort(vs.begin(), vs.end(), name_compare());
 	// ...
 }
-{% endhighlight %}
+```
+
 
 In addition, most people appreciate that `sort()` is type safe, that no casts are required to use it, and that they don't have to write a compare() function for standard types.
 
@@ -1120,7 +1168,7 @@ The primary reason that `sort()` tends to outperform(胜过) `qsort()` is that t
 ## What is a function object?
 
 
-{% highlight cpp %}
+```cpp
 #include<iostream>
 #include<vector>
 using namespace std;
@@ -1153,7 +1201,8 @@ int main()
 the sum is 15
 the sum is 15
 */
-{% endhighlight %}
+```
+
 
 An object that in some way behaves like a function, of course. Typically, that would mean an object of a class that defines the application operator - operator().
 
@@ -1165,7 +1214,7 @@ Function objects are extensively used to provide flexibility in the standard lib
 
 关于`for_each`的用法说明：
 
-{% highlight cpp %}
+```cpp
 // https://en.cppreference.com/w/cpp/algorithm/for_each
 template< class InputIt, class UnaryFunction >
 UnaryFunction for_each( InputIt first, InputIt last, UnaryFunction f );
@@ -1177,7 +1226,8 @@ f	-	function object, to be applied to the result of dereferencing every iterator
 		The signature does not need to have const &.
 		The type Type must be such that an object of type InputIt can be dereferenced and then implicitly converted to Type.
 */
-{% endhighlight %}
+```
+
 
 > Comment: 仿函数的用法
 
@@ -1187,7 +1237,7 @@ f	-	function object, to be applied to the result of dereferencing every iterator
 
 An `auto_ptr` is an example of very simple handle class, defined in `<memory>`, supporting exception safety using the [resource acquisition is initialization](https://www.stroustrup.com/bs_faq2.html#finally) technique. An auto_ptr holds a pointer, can be used as a pointer, and deletes the object pointed to at the end of its scope. For example:
 
-{% highlight cpp %}
+```cpp
 #include<memory>
 using namespace std;
 
@@ -1207,7 +1257,8 @@ void f()
 
 	delete q;
 }
-{% endhighlight %}
+```
+
 
 **If an exception is thrown in the ... part, the object held by p is correctly deleted by auto_ptr's destructor while the X pointed to by q is leaked. See TC++PL 14.4.2 for details.**
 
@@ -1216,7 +1267,7 @@ Auto_ptr is a very lightweight class. In particular, it is *not* a reference cou
 使用`-Wno-deprecated-declarations`编译选项屏蔽编译错误。
 
 
-{% highlight cpp %}
+```cpp
 #include<memory>
 #include<iostream>
 using namespace std;
@@ -1235,37 +1286,41 @@ int main()
 /*
 p 0 q 0xa208f0
 */
-{% endhighlight %}
+```
+
 
 should print a 0 pointer followed by a non-0 pointer. `auto_ptr::get()` returns the held pointer.
 
 **This "move semantics" differs from the usual "copy semantics", and can be surprising. In particular, never use an auto_ptr as a member of a standard container. The standard containers require the usual copy semantics.** For example:
 
-{% highlight cpp %}
+```cpp
 std::vector<auto_ptr<X> >v;	// error
-{% endhighlight %}
+```
+
 
 An auto_ptr holds a pointer to an individual element, not a pointer to an array:
 
-{% highlight cpp %}
+```cpp
 void f(int n)
 {
 	auto_ptr<X> p(new X[n]);	// error
 	// ...
 }
-{% endhighlight %}
+```
+
 
 This is an error because the destructor will delete the pointer using `delete` rather than `delete[]` and will fail to invoke the destructor for the last n-1 Xs.
 
 So should we use an auto_array to hold arrays? No. **There is no auto_array**. The reason is that there isn't a need for one. A better solution is to use a vector:
 
-{% highlight cpp %}
+```cpp
 void f(int n)
 {
 	vector<X> v(n);
 	// ...
 }
-{% endhighlight %}
+```
+
 
 Should an exception occur in the ... part, v's destructor will be correctly invoked.
 
@@ -1275,22 +1330,24 @@ In [C++11](https://www.stroustrup.com/C++11FAQ.html) use a [Unique_ptr](http://w
 
 The C++ standard library provides a set of useful, statically type-safe, and efficient containers. Examples are `vector`, `list`, and `map`:
 
-{% highlight cpp %}
+```cpp
 vector<int> vi(10);
 vector<Shape*> vs;
 list<string> lst;
 list<double> l2
 map<string,Record*> tbl;
 map< Key,vector<Record*> > t2;
-{% endhighlight %}
+```
+
 
 These containers are described in all good C++ textbooks, and should be preferred over [arrays](https://www.stroustrup.com/bs_faq2.html#arrays) and "home cooked" containers unless there is a good reason not to.
 
 These containers are homogeneous(相同种类的); that is, they hold elements of the same type. If you want a container to hold elements of several different types, you must express that either as a `union` or (usually much better) as a container of pointers to a polymorphic type. The classical example is:
 
-{% highlight cpp %}
+```cpp
 vector<Shape*> vi;	// vector of pointers to Shapes
-{% endhighlight %}
+```
+
 
 Here, vi can hold elements of any type derived from Shape. That is, vi is homogeneous in that all its elements are Shapes (to be precise, pointers to Shapes) and heterogeneous in the sense that vi can hold elements of a wide variety of Shapes, such as Circles, Triangles, etc.
 
@@ -1300,26 +1357,29 @@ The C++ standard library provides homogeneous containers because those are the e
 
 **If you need a heterogeneous container in C++, define a common interface for all the elements and make a container of those.** For example:
 
-{% highlight cpp %}
+```cpp
 class Io_obj { /* ... */ };	// the interface needed to take part in object I/O
 
 	vector<Io_obj*> vio;		// if you want to manage the pointers directly
 	vector< Handle<Io_obj> > v2;	// if you want a "smart pointer" to handle the objects
-{% endhighlight %}
+```
+
 
 Don't drop to the lowest level of implementation detail unless you have to:
 
-{% highlight cpp %}
+```cpp
 vector<void*> memory;	// rarely needed
-{% endhighlight %}
+```
+
 
 A good indication that you have "gone too low level" is that your code gets littered with casts.
 
 Using an Any class, such as Boost::Any, can be an alternative in some programs:
 
-{% highlight cpp %}
+```cpp
 vector<Any> v;
-{% endhighlight %}
+```
+
 
 ## Why are the standard containers so slow?
 

@@ -54,24 +54,27 @@ As you add or improve functionality in your module, you publish new versions of 
 
 On Linux or Mac:
 
-{% highlight cd %}
+```cd
 
-{% endhighlight %}
+```
+
 
 On Windows:
 
-{% highlight text %}
+```text
 cd %HOMEPATH%
-{% endhighlight %}
+```
+
 
 > 2. Create a greetings directory for your Go module source code.
 
 For example, from your home directory use the following commands:
 
-{% highlight text %}
+```text
 mkdir greetings
 cd greetings
-{% endhighlight %}
+```
+
 
 > 3. Start your module using the [go mod init command](https://go.dev/ref/mod#go-mod-init).
 
@@ -79,10 +82,11 @@ Run the `go mod init` command, giving it your module path -- here, use `example.
 
 For more on naming your module with a module path, see [Managing dependencies](https://go.dev/doc/modules/managing-dependencies#naming_module).
 
-{% highlight bash %}
+```bash
 $ go mod init example.com/greetings
 go: creating new go.mod: module example.com/greetings
-{% endhighlight %}
+```
+
 
 The `go mod init` command creates a `go.mod` file to track your code's dependencies. So far, the file includes only the name of your module and the Go version your code supports. But as you add dependencies, the `go.mod` file will list the versions your code depends on. This keeps builds reproducible and gives you direct control over which module versions to use.
 
@@ -91,7 +95,7 @@ The `go mod init` command creates a `go.mod` file to track your code's dependenc
 
 > 5. Paste the following code into your `greetings.go` file and save the file.
 
-{% highlight go %}
+```go
 package greetings
 
 import "fmt"
@@ -102,7 +106,8 @@ func Hello(name string) string {
     message := fmt.Sprintf("Hi, %v. Welcome!", name)
     return message
 }
-{% endhighlight %}
+```
+
 
 This is the first code for your module. It returns a greeting to any caller that asks for one. You'll write code that calls this function in the next step.
 
@@ -120,10 +125,11 @@ This function takes a name parameter whose type is `string`. The function also r
 
 In Go, the `:=` operator is a shortcut for declaring and initializing a variable in one line (Go uses the value on the right to determine the variable's type). Taking the long way, you might have written this as:
 
-{% highlight go %}
+```go
 var message string
 message = fmt.Sprintf("Hi, %v. Welcome!", name)
-{% endhighlight %}
+```
+
 
 * Use the `fmt` package's [Sprintf function](https://pkg.go.dev/fmt/#Sprintf) to create a greeting message. The first argument is a format string, and `Sprintf` substitutes the name parameter's value for the `%v` format verb. Inserting the value of the name parameter completes the greeting text.
 
@@ -140,19 +146,21 @@ In the [previous section](https://go.dev/doc/tutorial/create-module.html), you c
 
 After you create this directory, you should have both a `hello` and a `greetings` directory at the same level in the hierarchy, like so:
 
-{% highlight text %}
+```text
 <home>/
  |-- greetings/
  |-- hello/
-{% endhighlight %}
+```
+
 
 For example, if your command prompt is in the greetings directory, you could use the following commands:
 
-{% highlight bash %}
+```bash
 cd ..
 mkdir hello
 cd hello
-{% endhighlight %}
+```
+
 
 > 2. Enable dependency tracking for the code you're about to write.
 
@@ -160,10 +168,11 @@ To enable dependency tracking for your code, run the [go mod init command](https
 
 For the purposes of this tutorial, use `example.com/hello` for the module path.
 
-{% highlight bash %}
+```bash
 $ go mod init example.com/hello
 go: creating new go.mod: module example.com/hello
-{% endhighlight %}
+```
+
 
 > 3. In your text editor, in the `hello` directory, create a file in which to write your code and call it `hello.go`.
 
@@ -171,7 +180,7 @@ go: creating new go.mod: module example.com/hello
 
 To do that, paste the following code into `hello.go`.
 
-{% highlight go %}
+```go
 package main
 
 import (
@@ -184,7 +193,8 @@ func main() {
     message := greetings.Hello("Gladys")
     fmt.Println(message)
 }
-{% endhighlight %}
+```
+
 
 In this code, you:
 
@@ -200,30 +210,33 @@ To do that, use the go mod edit command to edit the `example.com/hello` module t
 
 * From the command prompt in the `hello` directory, run the following command:
 
-{% highlight bash %}
+```bash
 $ go mod edit -replace example.com/greetings=../greetings
-{% endhighlight %}
+```
+
 
 The command specifies that `example.com/greetings` should be replaced with `../greetings` for the purpose of locating the dependency. After you run the command, the `go.mod` file in the hello directory should include a replace directive:
 
-{% highlight text %}
+```text
 module example.com/hello
 
 go 1.16
 
 replace example.com/greetings => ../greetings
-{% endhighlight %}
+```
+
 
 * From the command prompt in the `hello` directory, run the `go mod tidy` command to synchronize the `example.com/hello` module's dependencies, adding those required by the code, but not yet tracked in the module.
 
-{% highlight bash %}
+```bash
 $ go mod tidy
 go: found example.com/greetings in example.com/greetings v0.0.0-00010101000000-000000000000
-{% endhighlight %}
+```
+
 
 After the command completes, the `example.com/hello` module's `go.mod` file should look like this:
 
-{% highlight text %}
+```text
 module example.com/hello
 
 go 1.16
@@ -231,7 +244,8 @@ go 1.16
 replace example.com/greetings => ../greetings
 
 require example.com/greetings v0.0.0-00010101000000-000000000000
-{% endhighlight %}
+```
+
 
 The command found the local code in the greetings directory, then added a [require directive](https://go.dev/doc/modules/gomod-ref#require) to specify that `example.com/hello` requires `example.com/greetings`. You created this dependency when you imported the `greetings` package in `hello.go`.
 
@@ -239,18 +253,20 @@ The number following the module path is a pseudo-version number -- a generated n
 
 To reference a published module, a `go.mod` file would typically omit the `replace` directive and use a require directive with a tagged version number at the end.
 
-{% highlight text %}
+```text
 require example.com/greetings v1.1.0
-{% endhighlight %}
+```
+
 
 For more on version numbers, see [Module version numbering](https://go.dev/doc/modules/version-numbers).
 
 > 6. At the command prompt in the `hello` directory, run your code to confirm that it works.
 
-{% highlight bash %}
+```bash
 $ go run .
 Hi, Gladys. Welcome!
-{% endhighlight %}
+```
+
 
 Congrats! You've written two functioning modules.
 
@@ -296,12 +312,13 @@ Your initial commit should include files listed in the following table:
 
 From the command-line, you can create an empty repository, add the files that will be part of your initial commit, and commit with a message. Here’s an example using `git`:
 
-{% highlight bash %}
+```bash
 $ git init
 $ git add --all
 $ git commit -m "mycode: initial commit"
 $ git push
-{% endhighlight %}
+```
+
 
 ## Choosing repository scope
 
@@ -344,32 +361,35 @@ For example, for module `example.com/mymodules/module1` below, you would have th
 
 A basic Go package has all its code in the project’s root directory. The project consists of a single module, which consists of a single package. The package name matches the last path component of the module name. For a very simple package requiring a single Go file, the project structure is:
 
-{% highlight text %}
+```text
 project-root-directory/
   go.mod
   modname.go
   modname_test.go
-{% endhighlight %}
+```
+
 
 Assuming this directory is uploaded to a GitHub repository at `github.com/someuser/modname`, the module line in the go.mod file should say module `github.com/someuser/modname`.
 
 The code in `modname.go` declares the package with:
 
-{% highlight go %}
+```go
 package modname
 
 // ... package code here
-{% endhighlight %}
+```
+
 
 Users can then rely on this package by import-ing it in their Go code with:
 
-{% highlight go %}
+```go
 import "github.com/someuser/modname"
-{% endhighlight %}
+```
+
 
 A Go package can be split into multiple files, all residing within the same directory, e.g.:
 
-{% highlight text %}
+```text
 project-root-directory/
   go.mod
   modname.go
@@ -378,7 +398,8 @@ project-root-directory/
   auth_test.go
   hash.go
   hash_test.go
-{% endhighlight %}
+```
+
 
 All the files in the directory declare package modname.
 
@@ -387,35 +408,38 @@ All the files in the directory declare package modname.
 
 A basic executable program (or command-line tool) is structured according to its complexity and code size. The simplest program can consist of a single Go file where func main is defined. Larger programs can have their code split across multiple files, all declaring package main:
 
-{% highlight text %}
+```text
 project-root-directory/
   go.mod
   auth.go
   auth_test.go
   client.go
   main.go
-{% endhighlight %}
+```
+
 
 Here the `main.go` file contains func main, but this is just a convention. The “main” file can also be called modname.go (for an appropriate value of modname) or anything else.
 
 Assuming this directory is uploaded to a GitHub repository at `github.com/someuser/modname`, the module line in the `go.mod` file should say:
 
-{% highlight text %}
+```text
 module github.com/someuser/modname
-{% endhighlight %}
+```
+
 
 And a user should be able to install it on their machine with:
 
-{% highlight text %}
+```text
 $ go install github.com/someuser/modname@latest
-{% endhighlight %}
+```
+
 
 
 ## Package or command with supporting packages
 
 Larger packages or commands may benefit from splitting off some functionality into supporting packages. Initially, it’s recommended placing such packages into a directory named internal; this prevents other modules from depending on packages we don’t necessarily want to expose and support for external uses. Since other projects cannot import code from our internal directory, we’re free to refactor its API and generally move things around without breaking external users. The project structure for a package is thus:
 
-{% highlight text %}
+```text
 project-root-directory/
   internal/
     auth/
@@ -427,13 +451,15 @@ project-root-directory/
   go.mod
   modname.go
   modname_test.go
-{% endhighlight %}
+```
+
 
 The `modname.go` file declares package modname, `auth.go` declares package auth and so on. `modname.go` can import the `auth` package as follows:
 
-{% highlight text %}
+```text
 import "github.com/someuser/modname/internal/auth"
-{% endhighlight %}
+```
+
 
 The layout for a command with supporting packages in an `internal` directory is very similar, except that the file(s) in the root directory declare package `main`.
 
@@ -441,7 +467,7 @@ The layout for a command with supporting packages in an `internal` directory is 
 
 A module can consist of multiple importable packages; each package has its own directory, and can be structured hierarchically. Here’s a sample project structure:
 
-{% highlight text %}
+```text
 project-root-directory/
   go.mod
   modname.go
@@ -457,27 +483,31 @@ project-root-directory/
   internal/
     trace/
       trace.go
-{% endhighlight %}
+```
+
 
 As a reminder, we assume that the module line in `go.mod` says:
 
-{% highlight text %}
+```text
 module github.com/someuser/modname
-{% endhighlight %}
+```
+
 
 The modname package resides in the root directory, declares package modname and can be imported by users with:
 
-{% highlight text %}
+```text
 import "github.com/someuser/modname"
-{% endhighlight %}
+```
+
 
 Sub-packages can be imported by users as follows:
 
-{% highlight text %}
+```text
 import "github.com/someuser/modname/auth"
 import "github.com/someuser/modname/auth/token"
 import "github.com/someuser/modname/hash"
-{% endhighlight %}
+```
+
 
 Package `trace` that resides in `internal/trace` cannot be imported outside this module. It’s recommended to keep packages in `internal` as much as possible.
 
@@ -486,7 +516,7 @@ Package `trace` that resides in `internal/trace` cannot be imported outside this
 
 Multiple programs in the same repository will typically have separate directories:
 
-{% highlight text %}
+```text
 project-root-directory/
   go.mod
   internal/
@@ -495,16 +525,18 @@ project-root-directory/
     main.go
   prog2/
     main.go
-{% endhighlight %}
+```
+
 
 In each directory, the program’s Go files declare package `main`. A top-level `internal` directory can contain shared packages used by all commands in the repository.
 
 Users can install these programs as follows:
 
-{% highlight text %}
+```text
 $ go install github.com/someuser/modname/prog1@latest
 $ go install github.com/someuser/modname/prog2@latest
-{% endhighlight %}
+```
+
 
 A common convention is placing all commands in a repository into a `cmd` directory; while this isn’t strictly necessary in a repository that consists only of commands, it’s very useful in a mixed repository that has both commands and importable packages, as we will discuss next.
 
@@ -512,7 +544,7 @@ A common convention is placing all commands in a repository into a `cmd` directo
 
 Sometimes a repository will provide both importable packages and installable commands with related functionality. Here’s a sample project structure for such a repository:
 
-{% highlight text %}
+```text
 project-root-directory/
   go.mod
   modname.go
@@ -527,21 +559,24 @@ project-root-directory/
       main.go
     prog2/
       main.go
-{% endhighlight %}
+```
+
 
 Assuming this module is called `github.com/someuser/modname`, users can now both import packages from it:
 
-{% highlight text %}
+```text
 import "github.com/someuser/modname"
 import "github.com/someuser/modname/auth"
-{% endhighlight %}
+```
+
 
 And install programs from it:
 
-{% highlight text %}
+```text
 $ go install github.com/someuser/modname/cmd/prog1@latest
 $ go install github.com/someuser/modname/cmd/prog2@latest
-{% endhighlight %}
+```
+
 
 
 ## Server project
@@ -550,7 +585,7 @@ Go is a common language choice for implementing servers. There is a very large v
 
 **Server projects typically won’t have packages for export, since a server is usually a self-contained binary (or a group of binaries)**. Therefore, it’s recommended to keep the Go packages implementing the server’s logic in the internal directory. Moreover, since the project is likely to have many other directories with non-Go files, it’s a good idea to keep all Go commands together in a cmd directory:
 
-{% highlight text %}
+```text
 project-root-directory/
   go.mod
   internal/
@@ -567,7 +602,8 @@ project-root-directory/
       main.go
     ...
   ... the project's other directories with non-Go code
-{% endhighlight %}
+```
+
 
 
 In case the server repository grows packages that become useful for sharing with other projects, it’s best to split these off to separate modules.

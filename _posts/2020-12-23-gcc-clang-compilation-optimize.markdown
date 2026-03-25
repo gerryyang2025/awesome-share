@@ -117,17 +117,19 @@ DIEs can be split into two general types. Those that describe data including dat
 
 ## 查看当前二进制文件使用的 DWARF 调试信息版本
 
-{% highlight bash %}
+```bash
 readelf --debug-dump=info <your_binary> | head -20
-{% endhighlight %}
+```
+
 
 ![dwarf_version](/assets/images/202507/dwarf_version.png)
 
 如果遇到 addr2line 的 DWARF 错误，尝试使用 DWARF 4 版本重新编译：
 
-{% highlight bash %}
+```bash
 gcc -gdwarf-4 -g3 -o myapp source.c
-{% endhighlight %}
+```
+
 
 GDB 兼容性：
 
@@ -153,15 +155,17 @@ The Clang compiler frontend, `clang -cc1`, supports two command line options for
 
 To generate `PCH` files using `clang -cc1`, use the option `-emit-pch`:
 
-{% highlight text %}
+```text
 $ clang -cc1 test.h -emit-pch -o test.h.pch
-{% endhighlight %}
+```
+
 
 This option is transparently used by clang when generating `PCH` files. The resulting `PCH` file contains the serialized form of the compiler's internal representation after it has completed parsing and semantic analysis. The `PCH` file can then be used as a prefix header with the `-include-pch` option:
 
-{% highlight text %}
+```text
 $ clang -cc1 -include-pch test.h.pch test.c -o test.s
-{% endhighlight %}
+```
+
 
 > 说明：上面的 `clang -cc1` 在实际使用中应替换为 `clang++`。例如，要生成预编译头文件 `my_header.pch`，可以使用命令 `clang++ -x c++-header -std=c++11 -o my_header.pch my_header.hpp`
 
@@ -200,7 +204,7 @@ Clang's precompiled headers are loaded "lazily" from disk. When a PCH file is in
 
 When given the `-print-stats` option, Clang produces statistics describing how much of the precompiled header was actually loaded from disk. For a simple "Hello, World!" program that includes the Apple `Cocoa.h` header (which is built as a precompiled header), this option illustrates how little of the actual precompiled header is required:
 
-{% highlight text %}
+```text
 *** PCH Statistics:
   933 stat cache hits
   4 stat cache misses
@@ -215,7 +219,8 @@ When given the `-print-stats` option, Clang produces statistics describing how m
   0/4413 visible declcontexts read (0.000000%)
   0/7230 method pool entries read (0.000000%)
   0 method pool misses
-{% endhighlight %}
+```
+
 
 For this small program, only a tiny fraction of the source locations, types, declarations, identifiers, and macros were actually deserialized from the precompiled header. These statistics can be useful to determine whether the precompiled header implementation can be improved by making more of the implementation lazy.
 
@@ -253,12 +258,13 @@ The "lazy" deserialization behavior of precompiled headers requires their integr
 
 # 编译加速 (统一编译)
 
-{% highlight buseunitybuild %}
+```buseunitybuild
 Whether to unify C++ code into larger files for faster compilation.
 
 bForceUnityBuild
 Whether to force C++ source files to be combined into larger files for faster compilation.
-{% endhighlight %}
+```
+
 
 * https://stackoverflow.com/questions/45110783/when-do-i-need-to-include-cpp-files
 * https://accu.org/journals/overload/25/138/thomason_2360/
@@ -276,7 +282,7 @@ Whether to force C++ source files to be combined into larger files for faster co
 
 gcc默认使用`-O0`优化级别，可以通过`gcc -Q --help=optimizers -O<number>`查看每个优化级别的差异。
 
-{% highlight text %}
+```text
 $gcc -Q --help=optimizers -O0 | head -n20
 The following options control optimizations:
   -O<number>
@@ -298,12 +304,13 @@ The following options control optimizations:
   -fcombine-stack-adjustments           [disabled]
   -fcommon                              [enabled]
   -fcompare-elim                        [disabled]
-{% endhighlight %}
+```
+
 
 
 测试代码：
 
-{% highlight text %}
+```text
 #include <cstdio>
 
 int func()
@@ -334,11 +341,12 @@ int main()
 
         return 0;
 }
-{% endhighlight %}
+```
+
 
 Makefile:
 
-{% highlight text %}
+```text
 # Compare gcc and clang, default is gcc
 
 #CC = /root/compile/llvm_install/bin/clang
@@ -385,11 +393,12 @@ clean:
         $(CXX) $(CFLAGS) $(INCLUDE) -c $<
 %.o: %.c
         $(CC) $(CFLAGS) $(INCLUDE) -c $<
-{% endhighlight %}
+```
+
 
 使用gcc编译，优化选项（默认级别，不做优化）：`-O0`
 
-{% highlight text %}
+```text
 (gdb) b main
 Breakpoint 1 at 0x400605: file demo.cpp, line 20.
 (gdb) r
@@ -442,11 +451,12 @@ Dump of assembler code for function main():
    0x0000000000400645 <+72>:    retq
 
 End of assembler dump.
-{% endhighlight %}
+```
+
 
 使用clang编译，优化选项（默认级别，不做优化）：`-O0`
 
-{% highlight text %}
+```text
 (gdb) b main
 Breakpoint 1 at 0x40115f: file demo.cpp, line 20.
 (gdb) r
@@ -496,7 +506,8 @@ Dump of assembler code for function main:
    0x000000000040119c <+76>:    retq
 
 End of assembler dump.
-{% endhighlight %}
+```
+
 
 
 也可通过[在线编译工具](https://gcc.godbolt.org/)反汇编。
@@ -528,48 +539,52 @@ Documentation of individual passes is available [here](http://llvm.org/docs/Pass
 
 You can compare the effect of changing high-level flags such as -O like this:
 
-{% highlight bash %}
+```bash
 diff -wy --suppress-common-lines  \
   <(echo 'int;' | clang -xc -Os   - -o /dev/null -\#\#\# 2>&1 | tr " " "\n" | grep -v /tmp) \
   <(echo 'int;' | clang -xc -O2 - -o /dev/null -\#\#\# 2>&1 | tr " " "\n" | grep -v /tmp)
 # will tell you that -O0 is indeed the default.
-{% endhighlight %}
+```
+
 
 -O0 优化选项：
 
-{% highlight bash %}
+```bash
 $echo 'int;' | clang -xc -O0 - -o /dev/null -\#\#\#
 clang version 3.5.2 (tags/RELEASE_352/final)
 Target: x86_64-unknown-linux-gnu
 Thread model: posix
  "/usr/local/bin/clang-3.5" "-cc1" "-triple" "x86_64-unknown-linux-gnu" "-emit-obj" "-mrelax-all" "-disable-free" "-disable-llvm-verifier" "-main-file-name" "-" "-mrelocation-model" "static" "-mdisable-fp-elim" "-fmath-errno" "-masm-verbose" "-mconstructor-aliases" "-munwind-tables" "-fuse-init-array" "-target-cpu" "x86-64" "-dwarf-column-info" "-resource-dir" "/usr/local/bin/../lib/clang/3.5.2" "-internal-isystem" "/usr/local/include" "-internal-isystem" "/usr/local/bin/../lib/clang/3.5.2/include" "-internal-externc-isystem" "/include" "-internal-externc-isystem" "/usr/include" "-O0" "-fdebug-compilation-dir" "/data/home/gerryyang/pracing/build/release/src/gamesvr/CMakeFiles/gamesvr.dir" "-ferror-limit" "19" "-fmessage-length" "198" "-mstackrealign" "-fobjc-runtime=gcc" "-fdiagnostics-show-option" "-fcolor-diagnostics" "-o" "/tmp/--e22b2f.o" "-x" "c" "-"
  "/bin/ld" "--eh-frame-hdr" "-m" "elf_x86_64" "-dynamic-linker" "/lib64/ld-linux-x86-64.so.2" "-o" "/dev/null" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/crt1.o" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/crti.o" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtbegin.o" "-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5" "-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64" "-L/usr/local/bin/../lib64" "-L/lib/../lib64" "-L/usr/lib/../lib64" "-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../.." "-L/usr/local/bin/../lib" "-L/lib" "-L/usr/lib" "/tmp/--e22b2f.o" "-lgcc" "--as-needed" "-lgcc_s" "--no-as-needed" "-lc" "-lgcc" "--as-needed" "-lgcc_s" "--no-as-needed" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtend.o" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/crtn.o"
-{% endhighlight %}
+```
+
 
 -O2 优化选项：
 
-{% highlight bash %}
+```bash
 $echo 'int;' | clang -xc -O2 - -o /dev/null -\#\#\#
 clang version 3.5.2 (tags/RELEASE_352/final)
 Target: x86_64-unknown-linux-gnu
 Thread model: posix
  "/usr/local/bin/clang-3.5" "-cc1" "-triple" "x86_64-unknown-linux-gnu" "-emit-obj" "-disable-free" "-disable-llvm-verifier" "-main-file-name" "-" "-mrelocation-model" "static" "-fmath-errno" "-masm-verbose" "-mconstructor-aliases" "-munwind-tables" "-fuse-init-array" "-target-cpu" "x86-64" "-momit-leaf-frame-pointer" "-dwarf-column-info" "-resource-dir" "/usr/local/bin/../lib/clang/3.5.2" "-internal-isystem" "/usr/local/include" "-internal-isystem" "/usr/local/bin/../lib/clang/3.5.2/include" "-internal-externc-isystem" "/include" "-internal-externc-isystem" "/usr/include" "-O2" "-fdebug-compilation-dir" "/data/home/gerryyang/pracing/build/release/src/gamesvr/CMakeFiles/gamesvr.dir" "-ferror-limit" "19" "-fmessage-length" "198" "-mstackrealign" "-fobjc-runtime=gcc" "-fdiagnostics-show-option" "-fcolor-diagnostics" "-vectorize-loops" "-vectorize-slp" "-o" "/tmp/--ebb79a.o" "-x" "c" "-"
  "/bin/ld" "--eh-frame-hdr" "-m" "elf_x86_64" "-dynamic-linker" "/lib64/ld-linux-x86-64.so.2" "-o" "/dev/null" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/crt1.o" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/crti.o" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtbegin.o" "-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5" "-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64" "-L/usr/local/bin/../lib64" "-L/lib/../lib64" "-L/usr/lib/../lib64" "-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../.." "-L/usr/local/bin/../lib" "-L/lib" "-L/usr/lib" "/tmp/--ebb79a.o" "-lgcc" "--as-needed" "-lgcc_s" "--no-as-needed" "-lc" "-lgcc" "--as-needed" "-lgcc_s" "--no-as-needed" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtend.o" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/crtn.o"
-{% endhighlight %}
+```
+
 
 -O3 优化选项：
 
-{% highlight bash %}
+```bash
 $echo 'int;' | clang -xc -O3 - -o /dev/null -\#\#\#
 clang version 3.5.2 (tags/RELEASE_352/final)
 Target: x86_64-unknown-linux-gnu
 Thread model: posix
  "/usr/local/bin/clang-3.5" "-cc1" "-triple" "x86_64-unknown-linux-gnu" "-emit-obj" "-disable-free" "-disable-llvm-verifier" "-main-file-name" "-" "-mrelocation-model" "static" "-fmath-errno" "-masm-verbose" "-mconstructor-aliases" "-munwind-tables" "-fuse-init-array" "-target-cpu" "x86-64" "-momit-leaf-frame-pointer" "-dwarf-column-info" "-resource-dir" "/usr/local/bin/../lib/clang/3.5.2" "-internal-isystem" "/usr/local/include" "-internal-isystem" "/usr/local/bin/../lib/clang/3.5.2/include" "-internal-externc-isystem" "/include" "-internal-externc-isystem" "/usr/include" "-O3" "-fdebug-compilation-dir" "/data/home/gerryyang/pracing/build/release/src/gamesvr/CMakeFiles/gamesvr.dir" "-ferror-limit" "19" "-fmessage-length" "198" "-mstackrealign" "-fobjc-runtime=gcc" "-fdiagnostics-show-option" "-fcolor-diagnostics" "-vectorize-loops" "-vectorize-slp" "-o" "/tmp/--1ea6a8.o" "-x" "c" "-"
  "/bin/ld" "--eh-frame-hdr" "-m" "elf_x86_64" "-dynamic-linker" "/lib64/ld-linux-x86-64.so.2" "-o" "/dev/null" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/crt1.o" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/crti.o" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtbegin.o" "-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5" "-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64" "-L/usr/local/bin/../lib64" "-L/lib/../lib64" "-L/usr/lib/../lib64" "-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../.." "-L/usr/local/bin/../lib" "-L/lib" "-L/usr/lib" "/tmp/--1ea6a8.o" "-lgcc" "--as-needed" "-lgcc_s" "--no-as-needed" "-lc" "-lgcc" "--as-needed" "-lgcc_s" "--no-as-needed" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtend.o" "/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/crtn.o"
-{% endhighlight %}
+```
 
 
-{% highlight text %}
+
+```text
 diff -wy --suppress-common-lines    <(echo 'int;' | clang -xc -O0   - -o /dev/null -\#\#\# 2>&1 | tr " " "\n" | grep -v /tmp)   <(echo 'int;' | clang -xc -O2 - -o /dev/null -\#\#\# 2>&1 | tr " " "\n" | grep -v /tmp)
 "-mrelax-all"                                                 <
 "-mdisable-fp-elim"                                           <
@@ -577,14 +592,16 @@ diff -wy --suppress-common-lines    <(echo 'int;' | clang -xc -O0   - -o /dev/nu
 "-O0"                                                         | "-O2"
                                                               > "-vectorize-loops"
                                                               > "-vectorize-slp"
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 diff -wy --suppress-common-lines  \
 >   <(echo 'int;' | clang -xc -O2   - -o /dev/null -\#\#\# 2>&1 | tr " " "\n" | grep -v /tmp) \
 >   <(echo 'int;' | clang -xc -O3 - -o /dev/null -\#\#\# 2>&1 | tr " " "\n" | grep -v /tmp)
 "-O2"                                                         | "-O3"
-{% endhighlight %}
+```
+
 
 With `version 3.5` the passes are as follow (parsed output of the command above):
 
@@ -607,7 +624,7 @@ Clang provides a mechanism for selectively disabling optimizations in functions 
 
 To disable optimizations in a single function definition, the GNU-style or C++11 non-standard attribute `optnone` can be used.
 
-{% highlight cpp %}
+```cpp
 // The following functions will not be optimized.
 // GNU-style attribute
 __attribute__((optnone)) int foo() {
@@ -618,13 +635,14 @@ __attribute__((optnone)) int foo() {
 [[clang::optnone]] int bar() {
   // ... code
 }
-{% endhighlight %}
+```
+
 
 To facilitate disabling optimization for a range of function definitions, a range-based pragma is provided. Its syntax is `#pragma clang optimize` followed by `off` or `on`.
 
 All function definitions in the region between an `off` and the following `on` will be decorated with the `optnone` attribute unless doing so would conflict with explicit attributes already present on the function (e.g. the ones that control inlining).
 
-{% highlight cpp %}
+```cpp
 #pragma clang optimize off
 // This function will be decorated with optnone.
 int foo() {
@@ -636,7 +654,8 @@ __attribute__((always_inline)) int bar() {
   // ... code
 }
 #pragma clang optimize on
-{% endhighlight %}
+```
+
 
 If no `on` is found to close an `off` region, the end of the region is the end of the compilation unit.
 
@@ -648,7 +667,7 @@ I expected `__attribute__((noinline))`, when added to a function, to make sure t
 
 Here is an example, which you can also [open on Godbolt](https://godbolt.org/z/QMTL8f):
 
-{% highlight cpp %}
+```cpp
 namespace {
 
 __attribute__((noinline))
@@ -669,11 +688,12 @@ int outer() {
 int main() {
     return outer();
 }
-{% endhighlight %}
+```
+
 
 When build with `-O3`, `gcc` emits `inner_noinline`, but not `inner_inline`:
 
-{% highlight cpp %}
+```cpp
 (anonymous namespace)::inner_noinline():
         mov     eax, 3
         ret
@@ -681,15 +701,17 @@ main:
         call    (anonymous namespace)::inner_noinline()
         add     eax, 4
         ret
-{% endhighlight %}
+```
+
 
 Clang insists on inlining it:
 
-{% highlight cpp %}
+```cpp
 main: # @main
   mov eax, 7
   ret
-{% endhighlight %}
+```
+
 
 If adding a parameter to the functions and letting them perform some trivial work, clang respects the noinline attribute: https://godbolt.org/z/NNSVab
 
@@ -768,21 +790,23 @@ This build mode assumes you already have compiled LLVM and Clang libraries on yo
 * Create a directory for IWYU development, e.g. `iwyu`
 * Clone the IWYU Git repo:
 
-{% highlight text %}
+```text
 iwyu$ git clone https://github.com/include-what-you-use/include-what-you-use.git
-{% endhighlight %}
+```
+
 
 
 * Presumably, you'll be building IWYU with a released version of LLVM and Clang, so **check out the corresponding branch**. For example, if you have Clang 6.0 installed, use the `clang_6.0` branch. IWYU `master` tracks LLVM & Clang `main`:
 
-{% highlight text %}
+```text
 iwyu$ cd include-what-you-use
 iwyu/include-what-you-use$ git checkout clang_6.0
-{% endhighlight %}
+```
+
 
 * Create a build root and use CMake to generate a build system linked with LLVM/Clang prebuilts:
 
-{% highlight text %}
+```text
 # This example uses the Makefile generator, but anything should work.
 iwyu/include-what-you-use$ cd ..
 iwyu$ mkdir build && cd build
@@ -792,21 +816,24 @@ iwyu/build$ cmake -G "Unix Makefiles" -DIWYU_LLVM_ROOT_PATH=/usr/lib/llvm-6.0 ..
 
 # For IWYU 0.11/Clang 7 and later
 iwyu/build$ cmake -G "Unix Makefiles" -DCMAKE_PREFIX_PATH=/usr/lib/llvm-7 ../include-what-you-use
-{% endhighlight %}
+```
+
 
 (substitute the `llvm-6.0` or `llvm-7` suffixes with the actual version compatible with your IWYU branch)
 
 or, if you have a local LLVM and Clang build tree, you can specify that as `CMAKE_PREFIX_PATH` for IWYU 0.11 and later:
 
-{% highlight text %}
+```text
 iwyu/build$ cmake -G "Unix Makefiles" -DCMAKE_PREFIX_PATH=~/llvm-project/build ../include-what-you-use
-{% endhighlight %}
+```
+
 
 * Once CMake has generated a build system, you can invoke it directly from `build`, e.g.
 
-{% highlight text %}
+```text
 iwyu/build$ make
-{% endhighlight %}
+```
+
 
 ### How to build as part of LLVM
 
@@ -814,16 +841,17 @@ Instructions for building LLVM and Clang are available at https://clang.llvm.org
 
 To include IWYU in the LLVM build, use the `LLVM_EXTERNAL_PROJECTS` and `LLVM_EXTERNAL_*_SOURCE_DIR` CMake variables when configuring LLVM:
 
-{% highlight text %}
+```text
 llvm-project/build$ cmake -G "Unix Makefiles" -DLLVM_ENABLE_PROJECTS=clang -DLLVM_EXTERNAL_PROJECTS=iwyu -DLLVM_EXTERNAL_IWYU_SOURCE_DIR=/path/to/iwyu /path/to/llvm-project/llvm
 llvm-project/build$ make
-{% endhighlight %}
+```
+
 
 This builds all of LLVM, Clang and IWYU in a single tree.
 
 ## Usage
 
-{% highlight text %}
+```text
 $include-what-you-use --help
 USAGE: include-what-you-use [-Xiwyu --iwyu_opt]... <clang opts> <source file>
 Here are the <iwyu_opts> you can specify (e.g. -Xiwyu --verbose=3):
@@ -871,15 +899,17 @@ In addition to IWYU-specific options you can specify the following
 options without -Xiwyu prefix:
    --help: prints this help and exits.
    --version: prints version and exits.
-{% endhighlight %}
+```
+
 
 ### Running on single source file
 
 The simplest way to use IWYU is to run it against a single source file:
 
-{% highlight text %}
+```text
 include-what-you-use $CXXFLAGS myfile.cc
-{% endhighlight %}
+```
+
 
 where `$CXXFLAGS` are the flags you would normally pass to the compiler.
 
@@ -888,9 +918,10 @@ where `$CXXFLAGS` are the flags you would normally pass to the compiler.
 
 Typically there is already a build system containing the relevant compiler flags for all source files. Replace your compiler with `include-what-you-use` to generate a large batch of IWYU advice. Depending on your build system/build tools, this can take many forms, but for a simple GNU Make system it might look like this:
 
-{% highlight text %}
+```text
 make -k CXX=include-what-you-use CXXFLAGS="-Xiwyu --error_always"
-{% endhighlight %}
+```
+
 
 > The additional `-Xiwyu --error_always` switch makes `include-what-you-use` always exit with an error code, so the build system knows it didn't build a .o file. Hence the need for `-k`.
 
@@ -901,28 +932,31 @@ In this mode `include-what-you-use` only analyzes the `.cc` (or `.cpp`) files kn
 CMake has grown native support for IWYU as of version 3.3. See [their documentation](https://cmake.org/cmake/help/latest/prop_tgt/LANG_INCLUDE_WHAT_YOU_USE.html) for CMake-side details.
 
 
-{% highlight text %}
+```text
 New in version 3.3.
 
 This property is implemented only when <LANG> is C or CXX.
 
 Specify a semicolon-separated list containing a command line for the include-what-you-use tool. The Makefile Generators and the Ninja generator will run this tool along with the compiler and report a warning if the tool reports any problems.
-{% endhighlight %}
+```
+
 
 The `CMAKE_CXX_INCLUDE_WHAT_YOU_USE` option enables a mode where CMake first compiles a source file, and then runs IWYU on it.
 
 Use it like this:
 
-{% highlight text %}
+```text
 mkdir build && cd build
 CC="clang" CXX="clang++" cmake -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE=include-what-you-use ...
-{% endhighlight %}
+```
+
 
 These examples assume that `include-what-you-use` is in the `PATH`. If it isn't, consider changing the value to an absolute path. Arguments to IWYU can be added using CMake's semicolon-separated list syntax, e.g.:
 
-{% highlight text %}
+```text
   ... cmake -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE="include-what-you-use;-w;-Xiwyu;--verbose=7" ...
-{% endhighlight %}
+```
+
 
 The option appears to be separately supported for both C and C++, so use `CMAKE_C_INCLUDE_WHAT_YOU_USE` for C code.
 
@@ -932,11 +966,12 @@ The `iwyu_tool.py` script pre-dates the native CMake support, and works off the 
 
 The script's command-line syntax is designed to mimic Clang's LibTooling, but they are otherwise unrelated. It can be used like this:
 
-{% highlight text %}
+```text
 mkdir build && cd build
 CC="clang" CXX="clang++" cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ...
 iwyu_tool.py -p .
-{% endhighlight %}
+```
+
 
 Unless a source filename is provided, all files in the project will be analyzed.
 
@@ -947,10 +982,11 @@ See `iwyu_tool.py --help` for more options.
 
 We also include a tool that automatically fixes up your source files based on the IWYU recommendations. This is also alpha-quality software! Here's how to use it (requires python3):
 
-{% highlight text %}
+```text
 make -k CXX=include-what-you-use CXXFLAGS="-Xiwyu --error_always" 2> /tmp/iwyu.out
 python3 fix_includes.py < /tmp/iwyu.out
-{% endhighlight %}
+```
+
 
 If you don't like the way `fix_includes.py` munges your `#include` lines, you can control its behavior via flags. `fix_includes.py --help` will give a full list, but these are some common ones:
 
@@ -1063,38 +1099,43 @@ BOLT 在一个进程当中完成反汇编、优化、重写二进制的操作，
 
 * 优化级别：使用 `-Os` 或 `-Oz` 优化选项。这些选项专门针对生成较小的二进制文件进行优化。
 
-{% highlight text %}
+```text
 clang -Os -o output_file input_file.c
 
-{% endhighlight %}
+```
+
 
 或者
 
-{% highlight text %}
+```text
 clang -Oz -o output_file input_file.c
-{% endhighlight %}
+```
+
 
 * 去除调试信息：如果不需要调试信息，请确保不使用 `-g` 选项。如果需要调试信息，但希望减小文件大小，可以考虑使用 `-Wl,--compress-debug-sections=zlib` 将调试信息压缩。
 
 * 链接时优化（LTO）：使用链接时优化可以在链接阶段进行更多优化，这可能有助于减小生成的二进制文件大小。要启用 LTO，请使用 `-flto` 选项.
 
-{% highlight text %}
+```text
 clang -flto -Os -o output_file input_file.c
-{% endhighlight %}
+```
+
 
 * 去除未使用的代码和数据：使用 `-ffunction-sections` 和 `-fdata-sections` 选项将函数和数据放入单独的节（section），然后使用链接器选项 `--gc-sections` 删除未使用的节：
 
-{% highlight text %}
+```text
 clang -Os -ffunction-sections -fdata-sections -o output_file input_file.c -Wl,--gc-sections
-{% endhighlight %}
+```
+
 
 * 静态链接：尽量避免静态链接，因为它会将库的整个内容包含到二进制文件中。相反，使用动态链接可以减小二进制文件大小。
 
 * 符号剥离：使用 `strip` 工具删除不必要的符号信息。这不仅可以减小二进制文件大小，还可以防止其他人轻松地逆向工程您的代码。在编译完成后，运行以下命令：
 
-{% highlight text %}
+```text
 strip output_file
-{% endhighlight %}
+```
+
 
 请注意，这将删除所有符号信息，使调试变得困难。因此，仅在不需要调试信息时执行此操作。
 
@@ -1115,7 +1156,7 @@ strip output_file
 
 > 注意：此选项对gcc和clang都生效。
 
-{% highlight text %}
+```text
 $readelf -t demo.o
 There are 26 section headers, starting at offset 0x10b0:
 
@@ -1166,18 +1207,20 @@ Section Headers:
        [0000000000000000]:
 
 ...
-{% endhighlight %}
+```
+
 
 并且最终的链接代码中，不会存在未使用函数的代码：
 
-{% highlight text %}
+```text
 $nm -C demo | grep func
 00000000004005f0 T func()
-{% endhighlight %}
+```
+
 
 查看mapfile，可以看到func2被discard了：
 
-{% highlight text %}
+```text
 Discarded input sections
 ...
  .text          0x0000000000000000        0x0 demo.o
@@ -1186,16 +1229,18 @@ Discarded input sections
  .text._Z5func2v
                 0x0000000000000000       0x10 demo.o
 ...
-{% endhighlight %}
+```
 
-{% highlight bash %}
+
+```bash
 $objdump -s -j .text._Z5func2v demo.o
 
 demo.o:     file format elf64-x86-64
 
 Contents of section .text._Z5func2v:
  0000 554889e5 c745fc04 0000008b 45fc5dc3  UH...E......E.].
-{% endhighlight %}
+```
+
 
 refer:
 
@@ -1215,7 +1260,7 @@ refer:
 * 虽然在磁盘容量足够大的PC中，可能不会出现想要将可执行文件变小的情况。但在容量有限的环境，或想要通过网络复制并运行程序时，`strip`却是一个方便的工具。
 
 
-{% highlight bash %}
+```bash
 # 去除目标文件中的符号
 $ strip objfile
 $ nm objfile
@@ -1225,7 +1270,8 @@ nm: objfile: no symbols
 $ strip -R .text demo1
 $ ./demo1
 Segmentation fault (core dumped)
-{% endhighlight %}
+```
+
 
 
 ## objcopy (分离调试信息)
@@ -1235,7 +1281,7 @@ Segmentation fault (core dumped)
 
 例如：
 
-{% highlight bash %}
+```bash
 # 拷贝出一个符号表文件
 $ objcopy --only-keep-debug mainO3 mainO3.symbol       
 
@@ -1243,20 +1289,22 @@ $ objcopy --only-keep-debug mainO3 mainO3.symbol       
 $ objcopy --strip-debug mainO3 mainO3.bin
 
 $ objcopy --add-gnu-debuglink=mainO3.symbol mainO3
-{% endhighlight %}
+```
+
 
 
 * 用`objcopy`嵌入可执行文件的数据，`objcopy`可以将任意文件转换为可以链接的目标文件。
 
 例如：可以将`foo.jpg`转换为x86用的ELF32形式的目标文件`foo.o`
 
-{% highlight bash %}
+```bash
 $ objcopy -I binary -O elf32-i386 -B i386 foo.jpg foo.o
-{% endhighlight %}
+```
+
 
 脚本工具：
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 scriptdir=`dirname ${0}`
@@ -1301,7 +1349,8 @@ objcopy --only-keep-debug "${tostripfile}" "${debugdir}/${debugfile}"
 strip --strip-debug --strip-unneeded "${tostripfile}"
 objcopy --add-gnu-debuglink="${debugdir}/${debugfile}" "${tostripfile}"
 chmod -x "${debugdir}/${debugfile}"
-{% endhighlight %}
+```
+
 
 refer: [How to generate gcc debug symbol outside the build target?](https://stackoverflow.com/questions/866721/how-to-generate-gcc-debug-symbol-outside-the-build-target)
 
@@ -1344,7 +1393,7 @@ The following example illustrates the advantages of LTO’s integrated approach 
 * Input source file `a.c` is compiled into LLVM bitcode form.
 * Input source file `main.c` is compiled into native object code.
 
-{% highlight c %}
+```c
 --- a.h ---
 extern int foo1(void);
 extern void foo2(void);
@@ -1385,15 +1434,17 @@ void foo4(void) {
 int main() {
   return foo1();
 }
-{% endhighlight %}
+```
+
 
 To compile, run:
 
-{% highlight text %}
+```text
 % clang -flto -c a.c -o a.o        # <-- a.o is LLVM bitcode file
 % clang -c main.c -o main.o        # <-- main.o is native object file
 % clang -flto a.o main.o -o main   # <-- standard link command with -flto
-{% endhighlight %}
+```
+
 
 * In this example, the linker recognizes that `foo2()` is an externally visible symbol defined in LLVM bitcode file. The linker completes its usual symbol resolution pass and finds that `foo2()` is not used anywhere. This information is used by the LLVM optimizer and it removes `foo2()`.
 * As soon as `foo2()` is removed, the optimizer recognizes that condition `i < 0` is always `false`, which means `foo3()` is never used. Hence, the optimizer also removes `foo3()`.
@@ -1441,13 +1492,14 @@ DWARF 消费者的兼容性：并非所有处理 DWARF 调试信息的工具（�
 
 ## [--compress-debug-sections=zlib](https://sourceware.org/binutils/docs/ld/Options.html#index-compress-debug-sections-1)
 
-{% highlight text %}
+```text
 --compress-debug-sections=none
 --compress-debug-sections=zlib
 --compress-debug-sections=zlib-gnu
 --compress-debug-sections=zlib-gabi
 --compress-debug-sections=zstd
-{% endhighlight %}
+```
+
 
 On ELF platforms, these options control how DWARF debug sections are compressed using zlib.
 
@@ -1466,7 +1518,7 @@ On ELF platforms, these options control how DWARF debug sections are compressed 
 
 通过 `readelf -S` 可以查看 `.debug_info` 在使用压缩后的大小变化：
 
-{% highlight text %}
+```text
 $ls -lh unittestsvr*
 -rwxr-xr-x 1 gerryyang users 224M 7月  22 12:04 unittestsvr.nozip
 -rwxr-xr-x 1 gerryyang users 106M 7月  22 12:04 unittestsvr.zip
@@ -1476,7 +1528,8 @@ $readelf -S unittestsvr.nozip | grep -A1 .debug_info
 $readelf -S unittestsvr.zip | grep -A1 .debug_info
   [34] .debug_info       PROGBITS         0000000000000000  0396840d
        0000000001e87e1a  0000000000000000   C       0     0     1
-{% endhighlight %}
+```
+
 
 
 截至目前（2022年2月），Clang编译器和GNU ld链接器尚未支持 --compress-debug-sections=zstd 选项。目前，GNU ld链接器支持的调试信息压缩方法是zlib（--compress-debug-sections=zlib）。
@@ -1485,27 +1538,31 @@ $readelf -S unittestsvr.zip | grep -A1 .debug_info
 
 首先，使用-g选项编译源代码以生成调试信息：
 
-{% highlight text %}
+```text
 clang -g -o output_file input_file.c
-{% endhighlight %}
+```
+
 
 使用objcopy将未压缩的调试信息从二进制文件中提取到单独的文件：
 
-{% highlight text %}
+```text
 objcopy --only-keep-debug output_file output_file.debug
-{% endhighlight %}
+```
+
 
 使用zstd手动压缩提取的调试信息：
 
-{% highlight text %}
+```text
 zstd -o output_file.debug.zst output_file.debug
-{% endhighlight %}
+```
+
 
 将压缩后的调试信息与二进制文件关联：
 
-{% highlight text %}
+```text
 objcopy --add-gnu-debuglink=output_file.debug.zst output_file
-{% endhighlight %}
+```
+
 
 请注意，这种方法可能不被所有调试器支持，因为它们可能无法识别zstd压缩的调试信息。在使用此方法之前，请确保您的调试器支持处理zstd压缩的调试信息。
 
@@ -1523,9 +1580,10 @@ objcopy --add-gnu-debuglink=output_file.debug.zst output_file
 
 What is the purpose of those command line options? Please help to decipher the meaning of the following command line:
 
-{% highlight text %}
+```text
 -Wl,--start-group -lmy_lib -lyour_lib -lhis_lib -Wl,--end-group -ltheir_lib
-{% endhighlight %}
+```
+
 
 Apparently it has something to do with linking, but the GNU manual is quiet what exactly grouping means.
 
@@ -1566,7 +1624,7 @@ You might think that, given how big of an issue compile times are in C++, there 
 
 I’ll do example with a super small C++ snippet that just includes some STL headers and does something with them. See the snippet and the output from three major compilers (Visual Studio, Gcc, Clang) in [Compiler Explorer here](https://godbolt.org/z/Yw08WW). The actual code does not do anything useful, I just needed something to throw at the compiler.
 
-{% highlight cpp %}
+```cpp
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -1581,7 +1639,8 @@ int main()
     std::regex re("^asd.*$");
     return 0;
 }
-{% endhighlight %}
+```
+
 
 I’m testing with `Visual Studio 2017 v15.9`, `Gcc 8.2` and `Clang 7.0`.
 
@@ -1591,13 +1650,14 @@ I’m not using Gcc much, and at least in my industry (game development), it’s
 
 Anyway, gcc has `-ftime-report` argument that prints information about where time was spent during compilation. Brace yourself, this will be over 100 lines of text:
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 g++ -std=c++11 -o test -O2 -ftime-report test.cc
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 Time variable                                   usr           sys          wall               GGC
  phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    1379 kB (  1%)
  phase parsing                      :   0.84 ( 25%)   0.46 ( 48%)   1.31 ( 27%)   78498 kB ( 40%)
@@ -1819,7 +1879,8 @@ Time variable                                   usr           sys          wall 
  address taken                      :   0.02 (  1%)   0.01 (  1%)   0.01 (  0%)       0 kB (  0%)
  repair loop structures             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)       2 kB (  0%)
  TOTAL                              :   3.33          0.95          4.80         198228 kB
-{% endhighlight %}
+```
+
 
 Ok, I guess that totally makes sense, **if you are a compiler developer working on gcc itself. But I’m not! Most of the above either does not mean anything to me, or I don’t really care about it**.
 
@@ -1852,7 +1913,7 @@ Several things to note:
 
 If it stopped printing all the info I don’t care about, did not duplicate half of it, and stopped printing LLVM passes after top 5 most expensive ones, it would already be way more legible, e.g. like this:
 
-{% highlight text %}
+```text
 ===-------------------------------------------------------------------------===
                          Miscellaneous Ungrouped Timers
 ===-------------------------------------------------------------------------===
@@ -1890,7 +1951,8 @@ If it stopped printing all the info I don’t care about, did not duplicate half
    ---Wall Time---  --- Name ---
    6.3410 (100.0%)  Clang front-end timer
    6.3410 (100.0%)  Total
-{% endhighlight %}
+```
+
 
 (also, please, drop the “…” around “Pass execution timing report” name; why it is there?)
 
@@ -2008,7 +2070,7 @@ Clang C/C++ build analysis tool when using Clang 9+ `-ftime-trace`. The `-ftime-
 
 Usage:
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 # -ftime-report
@@ -2039,11 +2101,12 @@ clang++ test.o -o test
 
 # Aternatively, instead of doing --start and --stop steps, you can do ClangBuildAnalyzer --all <artifacts_folder> <capture_file> after your build;
 # that will include all the compatible *.json files for analysis, no matter when they were produced.
-{% endhighlight %}
+```
+
 
 Analysis Output:
 
-{% highlight text %}
+```text
 Build tracing started. Do some Clang builds with '-ftime-trace', then run 'ClangBuildAnalyzer --stop . <filename>' to stop tracing and save session to a file.
 Stopping build tracing and saving to 'test.json'...
   done in 0.0s. Run 'ClangBuildAnalyzer --analyze test.json' to analyze it.
@@ -2195,11 +2258,12 @@ Compilation (1 times):
   1x: <direct include>
 
   done in 0.0s.
-{% endhighlight %}
+```
+
 
 Granularity (粒度) and amount of most expensive things (files, functions, templates, includes) that are reported can be controlled by having an [ClangBuildAnalyzer.ini](https://github.com/aras-p/ClangBuildAnalyzer/blob/main/ClangBuildAnalyzer.ini) file in the working directory. Take a look at ClangBuildAnalyzer.ini for an example.
 
-{% highlight ini %}
+```ini
 # ClangBuildAnalyzer reads ClangBuildAnalyzer.ini file from the working directory
 # when invoked, and various aspects of reporting can be configured this way.
 # This file example is setup to be exactly like what the defaults are.
@@ -2236,7 +2300,8 @@ maxNameLength = 70
 # Only print "root" headers in expensive header report, i.e.
 # only headers that are directly included by at least one source file
 onlyRootHeaders = true
-{% endhighlight %}
+```
+
 
 
 

@@ -1544,7 +1544,7 @@ Sally: You're welcome, Peter. (萨莉：不客气，彼得。)
 
 ## Unit 2
 
-{% highlight markdown %}
+```markdown
 * 题目：Our new home (我们的新家与大雁搬家)
 * 场景：萨莉和爸爸正在讨论他们的新家，分享各自喜欢的房间及原因；随后课文介绍了大雁为了寻找食物和温暖的气候而每年两次迁徙的自然常识。
 * 重点句型：
@@ -1567,7 +1567,8 @@ Dad: Because it's quiet. I can read and write there. (爸爸：因为它很安�
 Sally: Peter and Paul are in the garden. They like our new home too. (萨莉：彼得和保罗在花园里。他们也喜欢我们的新家。)
 Dad: Do you know why? (爸爸：你知道为什么吗？)
 Sally: Because they can play in the garden all day! (萨莉：因为他们可以在花园里玩一整天！)
-{% endhighlight %}
+```
+
 
 
 ## Unit 3

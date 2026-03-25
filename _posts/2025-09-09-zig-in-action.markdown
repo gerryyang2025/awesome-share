@@ -43,7 +43,7 @@ Incrementally improve your C/C++/Zig codebase.
 
 A minimal example printing `hello world`.
 
-{% highlight zig %}
+```zig
 // hello-world.zig
 
 const std = @import("std");
@@ -51,19 +51,21 @@ const std = @import("std");
 pub fn main() !void {
     try std.fs.File.stdout().writeAll("hello world!\n");
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $ zig build-exe hello-world.zig
 $ ./hello-world
 hello world!
-{% endhighlight %}
+```
+
 
 ## Calling external library functions (调用外部库函数)
 
 All system API functions can be invoked this way, you do not need library bindings to interface them.
 
-{% highlight zig %}
+```zig
 // windows-msgbox.zig
 
 const win = @import("std").os.windows;
@@ -73,18 +75,20 @@ extern "user32" fn MessageBoxA(?win.HWND, [*:0]const u8, [*:0]const u8, u32) cal
 pub fn main() !void {
     _ = MessageBoxA(null, "world!", "Hello", 0);
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $ zig test windows-msgbox.zig
 All 0 tests passed.
-{% endhighlight %}
+```
+
 
 ## Memory leak detection (内存泄露检测)
 
 Using `std.heap.GeneralPurposeAllocator` you can track double frees and memory leaks.
 
-{% highlight zig %}
+```zig
 // memory-leak.zig
 
 const std = @import("std");
@@ -100,10 +104,11 @@ pub fn main() !void {
 
     // oops I forgot to free!
 }
-{% endhighlight %}
+```
 
 
-{% highlight text %}
+
+```text
 $ zig build-exe memory-leak.zig
 $ ./memory-leak
 error(gpa): memory address 0x7f5d08ea0000 leaked:
@@ -112,13 +117,14 @@ error(gpa): memory address 0x7f5d08ea0000 leaked:
                                   ^
 /home/ci/deps/zig-x86_64-linux-0.15.1/lib/std/start.zig:627:37: 0x113dd49 in posixCallMainAndExit (std.zig)
 ...
-{% endhighlight %}
+```
+
 
 ## C interoperability (C 互操作性)
 
 Example of importing a `C` header file and linking to both `libc` and `raylib`.
 
-{% highlight zig %}
+```zig
 // c-interop.zig
 
 // build with `zig build-exe c-interop.zig -lc -lraylib`
@@ -143,13 +149,14 @@ pub fn main() void {
         ray.DrawText("Hello, World!", 190, 200, 20, ray.LIGHTGRAY);
     }
 }
-{% endhighlight %}
+```
+
 
 
 
 ## Test
 
-{% highlight zig %}
+```zig
 // index.zig
 
 const std = @import("std");
@@ -176,19 +183,21 @@ test "parse integers" {
         try std.testing.expectEqual(exp, actual);
     }
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $ zig test index.zig
 1/1 index.test.parse integers...OK
 All 1 tests passed.
-{% endhighlight %}
+```
+
 
 ## Zigg Zagg
 
 `Zig` is optimized for coding interviews (not really).
 
-{% highlight zig %}
+```zig
 // ziggzagg.zig
 
 const std = @import("std");
@@ -207,9 +216,10 @@ pub fn main() !void {
         }
     }
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $ zig build-exe ziggzagg.zig
 $ ./ziggzagg
 info: 1
@@ -228,7 +238,8 @@ info: 13
 info: 14
 info: ZiggZagg
 info: 16
-{% endhighlight %}
+```
+
 
 
 ## Generic Types (泛型)
@@ -236,7 +247,7 @@ info: 16
 In `Zig` types are comptime values and we use functions that return a type to implement generic algorithms and data structures. In this example we implement a simple generic queue and test its behaviour.
 
 
-{% highlight zig %}
+```zig
 // generic-type.zig
 
 const std = @import("std");
@@ -298,17 +309,19 @@ test "queue" {
     try std.testing.expectEqual(int_queue.dequeue(), 5);
     try std.testing.expectEqual(int_queue.dequeue(), null);
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $ zig test generic-type.zig
 1/1 generic-type.test.queue...OK
 All 1 tests passed.
-{% endhighlight %}
+```
+
 
 ## Using cURL from Zig (在 Zig 中使用 cURL)
 
-{% highlight zig %}
+```zig
 // curl.zig
 
 // compile with `zig build-exe zig-curl-test.zig --library curl --library c $(pkg-config --cflags libcurl)`
@@ -362,7 +375,8 @@ fn writeToArrayListCallback(data: *anyopaque, size: c_uint, nmemb: c_uint, user_
     buffer.appendSlice(typed_data[0 .. nmemb * size]) catch return 0;
     return nmemb * size;
 }
-{% endhighlight %}
+```
+
 
 
 ## Example Project

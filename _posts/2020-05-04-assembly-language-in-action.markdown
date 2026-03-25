@@ -23,10 +23,11 @@ tags:
 * **栈**：用于维护函数调用的上下文空间；局部变量、函数参数、返回地址等
 * **内核虚拟空间**：用户代码不可见的内存区域，由内核管理(页表就存放在内核虚拟空间)
 
-{% highlight bash %}
+```bash
 objdump -dj .data your_binary | grep "g_"
 objdump -dj .bss your_binary | grep "g_"
-{% endhighlight %}
+```
+
 
 ![virtual_process_space](/assets/images/202111/virtual_process_space.png)
 
@@ -53,7 +54,7 @@ objdump -dj .bss your_binary | grep "g_"
 
 ![test1](/assets/images/202111/test1.png)
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 
 int swap_add(int *xp, int *yp)
@@ -78,11 +79,12 @@ int main()
 {
     caller();
 }
-{% endhighlight %}
+```
+
 
 汇编解释：
 
-{% highlight text %}
+```text
 swap_add(int*, int*):
         push    rbp                           ; 保存上一层函数的 ebp
         mov     rbp, rsp                      ; 将当前 ebp 设置为 esp，即，栈桢底部
@@ -150,7 +152,8 @@ main:
         mov     eax, 0                         ; 返回值 0
         pop     rbp
         ret
-{% endhighlight %}
+```
+
 
 解释：
 
@@ -231,7 +234,7 @@ The x86 architecture is **little-endian**, meaning that multi-byte values are wr
 
 The stack is a **Last In First Out** (`LIFO`) data structure; data is pushed onto it and popped off of it in the reverse order.
 
-{% highlight asm %}
+```asm
 mov ax, 006Ah
 mov bx, F79Ah
 mov cx, 1124h
@@ -245,7 +248,8 @@ call do_stuff ; do some stuff. The function is not forced to save the registers 
 pop cx ; pop the element on top of the stack, 0x1124, into CX; the stack now has 0x006A and 0xF79A.
 pop bx ; pop the element on top of the stack, 0xF79A, into BX; the stack now has just 0x006A.
 pop ax ; pop the element on top of the stack, 0x006A, into AX; the stack is now empty.
-{% endhighlight %}
+```
+
 
 The Stack is usually used to pass arguments to functions or procedures and also to keep track of control flow when the call instruction is used. The other common use of the Stack is temporarily saving registers.
 
@@ -287,7 +291,7 @@ The Stack is usually used to pass arguments to functions or procedures and also 
 * lea 指令，装入有效地址到寄存器
 * 跳转指令：call，ret。
 
-{% highlight bash %}
+```bash
 # cpu 执行 call 跳转指令时，cpu 做了如下操作：
 
 rsp = rsp – 8
@@ -296,16 +300,18 @@ rsp = rip
 # call等同于以下两条语句，但call本身就一条指令
 push %rip
 jmp 标号
-{% endhighlight %}
+```
+
 
 类似 ret 指令会将栈顶的内容弹出到 rip 寄存器中，继续执行：
 
-{% highlight text %}
+```text
 rip = rsp
 rsp = rsp + 8
 # 等同于
 pop %rip
-{% endhighlight %}
+```
+
 
 * GCC 关于寄存器的使用
 
@@ -391,21 +397,23 @@ There are two ways to write assembly; `Intel syntax`, which in the beginning was
 
 Here is an example instruction in Intel:
 
-{% highlight text %}
+```text
 mov rax, 1
-{% endhighlight %}
+```
+
 
 And the same instruction in AT&T:
 
-{% highlight text %}
+```text
 mov $1, %rax
-{% endhighlight %}
+```
+
 
 **Both instructions set the registry rax to the value 1**. We can see in the AT&T case that the value 1 is prefixed with `$` and the registry name is prefixed with `%`. The order of the parameters is also different.
 
 In the rest of the article I will use only `Intel syntax` because it’s the one supported by `NASM`.
 
-{% highlight text %}
+```text
 +------------------------------+------------------------------------+
 |       Intel Code             |      AT&T Code                     |
 +------------------------------+------------------------------------+
@@ -420,7 +428,8 @@ In the rest of the article I will use only `Intel syntax` because it’s the one
 | lea     eax,[ebx+ecx]        |  leal    (%ebx,%ecx),%eax          |
 | sub     eax,[ebx+ecx*4h-20h] |  subl    -0x20(%ebx,%ecx,0x4),%eax |
 +------------------------------+------------------------------------+
-{% endhighlight %}
+```
+
 
 refer: http://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html
 
@@ -431,28 +440,31 @@ Assembly is a low level language where we tell the computer exactly which instru
 
 `Nasm` is one of the most popular assemblers out there. It has great support for x64 and works in multiple platforms. To install nasm in Ubuntu, you can do:
 
-{% highlight text %}
+```text
 sudo apt-get install nasm
-{% endhighlight %}
+```
+
 
 You can verify it installed correctly:
 
-{% highlight text %}
+```text
 $ nasm -v
 NASM version 2.13.02
-{% endhighlight %}
+```
+
 
 # Assembling a program
 
 The general format for assembling a program is:
 
-{% highlight text %}
+```text
 nasm -f <format> -o <output file> <source file>
-{% endhighlight %}
+```
+
 
 The `format` is the platform for which the program will be assembled (windows, linux, etc). To see the list of supported formats you can use:
 
-{% highlight text %}
+```text
 # For a list of valid output formats, use -hf
 $ nasm -hf
 
@@ -478,32 +490,36 @@ valid output formats for -f are (`*' denotes default):
     elf       ELF (short name for ELF32)
     macho     MACHO (short name for MACHO32)
     win       WIN (short name for WIN32)
-{% endhighlight %}
+```
+
 
 Since I’m using Linux, I’ll use something like this to assemble my programs:
 
-{% highlight text %}
+```text
 nasm -f elf64 -o example.o example.asm
-{% endhighlight %}
+```
+
 
 **There is one more step before our program is ready to run. We need to link it**. Linking a program is helpful to combine many object files together and is necessary to create the executable we need. For linking a program, I’ll use GNU linker (`ld`):
 
-{% highlight text %}
+```text
 ld -o <executable name> <object file>
-{% endhighlight %}
+```
+
 
 We can try these steps with an empty file and see what happens:
 
-{% highlight text %}
+```text
 touch example.asm
 nasm -f elf64 -o example.o example.asm
 ld -o example example.o
-{% endhighlight %}
+```
+
 
 If you run those commands, you will notice that the assembly step finishes successfully, but there is an error in the linking step:
 
 
-{% highlight text %}
+```text
 $ touch example.asm
 $ nasm -f elf64 -o example.o example.asm
 $ hexdump example.o
@@ -535,19 +551,21 @@ $ hexdump example.o
 
 $ ld -o example example.o
 ld: warning: cannot find entry symbol _start; not setting start address
-{% endhighlight %}
+```
+
 
 An assembly program needs a`_start` entry point. Let’s modify our example so it works:
 
-{% highlight text %}
+```text
 section .text
   global _start
 _start:
-{% endhighlight %}
+```
+
 
 **This is the tiniest program that can be linked successfully, but it does nothing**. Not only, it does nothing, but it fails to execute:
 
-{% highlight text %}
+```text
 $ nasm -f elf64 -o example.o example.asm
 $ hexdump example.o
 0000000 457f 464c 0102 0001 0000 0000 0000 0000
@@ -587,50 +605,55 @@ $ hexdump example.o
 $ ld -o example example.o
 $ ./example
 -bash: ./example: cannot execute binary file: Exec format error
-{% endhighlight %}
+```
+
 
 **Adding an instruction** to our program fixes this problem:
 
-{% highlight text %}
+```text
 section .text
   global _start
 _start:
   mov rax, 1
-{% endhighlight %}
+```
+
 
 But we get a segmentation fault:
 
-{% highlight text %}
+```text
 $ nasm -f elf64 -o example.o example.asm
 $ ld -o example example.o
 $ ./example
 Segmentation fault (core dumped)
-{% endhighlight %}
+```
+
 
 **The reason we get a segmentation fault is that the program doesn’t end correctly**. In higher level programming languages, the runtime (the compiler) takes care of this. In assembly, this needs to be done by the programmer. To do this, we need to use **syscall 60** (`sys_exit`). The interface for `sys_exit` is:
 
-{% highlight text %}
+```text
 rdi int error_code
-{% endhighlight %}
+```
+
 
 What this means is that is takes a single int argument in the `rdi` register. This argument is the exit code for the program. A successful program should finish with code `0`.
 
 Let’s make our program end successfully:
 
-{% highlight asm %}
+```asm
 section .text
   global _start
 _start:
   mov rax, 60
   mov rdi, 0
   syscall
-{% endhighlight %}
+```
+
 
 Looking at the program, you’ll notice that we first have to move the value `60` (The id of `sys_exit`) to the `rax` register. **This is necessary to execute any system call**. The next step is to populate the correct registers with the arguments that system call needs. In this case, it only needs the exit code in `rdi`. Finally, execute the system call.
 
 This program can be executed, and although it doesn’t do anything, it will end successfully:
 
-{% highlight text %}
+```text
 $ nasm -f elf64 -o example.o example.asm
 $ ld -o example example.o
 $ ./example
@@ -647,7 +670,8 @@ total 12K
 -rw-rw-r-- 1 ubuntu ubuntu  75 May  5 12:10 example.asm
 -rw-rw-r-- 1 ubuntu ubuntu 576 May  5 12:10 example.o
 -rwxrwxr-x 1 ubuntu ubuntu 352 May  5 12:10 example
-{% endhighlight %}
+```
+
 
 After strip, you may find that the size of tiniest elf is about 350 bytes.
 
@@ -656,13 +680,14 @@ After strip, you may find that the size of tiniest elf is about 350 bytes.
 
 The simplest way do declare variables is by initializing them in the `.data` segment of a program. The format to define initialized data is:
 
-{% highlight text %}
+```text
 [variable-name] define-directive initial-value [,initial-value] ...
-{% endhighlight %}
+```
+
 
 An example use:
 
-{% highlight asm %}
+```asm
 section .data
   exit_code dq 0
   sys_call dq 60
@@ -674,7 +699,8 @@ _start:
   mov rax, [sys_call]
   mov rdi, [exit_code]
   syscall
-{% endhighlight %}
+```
+
 
 When a variable is defined, some space in memory will be set for it. The `dq` directive is used to **reserve 64 bits in memory (8 bytes)**.
 
@@ -682,24 +708,27 @@ Something new in this code snippet is the use of **square brackets** `[]`. If we
 
 If you take a look at the initialization template above, you will notice that you can **supply multiple initial values**. When this is done, the variable works like an array. i.e. it uses one name to refer to multiple contiguous memory locations:
 
-{% highlight text %}
+```text
 some_array dq 1, 1, 2, 3, 5, 8
-{% endhighlight %}
+```
+
 
 Something similar can be done for `strings`, but luckily they allow us to type the whole value instead of having to type one character at a time:
 
-{% highlight text %}
+```text
 some_string db "Hello world"
-{% endhighlight %}
+```
+
 
 In this case, we used `db` to **allocate one byte per character**.
 
 To make large strings easier to type, they can be split into multiple lines like this:
 
-{% highlight text %}
+```text
 some_string db "Hello world, I'm trying to learn assembly, but it's hard. Do "
             db "you know what is the fastest way to learn?", 0
-{% endhighlight %}
+```
+
 
 The variable name only needs to be specified once, but the `define-directive needs` to be repeated.
 
@@ -708,15 +737,16 @@ The variable name only needs to be specified once, but the `define-directive nee
 
 Now that we know how to create strings, let’s try a simple program that prints a string. Before we start, Let’s look at the interface for **syscall 1** (`sys_write`):
 
-{% highlight text %}
+```text
 rdi   int               file_descriptor
 rsi   memory_location   string_to_print
 rdx   int               string_size
-{% endhighlight %}
+```
+
 
 For `rdi` we will use `1` because that is **the file descriptor for stdout**. Let’s see how this works in a program:
 
-{% highlight asm %}
+```asm
 section .data
   some_string dq "Hello world"
   some_string_size dq 11           ; "Hello world" contains 11 characters
@@ -736,11 +766,12 @@ _start:
   mov rax, 60
   mov rdi, 0
   syscall
-{% endhighlight %}
+```
+
 
 Executing this code will print `Hello world` to the terminal.
 
-{% highlight text %}
+```text
 $ nasm -f elf64 -o example.o example.asm
 $ ld -o example example.o
 $ ./example
@@ -756,22 +787,24 @@ total 12K
 -rw-rw-r-- 1 ubuntu ubuntu 329 May  5 13:28 example.asm
 -rw-rw-r-- 1 ubuntu ubuntu 944 May  5 13:28 example.o
 -rwxrwxr-x 1 ubuntu ubuntu 528 May  5 13:29 example
-{% endhighlight %}
+```
+
 
 We may compare this asm program to c program:
 
-{% highlight c %}
+```c
 #include <stdio.h>
 int main()
 {
     printf("Hello world");
     return 0;
 }
-{% endhighlight %}
+```
+
 
 then we can get asm code by using `gcc -S`:
 
-{% highlight text %}
+```text
 $ gcc -S helloworld.s helloworld.c
 $ gcc helloworld.s
 $ ls -rtlh
@@ -785,9 +818,10 @@ total 16K
 -rw-rw-r-- 1 ubuntu ubuntu   95 May  4 14:13 helloworld.c
 -rw-rw-r-- 1 ubuntu ubuntu  521 May  5 13:59 helloworld.s
 -rwxrwxr-x 1 ubuntu ubuntu 6.0K May  5 14:02 a.out
-{% endhighlight %}
+```
 
-{% highlight asm %}
+
+```asm
 .file   "helloworld.c"
         .text
         .section        .rodata
@@ -818,7 +852,8 @@ main:
         .size   main, .-main
         .ident  "GCC: (Ubuntu 7.3.0-27ubuntu1~18.04) 7.3.0"
         .section        .note.GNU-stack,"",@progbits
-{% endhighlight %}
+```
+
 
 We can find the size of c program is bigger than the prior asm program. (**6 KB > 528 B**)
 
@@ -832,9 +867,10 @@ We can find the size of c program is bigger than the prior asm program. (**6 KB 
 
 We have already used the mov instruction before:
 
-{% highlight text %}
+```text
 mov rax, 60
-{% endhighlight %}
+```
+
 
 The `opcode` is mov and it receives 2 `operands` **rax** and **60**. What this instruction does is move the value 60 to the **rax** register.
 
@@ -842,33 +878,36 @@ The `opcode` is mov and it receives 2 `operands` **rax** and **60**. What this i
 
 These are all **binary operations**. They take two operands and the result will be stored on the **first operand**:
 
-{% highlight text %}
+```text
 mov rax, 60
 sub rax, 50    ; rax is now 10
 add rax, 5     ; rax is now 15
 imul rax, 3    ; rax is now 45
-{% endhighlight %}
+```
+
 
 ## inc, dec
 
 To increment an operand we can use `inc` and to decrement it, we can use `dec`:
 
-{% highlight text %}
+```text
 mov rax, 60
 inc rax      ; rax is 61
 dec rax      ; rax is 60 again
-{% endhighlight %}
+```
+
 
 ## or, xor, and
 
 These are binary bitwise operations:
 
-{% highlight text %}
+```text
 mov rax, 5      ; 5 in binary is 101
 and rax, 6      ; 6 in binary is 110. rax now holds 4 (100 in binary)
 or rax, 8       ; 8 in binary is 1000. rax is now 12 (1100 in binary)
 xor rax, 11     ; 11 in binary is 1011. rax is now 7 (111 in binary)
-{% endhighlight %}
+```
+
 
 These are just some of the instructions available in an `x64` processor. There are many more that I’m not going to cover in this article.
 
@@ -884,7 +923,7 @@ These are just some of the instructions available in an `x64` processor. There a
 
 ## Conventions
 
-{% highlight text %}
+```text
 # The following template will be used for instructions that take no operands:
 Instr
 
@@ -898,7 +937,8 @@ Instr dest, src     [Intel Syntax](https://en.wikibooks.org/wiki/X86_Assembly/MA
 # The following template will be used for instructions that take 3 operands. Notice how the format of the instruction is different for different assemblers.
 Instr aux, src, dest    [GAS Syntax](https://en.wikibooks.org/wiki/X86_Assembly/GAS_Syntax)
 Instr dest, src, aux    [Intel Syntax](https://en.wikibooks.org/wiki/X86_Assembly/MASM_Syntax)
-{% endhighlight %}
+```
+
 
 ## Suffixes
 
@@ -911,15 +951,17 @@ Some instructions, especially when built for non-Windows platforms (i.e. Unix, L
 
 An example of the usage with the mov instruction on a 32-bit architecture, GAS syntax:
 
-{% highlight text %}
+```text
 movl $0x000F, %eax  # Store the value F into the eax register
-{% endhighlight %}
+```
+
 
 On Intel Syntax you don't have to use the suffix. Based on the register name and the used immediate value the compiler knows which data size to use.
 
-{% highlight text %}
+```text
 MOV EAX, 0x000F
-{% endhighlight %}
+```
+
 
 # Addressing modes
 
@@ -929,26 +971,29 @@ One of the most fundamental things about assembly is understanding **addressing 
 
 The immediate mode looks like this:
 
-{% highlight text %}
+```text
 mov rax, 60
-{% endhighlight %}
+```
+
 
 This mode is very simple because there is no indirection. The `rax` register will be set to `60`. The value `60` is called **an immediate constant (立即数)**. Immediate constants can be specified in decimal, binary, octal or hexadecimal. These instructions all do the same:
 
-{% highlight asm %}
+```asm
 mov rax, 60         ; decimal
 mov rax, 0b111100   ; binary
 mov rax, 0o74       ; octal
 mov rax, 0x3C       ; hexadecimal
-{% endhighlight %}
+```
+
 
 ## Register mode
 
 This mode is also very easy to understand. Information inside a register will be used:
 
-{% highlight text %}
+```text
 mov rax, rbx
-{% endhighlight %}
+```
+
 
 In this case, the value of `rax` will be set to whichever value is currently in `rbx`.
 
@@ -956,9 +1001,10 @@ In this case, the value of `rax` will be set to whichever value is currently in 
 
 In this mode, the register contains a memory address, the value we care about, is the value in that memory address:
 
-{% highlight text %}
+```text
 mov rdi, [rax]
-{% endhighlight %}
+```
+
 
 In the example above, `rax` contains **a memory address**. `rdi` will be set to **the value in that memory address**. This is easier to understand with an example. Imagine registers and memory looked like this before executing the instruction above:
 
@@ -982,25 +1028,28 @@ After the instruction is executed, `rdi` will contain `0xA` because `rax` contai
 
 We can also use **indirect mode** for **variables**, as we did for some of the examples:
 
-{% highlight text %}
+```text
 mov rdx, [some_string_size]      ; indirect mode for variable
-{% endhighlight %}
+```
+
 
 With indirect mode, we can also do memory displacements, which is useful for arrays. Assumming we have this array:
 
-{% highlight text %}
+```text
 some_array dq 1, 1, 2, 3, 5
-{% endhighlight %}
+```
+
 
 We can access its elements like this:
 
-{% highlight text %}
+```text
 mov rax, [some_array]         ; rax = 1 (first element)
 mov rax, [some_array + 8]     ; rax = 1 (second element)
 mov rax, [some_array + 16]    ; rax = 2 (third element)
 mov rax, [some_array + 24]    ; rax = 3 (fourth element)
 mov rax, [some_array + 32]    ; rax = 5 (fifth element)
-{% endhighlight %}
+```
+
 
 To understand this a little better we have to remember that each memory address can hold **8 bytes**. The `dq` instruction used to **create the array**, reserves `64 bits` per value, so we need `8 addresses` to hold a single value (64 / 8 = 8. This is the number of memory addresses it takes to hold a value).
 
@@ -1020,7 +1069,7 @@ Notice that the address after `0xA0` is not `0xA1` but `0xA8`. This is because e
 
 objdump除了可以对bin文件反汇编，同时还可以显示每条汇编指令的大小。
 
-{% highlight text %}
+```text
 $ objdump -d example
 
 example:     file format elf64-x86-64
@@ -1039,7 +1088,8 @@ Disassembly of section .text:
   4000ce:       b8 3c 00 00 00          mov    $0x3c,%eax
   4000d3:       bf 00 00 00 00          mov    $0x0,%edi
   4000d8:       0f 05                   syscall
-{% endhighlight %}
+```
+
 
 * https://stackoverflow.com/questions/5125896/how-to-disassemble-a-binary-executable-in-linux-to-get-the-assembly-code
 * [What does data16 mean in objdump output?](https://stackoverflow.com/questions/36706280/what-does-data16-mean-in-objdump-output)
@@ -1048,13 +1098,14 @@ Disassembly of section .text:
 
 We can use this command to assemble program:
 
-{% highlight text %}
+```text
 nasm -f elf64 -o example.o example.asm
-{% endhighlight %}
+```
+
 
 The `elf64` ([Executable and linkable format](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format)) parameter specifies **the format of the output file**. **This will generate a file with enough information so the Operating System can execute it, but it doesn’t contain any information to help debugging**. If we want our executable to contain debug information (information about the file and line number a program is executing) we need to say so when we assemble the program.
 
-{% highlight text %}
+```text
 $ gdb example
 GNU gdb (Ubuntu 8.1-0ubuntu3.2) 8.1.0.20180409-git
 Copyright (C) 2018 Free Software Foundation, Inc.
@@ -1072,22 +1123,24 @@ For help, type "help".
 Type "apropos word" to search for commands related to "word"...
 Reading symbols from example...(no debugging symbols found)...done.  # 没有调试信息
 (gdb)
-{% endhighlight %}
+```
+
 
 To see what are the formats for debug information available in your version of `nasm`, you can use:
 
-{% highlight text %}
+```text
 # For a list of debug formats, use -f <form> -y
 $ nasm -f elf64 -y
 
 valid debug formats for 'elf64' output format are ('*' denotes default):
     dwarf     ELF64 (x86-64) dwarf debug format for Linux/Unix
     stabs     ELF64 (x86-64) stabs debug format for Linux/Unix
-{% endhighlight %}
+```
+
 
 so we can use:
 
-{% highlight asm %}
+```asm
 $ nasm -f elf64 -g -F dwarf -o example.o example.asm
 $ ld -o example example.o
 $ ls -rtlh
@@ -1122,13 +1175,14 @@ Reading symbols from example...done.
 20        syscall
 (gdb)
 Line number 21 out of range; example.asm has 20 lines.
-{% endhighlight %}
+```
+
 
 ## Debugging with GDB
 
 Now, we can debug this program with GDB:
 
-{% highlight text %}
+```text
 $ gdb --quiet example
 Reading symbols from example...done.
 (gdb) b _start
@@ -1172,7 +1226,8 @@ Hello world18     mov rax, 60
 (gdb)
 [Inferior 1 (process 26432) exited normally]
 (gdb)
-{% endhighlight %}
+```
+
 
 Use `q` to quit gdb.
 
@@ -1182,7 +1237,7 @@ Use `q` to quit gdb.
 Writing assembly code, you will find yourself moving things in and out of registers very often. It is then natural that debugging a program we might want to see their contents. To see the contents of all registers we can use `info registers` or the abbreviation `i r`. Using the same example program:
 
 
-{% highlight text %}
+```text
 $ gdb --quiet example
 Reading symbols from example...done.
 (gdb) b _start
@@ -1245,7 +1300,8 @@ es             0x0      0
 fs             0x0      0
 gs             0x0      0
 (gdb)
-{% endhighlight %}
+```
+
 
 By printing the registers we can see that the breakpoint takes effect before executing the line: `mov rax, 60`. In many cases we probably only want to see a specific register. To do this we just need to add the register name to the command: `i r <register>`:
 
@@ -1253,7 +1309,7 @@ By printing the registers we can see that the breakpoint takes effect before exe
 
 Note that we need to cast the variable to the correct type or we’ll get an error. Another thing we can do is get the memory address by `info address`, then We can also see the data at a memory address using an asterisk (`*`)
 
-{% highlight text %}
+```text
 $ gdb --quiet example
 Reading symbols from example...done.
 (gdb) b _start
@@ -1282,7 +1338,8 @@ $1 = 11
 Symbol "some_string_size" is at 0x6000ec in a file compiled without debugging.
 (gdb) p (int) *0x6000ec
 $2 = 11
-{% endhighlight %}
+```
+
 
 # GCC Inline Assembly
 
@@ -1290,7 +1347,7 @@ $2 = 11
 
 With extended `asm` you can read and write C variables from assembler and perform jumps from assembler code to C labels. Extended `asm` syntax uses colons (‘:’) to delimit the operand parameters after the assembler template:
 
-{% highlight text %}
+```text
 asm asm-qualifiers ( AssemblerTemplate
                  : OutputOperands
                  [ : InputOperands
@@ -1301,7 +1358,8 @@ asm asm-qualifiers ( AssemblerTemplate
                       : InputOperands
                       : Clobbers
                       : GotoLabels)
-{% endhighlight %}
+```
+
 
 where in the last form, asm-qualifiers contains `goto` (and in the first form, not).
 
@@ -1316,7 +1374,7 @@ where in the last form, asm-qualifiers contains `goto` (and in the first form, n
 
 Therefore, taking one particular register as an example, you have the 8-bit `AL` and `AH` registers, which are the low and high bytes of the 16-bit `AX` register, which is the low word of the 32-bit `EAX` register, which is the low double-word of the 64-bit `RAX` register.
 
-{% highlight text %}
+```text
 | 63 - 32 | 31 - 16 | 15 - 8 | 7 - 0 |
 ======================================
 .         .         | AH     | AL    |
@@ -1344,7 +1402,8 @@ r12             | r12d          | r12w          | r12b
 r13             | r13d          | r13w          | r13b
 r14             | r14d          | r14w          | r14b
 r15             | r15d          | r15w          | r15b
-{% endhighlight %}
+```
+
 
 * [How do AX, AH, AL map onto EAX?](https://stackoverflow.com/questions/15191178/how-do-ax-ah-al-map-onto-eax)
 * [Assembly registers in 64-bit architecture](https://stackoverflow.com/questions/20637569/assembly-registers-in-64-bit-architecture)
@@ -1360,29 +1419,32 @@ From [Not sure about using test command with al in assembly](https://stackoverfl
 
 The first command is "anding" together the constant 1 and eax. If eax is something like 10101010 and 1 is: 00000001, then "anding" them together would produce: 0. But what does testing the lowest four bits of the register have to do with anything - and why is it important? What is this entire expression doing?
 
-{% highlight text %}
+```text
 8049ac0:       83 e0 01                and    $0x1,%eax // "and" these bits together
 8049ac3:       84 c0                   test   %al,%al  // check the last
 8049ac5:       74 05                   je     8049acc <level_4+0x60> // if it is equal, then skip down.
-{% endhighlight %}
+```
+
 
 解释：
 
 The `test` instruction is actually redundant, so doesn't do anything useful. It probably comes about because the compiler that produced this code is not very good at optimizing, so included an unnecessary instruction that doesn't hurt anything.
 
-{% highlight text %}
+```text
 and  $1,%eax    ; clear all bits of %eax except the lowest, set ZF if all bits are now zero
 test %al,%al    ; set ZF if %al (the lowest 8 bits of %eax) are all clear
 je   somewhere  ; branch if ZF is set
-{% endhighlight %}
+```
+
 
 So the `and` instruction will set the `ZF` flag equal to the complement of the lowest bit of `%eax`, and the test instruction will set it again to the same thing. This probably comes from code that looks like:
 
-{% highlight cpp %}
+```cpp
 if (var & 1) {
     // ... do something ...
 }
-{% endhighlight %}
+```
+
 
 where it loads `var` into `%eax` just before your code snip, and the branch target is just after the `}`. The code that is generated first computes `var & 1` into a temp register (the `and` instruction), then tests to see if the result is non-zero (the `test` instruction), then branches over the `...do something...` if the test was false (the `je` instruction).
 

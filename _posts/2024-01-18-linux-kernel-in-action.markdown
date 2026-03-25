@@ -35,7 +35,7 @@ tags:
 
 > 上述过程可参考 https://github.com/torvalds/linux/blob/master/mm/page_alloc.c#L4697 代码
 
-{% highlight cpp %}
+```cpp
 /*
  * This is the 'heart' of the zoned buddy allocator.
  */
@@ -102,7 +102,8 @@ out:
 
 	return page;
 }
-{% endhighlight %}
+```
+
 
 ## 三条水线
 
@@ -177,30 +178,34 @@ hung task 机制的实现很简单，其基本原理为：创建一个内核线�
 
 将平时的脏页回刷频率调高，这样内存回收时，需要回收的脏页就更少，降低 IO 的增量。
 
-{% highlight text %}
+```text
 调低 /proc/sys/vm/dirty_writeback_centisecs
 调低 /proc/sys/vm/dirty_background_ratio
-{% endhighlight %}
+```
 
-{% highlight bash %}
+
+```bash
 $ cat /proc/sys/vm/dirty_writeback_centisecs
 500
 $ cat /proc/sys/vm/dirty_background_ratio
 10
-{% endhighlight %}
+```
+
 
 * 调高 low 水线和 min 水线。
 
 调高水线，可以更早地进入内存回收逻辑，这样可以将 free 维持在一个较高水平，避免陷入极端场景。 由于 low 和 min 同时受 min_free_kbytes 管控，所以可以直接调整 min_free_kbytes 值。
 
-{% highlight text %}
+```text
 调高 /proc/sys/vm/min_free_kbytes
-{% endhighlight %}
+```
 
-{% highlight bash %}
+
+```bash
 $ cat /proc/sys/vm/min_free_kbytes
 45861
-{% endhighlight %}
+```
+
 
 
 ## 不同种类的低内存情况
@@ -209,26 +214,29 @@ $ cat /proc/sys/vm/min_free_kbytes
 
 Linux 内核虽然会对脏页进行周期性回刷，但当产生脏页的速度大于回刷速度时，脏页就会累积。可以模拟出这种情况，找一台 16G 内存的机器，执行以下命令产生脏页：
 
-{% highlight bash %}
+```bash
 stress -d 1 --hdd-bytes 100M
-{% endhighlight %}
+```
+
 
 查看内存脏页量的变化：
 
-{% highlight text %}
+```text
 $ awk '/Dirty|MemFree|MemTotal/ {print}' /proc/meminfo
 MemTotal:       131483996 kB
 MemFree:         3373988 kB
 Dirty:               396 kB
-{% endhighlight %}
+```
+
 
 此时通过 `iostat` 可以看到，**IO 读为 0，IO 写基本为 0，只有少量来自于周期性脏页回刷**。
 
 此时的 `free` 还是很多的，需要再给点内存压力，触发内存回收：
 
-{% highlight bash %}
+```bash
 stress --vm 1 --vm-bytes 14.9G --vm-keep -t 60
-{% endhighlight %}
+```
+
 
 加压后，`kswapd` 立刻被触发。`kswapd` 努力地回刷脏页，IO 读写都突增，不过读量远远小于写量。将内存压力去掉，`kswapd` 立刻停止，IO 读写入回到 0。**也就是说，脏页多的情况下，触发内存回收时，IO 写大量突增，IO 读少量增加。**
 
@@ -245,15 +253,17 @@ stress --vm 1 --vm-bytes 14.9G --vm-keep -t 60
 
 16G 内存的机器，对其加压14G，持续 60s：
 
-{% highlight bash %}
+```bash
 stress --vm 1 --vm-bytes 14G --vm-keep -t 60
-{% endhighlight %}
+```
+
 
 然后，快速申请 2G 内存：
 
-{% highlight bash %}
+```bash
 stress --vm 1 --vm-bytes 2G --vm-keep -t 60
-{% endhighlight %}
+```
+
 
 可以看到，很快就触发了 OOM，stress 进程被 OOM kill 了。这说明单次申请量过大，内核直接放弃了内存回收，触发 OOM 了。如果单次小幅度申请呢？观察 top，可以发现， kswapd0 的 CPU 使用率快速爬升，然后在接近打满一个核时，系统“卡死”，top 界面直接无响应了。此时，无论是新建一个新的 terminal，开始在老的 terminal 中不停地按 ctrl-c，系统都没有一点反应。这段时间内，不仅是系统无响应，CPU 和内存之类的监控也丢失。直到 60s 后 stress 命令施加的 14G 释放系统才恢复响应。查看这段时间的 D 住超过 10ms 的进程及其堆栈，可以看到这些 D 进程的堆栈几乎一样，都是在缺页异常处理中等待 IO。即程序访问文件的某个地址时，发现这个地址对应的内存数据不存在，于是将这些数据从磁盘加载到内存，触发了读 IO，进程陷入 D 状态等待 IO。通常情况，这种 D 状态会在 1ms 以内结束。而从上面堆栈来看，大量进程等 IO 都超多了 10ms，说明当时的 IO 状态不佳。查看 IO 监控，IO 读写都有突增，读远远大于写。这说明 IO 读将 IO 打满了，IO 到了性能瓶颈。那么，这些进程为什么会同时发生缺页异常，将 IO 打满？通过抓取当时的缺页异常 trace 发现：
 

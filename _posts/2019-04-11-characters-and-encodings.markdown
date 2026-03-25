@@ -49,12 +49,13 @@ refer:
 
 世界上存在着多种编码方式，同一个二进制数字可以被解释成不同的符号。因此，要想打开一个文本文件，就必须知道它的编码方式，否则用错误的编码方式解读，就会出现乱码。为什么电子邮件常常出现乱码？就是因为发信人和收信人使用的编码方式不一样。可以想象，如果有一种编码，将世界上所有的符号都纳入其中。每一个符号都给予一个独一无二的编码，那么乱码问题就会消失。这就是 Unicode，就像它的名字都表示的，这是一种所有符号的编码。Unicode 当然是一个很大的集合(Unicode 13.0 adds 5,930 characters, for a total of 143,859 characters, refer: http://www.unicode.org/versions/Unicode13.0.0/#Technical_Overview )。每个符号的编码都不一样，比如，`U+0639`表示阿拉伯字母`Ain`，`U+0041`表示英语的大写字母`A`，`U+4E25`表示汉字`严`。具体的符号对应表，可以查询`unicode.org`，或者专门的汉字对应表。
 
-{% highlight text %}
+```text
 Unicode provides a unique number for every character,
 no matter what the platform,
 no matter what the program,
 no matter what the language.
-{% endhighlight %}
+```
+
 
 refer: https://www.unicode.org/standard/WhatIsUnicode.html
 
@@ -66,18 +67,20 @@ Unicode编号规则：
 * 最新版本：13.0.0（2020 March 10），Unicode 13.0 adds 5,930 characters, for a total of 143,859 characters.
 * 全世界现有的符号当中，三分之二以上来自东亚文字。比如，中文"好"的码点（Code Point）是十六进制的`597D`。
 
-{% highlight text %}
+```text
 // U+表示紧跟在后面的十六进制数是Unicode的码点
 U+0000 = null
 U+597D = 好
-{% endhighlight %}
+```
+
 * Unicode只规定了每个字符的码点，到底用什么样的字节序表示这个码点，就涉及到编码方法。
 * 最直观的编码方法是，每个码点使用四个字节表示，字节内容一一对应码点。这种编码方法就叫做`UTF-32`。比如，码点0就用四个字节的0表示，码点597D就在前面加两个字节的0。`UTF-32`的优点在于，转换规则简单直观，查找效率高。缺点在于浪费空间，同样内容的英语文本，它会比ASCII编码大四倍。这个缺点很致命，导致实际上没有人使用这种编码方法，HTML 5标准就明文规定，网页不得编码成`UTF-32`。
 
-{% highlight text %}
+```text
 U+0000 = 0x0000 0000
 U+597D = 0x0000 597D
-{% endhighlight %}
+```
+
 
 * 人们真正需要的是一种节省空间的编码方法，这导致了`UTF-8`的诞生。`UTF-8`是一种变长的编码方法，字符长度从1个字节到4个字节不等。越是常用的字符，字节越短，最前面的128个字符，只使用1个字节表示，与`ASCII码`完全相同。
 
@@ -99,7 +102,7 @@ JavaScript之后的ECMAScript 6（简称ES6）版本，大幅增强了Unicode支
 
 > Java如何准确判断码点个数？
 
-{% highlight java %}
+```java
 import java.io.*;
 public class Test {
 
@@ -117,17 +120,19 @@ public class Test {
       System.out.println(Str2.codePointCount(0, Str2.length()));
    }
 }
-{% endhighlight %}
+```
+
 
 在[Compile and Execute Java Online (JDK 1.8.0)](https://www.tutorialspoint.com/compile_java_online.php)输出：
 
-{% highlight text %}
+```text
 $javac Test.java
 $java -Xmx128M -Xms16M Test
 String Length :29
 String Length :4
 Str2.codePointCount(0, Str2.length()):3
-{% endhighlight %}
+```
+
 
 refer:
 
@@ -207,9 +212,10 @@ UTF-8编码转换：http://www.mytju.com/classcode/tools/encode_utf8.asp
 
 UCS-2编码（用两个字节存入字符的 Unicode 码） 格式可以存储 Unicode 码（码点不超过`0xFFFF`）。以汉字`严`为例，Unicode 码是`4E25`，需要用两个字节存储，一个字节是`4E`，另一个字节是`25`。存储的时候，`4E`在前，`25`在后，这就是**Big endian**方式；`25`在前，`4E`在后，这是**Little endian**方式。
 
-{% highlight text %}
+```text
 这两个古怪的名称来自英国作家斯威夫特的《格列佛游记》。在该书中，小人国里爆发了内战，战争起因是人们争论，吃鸡蛋时究竟是从大头(Big-endian)敲开还是从小头(Little-endian)敲开。为了这件事情，前后爆发了六次战争，一个皇帝送了命，另一个皇帝丢了王位。
-{% endhighlight %}
+```
+
 
 第一个字节在前，就是"大头方式"（Big endian），第二个字节在前就是"小头方式"（Little endian）。
 
@@ -279,17 +285,19 @@ For example, the text:
 
 21个字符
 
-{% highlight text %}
+```text
 Dan's Tools are cool!
-{% endhighlight %}
+```
+
 
 Would be encoded as...
 
 28个字符（总长度膨胀了33%）
 
-{% highlight rgfuj3mgvg9vbhmgyxjlignvb2wh %}
+```rgfuj3mgvg9vbhmgyxjlignvb2wh
 
-{% endhighlight %}
+```
+
 
 ## What is Base64 encoding?
 

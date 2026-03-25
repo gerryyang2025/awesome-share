@@ -18,15 +18,16 @@ Keywords: nginx, web server, reverse proxy
 
 * nginx-1.19.9 (30-Mar-2021) 版本
 
-{% highlight text %}
+```text
 wget https://nginx.org/download/nginx-1.19.9.tar.gz
 tar -xzvf nginx-1.19.9.tar.gz
 cd nginx-1.19.9
-{% endhighlight %}
+```
+
 
 * 指定配置选项
 
-{% highlight text %}
+```text
 ./configure  --prefix=/usr/local/nginx  --with-http_ssl_module --with-http_v2_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_auth_request_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-mail --with-mail_ssl_module --with-stream --with-stream_ssl_module --with-stream_realip_module --with-stream_ssl_preread_module --with-threads --user=www --group=www
 
 Configuration summary
@@ -48,45 +49,51 @@ Configuration summary
   nginx http fastcgi temporary files: "fastcgi_temp"
   nginx http uwsgi temporary files: "uwsgi_temp"
   nginx http scgi temporary files: "scgi_temp"
-{% endhighlight %}
+```
+
 
 
 在 nginx 的 auto 子目录中有一个 options 文件，这个文件里面保存的就是 nginx 编译过程中的所有选项配置，通过 `grep "YES" auto/options` 可查看配置的所有选项。
 
 * 编译并安装 (root 权限)
 
-{% highlight text %}
+```text
 make && make install
-{% endhighlight %}
+```
+
 
 查看 nginx 安装后在的目录：
 
-{% highlight text %}
+```text
 $ whereis nginx
 nginx: /usr/local/nginx
-{% endhighlight %}
+```
+
 
 启动 nginx：
 
-{% highlight text %}
+```text
 $ ./nginx
 nginx: [emerg] getpwnam("www") failed
-{% endhighlight %}
+```
+
 
 错误的原因是没有创建 www 这个用户，需在系统中添加 www 用户组和用户 www，或者修改 nginx 的配置，在 nginx.conf中 把 user nobody 的注释去掉
 
-{% highlight text %}
+```text
 #/usr/sbin/groupadd -f www
 #/usr/sbin/useradd -g www www
-{% endhighlight %}
+```
+
 
 修改后重新启动：
 
-{% highlight text %}
+```text
 [root@/usr/local/nginx/sbin]$ ./nginx
 [root@/usr/local/nginx/sbin]$ ps ux|grep nginx
 root       58982  0.0  0.0  47460  1276 ?        Ss   11:04   0:00 nginx: master process ./nginx
-{% endhighlight %}
+```
+
 
 此时在浏览器中访问本地IP，可看到 nginx 返回的如下页面：
 
@@ -95,20 +102,21 @@ root       58982  0.0  0.0  47460  1276 ?        Ss   11:04   0:00 nginx: master
 
 # 常用命令
 
-{% highlight text %}
+```text
 nginx -s reload          # 向主进程发送信号，重新加载配置文件，热重启
 nginx -s reopen          # 重启 Nginx
 nginx -s stop            # 快速关闭
 nginx -s quit            # 等待工作进程处理完成后关闭
 nginx -T                 # 查看当前 Nginx 最终的配置
 nginx -t -c <配置路径>    # 检查配置是否有问题，如果已经在配置目录，则不需要 -c
-{% endhighlight %}
+```
+
 
 More: nginx -h
 
 Linux 系统应用管理工具 systemd 关于 nginx 的常用命令：
 
-{% highlight text %}
+```text
 systemctl start nginx    # 启动 Nginx
 systemctl stop nginx     # 停止 Nginx
 systemctl restart nginx  # 重启 Nginx
@@ -116,7 +124,8 @@ systemctl reload nginx   # 重新加载 Nginx，用于修改配置后
 systemctl enable nginx   # 设置开机启动 Nginx
 systemctl disable nginx  # 关闭开机启动 Nginx
 systemctl status nginx   # 查看 Nginx 运行状态
-{% endhighlight %}
+```
+
 
 
 # location
@@ -125,14 +134,15 @@ systemctl status nginx   # 查看 Nginx 运行状态
 
 `location`匹配顺序，优先级从高到低依次为（序号越小优先级越高）：
 
-{% highlight text %}
+```text
 1. location =    # 精准匹配
 2. location ^~   # 带参前缀匹配
 3. location ~    # 正则匹配（区分大小写）
 4. location ~*   # 正则匹配（不区分大小写）
 5. location /a   # 普通前缀匹配，优先级低于带参数前缀匹配。
 6. location /    # 任何没有匹配成功的，都会匹配这里处理
-{% endhighlight %}
+```
+
 
 1. 先精准匹配 `=` ，精准匹配成功则会立即停止其他类型匹配；
 2. 没有精准匹配成功时，进行前缀匹配。先查找带有 `^~` 的前缀匹配，带有 `^~` 的前缀匹配成功则立即停止其他类型匹配，普通前缀匹配（不带参数 `^~` ）成功则会暂存，继续查找正则匹配；
@@ -152,7 +162,7 @@ systemctl status nginx   # 查看 Nginx 运行状态
 
 例子1:
 
-{% highlight text %}
+```text
 server {
 
 listen       80;
@@ -168,27 +178,30 @@ location ~* ^/gerry {
     return 702;
 }
 }
-{% endhighlight %}
+```
+
 
 使用 `~*` 正则匹配（不区分大小写），相对于第一个匹配，其优先级更高。通过`curl -I`测试或查看 access 日志，可以看到返回码为 702
 
-{% highlight text %}
+```text
 $curl -I localhost/gerry
 HTTP/1.1 702
 Server: nginx/1.19.9
 Date: Wed, 26 Jan 2022 06:49:41 GMT
 Content-Length: 0
 Connection: keep-alive
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 ==> access.log <==
 10.99.16.41 - - [26/Jan/2022:14:23:48 +0800] "GET /gerry/ HTTP/1.1" 702 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
-{% endhighlight %}
+```
+
 
 例子2:
 
-{% highlight text %}
+```text
 server {
 
 listen       80;
@@ -209,22 +222,24 @@ location ^~ /ge {
         return 703;
 }
 }
-{% endhighlight %}
+```
+
 
 前缀匹配 `^~` 命中以后不会再搜寻正则匹配，返回码为 703
 
-{% highlight text %}
+```text
 $curl -I localhost/ge
 HTTP/1.1 703
 Server: nginx/1.19.9
 Date: Wed, 26 Jan 2022 06:50:37 GMT
 Content-Length: 0
 Connection: keep-alive
-{% endhighlight %}
+```
+
 
 例子3:
 
-{% highlight text %}
+```text
 server {
 
 listen       80;
@@ -240,18 +255,20 @@ location ~ ^/ger[a-z]+ {
     return 702;
 }
 }
-{% endhighlight %}
+```
+
 
 正则匹配和配置顺序有关，先匹配成功的返回，返回 701
 
-{% highlight text %}
+```text
 $curl -I localhost/gerry
 HTTP/1.1 701
 Server: nginx/1.19.9
 Date: Wed, 26 Jan 2022 06:55:03 GMT
 Content-Length: 0
 Connection: keep-alive
-{% endhighlight %}
+```
+
 
 
 # rewrite
@@ -291,27 +308,29 @@ nginx 通过 `ngx_http_rewrite_module` 模块支持 `URI` 重写、支持 `if` �
 
 如果替换字符串 replacement 包含新的请求参数，则在它们之后附加先前的请求参数。如果你不想要之前的参数，则在替换字符串 replacement 的末尾放置一个问号，避免附加它们。
 
-{% highlight text %}
+```text
 # 由于最后加了个 ?，原来的请求参数将不会被追加到 rewrite 之后的 URI 后面
 rewrite ^/users/(.*)$ /show?user=$1? last;
-{% endhighlight %}
+```
+
 
 ## 例子
 
 例子1:
 
-{% highlight text %}
+```text
 location ^~ /redirect {
     # 当匹配前缀表达式 /redirect/(.*)时 请求将被临时重定向到 http://www.$1.com
     # 相当于 flag 写为 redirect
     rewrite ^/redirect/(.*)$ http://www.$1.com;
     return 200 "ok";
 }
-{% endhighlight %}
+```
+
 
 执行返回 302 重定向，并通过应答头部的 Location: http://www.baidu.com 返回重定向地址，但是，由于 replacement 以 `http://` 开始，将不再继续处理，因此没有执行 return 200 "ok"。
 
-{% highlight text %}
+```text
 $curl -v localhost/redirect/baidu
 * About to connect() to localhost port 80 (#0)
 *   Trying 127.0.0.1...
@@ -337,21 +356,23 @@ $curl -v localhost/redirect/baidu
 </body>
 </html>
 * Connection #0 to host localhost left intact
-{% endhighlight %}
+```
+
 
 修改配置去除 `http://`，由于没有带 `http://` 所以只是简单的重写。请求的 URI 由 `/redirect/baidu` 重写为 `www.baidu.com` 因为会顺序执行 `rewrite` 指令，所以 下一步执行 `return` 指令，响应后返回 ok
 
 
-{% highlight text %}
+```text
 location ^~ /redirect {
     # 当匹配前缀表达式 /redirect/(.*)时 请求将被临时重定向到 http://www.$1.com
     # 相当于 flag 写为 redirect
     rewrite ^/redirect/(.*)$ http://www.$1.com;
     return 200 "ok";
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $curl -v localhost/redirect/baidu
 * About to connect() to localhost port 80 (#0)
 *   Trying 127.0.0.1...
@@ -370,12 +391,13 @@ $curl -v localhost/redirect/baidu
 <
 * Connection #0 to host localhost left intact
 ok
-{% endhighlight %}
+```
+
 
 
 例子2:
 
-{% highlight text %}
+```text
 # rewrite 后面没有任何 flag 时就顺序执行
 # 当 location 中没有 rewrite 模块指令可被执行时 就重写发起新一轮 location 匹配
 location / {
@@ -391,11 +413,12 @@ location = /test2 {
 location = /test3 {
     return 200 “/test3”;
 }
-{% endhighlight %}
+```
+
 
 请求 `localhost/test1` 返回 "/test3"
 
-{% highlight text %}
+```text
 $curl -v localhost/test1
 * About to connect() to localhost port 80 (#0)
 *   Trying 127.0.0.1...
@@ -414,11 +437,12 @@ $curl -v localhost/test1
 <
 * Connection #0 to host localhost left intact
 “/test3”
-{% endhighlight %}
+```
+
 
 修改添加 flag 为 last：
 
-{% highlight text %}
+```text
 location / {
     rewrite ^/test1 /test2;
     rewrite ^/test2 /test3 last;  # 此处发起新一轮location匹配 uri为 /test3
@@ -436,11 +460,12 @@ location = /test3 {
 location = /test4 {
     return 200 "/test4";
 }
-{% endhighlight %}
+```
+
 
 rewrite 为 /test3 后不会继续执行：
 
-{% highlight text %}
+```text
 $curl -v localhost/test1
 * About to connect() to localhost port 80 (#0)
 *   Trying 127.0.0.1...
@@ -459,11 +484,12 @@ $curl -v localhost/test1
 <
 * Connection #0 to host localhost left intact
 /test3
-{% endhighlight %}
+```
+
 
 修改为如下配置：
 
-{% highlight text %}
+```text
 location / {
     rewrite ^/test1 /test2;
     # 此处不会发起新一轮 location 匹配；当是会终止执行后续 rewrite 模块指令重写后的 URI 为 /more/index.html
@@ -473,14 +499,15 @@ location / {
     # 因为 proxy_pass 不是 rewrite 模块的指令 所以它不会被 break 终止
     proxy_pass https://www.baidu.com;
 }
-{% endhighlight %}
+```
+
 
 发送请求 127.0.0.1/test1，代理到 https://www.baidu.com
 
 
 例子3:
 
-{% highlight text %}
+```text
 server {
 
 location /gerry/ {
@@ -494,17 +521,19 @@ location /nginx/ {
 }
 
 }
-{% endhighlight %}
+```
+
 
 # Directive
 
 ## proxy_pass
 
-{% highlight text %}
+```text
 Syntax:	proxy_pass URL;
 Default:	—
 Context:	location, if in location, limit_except
-{% endhighlight %}
+```
+
 
 http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass
 
@@ -525,7 +554,7 @@ http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass
 
 vim /etc/nginx/sites-available/default
 
-{% highlight text %}
+```text
 server {
     listen 80;
     server_name blog.gerryyang.com;
@@ -546,7 +575,8 @@ server {
         proxy_pass         http://127.0.0.1:8081;
     }
 }
-{% endhighlight %}
+```
+
 
 
 

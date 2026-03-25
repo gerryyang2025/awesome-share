@@ -94,7 +94,7 @@ This llhttp parser is a default in Node version 12.
 
 http-parser [is not actively maintained](https://github.com/nodejs/http-parser/issues/522). New projects and projects looking to migrate should consider [llhttp](https://github.com/nodejs/llhttp).
 
-{% highlight text %}
+```text
 Maintainer notice #522
 
 
@@ -103,7 +103,8 @@ I'm moving on and as the last (semi-)active maintainer, that means http-parser i
 It's a stable project for a stable protocol and I don't expect many issues but you should take the above into account when evaluating whether http-parser is the right choice for you.
 
 For new projects and projects looking to migrate, I recommend https://github.com/nodejs/llhttp. Similar API, feature parity, well maintained and in active use.
-{% endhighlight %}
+```
+
 
 This is a parser for HTTP messages written in C. It parses both requests and responses. The parser is designed to be used in performance HTTP applications. It does not make any syscalls nor allocations, it does not buffer data, it can be interrupted at anytime. Depending on your architecture, it only requires about 40 bytes of data per message stream (in a web server that is per connection).
 
@@ -130,7 +131,7 @@ The parser extracts the following information from HTTP messages:
 
 One `http_parser` object is used per TCP connection. Initialize the struct using `http_parser_init()` and set the callbacks. That might look something like this for a request parser:
 
-{% highlight cpp %}
+```cpp
 http_parser_settings settings;
 settings.on_url = my_url_callback;
 settings.on_header_field = my_header_field_callback;
@@ -139,11 +140,12 @@ settings.on_header_field = my_header_field_callback;
 http_parser *parser = malloc(sizeof(http_parser));
 http_parser_init(parser, HTTP_REQUEST);
 parser->data = my_socket;
-{% endhighlight %}
+```
+
 
 When data is received on the socket execute the parser and check for errors.
 
-{% highlight cpp %}
+```cpp
 size_t len = 80*1024, nparsed;
 char buf[len];
 ssize_t recved;
@@ -164,7 +166,8 @@ if (parser->upgrade) {
 } else if (nparsed != recved) {
   /* Handle error. Usually just close the connection. */
 }
-{% endhighlight %}
+```
+
 
 `http_parser` needs to know where the end of the stream is. For example, sometimes servers send responses without Content-Length and expect the client to consume input (for the body) until EOF. To tell `http_parser` about EOF, give `0` as the fourth parameter to `http_parser_execute()`. Callbacks and errors can still be encountered during an EOF, so one must still be prepared to receive them.
 
@@ -176,14 +179,15 @@ The parser decodes the transfer-encoding for both requests and responses transpa
 
 `http_parser` supports upgrading the connection to a different protocol. An increasingly common example of this is the WebSocket protocol which sends a request like
 
-{% highlight text %}
+```text
     GET /demo HTTP/1.1
     Upgrade: WebSocket
     Connection: Upgrade
     Host: example.com
     Origin: http://example.com
     WebSocket-Protocol: sample
-{% endhighlight %}
+```
+
 
 followed by non-HTTP data.
 
@@ -208,7 +212,7 @@ For cases where it is necessary to pass local information to/from a callback, th
 
 Example:
 
-{% highlight cpp %}
+```cpp
  typedef struct {
   socket_t sock;
   void* buffer;
@@ -257,13 +261,14 @@ void http_parser_thread(socket_t sock) {
  my_data->buffer;
  ...
 }
-{% endhighlight %}
+```
+
 
 In case you parse HTTP message in chunks (i.e. `read()` request line from socket, parse, read half headers, parse, etc) your data callbacks may be called more than once. `http_parser` guarantees that data pointer is only valid for the lifetime of callback. You can also `read()` into a heap allocated buffer to avoid copying memory around if this fits your application.
 
 Reading headers may be a tricky task if you read/parse headers partially. Basically, you need to remember whether last header callback was field or value and apply the following logic:
 
-{% highlight text %}
+```text
 (on_header_field and on_header_value shortened to on_h_*)
  ------------------------ ------------ --------------------------------------------
 | State (prev. callback) | Callback   | Description/action                         |
@@ -284,11 +289,12 @@ Reading headers may be a tricky task if you read/parse headers partially. Basica
 | value                  | on_h_value | Value continues. Reallocate value buffer   |
 |                        |            | and append callback data to it             |
  ------------------------ ------------ --------------------------------------------
-{% endhighlight %}
+```
+
 
 http_parser.h
 
-{% highlight cpp %}
+```cpp
 /* Callbacks should return non-zero to indicate an error. The parser will
  * then halt execution.
  *
@@ -309,7 +315,8 @@ http_parser.h
  */
 typedef int (*http_data_cb) (http_parser*, const char *at, size_t length);
 typedef int (*http_cb) (http_parser*);
-{% endhighlight %}
+```
+
 
 ## Parsing URLs
 
@@ -367,7 +374,7 @@ The state machine graph is encoded explicitly in llhttp. The [llparse](https://g
 
 ## Usage
 
-{% highlight cpp %}
+```cpp
 #include "llhttp.h"
 
 llhttp_t parser;
@@ -396,7 +403,8 @@ if (err == HPE_OK) {
   fprintf(stderr, "Parse error: %s %s\n", llhttp_errno_name(err),
           parser.reason);
 }
-{% endhighlight %}
+```
+
 
 For more information on API usage, please refer to [src/native/api.h](https://github.com/nodejs/llhttp/blob/main/src/native/api.h).
 
@@ -404,23 +412,25 @@ For more information on API usage, please refer to [src/native/api.h](https://gi
 
 Make sure you have [Node.js](https://nodejs.org/), npm and npx installed. Then under project directory run:
 
-{% highlight text %}
+```text
 npm install
 make
-{% endhighlight %}
+```
+
 
 ### Using with CMake
 
 If you want to use this library in a CMake project you can use the snippet below.
 
-{% highlight text %}
+```text
 FetchContent_Declare(llhttp
   URL "https://github.com/nodejs/llhttp/releases/download/v6.0.5/llhttp-release-v6.0.5.tar.gz")  # Using version 6.0.5
 
 FetchContent_MakeAvailable(llhttp)
 
 target_link_libraries(${EXAMPLE_PROJECT_NAME} ${PROJECT_LIBRARIES} llhttp ${PROJECT_NAME})
-{% endhighlight %}
+```
+
 
 ## llparse
 
@@ -450,7 +460,7 @@ The library exposes four functions: `phr_parse_request`, `phr_parse_response`, `
 
 The example below reads an HTTP request from socket sock using read(2), parses it using phr_parse_request, and prints the details.
 
-{% highlight cpp %}
+```cpp
 char buf[4096], *method, *path;
 int pret, minor_version;
 struct phr_header headers[100];
@@ -488,7 +498,8 @@ for (i = 0; i != num_headers; ++i) {
     printf("%.*s: %.*s\n", (int)headers[i].name_len, headers[i].name,
            (int)headers[i].value_len, headers[i].value);
 }
-{% endhighlight %}
+```
+
 
 # Nginx http
 
@@ -597,20 +608,22 @@ I would always recommend going to the authoritative source when trying to unders
 
 Connection 头（header） 决定当前的事务完成后，是否会关闭网络连接。如果该值是“keep-alive”，网络连接就是持久的，不会关闭，使得对同一个服务器的请求可以继续在该连接上完成。
 
-{% highlight text %}
+```text
 Connection: keep-alive
 Connection: close
-{% endhighlight %}
+```
+
 
 * close 表明客户端或服务器想要关闭该网络连接，这是HTTP/1.0请求的默认值
 * keep-alive 表明客户端想要保持该网络连接打开，HTTP/1.1的请求默认使用一个持久连接。这个请求头列表由头部名组成，这些头将被第一个非透明的代理或者代理间的缓存所移除：这些头定义了发出者和第一个实体之间的连接，而不是和目的地节点间的连接。
 
 Keep-Alive 是一个通用消息头，允许消息发送者暗示连接的状态，还可以用来设置超时时长和最大请求数。
 
-{% highlight text %}
+```text
 Connection: Keep-Alive
 Keep-Alive: timeout=5, max=1000
-{% endhighlight %}
+```
+
 
 > 需要将 The Connection 首部的值设置为  "keep-alive" 这个首部才有意义。同时需要注意的是，在HTTP/2 协议中， Connection 和 Keep-Alive  是被忽略的；在其中采用其他机制来进行连接管理。
 
@@ -621,7 +634,7 @@ Keep-Alive: timeout=5, max=1000
 
 ## [How to send a header using a HTTP request through a cURL call?](https://stackoverflow.com/questions/356705/how-to-send-a-header-using-a-http-request-through-a-curl-call)
 
-{% highlight bash %}
+```bash
 # http1.0 curl 默认使用 http1.1 通信协议，若使用 http1.0 协议需要显示指定
 curl --http1.0 http://hostname/resource
 
@@ -636,7 +649,8 @@ curl -H "Accept: application/xml" -H "Content-Type: application/xml" -X GET http
 
 # Post
 curl --data "param1=value1&param2=value2" http://hostname/resource
-{% endhighlight %}
+```
+
 
 ## [Http / 1.1 protocol expect: 100 continue](https://developpaper.com/http-http-1-1-protocol-expect-100-continue/)
 

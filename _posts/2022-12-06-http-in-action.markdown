@@ -92,9 +92,10 @@ A [Uniform Resource Identifier](https://en.wikipedia.org/wiki/Uniform_Resource_I
 
 A [query string](https://en.wikipedia.org/wiki/Query_string) is a part of a uniform resource locator (**URL**) that assigns values to specified parameters. A query string commonly includes fields added to a base URL by a Web browser or other client application, for example as part of an HTML, choosing the appearance of a page, or jumping to positions in multimedia content.
 
-{% highlight text %}
+```text
 https://en.wikipedia.org/w/index.php?title=Query_string&action=edit
-{% endhighlight %}
+```
+
 
 An address bar on Google Chrome showing a URL with the query string `title=Query_string&action=edit`
 
@@ -122,17 +123,19 @@ When a web browser sends a **POST** request from a web form element, the default
 
 For example, the key-value pairs
 
-{% highlight text %}
+```text
 Name: Gareth Wylie
 Age: 24
 Formula: a+b == 21
-{% endhighlight %}
+```
+
 
 are encoded as
 
-{% highlight text %}
+```text
 Name=Gareth+Wylie&Age=24&Formula=a%2Bb+%3D%3D+21
-{% endhighlight %}
+```
+
 
 
 # Compatibility issues
@@ -154,7 +157,7 @@ The common workaround for these problems is to use [POST](https://en.wikipedia.o
 
 支持 GET 或 POST 请求打印，支持 keep-alive 检查，并返回固定的应答参数。
 
-{% highlight python %}
+```python
 #!/usr/bin/env python3
 # web_server.py
 
@@ -297,24 +300,26 @@ def run_server(host='0.0.0.0', port=8088):
 if __name__ == '__main__':
     # Using port 8088 to avoid permission issues
     run_server(host='0.0.0.0', port=8088)
-{% endhighlight %}
+```
+
 
 
 ## 客户端测试命令 (短连接)
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 curl -X POST 'http://localhost:8088/cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451' \
 -H 'Content-Type: application/json' \
 -H 'Connection: close' \
 -d '{"data": "test", "action": "process"}'
-{% endhighlight %}
+```
+
 
 Web Server 服务端请求内容：
 
 
-{% highlight text %}
+```text
 ================================================================================
 [2025-10-27 15:34:54] Received POST Request
 ================================================================================
@@ -346,17 +351,19 @@ Content-Type: JSON
 }
 ================================================================================
 Connection will be: closed
-{% endhighlight %}
+```
+
 
 应答内容：
 
-{% highlight json %}
+```json
 {"status": "success", "message": "POST request received and processed", "timestamp": "2025-10-27T15:34:54.009649", "method": "POST", "path": "/cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451", "client_ip": "127.0.0.1", "client_port": 49302, "connection": "close"}
-{% endhighlight %}
+```
+
 
 ## 客户端测试命令 (长连接)
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 curl -X POST 'http://localhost:8088/cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451' \
@@ -364,12 +371,13 @@ curl -X POST 'http://localhost:8088/cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp
 -H 'Connection: keep-alive' \
 -d '{"data": "test", "action": "process"}' \
 --max-time 5
-{% endhighlight %}
+```
+
 
 Web Server 服务端请求内容：
 
 
-{% highlight text %}
+```text
 ================================================================================
 [2025-10-27 15:34:47] Received POST Request
 ================================================================================
@@ -401,13 +409,15 @@ Content-Type: JSON
 }
 ================================================================================
 Connection will be: kept alive
-{% endhighlight %}
+```
+
 
 应答内容：
 
-{% highlight json %}
+```json
 {"status": "success", "message": "POST request received and processed", "timestamp": "2025-10-27T15:34:47.469851", "method": "POST", "path": "/cgi-bin/Test.fcgi?cmd=test&appid=1&timestamp=1554802545&nonce=100000&sign=73ea834b1ed7637dd9776f22269a8451", "client_ip": "127.0.0.1", "client_port": 49290, "connection": "keep-alive"}
-{% endhighlight %}
+```
+
 
 
 

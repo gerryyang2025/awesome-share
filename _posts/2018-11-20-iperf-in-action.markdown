@@ -50,10 +50,11 @@ Using the default options, `iperf` is meant to show typical well designed applic
 
 These flags include:
 
-{% highlight text %}
+```text
 -Z, --zerocopy            use a 'zero copy' sendfile() method of sending data
 -A, --affinity n/n,m      set CPU affinity
-{% endhighlight %}
+```
+
 
 # Quick Start
 
@@ -137,7 +138,7 @@ These flags include:
 
 # Usage
 
-{% highlight text %}
+```text
 $ iperf3 -h
 Usage: iperf3 [-s|-c host] [options]
        iperf3 [-h|--help] [-v|--version]
@@ -242,7 +243,8 @@ Client specific:
 
 iperf3 homepage at: https://software.es.net/iperf/
 Report bugs to:     https://github.com/esnet/iperf
-{% endhighlight %}
+```
+
 
 
 # /proc/net/softnet_stat 指标统计
@@ -253,11 +255,12 @@ Report bugs to:     https://github.com/esnet/iperf
 
 该文件每行对应一个 CPU 核心，字段以十六进制显示：
 
-{% highlight text %}
+```text
 $ cat /proc/net/softnet_stat
 00007b6c 00000000 00000001 00000000 00000000 00000000 00000000 00000000 00000000 00000000
 0000a3d1 00000000 00000002 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-{% endhighlight %}
+```
+
 
 | **字段位置** | **十六进制含义** | **解释**
 | -- | -- | --
@@ -281,13 +284,14 @@ $ cat /proc/net/softnet_stat
 ## 计算丢包率
 
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 processed=$(cat /proc/net/softnet_stat | awk '{print strtonum("0x"$1)}' | awk '{sum+=$1} END {print sum}')
 dropped=$(cat /proc/net/softnet_stat | awk '{print strtonum("0x"$2)}' | awk '{sum+=$1} END {print sum}')
 echo "丢包率: $(echo "scale=4; $dropped / $processed * 100" | bc)%"
-{% endhighlight %}
+```
+
 
 ## time_squeeze 指标
 
@@ -302,17 +306,18 @@ echo "丢包率: $(echo "scale=4; $dropped / $processed * 100" | bc)%"
 
 ## 检查网络性能问题
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 # 监控 softnet_stat 变化
 watch -n 1 'cat /proc/net/softnet_stat | \
 awk "{printf \"CPU %2d: processed=%d dropped=%d time_squeeze=%d\\n\", NR-1, strtonum(\"0x\"\$1), strtonum(\"0x\"\$2), strtonum(\"0x\"\$3)}"'
-{% endhighlight %}
+```
+
 
 ## 诊断网络瓶颈
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 echo "检查各CPU网络负载:"
@@ -325,11 +330,12 @@ awk '{
     printf "CPU%02d: 处理数=%-8d 丢包数=%-6d 丢包率=%.4f%% 挤压数=%-6d\n",
            NR-1, processed, dropped, drop_rate, squeezed;
 }'
-{% endhighlight %}
+```
+
 
 ## 监控脚本
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 INTERVAL=5
@@ -345,17 +351,19 @@ while true; do
     }'
     sleep $INTERVAL
 done
-{% endhighlight %}
+```
+
 
 ## 调优参数
 
-{% highlight bash %}
+```bash
 # 如果 time_squeeze 较高，增加处理预算
 echo 300 > /proc/sys/net/core/netdev_budget
 
 # 启用 RPS (Receive Packet Steering)
 echo f > /sys/class/net/eth0/queues/rx-0/rps_cpus
-{% endhighlight %}
+```
+
 
 
 # Refer

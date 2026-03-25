@@ -36,7 +36,7 @@ I'm now going to develop an example of running a process in "traced" mode in whi
 
 The high-level plan is to write code that splits into a child process that will execute a user-supplied command, and a parent process that traces the child. First, the main function:
 
-{% highlight cpp %}
+```cpp
 int main(int argc, char** argv)
 {
     pid_t child_pid;
@@ -58,13 +58,14 @@ int main(int argc, char** argv)
 
     return 0;
 }
-{% endhighlight %}
+```
+
 
 Pretty simple: we start a new child process with `fork` [^4]. The `if` branch of the subsequent condition runs the child process (called "target" here), and the `else if` branch runs the parent process (called "debugger" here).
 
 Here's the target process:
 
-{% highlight cpp %}
+```cpp
 void run_target(const char* programname)
 {
     procmsg("target started. will run '%s'\n", programname);
@@ -78,14 +79,16 @@ void run_target(const char* programname)
     /* Replace this process's image with the given program */
     execl(programname, programname, 0);
 }
-{% endhighlight %}
+```
+
 
 The most interesting line here is the `ptrace` call. `ptrace` is declared thus (in `sys/ptrace.h`):
 
-{% highlight cpp %}
+```cpp
 long ptrace(enum __ptrace_request request, pid_t pid,
                  void *addr, void *data);
-{% endhighlight %}
+```
+
 
 The first argument is a `request`, which may be one of many predefined `PTRACE_*` constants. The second argument specifies a process ID for some requests. The third and fourth arguments are address and data pointers, for memory manipulation. The `ptrace` call in the code snippet above makes the `PTRACE_TRACEME` request, which means that this child process asks the OS kernel to let its parent trace it. The request description from the man-page is quite clear:
 
@@ -95,7 +98,7 @@ I've highlighted the part that interests us in this example. Note that the very 
 
 Thus, time is ripe to see what the parent does:
 
-{% highlight cpp %}
+```cpp
 void run_debugger(pid_t child_pid)
 {
     int wait_status;
@@ -119,7 +122,8 @@ void run_debugger(pid_t child_pid)
 
     procmsg("the child executed %u instructions\n", icounter);
 }
-{% endhighlight %}
+```
+
 
 Recall from above that once the child starts executing the `exec` call, it will stop and be sent the `SIGTRAP` signal. The parent here waits for this to happen with the first `wait` call. `wait` will return once something interesting happens, and the parent checks that it was because the child was stopped (`WIFSTOPPED` returns true if the child process was stopped by delivery of a signal).
 
@@ -131,7 +135,7 @@ Note that `icounter` counts the amount of instructions executed by the child pro
 
 I compiled the following simple program and ran it under the tracer:
 
-{% highlight cpp %}
+```cpp
 #include <stdio.h>
 
 int main()
@@ -139,7 +143,8 @@ int main()
     printf("Hello, world!\n");
     return 0;
 }
-{% endhighlight %}
+```
+
 
 To my surprise, the tracer took quite long to run and reported that there were more than 100,000 instructions executed. For a simple `printf` call? What gives? The answer is very interesting [^5]. By default, `gcc` on Linux links programs to the C runtime libraries dynamically. What this means is that one of the first things that runs when any program is executed is the dynamic library loader that looks for the required shared libraries. This is quite a lot of code - and remember that our basic tracer here looks at each and every instruction, not of just the `main` function, but of the whole process.
 
@@ -147,7 +152,7 @@ So, when I linked the test program with the `-static` flag (and verified that th
 
 Still not satisfied, I wanted to see something testable - i.e. a whole run in which I could account for every instruction executed. This, of course, can be done with assembly code. So I took this version of "Hello, world!" and assembled it:
 
-{% highlight text %}
+```text
 section    .text
     ; The _start symbol must be declared for the linker (ld)
     global _start
@@ -174,7 +179,8 @@ _start:
 section   .data
 msg db    'Hello, world!', 0xa
 len equ    $ - msg
-{% endhighlight %}
+```
+
 
 Sure enough. Now the tracer reported that 7 instructions were executed, which is something I can easily verify.
 
@@ -182,7 +188,7 @@ Sure enough. Now the tracer reported that 7 instructions were executed, which is
 
 The assembly-written program allows me to introduce you to another powerful use of `ptrace` - closely examining the state of the traced process. Here's another version of the `run_debugger` function:
 
-{% highlight cpp %}
+```cpp
 void run_debugger(pid_t child_pid)
 {
     int wait_status;
@@ -213,20 +219,22 @@ void run_debugger(pid_t child_pid)
 
     procmsg("the child executed %u instructions\n", icounter);
 }
-{% endhighlight %}
+```
+
 
 The only difference is in the first few lines of the `while` loop. There are two new `ptrace` calls. The first one reads the value of the process's registers into a structure. `user_regs_struct` is defined in `sys/user.h`. Now here's the fun part - if you look at this header file, a comment close to the top says:
 
-{% highlight cpp %}
+```cpp
 /* The whole purpose of this file is for GDB and GDB only.
    Don't read too much into it. Don't use it for
    anything other than GDB unless know what you are
    doing.  */
-{% endhighlight %}
+```
+
 
 Now, I don't know about you, but it makes me feel we're on the right track. Anyway, back to the example. Once we have all the registers in `regs`, we can peek at the current instruction of the process by calling `ptrace` with `PTRACE_PEEKTEXT`, passing it `regs.eip` (the extended instruction pointer on x86) as the address. What we get back is the instruction [^6]. Let's see this new tracer run on our assembly-coded snippet:
 
-{% highlight text %}
+```text
 $ simple_tracer traced_helloworld
 [5700] debugger started
 [5701] target started. will run 'traced_helloworld'
@@ -239,11 +247,12 @@ Hello, world!
 [5700] icounter = 6.  EIP = 0x08048096.  instr = 0x000001b8
 [5700] icounter = 7.  EIP = 0x0804809b.  instr = 0x000080cd
 [5700] the child executed 7 instructions
-{% endhighlight %}
+```
+
 
 OK, so now in addition to `icounter` we also see the instruction pointer and the instruction it points to at each step. How to verify this is correct? By using `objdump -d` on the executable:
 
-{% highlight text %}
+```text
 $ objdump -d traced_helloworld
 
 traced_helloworld:     file format elf32-i386
@@ -259,7 +268,8 @@ Disassembly of section .text:
  8048094:     cd 80                   int    $0x80
  8048096:     b8 01 00 00 00          mov    $0x1,%eax
  804809b:     cd 80                   int    $0x80
-{% endhighlight %}
+```
+
 
 The correspondence between this and our tracing output is easily observed.
 
@@ -271,7 +281,7 @@ The correspondence between this and our tracing output is easily observed.
 
 The complete C source-code of the simple tracer presented in this article (the more advanced, instruction-printing version) is available [here](https://github.com/eliben/code-for-blog/blob/main/2011/simple_tracer.c). It compiles cleanly with `-Wall -pedantic --std=c99` on version 4.4 of `gcc`.
 
-{% highlight cpp %}
+```cpp
 /* Code sample: using ptrace for simple tracing of a child process.
 **
 ** Note: this was originally developed for a 32-bit x86 Linux system; some
@@ -400,7 +410,8 @@ gcc -g test.c
 [3136473] icounter = 195949.  RIP = 0x9a100b24.  instr = 0x3d48050f
 [3136473] the child executed 195949 instructions
 */
-{% endhighlight %}
+```
+
 
 # Conclusion and next steps
 

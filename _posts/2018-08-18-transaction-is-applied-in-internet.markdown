@@ -31,7 +31,7 @@ tags:
 
 内部是通过**Two-Phase Commit**来保证的。2PL就是将加锁/解锁分为两个完全不相交的阶段。加锁阶段：只加锁，不放锁。解锁阶段：只放锁，不加锁。
 
-{% highlight text %}
+```text
 Two-phase commit works in two phases: `a voting phase` and `a decision phase`.
 
 * In the voting(or prepare) phase, the transaction manager will ask both the RM1 and RM2 whether they can agree with a successful termination or not. Each may return a negative reply, for instance if there was a time-out which caused the RM1's work to be rolled back. If one of them replies positively, then it should make sure it can always make the work permanent.
@@ -41,7 +41,8 @@ Two-phase commit works in two phases: `a voting phase` and `a decision phase`.
 	- If both replies were positive (meaning that both the RM1 and RM2 can make the work permanent), then the transaction manager will instruct each to commit.
 
 	- If at least one reply is negative (or missing) then a rollback decision is sent to the remaining resource. This means that the remaining resource cancels (rolls back) the work done for the transaction.
-{% endhighlight %}
+```
+
 
 但是，当出现**多个不同的本地事务(分布式事务)**时，如何保证一致性？
 
@@ -92,12 +93,13 @@ Two-phase commit works in two phases: `a voting phase` and `a decision phase`.
 
 [Java Transaction API (JTA)]提供了一套事务接口规范。
 
-{% highlight text %}
+```text
 `JTA` is short for Sun Microsystems' Java Transaction API and is Sun's (low-level) API for creating transactions in Java and making your data access operations part of those transactions.
 
 The JTA defines how your application can request transactional functionality on the Java platform. **JTA is not a product in itself, but rather a set of Java interfaces.** A vendor-specific JTA implementation referred to as a transaction manager or transaction service (such as Transactions™) is needed to actually use the functionality
 defined in these interfaces. In other words, you can program JTA transactions in your application, but you need the implementation classes of a JTA-compliant transaction manager vendor in order to run your application.
-{% endhighlight %}
+```
+
 
 ## 数据库事务
 
@@ -111,7 +113,7 @@ MySQL服务器逻辑架构从上往下可以分为三层：
 
 MySQL中默认采用的是自动提交（`autocommit`）模式，在自动提交模式下，如果没有`start transaction`显式地开始一个事务，那么每个sql语句都会被当做一个事务执行提交操作。通过`set autocommit = 0;`可以关闭autocommit，需要注意的是，autocommit参数是`针对连接的`，在一个连接中修改了参数，不会对其他连接产生影响。如果关闭了autocommit，则所有的sql语句都在一个事务中，直到执行了commit或rollback，该事务结束，同时开始了另外一个事务。
 
-{% highlight text %}
+```text
 mysql> show variables like 'autocommit';
 +---------------+-------+
 | Variable_name | Value |
@@ -129,23 +131,25 @@ mysql> show variables like 'autocommit';
 | autocommit    | OFF   |
 +---------------+-------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
+
 
 也可以用`START TRANSACTION`语句开始一个事务，然后要么使用`COMMIT`提交事务将修改的数据持久保留，要么使用`ROLLBACK`撤销所有的修改。
 
-{% highlight sql %}
+```sql
 START TRANSACTION;
 SELECT balance FROM checking WHERE customer_id = 'gerry';
 UPDATE checking SET balance = balance - 200.00 WHERE customer_id = 'gerry';
 UPDATE savings SET balance = balance + 200.00 WHERE customer_id = 'gerry';
 COMMIT;
-{% endhighlight %}
+```
+
 
 ### ACID
 
 `ACID`表示原子性，一致性，隔离性和持久性。一个运行良好的事务处理系统，必须具备这些标准特征。事务的ACID特性可以确保银行不会弄丢你的钱。
 
-{% highlight text %}
+```text
 1. 原子性（atomicity）
 对于一个事务来说，不可能只执行其中一部分操作，这就是事务的原子性。
 2. 一致性（consistency）
@@ -154,7 +158,8 @@ COMMIT;
 通常来说（根据不同的隔离级别），一个事务所做的修改在最终提交以前，对其他事务是不可见的。
 4. 持久性（durability）
 一旦事务提交，则其所做的修改就会永久保存在数据库中。
-{% endhighlight %}
+```
+
 
 ### MVCC：Snapshot Read vs Current Read
 
@@ -164,17 +169,18 @@ MySQL InnoDB存储引擎，实现的是基于多版本的并发控制协议`MVCC
 
 
 `快照读`：简单的select操作，属于快照读，不加锁。(当然，也有例外)
-{% highlight text %}
+```text
 select * from table where ?;
 
 `当前读`：特殊的读操作，插入/更新/删除操作，属于当前读，需要加锁。
-{% endhighlight %}
+```
+
 select * from table where ? lock in share mode;
 select * from table where ? for update;
 insert into table values (…);
 update table set ? where ?;
 delete from table where ?;
-{% highlight text %}
+```text
 所有以上的语句，都属于当前读，读取记录的最新版本。并且，读取之后，还需要保证其他并发事务不能修改当前记录，对读取记录加锁。其中，除了第一条语句，对读取记录加`S锁` (共享锁)外，其他的操作，都加的是`X锁` (排它锁)。
 
 ### Cluster Index：聚簇索引
@@ -225,7 +231,8 @@ MySQL/InnoDB定义的4种隔离级别：
 
 MySQL中查看和设置隔离级别：
 
-{% endhighlight %}
+```
+
 -- 查看当前会话隔离级别
 SELECT @@tx_isolation;
 
@@ -240,17 +247,18 @@ set global transaction isolation level repeatable read | serializable | ...;
 
 -- 开始事务
 set autocommit=off 或者 start transaction
-{% highlight text %}
+```text
 
 例子：
 
-{% endhighlight %}
+```
+
 START TRANSACTION;
 事务A：在整个执行阶段，会将某数据项的值从1开始，加1操作，直到变成10之后进行事务提交。
 事务B：查看此数据项的值，请问在不同的隔离级别下看到的值是多少？
 事务C：执行和事务A类似的操作，将此数据项从10累加到20，然后进行提交。
 COMMIT;
-{% highlight text %}
+```text
 ![mysql_trans_example](/assets/images/201808/mysql_trans_example.png)
 
 [MySQL读书笔记－事务，隔离级别，死锁](https://blog.csdn.net/delphiwcdj/article/details/51874401)
@@ -260,15 +268,17 @@ COMMIT;
 
 假设存在表：
 
-{% endhighlight %}
+```
+
 create table t_gerry(id int(2)) engine=innodb default charset=utf8;
 insert into t_gerry(id) values(1);
 insert into t_gerry(id) values(2);
-{% highlight text %}
+```text
 
 事务1和事务2，执行顺序如下：
 
-{% endhighlight %}
+```
+
 mysql> select * from t_gerry;
 +------+
 | id   |
@@ -321,7 +331,7 @@ mysql> select * from t_gerry;
 |    4 |
 +------+
 3 rows in set (0.00 sec)
-{% highlight text %}
+```text
 
 
 
@@ -331,7 +341,8 @@ mysql> select * from t_gerry;
 
 ![DTP](/assets/images/201808/DTP.png)
 
-{% endhighlight %}
+```
+
 **DTP**（Distributed Transaction Processing）systems are those where work in support of a
 single transaction may occur across RMs. This has several implications:
 * The system must have a way to refer to a transaction that encompasses all work
@@ -339,7 +350,8 @@ done anywhere in the system. （知道每个子事务的状态）
 * The decision to commit or roll back a transaction must consider the status of work
 done anywhere on behalf of the transaction. The decision must have uniform effect
 throughout the DTP system.  （根据每个子事务的状态来决定commit还是rollback）
-{% highlight text %}
+{% raw %}
+```text
 
 ## MySQL XA
 
@@ -363,18 +375,20 @@ MySQL XA**事务状态**变化：(详见[XA Transaction States])
 
 下面是`XA Transaction SQL Syntax`的一些用法，其中`xid`，即全局唯一事务ID通常是由`Transaction Manager`生成。
 
-{% highlight sql %}
+```sql
 XA START | BEGIN xid;
 XA END xid;
 XA PREPARE xid;
 XA COMMIT xid;
 XA ROLLBACK xid;
 XA RECOVER;         -- 显示PREPARED状态的事务
-{% endhighlight %}
+```
+{% endraw %}
+
 
 使用MySQL XA的一个例子：
 
-{% highlight sql %}
+```sql
 xa start xid;  -- for db1
 update db1.t_user_balance set balance = balance - 1 where user = 'Bob' and balance > 1;
 xa start xid;  -- for db2
@@ -391,15 +405,17 @@ xa commit xid; -- for db2
 -- 如果do_other_something失败，需要回滚之前的db事务
 xa rollback xid; -- for db1
 xa rollback xid; -- for db2
-{% endhighlight %}
+```
+
 
 思考1: MySQL默认是RR隔离级别，分布式事务场景下, 是否需要设置成串行化隔离级别？
 
 如果数据库不支持分布式MVCC，就有必要。否则可能RM1的本地事务提交了，RM2还没提交，这样外部就会读取到RM1已经提交的结果和RM2上未提交的结果，破坏了隔离性。
 
-{% highlight sql %}
+```sql
 set session transaction isolation level SERIALIZABLE;
-{% endhighlight %}
+```
+
 
 思考2：分布式事务的热点数据并发性能最高就是趋近于单机本地事务。所以无论是基于XA协议实现的分布式事务，还是单机本地事务，都是存在热点数据并发性能极限的。如何解决热点数据问题？
 
@@ -414,18 +430,18 @@ Pat helland在2007年也发表了一篇相同观点的文章[Life beyond Distrib
 
 ![2007_scale_agnostic](/assets/images/201808/2007_scale_agnostic.png)
 
-{% endhighlight %}
 To reach an agreement across entities, one entity has to ask another to accept some uncertainty. This is done by sending a message which requests a commitment but leaves open the possibility of cancellation. This is called a tentative operation and it represented by a message
 flowing between two entities. At the end of this step, one of the entities agrees to abide by the wishes of the other.
-{% highlight text %}
+```text
 
 [Tentative Operation]进一步对`TCC`的定义进行了说明。对`How can a requestor ensure a consistent outcome across multiple, independent providers?`的问题进行了讨论。
 
-{% endhighlight %}
+```
+
 * The communication channels used by loosely coupled, distributed systems usually do not provide transactional semantics at the transport level. Instead, participants can send and receive message, often reliably.
 * While some operations are inherently reversible, e.g. debiting a bank account after a credit, other operations, such as shipping a package or scrapping a car cannot easily be undone. As a result, the requestor might not be able to do much to rectify the situation.
 * Distributed conversations typically involve uncertainty: a participant cannot be certain that a conversation partner continues in the conversation or even exist after the last interaction. Participants should therefore allocate resources cautiously.
-{% highlight text %}
+```text
 
 ![requestor_provider](/assets/images/201808/requestor_provider.png)
 
@@ -443,9 +459,10 @@ flowing between two entities. At the end of this step, one of the entities agree
 
 在蚂蚁金服的[分布式事务解决方案与适用场景分析]一文中，也对`TCC`模型进行了介绍。
 
-{% endhighlight %}
+```
+
 TCC 分布式事务模型直接作用于服务层。不与具体的服务框架耦合，与底层 RPC 协议无关，与底层存储介质无关，可以灵活选择业务资源的锁定粒度，减少资源锁持有时间，可扩展性好，可以说是为独立部署的 `SOA`(Service-Oriented Architecture) 服务而设计的。
-{% highlight text %}
+```text
 
 文中认为`TCC`有**两个主要优势**：
 
@@ -493,7 +510,8 @@ TCC 分布式事务模型直接作用于服务层。不与具体的服务框架�
 
 TXC/GTS/Fescar 一脉相承，为解决微服务架构下的分布式事务问题交出了一份与众不同的答卷。
 
-{% endhighlight %}
+```
+
 Ant Financial
 
 * XTS: Extended Transaction Service. Ant Financial middleware team developed the distributed transaction middleware since 2007, which is widely used in Ant Financial and solves the problems of data consistency across databases and services.
@@ -511,7 +529,7 @@ Alibaba
 Seata Community
 
 * Seata :Simple Extensible Autonomous Transaction Architecture. Ant Financial joins Fescar, which make it to be a more neutral and open community for distributed transaction，and Fescar be rename to Seata.
-{% highlight text %}
+```text
 
 **设计的目标：**
 
@@ -572,17 +590,19 @@ Seata Community
 
 基于MySQL Innodb(local ACID transactions) + UNDO_LOG 的方式，这种模式对业务无入侵，业务本身不用关心回滚和提交逻辑。
 
-{% endhighlight %}
+```
+
 Evolution from the two phases commit protocol:
 
 Phase 1：commit business data and rollback log in the same local transaction, then release local lock and connection resources.
 Phase 2：for commit case, do the work asynchronously and quickly.
          for rollback case, do compensation, base on the rollback log created in the phase 1.
-{% highlight text %}
+{% raw %}
+```text
 
 但是此模式对支持的SQL回滚语句有限制，并非所有情况都可以UNDO。以下是在业务本地隐式创建的`undo_log`反操作信息表。
 
-{% highlight sql %}
+```sql
 -- 注意此处0.3.0+ 增加唯一索引 ux_undo_log
 CREATE TABLE `undo_log` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -596,19 +616,22 @@ CREATE TABLE `undo_log` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_undo_log` (`xid`,`branch_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-{% endhighlight %}
+```
+{% endraw %}
+
 
 * [Fescar-MT](https://github.com/fescar-group/awesome-fescar/blob/master/wiki/en-us/Fescar-MT.md) - **Manual (Branch) Transaction Mode**
 
 此模式不依赖于底层资源具体是什么，分支事务需要应用自己来定义业务本身及提交和回滚的逻辑。需要业务提供`prepare`，`commit`，`rollback`这三个接口供框架调用。MT 模式一方面是 AT 模式的补充。另外，更重要的价值在于，通过 MT 模式可以把众多非事务性资源纳入全局事务的管理中。
 
-{% highlight text %}
+```text
 the MT mode does not rely on transaction support for the underlying data resources:
 
 One phase prepare behavior: Call the prepare logic of custom.
 Two phase commit behavior: Call the commit logic of custom.
 Two phase rollback behavior: Call the rollback logic of custom.
-{% endhighlight %}
+```
+
 
 * 混合模式
 
@@ -652,10 +675,11 @@ XA的原生支持。(TBD)
 
 RU -> 脏读 -> 会影响业务，导致应用逻辑并发处理不当。解决方法是：
 
-{% highlight sql %}
+```sql
 select value from table where id = 'gerry' for update;
 update table set value = value - 100 where id = 'gerry';
-{% endhighlight %}
+```
+
 
 问题2：GTS什么场景下不能保证数据的一致性？
 
@@ -748,4 +772,3 @@ DRDS，Oracle，MySQL，RDS，PostgreSQL，MQ等。
 [深入学习MySQL事务：ACID特性的实现原理]: https://www.cnblogs.com/kismetv/p/10331633.html
 
 [基于大中台架构的电商业务中台最佳实践之三：交易中台技术要点设计之高性能]: https://zhuanlan.zhihu.com/p/48693144
-{% endhighlight %}

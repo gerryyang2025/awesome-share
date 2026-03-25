@@ -58,24 +58,27 @@ To begin using Ansible as a means of managing your server infrastructure, you ne
 
 From your control node, run the following command to include the official project’s PPA (personal package archive) in your system’s list of sources:
 
-{% highlight bash %}
+```bash
 sudo apt-add-repository ppa:ansible/ansible
-{% endhighlight %}
+```
+
 
 Press `ENTER` when prompted to accept the PPA addition.
 
 Next, refresh your system’s package index so that it is aware of the packages available in the newly included PPA:
 
-{% highlight bash %}
+```bash
 sudo apt update
-{% endhighlight %}
+```
+
 
 Following this update, you can install the Ansible software with:
 
 
-{% highlight bash %}
+```bash
 sudo apt install ansible
-{% endhighlight %}
+```
+
 
 Your Ansible control node now has all of the software required to administer your hosts. Next, we will go over how to add your hosts to the control node’s inventory file so that it can control them.
 
@@ -83,16 +86,17 @@ Your Ansible control node now has all of the software required to administer you
 
 CentOS utilizes the YUM package manager as well, and you can install Ansible directly from the EPEL repository:
 
-{% highlight bash %}
+```bash
 sudo yum update -y
 sudo yum install epel-release
 sudo yum install ansible
 
 # Validate Ansible:
 ansible ---version
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $ which ansible
 /usr/bin/ansible
 
@@ -106,7 +110,8 @@ ansible [core 2.16.3]
   python version = 3.12.8 (main, Dec 16 2024, 17:09:32) [GCC 8.5.0 20210514 (Tencent 8.5.0-23)] (/usr/bin/python3.12)
   jinja version = 3.1.2
   libyaml = True
-{% endhighlight %}
+```
+
 
 # Step 2 — Setting Up the Inventory File
 
@@ -114,13 +119,14 @@ The **inventory** file contains information about the hosts you’ll manage with
 
 To edit the contents of your default Ansible inventory, open the `/etc/ansible/hosts` file using your text editor of choice, on your Ansible Control Node:
 
-{% highlight bash %}
+```bash
 sudo nano /etc/ansible/hosts
-{% endhighlight %}
+```
+
 
 > **Note**: some Ansible installations won’t create a default inventory file. If the file doesn’t exist in your system, you can create a new file at `/etc/ansible/hosts` or provide a custom inventory path using the `-i` parameter when running commands and playbooks.
 
-{% highlight text %}
+```text
 $ cat /etc/ansible/hosts
 # This is the default ansible 'hosts' file.
 #
@@ -175,11 +181,12 @@ $ cat /etc/ansible/hosts
 ## [openSUSE]
 ## green.example.com
 ## blue.example.com
-{% endhighlight %}
+```
+
 
 The default inventory file provided by the Ansible installation contains a number of examples that you can use as references for setting up your inventory. The following example defines a group named `[servers]` with three different servers in it, each identified by a custom alias: **server1**, **server2**, and **server3**. Be sure to replace the highlighted IPs with the IP addresses of your Ansible hosts.
 
-{% highlight bash %}
+```bash
 # /etc/ansible/hosts
 [servers]
 server1 ansible_host=203.0.113.111
@@ -188,7 +195,8 @@ server3 ansible_host=203.0.113.113
 
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3
-{% endhighlight %}
+```
+
 
 The `all:vars` subgroup sets the `ansible_python_interpreter` host parameter that will be valid for all hosts included in this inventory. This parameter makes sure the remote server uses the `/usr/bin/python3` Python 3 executable instead of `/usr/bin/python` (Python 2.7), which is not present on recent Ubuntu versions.
 
@@ -196,13 +204,14 @@ When you’re finished, save and close the file by pressing `CTRL+X` then `Y` an
 
 Whenever you want to check your inventory, you can run:
 
-{% highlight bash %}
+```bash
 ansible-inventory --list -y
-{% endhighlight %}
+```
+
 
 You’ll see output similar to this, but containing your own server infrastructure as defined in your inventory file:
 
-{% highlight bash %}
+```bash
 all:
   children:
     servers:
@@ -217,7 +226,8 @@ all:
           ansible_host: 203.0.113.113
           ansible_python_interpreter: /usr/bin/python3
     ungrouped: {}
-{% endhighlight %}
+```
+
 
 Now that you’ve configured your inventory file, you have everything you need to test the connection to your Ansible hosts.
 
@@ -232,9 +242,10 @@ You can use the `-u` argument to specify the remote system user. When not provid
 
 From your local machine or Ansible control node, run:
 
-{% highlight bash %}
+```bash
 ansible all -m ping -u root
-{% endhighlight %}
+```
+
 
 This command will use Ansible’s built-in [`ping` module](https://docs.ansible.com/ansible/latest/modules/ping_module.html) to run a connectivity test on all nodes from your default inventory, connecting as **root**. The `ping` module will test:
 
@@ -244,7 +255,7 @@ This command will use Ansible’s built-in [`ping` module](https://docs.ansible.
 
 You should get output similar to this:
 
-{% highlight text %}
+```text
 server1 | SUCCESS => {
     "changed": false,
     "ping": "pong"
@@ -257,7 +268,8 @@ server3 | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-{% endhighlight %}
+```
+
 
 ![ansible1](/assets/images/202502/ansible1.png)
 
@@ -265,14 +277,15 @@ server3 | SUCCESS => {
 
 例如：
 
-{% highlight bash %}
+```bash
 server1 ansible_host=9.134.129.173 ansible_ssh_port=36000 ansible_user=root
 server2 ansible_host=9.134.129.173 ansible_ssh_port=36000 ansible_user=root
 server3 ansible_host=9.134.129.173 ansible_ssh_port=36000 ansible_user=root
 
 [all:vars]
 ansible_python_interpreter=/usr/local/bin/python
-{% endhighlight %}
+```
+
 
 
 If this is the first time you’re connecting to these servers via SSH, you’ll be asked to confirm the authenticity of the hosts you’re connecting to via Ansible. When prompted, type `yes` and then hit `ENTER` to confirm.
@@ -288,9 +301,10 @@ After confirming that your Ansible control node is able to communicate with your
 
 Any command that you would normally execute on a remote server over SSH can be run with Ansible on the servers specified in your inventory file. As an example, you can check disk usage on all servers with:
 
-{% highlight bash %}
+```bash
 ansible all -a "df -h" -u root
-{% endhighlight %}
+```
+
 
 ![ansible2](/assets/images/202502/ansible2.png)
 
@@ -298,21 +312,24 @@ The highlighted command `df -h` can be replaced by any command you’d like.
 
 You can also execute [Ansible modules](https://docs.ansible.com/ansible/latest/modules/modules_by_category.html) via ad-hoc commands, similarly to what we’ve done before with the `ping` module for testing connection. For example, here’s how we can use the `apt` module to install the latest version of `vim` on all the servers in your inventory:
 
-{% highlight bash %}
+```bash
 ansible all -m apt -a "name=vim state=latest" -u root
-{% endhighlight %}
+```
+
 
 You can also target individual hosts, as well as groups and subgroups, when running Ansible commands. For instance, this is how you would check the `uptime` of every host in the **servers** group:
 
-{% highlight bash %}
+```bash
 ansible servers -a "uptime" -u root
-{% endhighlight %}
+```
+
 
 We can specify multiple hosts by separating them with colons:
 
-{% highlight bash %}
+```bash
 ansible server1:server2 -m ping -u root
-{% endhighlight %}
+```
+
 
 For more information on how to use Ansible, including how to execute playbooks to automate server setup, you can check our [Ansible Reference Guide](https://www.digitalocean.com/community/cheatsheets/how-to-use-ansible-cheat-sheet-guide).
 
@@ -344,22 +361,24 @@ You can still set `ansible_python_interpreter` to a specific path at any variabl
 
 
 
-{% highlight text %}
+```text
 [root /etc/ansible 15:02:12]$ ls
 ansible.cfg  hosts  roles
-{% endhighlight %}
+```
+
 
 ## setup 模块用于收集远程主机的信息
 
 例如，想查看主机的操作系统信息，`filter=ansible_os_family` 表示只显示 `ansible_os_family` 这个字段的信息。
 
-{% highlight bash %}
+```bash
 $ ansible server1 -m setup -a 'filter=ansible_os_family' -i hosts
-{% endhighlight %}
+```
+
 
 输出：
 
-{% highlight text %}
+```text
 server1 | SUCCESS => {
     "ansible_facts": {
         "ansible_os_family": "RedHat",
@@ -367,17 +386,19 @@ server1 | SUCCESS => {
     },
     "changed": false
 }
-{% endhighlight %}
+```
+
 
 也可以使用通配符来匹配多个字段。例如，想查看所有以 `ansible_eth` 开头的网络接口信息，`filter=ansible_eth*` 表示显示所有以 `ansible_eth` 开头的字段的信息。
 
-{% highlight bash %}
+```bash
 $ ansible server2 -m setup -a 'filter=ansible_eth*' -i hosts
-{% endhighlight %}
+```
+
 
 输出：
 
-{% highlight text %}
+```text
 server2 | SUCCESS => {
     "ansible_facts": {
         "ansible_eth0": {
@@ -446,7 +467,8 @@ server2 | SUCCESS => {
     },
     "changed": false
 }
-{% endhighlight %}
+```
+
 
 
 # Refer

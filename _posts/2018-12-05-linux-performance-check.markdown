@@ -111,9 +111,10 @@ Refer：
 
 可以通过top或者从文件`/proc/cpuinfo`中获取cpu的信息。**在实际生产环境中，当平均负载高于CPU数量70%(并不绝对)的时候，就应该排查负载高的问题了。**
 
-{% highlight bash %}
+```bash
 grep 'model name' /proc/cpuinfo | wc -l
-{% endhighlight %}
+```
+
 
 ### 平均负载与CPU使用率
 
@@ -213,11 +214,12 @@ CPU上下文切换，就是把前一个任务的CPU上下文保存起来，然�
 
 * `节拍率CONFIG_HZ`(内核选项)。为了维护CPU时间，Linux通过事先定义的`节拍率(内核中表示为HZ)`，触发时间中断，并使用全局变量`Jiffies`记录开机以来的节拍数。每发生一次时间中断，`Jiffies`的值就加1。节拍率HZ是内核的可配选项，可以设置为100,250,1000等，不同的系统可能设置不同数值。
 
-{% highlight text %}
+```text
 # 通过内核选项查看节拍率的配置值，代表每秒钟触发250次时间中断
 $grep "CONFIG_HZ=" /boot/config-$(uname -r)
 CONFIG_HZ=250
-{% endhighlight %}
+```
+
 
 * `节拍率USER_HZ`(用户空间)，它固定为100(即，1/100秒)，用户空间程序并不需要关心内核中HZ被设置成了多少，因为它看到的总是固定值USER_HZ。
 * `/proc/stat`提供了关于系统的CPU和任务统计信息。
@@ -234,7 +236,7 @@ CONFIG_HZ=250
 		+ `steal`(缩写为`st`)，代表**当系统运行在虚拟机中的时候，被其他虚拟机占用的CPU时间**。
 		+ `guest`(缩写为`guest`)，代表**通过虚拟化运行其他操作系统的时间，也就是运行虚拟机的CPU时间**。
 
-{% highlight text %}
+```text
 $cat /proc/stat | grep ^cpu
 cpu  578330344 13474169 274296516 29468768395 1704635 1707 8800004 559876 0 0
 cpu0 76800541 3786 41365936 3662395305 1410425 514 1247852 153728 0 0
@@ -245,7 +247,8 @@ cpu4 71347242 617 32365060 3691242578 39912 0 854235 42197 0 0
 cpu5 71362048 566 32447788 3691034602 38925 0 893029 42947 0 0
 cpu6 71066492 748 32433314 3691442169 38796 0 855324 42912 0 0
 cpu7 70509238 13466270 33395943 3676865232 47833 0 860013 43484 0 0
-{% endhighlight %}
+```
+
 
 ## 中断
 
@@ -274,7 +277,7 @@ cpu7 70509238 13466270 33395943 3676865232 47833 0 860013 43484 0 0
 	- `RCU`，RCU锁
 * 正常情况，同一种中断在不同CPU上的累积次数应该相差不大。
 
-{% highlight text %}
+```text
 $ cat /proc/softirqs
                     CPU0       CPU1       CPU2       CPU3       CPU4       CPU5       CPU6       CPU7
           HI:          0          0          0          0          0          0          0          0
@@ -287,14 +290,16 @@ BLOCK_IOPOLL:          0          0          0          0          0          0 
        SCHED:  334322040  201626971  182193519  166406020  158340210  155001620  162949961  160917624
      HRTIMER:    3770790    3067883    3294058    2814030    3082644    5280147    2529713    2751330
          RCU:  505317878  414070615  405384406  383304364  379485156  369748897  386444807  374074340
-{% endhighlight %}
+```
+
 
 如何查看**中断次数的变化速率**？
 
-{% highlight text %}
+```text
 # 从高亮部分可以直观看出哪些内容变化的更快
 watch -d cat /proc/softirqs
-{% endhighlight %}
+```
+
 
 
 
@@ -303,7 +308,7 @@ watch -d cat /proc/softirqs
 
 内核线程的名字外面都有中括号，说明ps命令无法获取它们的命令行参数。
 
-{% highlight text %}
+```text
 $ ps aux|grep softirq
 root         3  0.0  0.0      0     0 ?        S    May15   2:56 [ksoftirqd/0]
 root        29  0.0  0.0      0     0 ?        S    May15   2:08 [ksoftirqd/1]
@@ -313,13 +318,14 @@ root        44  0.0  0.0      0     0 ?        S    May15   0:33 [ksoftirqd/4]
 root        49  0.0  0.0      0     0 ?        S    May15   0:37 [ksoftirqd/5]
 root        54  0.0  0.0      0     0 ?        S    May15   0:36 [ksoftirqd/6]
 root        59  0.0  0.0      0     0 ?        S    May15   0:34 [ksoftirqd/7]
-{% endhighlight %}
+```
+
 
 ### 查看硬中断
 
 * `/proc/interrupts` 提供了硬中断的运行情况。
 
-{% highlight text %}
+```text
 $ cat /proc/interrupts
            CPU0       CPU1       CPU2       CPU3       CPU4       CPU5       CPU6       CPU7
   0:         33          0          0          0          0          0          0          0   IO-APIC-edge      timer
@@ -353,7 +359,8 @@ MCE:          0          0          0          0          0          0          
 MCP:      65623      65623      65623      65623      65623      65623      65623      65623   Machine check polls
 ERR:          0
 MIS:          0
-{% endhighlight %}
+```
+
 
 # 内存相关
 
@@ -373,13 +380,14 @@ MIS:          0
 
 如何查看内存的使用情况？(数值都默认以`字节`为单位)
 
-{% highlight text %}
+```text
 # free
              total       used       free     shared    buffers     cached
 Mem:       1017796     819720     198076      16784      46240     468880
 -/+ buffers/cache:     304600     713196
 Swap:            0          0          0
-{% endhighlight %}
+```
+
 
 ![top](/assets/images/201901/top.png)
 
@@ -483,14 +491,15 @@ A: 使用cachestat和cachetop。其中，cachestat提供了整个系统缓存的
 Q: 如何指定文件的缓存大小？
 A: 指定文件在内存中的缓存大小，可以使用[pcstat]这个工具，来查看文件在内存中的缓存大小和缓存比例。
 
-{% highlight text %}
+```text
 $ pcstat /bin/ls
 +---------+----------------+------------+-----------+---------+
 | Name    | Size (bytes)   | Pages      | Cached    | Percent |
 |---------+----------------+------------+-----------+---------|
 | /bin/ls | 133792         | 33         | 0         | 000.000 |
 +---------+----------------+------------+-----------+---------+
-{% endhighlight %}
+```
+
 
 [pcstat]: https://github.com/tobert/pcstat
 
@@ -540,17 +549,18 @@ A:
 
 可以看到，一旦**pages_free**小于pages_low，就会触发内存的回收。这个pages_low可以通过内核选项`/proc/sys/vm/min_free_kbytes`来间接设置。min_free_kbytes设置了pages_min，其他两个阈值，都是根据pages_min计算生成的，计算方法如下：
 
-{% highlight text %}
+```text
 pages_low  = pages_min * 5 / 4
 pages_high = pages_min * 3 / 2
-{% endhighlight %}
+```
+
 
 **Q: 很多情况下，发现SWAP升高，可是在分析系统的内存使用时，却很可能发现系统剩余内存还多着呢，为什么剩余内存很多的情况下，也会发生SWAP？**
 
 
 A: 这是处理器的`NUMA (Non-Uniform Memory Access)`架构导致的。在NUMA架构下，多个处理器被划分到不同的Node下，且每个Node都拥有自己的本地内存空间。当本地内存不足时，默认既可以从其他Node寻找空闲内存，也可以从本地内存回收。可以设置`/proc/sys/vm/zone_reclaim_mode`来调整NUMA本地内存的回收策略。
 
-{% highlight text %}
+```text
 $ numactl --hardware
 available: 1 nodes (0)
 node 0 cpus: 0 1
@@ -572,7 +582,8 @@ Node 0, zone   Normal
      nr_zone_inactive_file 539024
      nr_zone_active_file 923986
 ...
-{% endhighlight %}
+```
+
 
 **Q: 内存回收包括文件页和匿名页，对文件页的回收，就是直接回收缓存或者把脏页写回磁盘后再回收；对匿名页的回收，就是通过SWAP机制，把它们写入磁盘后再释放内存。既然有两种不同的内存回收机制，在实际回收内存时，该先回收哪一种？**
 
@@ -588,15 +599,16 @@ A: Linux提供了一个`/proc/sys/vm/swappiness`选项，取值0 - 100（表示�
 
 A: 通过`free`命令可以查看SWAP是否开启。如果Swap的大小都是0，说明机器没有配置SWAP。
 
-{% highlight text %}
+```text
 $ free
              total        used        free      shared  buff/cache   available
 Mem:        8169348      331668     6715972         696     1121708     7522896
 Swap:             0           0           0
-{% endhighlight %}
+```
+
 
 开启SWAP的方法：Linux本身支持两种类型的SWAP，即**SWAP分区**和**SWAP文件**。以SWAP文件为例，配置开启SWAP：
-{% highlight text %}
+```text
 # 创建 Swap 文件，这里配置SWAP文件的大小为8GB
 $ fallocate -l 8G /mnt/swapfile
 
@@ -608,35 +620,39 @@ $ mkswap /mnt/swapfile
 
 # 开启 Swap
 $ swapon /mnt/swapfile
-{% endhighlight %}
+```
+
 
 再次用`free`命令查看，确认SWAP配置成功。
 
-{% highlight text %}
+```text
 $ free
              total        used        free      shared  buff/cache   available
 Mem:        8169348      331668     6715972         696     1121708     7522896
 Swap:       8388604           0     8388604
-{% endhighlight %}
+```
+
 
 如果需要关闭SWAP，执行下面命令：
 
-{% highlight text %}
+```text
 $ swapoff -a
-{% endhighlight %}
+```
+
 
 实际上，关闭SWAP后再重新打开，也是一种常用的SWAP空间清理方法：
 
-{% highlight text %}
+```text
 $ swapoff -a && swapon -a
-{% endhighlight %}
+```
+
 
 
 **Q: SWAP换出的是哪些进程的内存？**
 
 A: 通过`proc`文件系统来查看进程SWAP换出的虚拟内存大小。它保存在`/proc/pid/status`中的`VmSwap`中。
 
-{% highlight text %}
+```text
 # 按 VmSwap 使用量对进程排序，输出进程名称、进程 ID 以及 SWAP 用量
 $ for file in /proc/*/status ; do awk '/VmSwap|Name|^Pid/ {printf $2 " " $3} END{ print ""}' $file; done | sort -k 3 -n -r | head
 dockerd 2226 10728 kB
@@ -644,14 +660,16 @@ docker-containe 2251 8516 kB
 snapd 936 4020 kB
 networkd-dispat 911 836 kB
 polkitd 1004 44 kB
-{% endhighlight %}
+```
+
 
 或者：
 
-{% highlight text %}
+```text
 # apt install smem
 # smem --sort swap
-{% endhighlight %}
+```
+
 
 **Q: 通常降低SWAP的使用，可以提高系统的整体性能，需要怎么做呢？**
 
@@ -665,14 +683,15 @@ A: 几种常见的降低方法：
 
 模拟大文件的读取：
 
-{% highlight text %}
+```text
 # 写入空设备，实际上只有磁盘的读请求
 $ dd if=/dev/sda1 of=/dev/null bs=1G count=2048
-{% endhighlight %}
+```
+
 
 在其他终端运行sar命令，查看内存各个指标的变化情况：
 
-{% highlight text %}
+```text
 # 间隔 1 秒输出一组数据
 # -r 表示显示内存使用情况，-S 表示显示 Swap 使用情况
 $ sar -r -S 1
@@ -696,11 +715,12 @@ $ sar -r -S 1
 
 04:44:06    kbswpfree kbswpused  %swpused  kbswpcad   %swpcad
 04:44:07      8384508      4096      0.05        52      1.27
-{% endhighlight %}
+```
+
 
 通过`/proc/zoneinfo`观察剩余内存，内存阈值，以及匿名页和文件页的使用情况：
 
-{% highlight text %}
+```text
 # -d 表示高亮变化的字段
 # -A 表示仅显示 Normal 行以及之后的 15 行输出
 $ watch -d grep -A 15 'Normal' /proc/zoneinfo
@@ -720,7 +740,8 @@ Node 0, zone   Normal
       nr_zone_active_file 496695
       nr_zone_unevictable 2251
       nr_zone_write_pending 0
-{% endhighlight %}
+```
+
 
 可以发现，系统回收内存时，有时候会回收更多的文件页，有时候又回收更多的匿名页。通过`/proc/sys/vm/swappiness`选项设置内存回收的倾向。
 
@@ -758,7 +779,7 @@ Node 0, zone   Normal
 
 /proc/meminfo
 
-{% highlight text %}
+```text
 # grep 表示只保留包含 active 的指标（忽略大小写）
 # sort 表示按照字母顺序排序
 $ cat /proc/meminfo | grep -i active | sort
@@ -769,16 +790,18 @@ Inactive(anon):      720 kB
 Inactive(file):  2109536 kB
 Inactive:        2110256 kB
 
-{% endhighlight %}
+```
+
 
 /proc/pid/smaps
 
-{% highlight text %}
+```text
 # 使用 grep 查找 Pss 指标后，再用 awk 计算累加值
 $ grep Pss /proc/[1-9]*/smaps | awk '{total+=$2}; END {printf "%d kB\n", total }'
 391266 kB
 
-{% endhighlight %}
+```
+
 
 
 | 内存指标 | 性能工具
@@ -840,11 +863,12 @@ VFS内部通过**目录项，索引节点，逻辑块，以及超级块**等数�
 **文件系统I/O**
 
 
-{% highlight c %}
+```c
 int open(const char *pathname, int flags, mode_t mode);
 ssize_t read(int fd, void *buf, size_t count);
 ssize_t write(int fd, const void *buf, size_t count);
-{% endhighlight %}
+```
+
 
 文件读写方式的各种差异，导致I/O的分类多种多样：
 * 缓冲与非缓冲I/O
@@ -941,7 +965,7 @@ ssize_t write(int fd, const void *buf, size_t count);
 
 观测每块磁盘的使用情况，常用`iostat`工具，其指标数据来自于`/proc/diskstats`。
 
-{% highlight text %}
+```text
 # -d -x 表示显示所有磁盘 I/O 的指标
 $ iostat -dx 1
 Device            r/s     w/s     rkB/s     wkB/s   rrqm/s   wrqm/s  %rrqm  %wrqm r_await w_await aqu-sz rareq-sz wareq-sz  svctm  %util
@@ -949,7 +973,8 @@ loop0            0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.0
 loop1            0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.00    0.00    0.00   0.00     0.00     0.00   0.00   0.00
 sda              0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.00    0.00    0.00   0.00     0.00     0.00   0.00   0.00
 sdb              0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.00    0.00    0.00   0.00     0.00     0.00   0.00   0.00
-{% endhighlight %}
+```
+
 
 各指标含义如下：
 
@@ -984,11 +1009,12 @@ https://linux.die.net/man/1/iostat
 
 除了每块磁盘的I/O情况，每个进程的I/O情况也是需要关注的重点。可以使用`pidstat`和`iotop`工具来查看进程的I/O情况。
 
-{% highlight text %}
+```text
 $ pidstat -d 1
 13:39:51      UID       PID   kB_rd/s   kB_wr/s kB_ccwr/s iodelay  Command
 13:39:52      102       916      0.00      4.00      0.00       0  rsyslogd
-{% endhighlight %}
+```
+
 
 各指标含义如下：
 
@@ -1002,14 +1028,15 @@ $ pidstat -d 1
 | iodelay | 块I/O延迟，包括等待同步块I/O和换入块I/O结束的时间，单位是时钟周期
 
 
-{% highlight text %}
+```text
 $ iotop
 Total DISK READ :       0.00 B/s | Total DISK WRITE :       7.85 K/s
 Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       0.00 B/s
   TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO>    COMMAND
 15055 be/3 root        0.00 B/s    7.85 K/s  0.00 %  0.00 % systemd-journald
 
-{% endhighlight %}
+```
+
 
 注意，前两行分别表示，进程的磁盘读写大小总数和磁盘真实的读写大小总数。因为缓存，缓冲区，I/O合并等因素的影响，它们可能并不相等。
 
@@ -1021,7 +1048,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       0.00 B/s
 
 **几个常见场景的测试方法：**
 
-{% highlight text %}
+```text
 # 随机读
 fio -name=randread -direct=1 -iodepth=64 -rw=randread -ioengine=libaio -bs=4k -size=1G -numjobs=1 -runtime=1000 -group_reporting -filename=/dev/sdb
 
@@ -1033,7 +1060,8 @@ fio -name=read -direct=1 -iodepth=64 -rw=read -ioengine=libaio -bs=4k -size=1G -
 
 # 顺序写
 fio -name=write -direct=1 -iodepth=64 -rw=write -ioengine=libaio -bs=4k -size=1G -numjobs=1 -runtime=1000 -group_reporting -filename=/dev/sdb
-{% endhighlight %}
+```
+
 
 
 参数说明：
@@ -1049,7 +1077,7 @@ fio -name=write -direct=1 -iodepth=64 -rw=write -ioengine=libaio -bs=4k -size=1G
 
 fio支持**I/O重放**，可以得到应用程序I/O模式的基准测试报告：
 
-{% highlight text %}
+```text
 # 使用 blktrace 跟踪磁盘 I/O，注意指定应用程序正在操作的磁盘
 $ blktrace /dev/sdb
 
@@ -1062,7 +1090,8 @@ $ blkparse sdb -d sdb.bin
 
 # 使用 fio 重放日志
 $ fio --name=replay --filename=/dev/sdb --direct=1 --read_iolog=sdb.bin
-{% endhighlight %}
+```
+
 
 [腾讯云 - 云硬盘类型性能指标参考](https://cloud.tencent.com/document/product/362/2353)
 
@@ -1164,7 +1193,7 @@ Linux是怎么收发网络包的？
 
 `ifconfig`和`ip`分别属于软件包net-tools和iproute2，iproute2是net-tools的下一代。**推荐使用ip工具**。
 
-{% highlight text %}
+```text
 $ ifconfig eth0
 eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST> mtu 1500
       inet 10.240.0.30 netmask 255.240.0.0 broadcast 10.255.255.255
@@ -1186,7 +1215,8 @@ $ ip -s addr show dev eth0
    9542432350 40809397 0       0       0       193
   TX: bytes packets errors dropped carrier collsns
    4815625265 32637658 0       0       0       0
-{% endhighlight %}
+```
+
 
 * **网络接口状态标志**。ifconfig输出中的`RUNNING`，或者ip输出中的`LOWER_UP`都表示物理网络层是连通的，即网卡已经连接到了交换机或者路由器中。如果看不到，通常表示网线被拔掉了。
 * **MTU的大小**。MTU默认大小是1500，根据网络架构的不同，可能需要调整MTU的数值。
@@ -1202,7 +1232,7 @@ $ ip -s addr show dev eth0
 
 除了ifconfig和ip只显示了网络接口收发数据包的统计信息，网络协议栈中的统计信息也需要关注。可以使用`netstat`或`ss`来查看套接字，网络栈，网络接口以及路由表的信息。推荐使用`ss`来查询网络的连接信息，因为它比`netstat`速度更快。
 
-{% highlight text %}
+```text
 # head -n 3 表示只显示前面 3 行
 # -l 表示只显示监听套接字
 # -n 表示显示数字地址和端口 (而不是名字)
@@ -1220,7 +1250,8 @@ $ ss -ltnp | head -n 3
 State    Recv-Q    Send-Q        Local Address:Port        Peer Address:Port
 LISTEN   0         128           127.0.0.53%lo:53               0.0.0.0:*        users:(("systemd-resolve",pid=840,fd=13))
 LISTEN   0         128                 0.0.0.0:22               0.0.0.0:*        users:(("sshd",pid=1459,fd=3))
-{% endhighlight %}
+```
+
 
 都展示了，套接字的状态，接收队列，发送队列，本地地址，远端地址，进程PID和进程名称等。
 
@@ -1241,7 +1272,7 @@ LISTEN   0         128                 0.0.0.0:22               0.0.0.0:*       
 
 使用netstat可以展示，TCP协议的**主动连接，被动连接，失败重试，发送和接收的分段数量**等各种信息。
 
-{% highlight text %}
+```text
 $ netstat -s
 ...
 Tcp:
@@ -1269,13 +1300,14 @@ UDP	  2         2         0
 TCP	  4         3         1
 ...
 
-{% endhighlight %}
+```
+
 
 ## 网络吞吐和PPS
 
 使用`sar -n`查看网络的统计信息。
 
-{% highlight text %}
+```text
 # 数字 1 表示每隔 1 秒输出一组数据
 $ sar -n DEV 1
 Linux 4.15.0-1035-azure (ubuntu) 	01/06/19 	_x86_64_	(2 CPU)
@@ -1285,22 +1317,24 @@ Linux 4.15.0-1035-azure (ubuntu) 	01/06/19 	_x86_64_	(2 CPU)
 13:21:41      docker0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
 13:21:41           lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
 
-{% endhighlight %}
+```
+
 
 使用`ethtool`来查询带宽：(**注意，单位是比特，小写字母b**)
 
-{% highlight text %}
+```text
 # 一个千兆网卡
 $ ethtool eth0 | grep Speed
 	Speed: 1000Mb/s
 
-{% endhighlight %}
+```
+
 
 ## 连通性和延时
 
 使用`ping`来测试远程主机的连通性和延时，而这是基于**ICMP**协议。
 
-{% highlight text %}
+```text
 # -c3 表示发送三次 ICMP 包后停止
 $ ping -c3 114.114.114.114
 PING 114.114.114.114 (114.114.114.114) 56(84) bytes of data.
@@ -1312,7 +1346,8 @@ PING 114.114.114.114 (114.114.114.114) 56(84) bytes of data.
 3 packets transmitted, 3 received, 0% packet loss, time 2001ms
 rtt min/avg/max/mdev = 244.023/244.070/244.105/0.034 ms
 
-{% endhighlight %}
+```
+
 
 * 第一部分，是每个ICMP请求的信息。包括，ICMP序列号(icmp_seq)，TTL(生存时间或者跳数)，往返延时。
 * 第二部分，是三次ICMP请求的汇总。
@@ -1479,7 +1514,7 @@ Q: 有没有可能在单机中，同时处理1000万的请求？
 
 
 
-{% highlight text %}
+```text
 $ top
 top - 11:41:27 up 224 days, 19:54,  1 user,  load average: 0.01, 0.06, 0.06
 Tasks: 140 total,   1 running, 139 sleeping,   0 stopped,   0 zombie
@@ -1495,7 +1530,8 @@ Swap:  2104508k total,        0k used,  2104508k free,  3361592k cached
     7 root      RT   0     0    0    0 S  0.0  0.0   0:36.80 migration/0
     8 root      20   0     0    0    0 S  0.0  0.0   0:00.00 rcu_bh
     9 root      20   0     0    0    0 S  0.0  0.0   0:00.00 rcuob/0
-{% endhighlight %}
+```
+
 
 ## ps
 	- 显示了每个进程的资源使用情况。
@@ -1515,7 +1551,7 @@ Swap:  2104508k total,        0k used,  2104508k free,  3361592k cached
 		+ cswch (voluntary context switches)表示每秒自愿上下文切换的次数。是指进程无法获取所需资源，导致的上下文切换(例如，I/O，内存等系统资源不足时)。
 		+ nvcswch (non-voluntary context switches)表示每秒非自愿上下文切换的次数。是指进程由于时间片已到等原因，被系统强制调度，而发生的上下文切换(例如，大量进程都在争抢CPU时)。
 
-{% highlight text %}
+```text
 $ pidstat -wt 5
 Linux 3.10.107-1-tlinux2_kvm_guest-0046 (VM_4_14_centos)        12/20/18        _x86_64_        (8 CPU)
 
@@ -1534,7 +1570,8 @@ Linux 3.10.107-1-tlinux2_kvm_guest-0046 (VM_4_14_centos)        12/20/18        
 09:27:02        0         -        18     27.87      0.00  |__rcuos/0
 09:27:02        0        19         -     27.87      0.00  rcuos/1
 09:27:02        0         -        19     27.87      0.00  |__rcuos/1
-{% endhighlight %}
+```
+
 
 ## vmstat
 
@@ -1550,7 +1587,7 @@ A: The  first  report  produced gives averages since the last reboot.  Additiona
 + bi 块设备读取的大小，单位为块/秒(因为Linux中块的大小是1KB，所以单位等价于KB/s)
 + bo 块设备写入的大小，单位为块/秒
 
-{% highlight text %}
+```text
 # 每隔5秒输出1组数据
 $vmstat 5
 procs -----------memory---------- ---swap-- -----io---- -system-- -----cpu------
@@ -1559,22 +1596,25 @@ procs -----------memory---------- ---swap-- -----io---- -system-- -----cpu------
  0  0 1032316 6471860 387984 5092548    0    0     0   122  312 10741  0  0 99  1  0
  0  0 1032316 6472252 387996 5092536    0    0     0    89  302 10531  0  0 99  1  0
  0  0 1032316 6471632 388012 5093548    0    0     0   242  326 10559  0  0 99  1  0
-{% endhighlight %}
+```
+
 
 ## sysbench
 
 CentOS
 
-{% highlight text %}
+```text
 sysbench --num-threads=10 --max-time=300 --max-requests=1000000 --test=threads --thread-yields=1000 --thread-locks=8 run
-{% endhighlight %}
+```
+
 
 ## proc
 
 查看中断使用情况，其中`RES`表示**重调度中断(唤醒空闲状态的CPU来调度新的任务运行)**
-{% highlight text %}
+```text
 watch -d cat /proc/interrupts
-{% endhighlight %}
+```
+
 
 ![proc_interrupts](/assets/images/201812/proc_interrupts.png)
 
@@ -1608,16 +1648,17 @@ refer: [brendangregg: perf Examples]
 
 ## ab
 
-{% highlight text %}
+```text
 ab -c 10 -n 10000 http://ip:port
-{% endhighlight %}
+```
+
 
 ## sar
 
 + Collect, report, or save system activity information.
 + 一个系统活动报告工具，既可以实时查看系统的当前活动，又可以配置保存和报告历史统计数
 
-{% highlight text %}
+```text
 # 查看CPU使用率
 sar -u 1
 
@@ -1631,7 +1672,8 @@ Linux 3.10.94-1-tlinux2_kvm_guest-0019.tl2 (TENCENT64.site)     12/31/18        
 17:41:56         eth1      7.00     20.00      0.85      4.85      0.00      0.00      0.00
 17:41:56       peth21      0.00      0.00      0.00      0.00      0.00      0.00      0.00
 17:41:56           lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
-{% endhighlight %}
+```
+
 第一列，是报告的时间。
 IFACE，是网卡。
 rxpck/s和txpck/s，分别是每秒接收，发送的网络帧数。
@@ -1641,22 +1683,24 @@ rxkB/s和txkB/s，分别是每秒接收，发送的千字节数。
 
 一个可以构造TCP/IP协议数据包的工具，可以对系统进行安全审计，防火墙测试等
 
-{% highlight text %}
+```text
 # 模拟SYN FLOOD攻击
 # -S参数表示设置TCP协议的SYN(同步序列号)，-p表示目的端口为80
 # -i u100表示每隔100微妙发送一个网络帧
 # 注意：如果在实践过程中现象不明显，可以尝试把100调小
 $ hping3 -S -p 80 -i u100 192.168.0.30
-{% endhighlight %}
+```
+
 
 PS: SYN FLOOD问题最简单的解决方法，是从交换机或硬件防火墙中封掉来源IP，这样SYN FLOOD网络帧就不会发送到服务器中。
 
 ## tcpdump
 
 一个常用的网络抓包工具，用于分析网络问题
-{% highlight text %}
+```text
 tcpdump -i eth0 -n tcp  port 80
-{% endhighlight %}
+```
+
 
 ## dd
 
@@ -1668,30 +1712,33 @@ tcpdump -i eth0 -n tcp  port 80
 
 准备工作：
 
-{% highlight text %}
+```text
 # 清理文件页，目录项，Inodes等各种缓存：
 echo 3 > /proc/sys/vm/drop_caches
 
 # 查看cache使用情况
 vmstat 1
-{% endhighlight %}
+```
+
 
 写案例：
 
-{% highlight text %}
+```text
 # 通过读取随机设备，生成一个500MB大小的文件
 dd if=/dev/urandom of=/tmp/file bs=1M count=500
-{% endhighlight %}
+```
+
 ![dd_r_w](/assets/images/201901/dd_r_w.png)
 
 bi和bo，分别表示块设备读取和写入的大小，单位为`块/秒`(因为Linux中块的大小是1KB，所以单位等价于KB/s)。将bo加起来就是写入的500MB。
 
 读案例：
 
-{% highlight text %}
+```text
 # 读
 dd if=/tmp/file of=/dev/null
-{% endhighlight %}
+```
+
 ![dd_r](/assets/images/201901/dd_r.png)
 
 * cachestat
@@ -1714,9 +1761,10 @@ dd if=/tmp/file of=/dev/null
 
 [pcstat]是一个基于Go开发的工具，指定和查看文件的缓存大小。
 
-{% highlight text %}
+```text
 go get github.com/tobert/pcstat
-{% endhighlight %}
+```
+
 
 [pcstat]: https://github.com/tobert/pcstat
 

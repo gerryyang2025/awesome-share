@@ -34,7 +34,7 @@ As `ag++` is just a wrapper, it first generates the `puma` configuration file, t
 some cases this may lead to a situation where the names of intermediate files interfere with each other.
 
 
-{% highlight text %}
+```text
 $cat puma.config
 --skip-bodies-non-prj
 -D __puma
@@ -72,7 +72,8 @@ $cat puma.config
 -D "linux=1"
 -D "unix=1"
 --gnu 8.3.1
-{% endhighlight %}
+```
+
 
 
 # About the Project
@@ -84,16 +85,17 @@ With the AspectC++ project we extend the AspectJ approach to **C/C++**. It is a 
 
 # 示例 1 - Hello World
 
-{% highlight text %}
+```text
 $tree
 .
 ├── hello.h
 ├── main.cc
 ├── Makefile
 └── world.ah
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 // main.cc
 
 #include "hello.h"
@@ -102,9 +104,10 @@ int main(){
   hello(); //print "Hello"
   return 0;
 }
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 // hello.h
 
 #ifndef __HELLO_H__
@@ -118,11 +121,12 @@ void hello() {
 }
 
 #endif
-{% endhighlight %}
+```
+
 
 `world.ah` 内容如下：
 
-{% highlight cpp %}
+```cpp
 #ifndef __WORLD_AH__
 #define __WORLD_AH__
 
@@ -138,11 +142,12 @@ aspect World {
 };
 
 #endif
-{% endhighlight %}
+```
+
 
 Makefile 内容如下：
 
-{% highlight text %}
+```text
 CXX ?= g++
 ACXX ?= ag++
 
@@ -187,20 +192,22 @@ endif
 
 # don't remove any intermediate files
 .SECONDARY:
-{% endhighlight %}
+```
+
 
 
 编译构建：
 
-{% highlight text %}
+```text
 $make -n
 echo Compiling main.cc
 ag++ --c_compiler clang++ -c main.cc -o Junk/main.o
 echo Linking helloworld
 g++  -o helloworld Junk/main.o
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $make
 Compiling main.cc
 Linking helloworld
@@ -208,20 +215,22 @@ $make run
 ./helloworld
 Hello
 World
-{% endhighlight %}
+```
+
 
 # 示例 2 - profiling
 
-{% highlight text %}
+```text
 $tree
 .
 ├── genericprofiler.ah
 ├── main.cc
 ├── Makefile
 └── profiler.ah
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 // main.cc
 
 class MyClass {
@@ -248,11 +257,12 @@ int main() {
 
   return 0;
 }
-{% endhighlight %}
+```
+
 
 genericprofiler.ah
 
-{% highlight cpp %}
+```cpp
 #ifndef __genericprofiler_ah__
 #define __genericprofiler_ah__
 
@@ -377,11 +387,12 @@ aspect GenericProfiler {
 
 
 #endif
-{% endhighlight %}
+```
+
 
 profiler.ah
 
-{% highlight cpp %}
+```cpp
 #ifndef __profiler_ah__
 #define __profiler_ah__
 
@@ -424,22 +435,24 @@ aspect CSVProfiler : public GenericProfiler {
 };
 
 #endif
-{% endhighlight %}
+```
+
 
 编译构建：
 
-{% highlight text %}
+```text
 $make -n
 echo Compiling main.cc
 ag++  --c_compiler clang++ -c main.cc -o Junk/main.o
 echo Linking profiling
 g++  -o profiling Junk/main.o
-{% endhighlight %}
+```
+
 
 
 运行：
 
-{% highlight text %}
+```text
 $./profiling
 function ; number of executions ; total time (clock cycles)
 void work() ; 2 ; 78
@@ -447,7 +460,8 @@ void MyClass::privateWork() ; 6 ; 234
 void MyClass::work() ; 3 ; 858
 void MyClass::work(int) ; 1 ; 1300
 int main() ; 1 ; 2392
-{% endhighlight %}
+```
+
 
 
 # [AspectC++ – A Language Overview, May 20, 2005](https://www.aspectc.org/doc/ac-lang-survey.pdf)
@@ -482,13 +496,14 @@ Example
 
 The following advice is generic advice, because its implementation can deal with multiple overloaded `C::foo(...)` implementations that have different result types:
 
-{% highlight cpp %}
+```cpp
 advice execution(" % C::foo(...)") : around() {
     std::cout << " executing " << JoinPoint::signature() << " on " << *tjp->that() << std::endl ;
     tjp-> proceed();
     std::cout << " the result was " << *tjp->result() << std::endl ;
 }
-{% endhighlight %}
+```
+
 
 
 
@@ -497,7 +512,7 @@ advice execution(" % C::foo(...)") : around() {
 
 The `ag++` program provides a more intuitive(使用简便的) frontend to the AspectC++ weaver (`ac++`) in a GNU environment. The only preliminaries are a working installation of GNU C++ compiler, which also can run within a cygwin environment. **It basically wraps the functionality of the aspect weaver and the c++ compiler into one single program.**
 
-{% highlight text %}
+```text
 $ag++ --help
 usage:  ag++ [options] [file...]
    options are ...
@@ -556,7 +571,8 @@ usage:  ag++ [options] [file...]
      --no_attributes            Disable support user-defined attributes
      -isystem <arg>             Add system include path
      --warn_compatibility <arg>         Enable migration warnings for code based on major version <arg>
-{% endhighlight %}
+```
+
 
 # [Documentation: AC++ Compiler Manual, Version 2.3, February 17, 2021](https://www.aspectc.org/doc/ac-compilerman.pdf)
 
@@ -573,7 +589,7 @@ Aspects are a special AspectC++ language element, which can be used to implement
 After the code transformation the output of `ac++` can be compiled to executable code with ordinary C++ compilers like `GNU g++`, or `Microsoft VisualC++`.
 
 
-{% highlight text %}
+```text
 $ac++ -h
 usage: ac++ options
    options are ...
@@ -617,7 +633,8 @@ usage: ac++ options
    further options for correct parsing are ...
      -I <arg>                   include file search path
      -D <name>[=<value>]        macro definitions
-{% endhighlight %}
+```
+
 
 
 ## Download and Installation
@@ -631,7 +648,7 @@ The `README` file explains the necessary steps for the installation, while the `
 
 https://www.aspectc.org/releases/2.3/README-2.3
 
-{% highlight installation %}
+```installation
 ------------
 
 Installation on systems with g++ is straightforward. Unpack the tarball,
@@ -663,7 +680,8 @@ Visit http://www.aspectc.org for more information and updated versions.
 
 If you want any information about the AspectC++ project or have any comments,
 feel free to send us mail via info@aspectc.org.
-{% endhighlight %}
+```
+
 
 ## Invocation
 
@@ -717,27 +735,31 @@ A match expression is a quoted string.
 
 > Example: match expressions (name pointcuts)
 
-{% highlight text %}
+```text
 "int C::%(...)"
-{% endhighlight %}
+```
+
 
 matches all member functions of the class C that return an int
 
-{% highlight text %}
+```text
 "%List"
-{% endhighlight %}
+```
+
 
 matches any namespace, class, struct, union, or enum whose name ends with List.
 
-{% highlight text %}
+```text
 "% printf(const char *, ...)"
-{% endhighlight %}
+```
+
 
 matches the function printf (defined in the global scope) having at least one parameter of type const char * and returning any type
 
-{% highlight text %}
+```text
 "const %& ...::%(...)"
-{% endhighlight %}
+```
+
 
 matches all functions that return a reference to a constant object
 
@@ -756,15 +778,17 @@ Such a pointcut function is for instance `within(pointcut)`, which filters all j
 
 > Example: pointcut expressions
 
-{% highlight text %}
+```text
 "%List" && !derived("Queue")
-{% endhighlight %}
+```
+
 
 describes the set of classes with names that end with `List` and that are not derived from the class `Queue`
 
-{% highlight text %}
+```text
 call("void draw()") && within("Shape")
-{% endhighlight %}
+```
+
 
 describes the set of calls to the function `draw` that are within methods of the class `Shape`
 
@@ -796,13 +820,14 @@ To see the collection of prior postings to the list, visit the [aspectc-user Arc
 
 Make sure that the matched name is not a macro. AspectC++ can't match macros:
 
-{% highlight cpp %}
+```cpp
 #define X x_is_real_function_name
 
 // ...
 
 int X(int b) { ... }
-{% endhighlight %}
+```
+
 
 will not be matched by "% X(int)".
 

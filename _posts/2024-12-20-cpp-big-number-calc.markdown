@@ -16,7 +16,7 @@ tags:
 
 测试代码：https://godbolt.org/z/Gn1bx1d7r
 
-{% highlight cpp %}
+```cpp
 #include <cstdint>
 #include <limits>
 #include <iostream>
@@ -160,11 +160,12 @@ int main()
 
     return 0;
 }
-{% endhighlight %}
+```
+
 
 输出：
 
-{% highlight text %}
+```text
 UINT32_MAX=4294967295
 std::numeric_limits<uint32_t>::max()=4294967295
 UINT64_MAX=18446744073709551615
@@ -184,4 +185,5 @@ uVal2=2147483648
 SafeAdd(a, b)=18446744071562067967
 a2 - b2 =18446744071562067969
 SafeMinus(a2, b2)=-2147483648
-{% endhighlight %}
+```
+

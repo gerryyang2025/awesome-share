@@ -21,7 +21,7 @@ tags:
 
 Consider the following function that extracts all the keys from a `map[string]int` type:
 
-{% highlight go %}
+```go
 func getKeys(m map[string]int) []string {
     var keys []string
     for k := range m {
@@ -29,13 +29,14 @@ func getKeys(m map[string]int) []string {
     }
     return keys
 }
-{% endhighlight %}
+```
+
 
 What if we would like to use a similar feature for another map type such as a `map[int]string`? **Before generics, Go developers had a couple of options: using code generation, reflection, or duplicating code**.
 
 For example, we could write two functions, one for each map type, or even try to extend `getKeys` to accept different map types:
 
-{% highlight go %}
+```go
 func getKeys(m any) ([]any, error) {
     switch t := m.(type) {
     default:
@@ -50,7 +51,8 @@ func getKeys(m any) ([]any, error) {
         // Copy the extraction logic
     }
 }
-{% endhighlight %}
+```
+
 
 **We can start noticing a couple of issues:** (三个问题)
 
@@ -65,17 +67,18 @@ func getKeys(m any) ([]any, error) {
 
 Type parameters are generic types we can use with **functions** and **types**. For example, the following function accepts a type parameter:
 
-{% highlight go %}
+```go
 func foo[T any](t T) {
     // ...
 }
-{% endhighlight %}
+```
+
 
 When calling `foo`, we will pass a type argument of any type. Passing a type argument is called instantiation because the work is done at compile time which keeps type safety as part of the core language features and avoids runtime overheads.
 
 Let’s get back to the `getKeys` function and use type parameters to write a generic version that would accept any kind of map:
 
-{% highlight go %}
+```go
 func getKeys[K comparable, V any](m map[K]V) []K {
   var keys []K
   for k := range m {
@@ -83,13 +86,15 @@ func getKeys[K comparable, V any](m map[K]V) []K {
   }
   return keys
 }
-{% endhighlight %}
+```
+
 
 To handle the map, we defined two kinds of type parameters. First, the values can be of any type: `V any`. **However, in Go, the map keys can’t be of any type**. For example, we cannot use **slices**:
 
-{% highlight go %}
+```go
 var m map[[]byte]int
-{% endhighlight %}
+```
+
 
 This code leads to a compilation error: **invalid map key type []byte**. Therefore, instead of accepting any key type, we are obliged to restrict type arguments so that the key type meets specific requirements. Here, being comparable (we can use `==` or `!=`). **Hence, we defined `K` as comparable instead of `any`**.
 
@@ -100,7 +105,7 @@ Restricting type arguments to match specific requirements is called a **constrai
 
 Let’s see a concrete example for the latter. Imagine we don’t want to accept any `comparable` type for map key type. For instance, we would like to restrict it to either `int` or `string` types. We can define a custom constraint this way:
 
-{% highlight go %}
+```go
 type customConstraint interface {
    ~int | ~string // Define a custom type that will restrict types to int and string
 }
@@ -109,26 +114,29 @@ type customConstraint interface {
 func getKeys[K customConstraint, V any](m map[K]V) []K {
    // Same implementation
 }
-{% endhighlight %}
+```
+
 
 First, we define a `customConstraint` interface to restrict the types to be either `int` or `string` using the union operator `|` (we will discuss the use of `~` a bit later). Then, `K` is now a `customConstraint` instead of a `comparable` as before.
 
 Now, the signature of `getKeys` enforces that we can call it with a map of any value type, but the key type has to be an `int` or a `string`. For example, on the caller-side:
 
-{% highlight go %}
+```go
 m = map[string]int{
    "one":   1,
    "two":   2,
    "three": 3,
 }
 keys := getKeys(m)
-{% endhighlight %}
+```
+
 
 Note that Go can infer that `getKeys` is called with a `string` type argument. The previous call was similar to this:
 
-{% highlight go %}
+```go
 keys := getKeys[string](m)
-{% endhighlight %}
+```
+
 
 ![100_go_mistakes9](/assets/images/202512/100_go_mistakes9.png)
 
@@ -140,7 +148,7 @@ So far, we have discussed examples using generics for functions. **However, we c
 
 For example, we will create a linked list containing values of any type. Meanwhile, we will write an `Add` method to append a node:
 
-{% highlight go %}
+```go
 type Node[T any] struct { // Use type parameter
    Val  T
    next *Node[T]
@@ -149,21 +157,24 @@ type Node[T any] struct { // Use type parameter
 func (n *Node[T]) Add(next *Node[T]) { // Instantiate type receiver
    n.next = next
 }
-{% endhighlight %}
+```
+
 
 We use type parameters to define `T` and use both fields in `Node`. Regarding the method, the receiver is instantiated. Indeed, because `Node` is **generic**, it has to follow also the type parameter defined.
 
 **One last thing to note about type parameters: they can’t be used on `methods`, only on `functions`**. For example, the following method wouldn’t compile:
 
-{% highlight go %}
+```go
 type Foo struct {}
 
 func (Foo) bar[T any](t T) {}
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 ./main.go:29:15: methods cannot have type parameters
-{% endhighlight %}
+```
+
 
 Now, let’s delve into concrete cases where we should and shouldn’t use generics.
 
@@ -177,15 +188,16 @@ So when are **generics** useful? Let’s discuss a couple of common uses **where
 
 * **Functions working with slices, maps, and channels of any type**. For example, a function to merge two channels would work with any channel type. Hence, we could use type parameters to factor out the channel type:
 
-{% highlight go %}
+```go
 func merge[T any](ch1, ch2 <-chan T) <-chan T {
     // ...
 }
-{% endhighlight %}
+```
+
 
 * **Meanwhile, instead of factoring out a type, we can factor out behaviors**. For example, the sort package contains functions to sort different slice types such as `sort.Ints` or `sort.Float64s`. Using type parameters, we can factor out the sorting behaviors that rely on three methods, `Len`, `Less`, and `Swap`:
 
-{% highlight go %}
+```go
 type sliceFn[T any] struct { // Use type parameter
    s       []T
    compare func(T, T) bool // Compare two T elements
@@ -194,18 +206,20 @@ type sliceFn[T any] struct { // Use type parameter
 func (s sliceFn[T]) Len() int           { return len(s.s) }
 func (s sliceFn[T]) Less(i, j int) bool { return s.compare(s.s[i], s.s[j]) }
 func (s sliceFn[T]) Swap(i, j int)      { s.s[i], s.s[j] = s.s[j], s.s[i] }
-{% endhighlight %}
+```
+
 
 Conversely, **when is it recommended not to use generics**?
 
 * When just calling a method of the type argument. For example, consider a function that receives an `io.Writer` and call the `Write` method:
 
-{% highlight go %}
+```go
 func foo[T io.Writer](w T) {
    b := getBytes()
    _, _ = w.Write(b)
 }
-{% endhighlight %}
+```
+
 
 * When it makes our code more complex. Generics are never **mandatory**(强制性的), and as Go developers, we have been able to live without them for more than a decade. If writing generic functions or structures we figure out that it doesn’t make our code clearer, we should probably reconsider our decision for this particular use case.
 

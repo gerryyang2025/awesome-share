@@ -19,14 +19,15 @@ tags:
 
 shm_open, shm_unlink - create/open or unlink POSIX shared memory objects
 
-{% highlight c %}
+```c
 #include <sys/mman.h>
 #include <sys/stat.h>        /* For mode constants */
 #include <fcntl.h>           /* For O_* constants */
 
 int shm_open(const char *name, int oflag, mode_t mode);
 int shm_unlink(const char *name);
-{% endhighlight %}
+```
+
 
 `shm_open()` creates and opens a new, or opens an existing, **POSIX shared memory object**. A POSIX shared memory object is in effect a handle which can be used by unrelated processes to `mmap(2)` the same region of shared memory.  The `shm_unlink()` function performs the converse operation, removing an object previously created by `shm_open()`.
 
@@ -38,57 +39,62 @@ The operation of `shm_open()` is analogous to that of `open(2)`. `name` specifie
 
 pthread_mutex_init — destroy and initialize a mutex
 
-{% highlight c %}
+```c
 #include <pthread.h>
 
 int pthread_mutex_init(pthread_mutex_t *restrict mutex, const pthread_mutexattr_t *restrict attr);
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-{% endhighlight %}
+```
+
 
 ## [pthread_condattr_init](https://man7.org/linux/man-pages/man3/pthread_condattr_init.3p.html)
 
 pthread_condattr_init — initialize the condition variable attributes object
 
-{% highlight c %}
+```c
 #include <pthread.h>
 
 int pthread_condattr_init(pthread_condattr_t *attr);
-{% endhighlight %}
+```
+
 
 
 ## [pthread_condattr_setpshared](https://man7.org/linux/man-pages/man3/pthread_condattr_setpshared.3p.html)
 
 pthread_condattr_setpshared — set the process-shared condition variable attribute
 
-{% highlight c %}
+```c
 #include <pthread.h>
 
 int pthread_condattr_setpshared(pthread_condattr_t *attr, int pshared);
-{% endhighlight %}
+```
+
 
 ## [pthread_cond_init](https://linux.die.net/man/3/pthread_cond_init) / pthread_cond_destroy
 
 pthread_cond_destroy, pthread_cond_init - destroy and initialize condition variables
 
-{% highlight c %}
+```c
 #include <pthread.h>
 
 int pthread_cond_destroy(pthread_cond_t *cond);
 int pthread_cond_init(pthread_cond_t *restrict cond, const pthread_condattr_t *restrict attr);
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-{% endhighlight %}
+```
+
 
 
 ## [pthread_mutexattr_init](https://man7.org/linux/man-pages/man3/pthread_mutexattr_init.3.html) / pthread_mutexattr_destroy
 
 pthread_mutexattr_init, pthread_mutexattr_destroy - initialize and destroy a mutex attributes object
 
-{% highlight c %}
+```c
 #include <pthread.h>
 
 int pthread_mutexattr_init(pthread_mutexattr_t *attr);
 int pthread_mutexattr_destroy(pthread_mutexattr_t *attr);
-{% endhighlight %}
+```
+
 
 The `pthread_mutexattr_init()` function initializes the mutex attributes object pointed to by `attr` with default values for all attributes defined by the implementation.
 
@@ -103,12 +109,13 @@ The results of destroying an uninitialized mutex attributes object are undefined
 
 ## pthread_mutexattr_getpshared / [pthread_mutexattr_setpshared](https://linux.die.net/man/3/pthread_mutexattr_setpshared)
 
-{% highlight c %}
+```c
 #include <pthread.h>
 
 int pthread_mutexattr_getpshared(const pthread_mutexattr_t *restrict attr, int *restrict pshared);
 int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr, int pshared);
-{% endhighlight %}
+```
+
 
 The `pthread_mutexattr_getpshared()` function shall **obtain** the value of the process-shared attribute from the attributes object referenced by `attr`.
 
@@ -123,23 +130,25 @@ If the process-shared attribute is `PTHREAD_PROCESS_PRIVATE`, the mutex shall on
 
 pthread_cond_broadcast, pthread_cond_signal - broadcast or signal a condition
 
-{% highlight c %}
+```c
 #include <pthread.h>
 
 int pthread_cond_broadcast(pthread_cond_t *cond);
 int pthread_cond_signal(pthread_cond_t *cond);
-{% endhighlight %}
+```
+
 
 ## [pthread_cond_wait](https://linux.die.net/man/3/pthread_cond_wait) / [pthread_cond_timedwait](https://linux.die.net/man/3/pthread_cond_timedwait)
 
 pthread_cond_timedwait, pthread_cond_wait - wait on a condition
 
-{% highlight c %}
+```c
 #include <pthread.h>
 
 int pthread_cond_timedwait(pthread_cond_t *restrict cond, pthread_mutex_t *restrict mutex, const struct timespec *restrict abstime);
 int pthread_cond_wait(pthread_cond_t *restrict cond, pthread_mutex_t *restrict mutex);
-{% endhighlight %}
+```
+
 
 The `pthread_cond_timedwait()` and `pthread_cond_wait()` functions shall block on a condition variable. They shall be called with `mutex` locked by the calling thread or undefined behavior results.
 
@@ -164,7 +173,7 @@ Upon successful return, the mutex shall have been locked and shall be owned by t
 
 # 测试代码
 
-{% highlight c %}
+```c
 // kbhit.h
 
 #pragma once
@@ -198,7 +207,8 @@ int kbhit()
 
     return 0;
 }
-{% endhighlight %}
+```
+
 
 `kbhit()` 函数的实现涉及以下步骤：
 
@@ -216,7 +226,7 @@ int kbhit()
 
 ## 生产者
 
-{% highlight c %}
+```c
 // producer.c
 
 #include <stdio.h>
@@ -301,7 +311,8 @@ int main() {
     printf("producer exit\n");
     return 0;
 }
-{% endhighlight %}
+```
+
 
 这段代码定义了一个名为 share_data_t 的结构体，该结构体包含一个互斥锁（pthread_mutex_t）、一个条件变量（pthread_cond_t）和一个易失性整数（int volatile val）。这个结构体将用于在进程之间共享数据。
 
@@ -314,7 +325,7 @@ int main() {
 
 ## 消费者
 
-{% highlight c %}
+```c
 // consumer.c
 
 #include <stdio.h>
@@ -400,7 +411,8 @@ int main() {
     printf("consumer exit\n");
     return 0;
 }
-{% endhighlight %}
+```
+
 
 这段代码是一个消费者程序，它与生产者程序一起工作。消费者程序使用共享内存来访问生产者程序中的 share_data_t 结构体。结构体包含一个互斥锁，一个条件变量和一个易失性整数值。生产者和消费者之间通过这个结构体进行数据共享和同步。
 
@@ -424,7 +436,7 @@ int main() {
 
 Makefile 内容如下：
 
-{% highlight text %}
+```text
 CXXFLAGS = -Wall -g -pipe -O2
 CFLAGS = -Wall -g -pipe -O2
 
@@ -457,7 +469,8 @@ clean:
         $(CXX) $(CXXFLAGS) $(INCLUDE) -c $<
 %.o: %.c
         $(CC) $(CFLAGS) $(INCLUDE) -c $<
-{% endhighlight %}
+```
+
 
 
 # Refer

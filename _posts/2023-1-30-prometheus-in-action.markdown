@@ -113,21 +113,24 @@ Prometheus 内置的时序数据库 TSDB。
 
 Prometheus 读写的是**时序数据**，与一般的数据对象相比，时序数据有其特殊性，TSDB 对此进行了大量针对性的设计与优化。因此理解时序数据是理解 Prometheus 存储模型的第一步。通常它由如下所示的**标识**和**采样数据**两部组成：
 
-{% highlight text %}
+```text
 标识 -> {(t0, v0), (t1, v1), (t2, v2), ...}
-{% endhighlight %}
+```
+
 
 **标识**，用于**区分各个不同的监控指标**。在 Prometheus 中通常用**指标名 + 一系列的 label** 唯一地标识**一个时间序列**。如下为 Prometheus 抓取的一条时间序列，其中 `http_request_tota` l为**指标名**，表示 HTTP 请求的总数，它有 `path` 和 `method` 两个 **label**，用于表示各种请求的路径和方法。
 
-{% highlight text %}
+```text
 http_request_total{path="/", method="GET"} -> {(t0, v1), (t1, v1), ...}
-{% endhighlight %}
+```
+
 
 事实上，**指标名**最后也是作为一个特殊的 **label** 被存储的，它的 key 为 `__name__`，如下所示。最终 Prometheus 存储在数据库中的时间序列标识就是一堆 **label**。我们将这堆 **label** 称为 `series`。
 
-{% highlight text %}
+```text
 {__name__="http_request_total", path="/", method="GET"}
-{% endhighlight %}
+```
+
 
 采样数据则由诸多的**采样点**（Prometheus 中称为 `sample`）构成。`t0, t1, t2, ...` 表示**样本采集的时间**，`v0, v1, v2, ...` 则表示**指标在采集时刻的值**。**采样时间**一般是单调递增的并且相邻 sample 的时间间隔往往相同，Prometheus 中默认为 15s。而且一般相邻 sample 的指标值 v 并不会相差太多。基于采样数据的上述特性，对它进行高效地压缩存储是完全可能的。Prometheus 对于采样数据压缩算法的实现，参考了 Facebook 的时序数据库 `Gorilla` 中的做法，**通过该算法，16 字节的 sample 平均只需要 1.37 个字节的存储空间**。
 
@@ -153,7 +156,7 @@ refer:
 
 Prometheus 2.x 采用**自定义的存储格式**将样本数据保存在**本地磁盘**当中。按照**两个小时**（最少时间）为一个时间窗口，将两小时内产生的数据存储在一个块 (Block) 中，每一个块中包含该时间窗口内的所有样本数据 (chunks)，元数据文件 (meta.json) 以及索引文件 (index)。
 
-{% highlight text %}
+```text
 $ tree
 .
 ├── 01E2MA5GDWMP69GVBVY1W5AF1X
@@ -183,7 +186,8 @@ $ tree
     ├── 00000369
     └── checkpoint.000365
         └── 00000000
-{% endhighlight %}
+```
+
 
 ## Block
 
@@ -223,34 +227,37 @@ PromQL follows the same [escaping rules as Go](https://go.dev/ref/spec#String_li
 
 Example:
 
-{% highlight text %}
+```text
 "this is a string"
 'these are unescaped: \n \\ \t'
 `these are not unescaped: \n ' " \t`
-{% endhighlight %}
+```
+
 
 ### Float literals
 
 Scalar float values can be written as literal integer or floating-point numbers in the format (whitespace only included for better readability):
 
-{% highlight text %}
+```text
 [-+]?(
       [0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
     | 0[xX][0-9a-fA-F]+
     | [nN][aA][nN]
     | [iI][nN][fF]
 )
-{% endhighlight %}
+```
+
 
 Examples:
 
-{% highlight 23 %}
+```23
 -2.43
 3.4e-9
 0x8f
 -Inf
 NaN
-{% endhighlight %}
+```
+
 
 ## Time series Selectors
 
@@ -260,17 +267,19 @@ Instant vector selectors allow the selection of a set of time series and a singl
 
 This example selects all time series that have the `http_requests_total` metric name:
 
-{% highlight text %}
+```text
 http_requests_total
-{% endhighlight %}
+```
+
 
 > It is possible to filter these time series further by appending a comma separated list of label matchers in curly braces (`{}`).
 
 This example selects only those time series with the `http_requests_total` metric name that also have the `job` label set to `prometheus` and their `group` label set to `canary`:
 
-{% highlight text %}
+```text
 http_requests_total{job="prometheus",group="canary"}
-{% endhighlight %}
+```
+
 
 > It is also possible to negatively match a label value, or to match label values against regular expressions. The following label matching operators exist:
 
@@ -283,30 +292,34 @@ http_requests_total{job="prometheus",group="canary"}
 
 For example, this selects all `http_requests_total` time series for `staging`, `testing`, and `development` environments and HTTP methods other than `GET`.
 
-{% highlight text %}
+```text
 http_requests_total{environment=~"staging|testing|development",method!="GET"}
-{% endhighlight %}
+```
+
 
 > Label matchers that match empty label values also select all time series that do not have the specific label set at all. It is possible to have multiple matchers for the same label name.
 
 Vector selectors must either specify a name or at least one label matcher that does not match the empty string. The following expression is illegal:
 
-{% highlight text %}
+```text
 {job=~".*"} # Bad!
-{% endhighlight %}
+```
+
 
 In contrast, these expressions are valid as they both have a selector that does not match empty label values.
 
-{% highlight text %}
+```text
 {job=~".+"}              # Good!
 {job=~".*",method="get"} # Good!
-{% endhighlight %}
+```
+
 
 Label matchers can also be applied to metric names by matching against the internal `__name__` label. For example, the expression `http_requests_total` is equivalent to {`__name__="http_requests_total"`}. Matchers other than `=` (`!=`, `=~`, `!~`) may also be used. The following expression selects all metrics that have a name starting with `job:`:
 
-{% highlight text %}
+```text
 {__name__=~"job:.*"}
-{% endhighlight %}
+```
+
 
 ### Range Vector Selectors
 
@@ -314,9 +327,10 @@ Range vector literals work like instant vector literals, except that they select
 
 In this example, we select all the values we have recorded within the last 5 minutes for all time series that have the metric name `http_requests_total` and a `job` label set to `prometheus`:
 
-{% highlight text %}
+```text
 http_requests_total{job="prometheus"}[5m]
-{% endhighlight %}
+```
+
 
 ### Time Durations
 
@@ -334,11 +348,12 @@ Time durations are specified as a number, followed immediately by one of the fol
 
 Here are some examples of valid time durations:
 
-{% highlight 5h %}
+```5h
 1h30m
 5m
 10s
-{% endhighlight %}
+```
+
 
 ### Offset modifier
 
@@ -346,33 +361,38 @@ The `offset` modifier allows changing the time offset for individual instant and
 
 For example, the following expression returns the value of `http_requests_total` 5 minutes in the past relative to the current query evaluation time:
 
-{% highlight text %}
+```text
 http_requests_total offset 5m
-{% endhighlight %}
+```
+
 
 Note that the offset modifier always needs to follow the selector immediately, i.e. the following would be correct:
 
-{% highlight text %}
+```text
 sum(http_requests_total{method="GET"} offset 5m) // GOOD.
-{% endhighlight %}
+```
+
 
 While the following would be incorrect:
 
-{% highlight text %}
+```text
 sum(http_requests_total{method="GET"}) offset 5m // INVALID.
-{% endhighlight %}
+```
+
 
 The same works for range vectors. This returns the 5-minute rate that http_requests_total had a week ago:
 
-{% highlight text %}
+```text
 rate(http_requests_total[5m] offset 1w)
-{% endhighlight %}
+```
+
 
 For comparisons with temporal shifts forward in time, a negative offset can be specified:
 
-{% highlight text %}
+```text
 rate(http_requests_total[5m] offset -1w)
-{% endhighlight %}
+```
+
 
 > Note that this allows a query to look ahead of its evaluation time.
 
@@ -383,27 +403,31 @@ The `@` modifier allows changing the evaluation time for individual instant and 
 
 For example, the following expression returns the value of `http_requests_total` at `2021-01-04T07:40:00+00:00`:
 
-{% highlight text %}
+```text
 http_requests_total @ 1609746000
-{% endhighlight %}
+```
+
 
 Note that the `@` modifier always needs to follow the selector immediately, i.e. the following would be correct:
 
-{% highlight text %}
+```text
 sum(http_requests_total{method="GET"} @ 1609746000) // GOOD.
-{% endhighlight %}
+```
+
 
 While the following would be incorrect:
 
-{% highlight text %}
+```text
 sum(http_requests_total{method="GET"}) @ 1609746000 // INVALID.
-{% endhighlight %}
+```
+
 
 The same works for range vectors. This returns the 5-minute rate that `http_requests_total` had at `2021-01-04T07:40:00+00:00`:
 
-{% highlight text %}
+```text
 rate(http_requests_total[5m] @ 1609746000)
-{% endhighlight %}
+```
+
 
 ## Subquery
 
@@ -428,9 +452,10 @@ Prometheus supports several functions to operate on data. These are described in
 
 PromQL supports line comments that start with `#`. Example:
 
-{% highlight text %}
+```text
     # This is a comment
-{% endhighlight %}
+```
+
 
 ## Gotchas
 
@@ -458,104 +483,118 @@ This is especially relevant for Prometheus's query language, where a bare metric
 
 Return all time series with the metric `http_requests_total`:
 
-{% highlight text %}
+```text
 http_requests_total
-{% endhighlight %}
+```
+
 
 Return all time series with the metric `http_requests_total` and the given `job` and `handler` labels:
 
-{% highlight text %}
+```text
 http_requests_total{job="apiserver", handler="/api/comments"}
-{% endhighlight %}
+```
+
 
 Return a whole range of time (in this case 5 minutes up to the query time) for the same vector, making it a [range vector](https://prometheus.io/docs/prometheus/latest/querying/basics/#range-vector-selectors):
 
-{% highlight text %}
+```text
 http_requests_total{job="apiserver", handler="/api/comments"}[5m]
-{% endhighlight %}
+```
+
 
 > Note that an expression resulting in a range vector cannot be graphed directly, but viewed in the tabular ("Console") view of the expression browser.
 
 Using regular expressions, you could select time series only for jobs whose name match a certain pattern, in this case, all jobs that end with `server`:
 
-{% highlight text %}
+```text
 http_requests_total{job=~".*server"}
-{% endhighlight %}
+```
+
 
 > All regular expressions in Prometheus use [RE2 syntax](https://github.com/google/re2/wiki/Syntax).
 
 To select all HTTP status codes except 4xx ones, you could run:
 
-{% highlight text %}
+```text
 http_requests_total{status!~"4.."}
-{% endhighlight %}
+```
+
 
 ## Subquery
 
 Return the 5-minute rate of the `http_requests_total` metric for the past 30 minutes, with a resolution of 1 minute.
 
-{% highlight text %}
+```text
 rate(http_requests_total[5m])[30m:1m]
-{% endhighlight %}
+```
+
 
 This is an example of a nested subquery. The subquery for the `deriv` function uses the default resolution. Note that using subqueries unnecessarily is unwise.
 
-{% highlight text %}
+```text
 max_over_time(deriv(rate(distance_covered_total[5s])[30s:5s])[10m:])
-{% endhighlight %}
+```
+
 
 ## Using functions, operators, etc.
 
 Return the per-second rate for all time series with the `http_requests_total` metric name, as measured over the last 5 minutes:
 
-{% highlight text %}
+```text
 rate(http_requests_total[5m])
-{% endhighlight %}
+```
+
 
 Assuming that the `http_requests_total` time series all have the labels `job` (fanout by job name) and `instance` (fanout by instance of the job), we might want to sum over the rate of all instances, so we get fewer output time series, but still preserve the `job` dimension:
 
-{% highlight text %}
+```text
 sum by (job) (
   rate(http_requests_total[5m])
 )
-{% endhighlight %}
+```
+
 
 If we have two different metrics with the same dimensional labels, we can apply binary operators to them and elements on both sides with the same label set will get matched and propagated to the output. For example, this expression returns the unused memory in MiB for every instance (on a fictional cluster scheduler exposing these metrics about the instances it runs):
 
 
-{% highlight text %}
+```text
 (instance_memory_limit_bytes - instance_memory_usage_bytes) / 1024 / 1024
-{% endhighlight %}
+```
+
 
 The same expression, but summed by application, could be written like this:
 
-{% highlight text %}
+```text
 sum by (app, proc) (
   instance_memory_limit_bytes - instance_memory_usage_bytes
 ) / 1024 / 1024
-{% endhighlight %}
+```
+
 
 If the same fictional cluster scheduler exposed CPU usage metrics like the following for every instance:
 
-{% highlight text %}
+```text
 instance_cpu_time_ns{app="lion", proc="web", rev="34d0f99", env="prod", job="cluster-manager"}
 instance_cpu_time_ns{app="elephant", proc="worker", rev="34d0f99", env="prod", job="cluster-manager"}
 instance_cpu_time_ns{app="turtle", proc="api", rev="4d3a513", env="prod", job="cluster-manager"}
 instance_cpu_time_ns{app="fox", proc="widget", rev="4d3a513", env="prod", job="cluster-manager"}
 ...
-{% endhighlight %}
+```
+
 
 We could get the top 3 CPU users grouped by application (`app`) and process type (`proc`) like this:
 
-{% highlight text %}
+```text
 topk(3, sum by (app, proc) (rate(instance_cpu_time_ns[5m])))
-{% endhighlight %}
+```
+
 
 Assuming this metric contains one time series per running instance, you could count the number of running instances per application like this:
 
-{% highlight text %}
+```text
 count by (app) (instance_cpu_time_ns)
-{% endhighlight %}
+```
+
 
 
 # [Exposition Formats](https://prometheus.io/docs/instrumenting/exposition_formats/)
@@ -578,7 +617,7 @@ If the token is **TYPE**, exactly two more tokens are expected. The first is the
 
 以下是一个完整的Prometheus指标输出示例，包括注释、HELP和TYPE表达式、直方图、摘要、字符转义示例等：
 
-{% highlight text %}
+```text
 # HELP http_requests_total The total number of HTTP requests.
 # TYPE http_requests_total counter
 http_requests_total{method="GET", handler="/api/v1/users"} 100
@@ -611,7 +650,8 @@ escaped_characters_examples{example="quote"} 3 # This is a quote: \"
 # TYPE unicode_characters_examples untyped
 unicode_characters_examples{example="smiley_face"} 1 # This is a smiley face: 😊
 unicode_characters_examples{example="heart"} 2 # This is a heart: ❤️
-{% endhighlight %}
+```
+
 
 在这个示例中，我们定义了三个指标：`http_requests_total`、`http_request_duration_seconds`和`http_request_size_bytes`。每个指标都有一个`HELP`行和一个`TYPE`行，用于指定**指标的帮助文档**和**类型**。`http_requests_total`是一个计数器指标，`http_request_duration_seconds`是一个直方图指标，`http_request_size_bytes`是一个摘要指标。
 
@@ -658,7 +698,7 @@ Following Prometheus best practices, App exposes only raw metric values. Ratios 
 
 Calculate average request processing time:
 
-{% highlight promql %}
+```promql
 # Average request duration over the last 5 minutes
 rate(namesvr_jrpc_request_duration_seconds_sum[5m]) / rate(namesvr_jrpc_request_duration_seconds_count[5m])
 
@@ -670,7 +710,8 @@ histogram_quantile(0.95, rate(namesvr_jrpc_request_duration_seconds_bucket[5m]))
 
 # 50th percentile (median) request duration
 histogram_quantile(0.50, rate(namesvr_jrpc_request_duration_seconds_bucket[5m]))
-{% endhighlight %}
+```
+
 
 示例：`histogram_quantile(0.99, rate(namesvr_jrpc_request_duration_seconds_bucket[5m]))`
 
@@ -723,9 +764,10 @@ The metric and label conventions presented in this document are not required for
 2. 增加限制：可以通过修改 Prometheus 的配置文件，增加 --storage.tsdb.max-block-duration 和 --storage.tsdb.min-block-duration 参数的值，以增加 Prometheus 存储时间序列的块大小，从而提高查询的限制。
 3. 水平扩展：如果以上方法无法解决问题，可以考虑使用水平扩展的方式，即增加 Prometheus 实例的数量，将查询分散到多个实例上，从而提高查询的并发能力和容量。
 
-{% highlight text %}
+```text
 topk(1, count ({__name__=~"msgame_P.*"}) by(__name__))
-{% endhighlight %}
+```
+
 
 
 # Manual

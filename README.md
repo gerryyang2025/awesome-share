@@ -66,22 +66,19 @@ This site uses [jekyll-theme-chirpy](https://github.com/cotes2020/jekyll-theme-c
 
 ### Style stack (Chirpy + custom CSS)
 
-The **site chrome** (top bar, sidebar, post layout, theme toggle) comes from the Chirpy gem. The **article body** is intentionally tuned to look like **[GitHub-style Markdown](https://github.com/github/markup)**: neutral text grays, blue links, light gray code block panels, 6px rounding on code UI, and matching dark-mode equivalents.
+The **site chrome** (top bar, sidebar, post layout, theme toggle) and **syntax-highlighted code blocks** (Rouge markup, line numbers, language/filename header, copy control) come from the **Chirpy** gem. The **article body** adds **[GitHub-style Markdown](https://github.com/github/markup)**-like prose: neutral text grays, blue links, 6px rounding on common UI, and matching dark-mode variables where noted below.
 
 | Piece | Role |
 | --- | --- |
-| **Chirpy (gem)** | Global layout, typography baseline, TOC panel, `[data-theme="dark"]` / `.theme-dark` for dark mode. Version is pinned in `Gemfile` (currently **7.5.0**). |
-| **`_includes/metadata-hook.html`** | Theme hook: one **`post-content-bundle.css`** (concat of the six sources below, **one runtime request**) + `code-copy.js`. Regenerate the bundle after editing any source: **`./tools/bundle-post-content-css.sh`**. |
-| **`assets/css/post-content-bundle.css`** | Generated file — do not hand-edit; order: rouge-highlight → code-copy-btn → markdown-extras → blockquote → table → inline-code. |
+| **Chirpy (gem)** | Global layout, typography baseline, TOC panel, code-block chrome and Rouge styling, `[data-theme="dark"]` / `.theme-dark` for dark mode. Version is pinned in `Gemfile` (currently **7.5.0**). |
+| **`_includes/metadata-hook.html`** | Theme hook: loads **`post-content-bundle.css`** (**one runtime request**). Regenerate the bundle after editing any bundled source: **`./tools/bundle-post-content-css.sh`**. |
+| **`assets/css/post-content-bundle.css`** | Generated file — do not hand-edit; order: **markdown-extras → blockquote → table → inline-code**. |
 | **`assets/css/markdown-extras.css`** | Main content layer: scoped to `.post-content`, `#post-content`, `.content`. Defines **`--md-*` CSS variables** (foreground, muted text, borders, canvas, link colors, inline-code background) for **light and dark**; vertical rhythm (`1rem` block spacing, `line-height: 1.65` on paragraphs); **h2** with bottom border; link underlines; footnotes, task lists, `details`/`summary`, `kbd`, `mark`, `hr`, images; **kramdown `{:toc}`** (`#markdown-toc`) — hidden when the theme TOC is on (`article[data-toc="true"]`), sticky side column on wide screens when per-post `toc: false`. |
 | **`assets/css/blockquote.css`** | Blockquotes: left accent border, muted body color (uses `var(--md-fg-muted)` when available). |
-| **`assets/css/inline-code.css`** | Inline `` `code` ``: **`.content code`** (covers `p`/`li`/headings, not only direct children of `.content`), Chirpy **`var(--code-color)`** / **`var(--inline-code-bg)`** with v7.5 **fallbacks**; **`pre` / `.highlight code`** reset so blocks keep Rouge. Blockquote: **`color: inherit`** on `:not(pre) > code`. |
-| **`assets/css/code-copy-btn.css`** | `.highlight` container (border, radius, padding) and **copy** button position; uses `var(--md-*)` with hex fallbacks. |
-| **`assets/css/rouge-highlight.css`** | Rouge token colors (reds/blues for keywords/strings, etc.) — **GitHub-flavored** palette. |
+| **`assets/css/inline-code.css`** | Inline `` `code` ``: **`.content code`** (covers `p`/`li`/headings, not only direct children of `.content`), Chirpy **`var(--code-color)`** / **`var(--inline-code-bg)`** with v7.5 **fallbacks**; **`pre` / `.highlight code`** reset so block Rouge output stays on the theme’s block styles. Blockquote: **`color: inherit`** on `:not(pre) > code`. |
 | **`assets/css/table.css`** | Chirpy wraps tables in **`.table-wrapper`**; rules align with the theme’s table markup, including striped rows and dark-mode `--tb-*` variables. |
-| **`assets/js/code-copy.js`** | Copy-to-clipboard for code blocks (paired with `code-copy-btn.css`). |
 
-**Changing the look later:** edit the source files under `assets/css/` (same order as above), then run **`./tools/bundle-post-content-css.sh`** so **`post-content-bundle.css`** picks up changes. Prefer adjusting **`--md-*`** at the top of `markdown-extras.css` first. Shell colors (sidebar, navbar) live in the theme’s SCSS unless you add `_sass` overrides.
+**Changing the look later:** edit the source files under `assets/css/` (same order as the bundle), then run **`./tools/bundle-post-content-css.sh`** so **`post-content-bundle.css`** picks up changes. Prefer adjusting **`--md-*`** at the top of `markdown-extras.css` first. Shell colors (sidebar, navbar) and code-block palettes live in the theme’s SCSS unless you add `_sass` overrides.
 
 - **Requirements**: Ruby **>= 3.1** and Jekyll **~> 4.3** (Chirpy depends on Jekyll 4.3 and Ruby ~> 3.1).
 - **Home**: `index.html` uses layout `home` (rendered by the theme).
@@ -120,16 +117,15 @@ tags: [prompt, LLM, tutorial]
 - **Tag page**: `/tags/prompt/` lists all posts with tag `prompt`.
 - **Multiple tags**: Use a list, e.g. `tags: [Go, Kubernetes, tutorial]`. Tags have been added to all posts via `tools/add_tags_to_posts.rb`; see **[tools/README.md](tools/README.md)** for usage and options.
 
-### Code blocks: prefer `{% highlight %}`
+### Code blocks (Chirpy / kramdown)
 
-To avoid code blocks rendering as a single line (a known issue with the theme/compress pipeline), use Jekyll’s **`{% highlight %}`** tag instead of Markdown fenced blocks (`` ``` ``).
+Per [Writing a New Post — Code Block](https://chirpy.cotes.page/posts/write-a-new-post/), **the Jekyll tag `{% highlight %}` is not compatible with this theme**. Use **Markdown fenced blocks** (`` ```language ``) so Rouge, line numbers, optional filename label, and the theme’s copy control work as intended.
 
-- **Syntax**: `{% highlight lang %}` … `{% endhighlight %}` (e.g. `{% highlight bash %}`, `{% highlight yaml %}`, `{% highlight go %}`).
-- **Line breaks**: Content between the tags is output as-is, so line breaks and formatting are preserved.
-- **Rouge**: Syntax highlighting uses Rouge; supported language names match [Rouge lexers](https://github.com/rouge-ruby/rouge/wiki/List-of-supported-languages-and-lexers) (e.g. `bash`, `yaml`, `go`, `python`, `json`).
-- **Liquid in code**: If the snippet contains `{{` or `{%`, wrap the block in `{% raw %}…{% endraw %}` or escape so Liquid does not interpret it.
-- **Converting posts**: To convert existing `` ```lang … ``` `` blocks in a post to `{% highlight %}`, run:
-  `ruby tools/convert_fenced_to_highlight.rb _posts/YYYY-MM-DD-post-name.markdown`
+- **Syntax**: open with a line of three backticks plus the lexer name (e.g. `bash`, `yaml`, `go`, `python`); close with a line of three backticks only. Lexers follow [Rouge](https://github.com/rouge-ruby/rouge/wiki/List-of-supported-languages-and-lexers).
+- **Line numbers**: By default, kramdown shows line numbers for most languages (`_config.yml` → `kramdown.block.line_numbers`). To hide them on a block, add a line after the closing fence: `{: .nolineno }` (see Chirpy docs).
+- **Filename label**: After the closing fence, use e.g. `{: file="path/to/file.sh" }`.
+- **Liquid in code**: If the snippet contains `{{` or `{%`, wrap the fence (and both lines of backticks) in `{% raw %}…{% endraw %}`, or set `render_with_liquid: false` in the post’s front matter (Jekyll 4+).
+- **Legacy migration**: Older posts that used `{% highlight %}` were converted with `ruby tools/convert_highlight_to_fenced.rb _posts` (or a single file path). **`compress_html`** in `_config.yml` is already disabled for `development` and `production`, so fenced blocks keep newlines without needing Liquid `highlight` tags.
 
 ### Common deployment issue (Ruby too old)
 

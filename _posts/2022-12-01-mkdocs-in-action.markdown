@@ -36,29 +36,32 @@ For full documentation visit [mkdocs.org](https://www.mkdocs.org/).
 
 # Project layout
 
-{% highlight text %}
+```text
 mkdocs.yml    # The configuration file.
 docs/
     index.md  # The documentation homepage.
     ...       # Other markdown pages, images and other files.
-{% endhighlight %}
+```
+
 
 # [Getting Started with MkDocs](https://www.mkdocs.org/getting-started/)
 
 ## Installation
 
-{% highlight text %}
+```text
 pip install mkdocs
-{% endhighlight %}
+```
+
 
 ## Creating a new project
 
-{% highlight text %}
+```text
 mkdocs new my-project
 cd my-project
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 ~/tools/mkdocs$mkdocs new my-project
 INFO     -  Creating project directory: my-project
 INFO     -  Writing config file: my-project/mkdocs.yml
@@ -72,13 +75,14 @@ my-project/
 └── mkdocs.yml
 
 1 directory, 2 files
-{% endhighlight %}
+```
+
 
 There's a single configuration file named `mkdocs.yml`, and a folder named `docs` that will contain your documentation source files (`docs` is the default value for the [docs_dir](https://www.mkdocs.org/user-guide/configuration/#docs_dir) configuration setting). Right now the `docs` folder just contains a single documentation page, named [index.md](https://www.mkdocs.org/user-guide/configuration/#docs_dir).
 
 `MkDocs` comes with a built-in dev-server that lets you preview your documentation as you work on it. Make sure you're in the same directory as the `mkdocs.yml` configuration file, and then start the server by running the `mkdocs serve` command:
 
-{% highlight text %}
+```text
 $mkdocs serve -a 9.135.18.186:8080
 INFO     -  Building documentation...
 INFO     -  Cleaning site directory
@@ -93,7 +97,8 @@ INFO     -  Building documentation...
 INFO     -  [20:30:35] Reloading browsers
 INFO     -  [20:30:35] Browser connected: http://9.135.18.186:8080/
 
-{% endhighlight %}
+```
+
 
 Open up http://9.135.18.186:8000/ in your browser, and you'll see the default home page being displayed.
 
@@ -105,10 +110,11 @@ Open the `docs/index.md` document in your text editor of choice, change the init
 
 Now try editing the configuration file: `mkdocs.yml`. Change the [site_name](https://www.mkdocs.org/user-guide/configuration/#site_name) setting to MkLorum and save the file.
 
-{% highlight yaml %}
+```yaml
 site_name: MkLorum
 site_url: https://example.com/
-{% endhighlight %}
+```
+
 
 Your browser should immediately reload, and you'll see your new site name take effect.
 
@@ -121,19 +127,21 @@ Your browser should immediately reload, and you'll see your new site name take e
 
 Now add a second page to your documentation:
 
-{% highlight text %}
+```text
 curl 'https://jaspervdj.be/lorem-markdownum/markdown.txt' > docs/about.md
-{% endhighlight %}
+```
+
 
 As our documentation site will **include some navigation headers**, you may want to edit the configuration file and add some information about the order, title, and nesting of each page in the navigation header by adding a nav setting:
 
-{% highlight yaml %}
+```yaml
 site_name: MkLorum
 site_url: https://example.com/
 nav:
     - Home: index.md
     - About: about.md
-{% endhighlight %}
+```
+
 
 Save your changes and you'll now see a navigation bar with `Home` and `About` items on the left as well as `Search`, `Previous`, and `Next` items on the right.
 
@@ -148,14 +156,15 @@ Try the menu items and navigate back and forth between pages. Then click on **Se
 
 Now change the configuration file to alter how the documentation is displayed by changing the theme. Edit the `mkdocs.yml` file and add a [theme](https://www.mkdocs.org/user-guide/configuration/#theme) setting:
 
-{% highlight yaml %}
+```yaml
 site_name: MkLorum
 site_url: https://example.com/
 nav:
     - Home: index.md
     - About: about.md
 theme: readthedocs
-{% endhighlight %}
+```
+
 
 Save your changes, and you'll see the ReadTheDocs theme being used.
 
@@ -170,19 +179,21 @@ By default, MkDocs uses the [MkDocs favicon](https://www.mkdocs.org/img/favicon.
 
 That's looking good. You're ready to deploy the first pass of your `MkLorum` documentation. First build the documentation:
 
-{% highlight text %}
+```text
 mkdocs build
-{% endhighlight %}
+```
+
 
 This will create a new directory, named `site`. Take a look inside the directory:
 
-{% highlight text %}
+```text
 $ ls site
 about  fonts  index.html  license  search.html
 css    img    js          mkdocs   sitemap.xml
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 ~/tools/mkdocs/my-project$mkdocs build
 INFO     -  Cleaning site directory
 INFO     -  Building documentation to directory: /data/home/gerryyang/tools/mkdocs/my-project/site
@@ -192,15 +203,17 @@ docs  mkdocs.yml  site
 ~/tools/mkdocs/my-project$cd site/
 ~/tools/mkdocs/my-project/site$ls
 404.html  about  css  img  index.html  js  search  search.html  sitemap.xml  sitemap.xml.gz
-{% endhighlight %}
+```
+
 
 Notice that your source documentation has been output as two HTML files named `index.html` and `about/index.html`. You also have various other media that's been copied into the site directory as part of the documentation theme. You even have a `sitemap.xml` file and `mkdocs/search_index.json`.
 
 If you're using source code control such as `git` you probably don't want to check your documentation builds into the repository. Add a line containing `site/` to your `.gitignore` file.
 
-{% highlight text %}
+```text
 echo "site/" >> .gitignore
-{% endhighlight %}
+```
+
 
 If you're using another source code control tool you'll want to check its documentation on how to ignore specific directories.
 
@@ -208,15 +221,17 @@ If you're using another source code control tool you'll want to check its docume
 
 There are various other commands and options available. For a complete list of commands, use the `--help` flag:
 
-{% highlight text %}
+```text
 mkdocs --help
-{% endhighlight %}
+```
+
 
 To view a list of options available on a given command, use the `--help` flag with that command. For example, to get a list of all options available for the `build` command run the following:
 
-{% highlight text %}
+```text
 mkdocs build --help
-{% endhighlight %}
+```
+
 
 ## Deploying
 

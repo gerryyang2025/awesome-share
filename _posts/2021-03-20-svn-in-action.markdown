@@ -30,10 +30,11 @@ tags:
 
 在 vscode 中安装作者为 Chris Johnston 的 SVN 扩展插件。在 `.vscode/settings.json` 配置中添加 `svn.path` 路径配置，然后输入 `Command+Shift+P` 执行 `Reload Window` 使配置修改生效。当 vscode 加载配置生效后，可以在左边栏看到 "S" 图标，随后可以添加需要的 SVN URL 仓库地址。
 
-{% highlight json %}
+```json
     // Path to the svn executable
     "svn.path": "/usr/bin/svn",
-{% endhighlight %}
+```
+
 
 
 参考 [Configure SVN repo url in Visual Studio Code](https://stackoverflow.com/questions/52978849/configure-svn-repo-url-in-visual-studio-code) 中的步骤 checkout 所需的代码分支到本地目录。
@@ -63,10 +64,11 @@ tags:
 
 确认是否能获取到自己的提交：
 
-{% highlight bash %}
+```bash
 svn update
 svn log -v -l 1  # 查看最新日志是否包含你的提交
-{% endhighlight %}
+```
+
 
 # SVN 处理代码冲突的方法
 
@@ -86,10 +88,11 @@ svn log -v -l 1  # 查看最新日志是否包含你的提交
 * mc：强制采用本地修改（覆盖服务器代码）。
 * tc：强制采用服务器代码（丢弃本地修改）。
 
-{% highlight text %}
+```text
 Select: (p) postpone, (df) diff-full, (e) edit,
         (mc) mine-conflict, (tc) theirs-conflict
-{% endhighlight %}
+```
+
 
 
 
@@ -97,39 +100,45 @@ Select: (p) postpone, (df) diff-full, (e) edit,
 
 * 创建分支：首先需要创建一个分支，可以使用 `svn copy` 命令将主干（trunk）复制到分支目录中。例如：
 
-{% highlight bash %}
+```bash
 svn copy http://svn.example.com/repo/trunk http://svn.example.com/repo/branches/my_branch -m "Creating a new branch"
-{% endhighlight %}
+```
+
 
 * 切换到分支：在本地工作副本中切换到新创建的分支，以便进行开发和修改。可以使用 `svn switch` 命令切换到分支：
 
-{% highlight bash %}
+```bash
 svn switch http://svn.example.com/repo/branches/my_branch
-{% endhighlight %}
+```
+
 
 * 修改分支内容：在分支上进行代码修改，并提交更改到服务器。例如：
 
-{% highlight bash %}
+```bash
 svn commit -m "My Changes"
-{% endhighlight %}
+```
+
 
 * 合并分支到主干：当分支上的修改完成后，需要将分支的更改合并到主干（trunk）。可以使用 `svn merge` 命令进行合并。例如：
 
-{% highlight bash %}
+```bash
 svn merge http://svn.example.com/repo/branches/my_branch
-{% endhighlight %}
+```
+
 
 * 解决冲突：如果合并过程中出现冲突，需要手动解决冲突文件。在本地编辑器中编辑冲突文件，然后使用 `svn resolve` 命令标记冲突已解决：
 
-{% highlight bash %}
+```bash
 svn resolve --accept=working path/to/conflict/file
-{% endhighlight %}
+```
+
 
 * 提交合并结果：解决冲突后，将合并后的更改提交到服务器。例如：
 
-{% highlight bash %}
+```bash
 svn commit -m "Merged changes from my_branch to trunk"
-{% endhighlight %}
+```
+
 
 * 验证合并结果：确保合并后的代码在主干中正确无误，可以通过更新主干工作副本并检查代码来验证。
 
@@ -139,7 +148,7 @@ svn commit -m "Merged changes from my_branch to trunk"
 
 # SVN 状态
 
-{% highlight text %}
+```text
 A  已添加
 D  已删除
 U  已更新
@@ -147,13 +156,14 @@ C  合并冲突
 G  合并成功
 E  已存在
 R  已替换
-{% endhighlight %}
+```
+
 
 # 常用命令
 
 ## 基础操作
 
-{% highlight bash %}
+```bash
 # 查看仓库信息
 svn info
 
@@ -177,11 +187,12 @@ svn update
 svn up
 
 
-{% endhighlight %}
+```
+
 
 ## 分支操作
 
-{% highlight bash %}
+```bash
 # 创建分支
 svn copy <source_url> <branch_url> -m "创建分支说明"
 
@@ -207,11 +218,12 @@ svn switch http://svn.example.com/branches/feature-branch
 # 合并分支到主干
 # 切换到主干目录后执行
 svn merge <branch_url>
-{% endhighlight %}
+```
+
 
 ## 提交更改
 
-{% highlight bash %}
+```bash
 # 添加新文件
 svn add <filename>
 svn add --force *
@@ -225,13 +237,14 @@ svn del <filename>
 svn commit -m "提交说明"
 # 或简写为
 svn ci -m "提交说明"
-{% endhighlight %}
+```
+
 
 
 
 ## 解决冲突
 
-{% highlight bash %}
+```bash
 # 问题类型：系统锁定/损坏
 # 触发条件：操作中断或异常
 # 前置操作：无
@@ -243,21 +256,24 @@ svn cleanup
 # 前置操作：需要先手动编辑解决文件冲突内容
 # 结果：标记冲突为已解决
 svn resolved <filename>
-{% endhighlight %}
+```
+
 
 ## 查看文件差异
 
-{% highlight bash %}
+```bash
 # 查看 diff
 svn diff
-{% endhighlight %}
+```
+
 
 ## 撤销本地修改
 
-{% highlight bash %}
+```bash
 svn revert <filename>
 svn revert . -R
-{% endhighlight %}
+```
+
 
 
 ## 查看文件每一行最后修改信息
@@ -273,19 +289,21 @@ svn revert . -R
 3. 结果中的日期是提交日期，不是修改日期
 4. 如果文件被移动/重命名过，需要使用 --stop-on-copy 参数查看完整历史
 
-{% highlight bash %}
+```bash
 svn blame -v filename.txt
-{% endhighlight %}
+```
+
 
 输出格式：
 
-{% highlight text %}
+```text
   修订号 用户名      日期                 代码行
   12345  user1   2023-05-01 10:30:45  // 这是第一行代码
   12346  user2   2023-05-02 14:15:22  // 这是第二行代码
-{% endhighlight %}
+```
 
-{% highlight bash %}
+
+```bash
 # 追踪代码变更来源
 svn blame -v utils.py | grep "problem_function"
 
@@ -294,7 +312,8 @@ svn blame -r {2023-01-01}:{2023-06-30} config.ini
 
 # 生成代码贡献报告
 svn blame src/ | awk '{print $2}' | sort | uniq -c | sort -nr
-{% endhighlight %}
+```
+
 
 
 
@@ -302,13 +321,14 @@ svn blame src/ | awk '{print $2}' | sort | uniq -c | sort -nr
 
 与 [How do you see recent SVN log entries?](https://stackoverflow.com/questions/4881129/how-do-you-see-recent-svn-log-entries) 反馈的问题感受一样，如果执行 `svn log` 命令默认会输出所有 svn 的历史提交记录到终端且不会暂停分页输出，交互体验比较差。如果要分页显示需要执行 `svn log | less`。或者通过 `--limit` 选项限制查询输出的记录条数，例如：查询最近 4 条历史提交记录 `svn log --limit 4` 或 `svn log -l 4`。
 
-{% highlight bash %}
+```bash
 `-l [--limit] ARG`         : maximum number of log entries
-{% endhighlight %}
+```
+
 
 另外可以根据 `revision` 查询一个返回的历史提交记录。
 
-{% highlight bash %}
+```bash
 `-r [--revision] ARG`      : ARG (some commands also take ARG1:ARG2 range)
                              A revision argument can be one of:
                                 NUMBER       revision number
@@ -317,11 +337,12 @@ svn blame src/ | awk '{print $2}' | sort | uniq -c | sort -nr
                                 'BASE'       base rev of item's working copy
                                 'COMMITTED'  last commit at or before BASE
                                 'PREV'       revision just before COMMITTED
-{% endhighlight %}
+```
+
 
 使用示例：
 
-{% highlight bash %}
+```bash
 # To list everything in ascending order
 svn log -r 1:HEAD
 
@@ -333,20 +354,22 @@ svn log -r 13:BASE
 
 # To get everything between the given dates
 svn log -r {2011-02-02}:{2011-02-03}
-{% endhighlight %}
+```
+
 
 You can combine all the above expressions with the `--limit` option, so that can you have a quite granular control over what is printed. For more info about these `-r` expressions refer to `svn help log` or the relevant chapter in the book [Version Control with Subversion](http://svnbook.red-bean.com/en/1.4/svn.tour.revs.specifiers.html)
 
 
 I like to use `-v` for **verbose** mode. It'll give you the commit id, comments and all affected files.
 
-{% highlight bash %}
+```bash
 svn log -v --limit 4
-{% endhighlight %}
+```
+
 
 Example of output:
 
-{% highlight text %}
+```text
 I added some migrations and deleted a test xml file
 ------------------------------------------------------------------------
 r58687 | mr_x | 2012-04-02 15:31:31 +0200 (Mon, 02 Apr 2012) | 1 line Changed
@@ -355,18 +378,20 @@ A /trunk/java/App/src/database/support
 A /trunk/java/App/src/database/support/MIGRATE
 A /trunk/java/App/src/database/support/MIGRATE/remove_device.sql
 D /trunk/java/App/src/code/test.xml
-{% endhighlight %}
+```
+
 
 查看当前代码到最新提交之间的历史记录：
 
 In case anybody is looking at this old question, a handy command to see the changes since your last update:
 
-{% highlight bash %}
+```bash
 svn log -r BASE:HEAD -v
 
 # or
 svn log -r $(svn info | grep Revision | cut -f 2 -d ' '):HEAD -v
-{% endhighlight %}
+```
+
 
 
 

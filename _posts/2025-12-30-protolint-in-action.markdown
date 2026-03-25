@@ -33,9 +33,10 @@ tags:
 
 ## 查看所有规则
 
-{% highlight bash %}
+```bash
 protolint list
-{% endhighlight %}
+```
+
 
 常见规则：
 
@@ -59,7 +60,7 @@ protolint list
 
 在 `.proto` 文件中使用注释来禁用特定规则：
 
-{% highlight protobuf %}
+```protobuf
 // 在文件开头禁用 MAX_LINE_LENGTH 规则（项目规范是 120 字符）
 // protolint:disable MAX_LINE_LENGTH
 
@@ -77,23 +78,26 @@ message VeryLongMessageNameThatExceedsTheDefaultLineLengthLimit {
 
 // 重新启用规则
 // protolint:enable MAX_LINE_LENGTH
-{% endhighlight %}
+```
+
 
 ### 方法 2: 使用自动修复和禁用注释
 
-{% highlight bash %}
+```bash
 # 自动修复可以修复的问题，并为其他问题插入禁用注释
 protolint lint -fix -auto_disable=next .
-{% endhighlight %}
+```
+
 
 ### 方法 3: 使用命令行参数
 
 某些规则可以通过命令行参数调整，例如：
 
-{% highlight bash %}
+```bash
 # 查看帮助
 protolint lint --help
-{% endhighlight %}
+```
+
 
 ## 配置路径
 
@@ -101,7 +105,7 @@ protolint lint --help
 
 基本用法：
 
-{% highlight bash %}
+```bash
 # 在 protocol 目录下运行
 cd protocol
 protolint lint .
@@ -111,17 +115,19 @@ protolint lint -config_dir_path protocol protocol/
 
 # 指定配置文件路径
 protolint lint -config_path protocol/.protolint.yaml protocol/mesh/protocol/route_registry.proto
-{% endhighlight %}
+```
+
 
 ## 自动修复
 
-{% highlight bash %}
+```bash
 # 自动修复一些问题
 protolint lint -fix .
 
 # 自动修复并插入禁用注释（推荐，保持兼容性）
 protolint lint -fix -auto_disable=next .
-{% endhighlight %}
+```
+
 
 
 
@@ -130,10 +136,11 @@ protolint lint -fix -auto_disable=next .
 * Via Homebrew
   + `protolint` can be installed for Mac or Linux using Homebrew via the [yoheimuta/protolint](https://github.com/yoheimuta/homebrew-protolint) tap.
 
-{% highlight bash %}
+```bash
 brew tap yoheimuta/protolint
 brew install protolint
-{% endhighlight %}
+```
+
 
 * Via GitHub Releases
   + You can also download a pre-built binary from this release page: https://github.com/yoheimuta/protolint/releases
@@ -142,26 +149,29 @@ brew install protolint
 * Use the maintained Docker image
   + protolint ships a Docker image [yoheimuta/protolint](https://hub.docker.com/r/yoheimuta/protolint) that allows you to use protolint as part of your Docker workflow.
 
-{% highlight text %}
+```text
 ❯❯❯ docker run --volume "$(pwd):/workspace" --workdir /workspace yoheimuta/protolint lint _example/proto
 [_example/proto/invalidFileName.proto:1:1] File name should be lower_snake_case.proto.
 [_example/proto/issue_88/oneof_options.proto:11:5] Found an incorrect indentation style "    ". "  " is correct.
 [_example/proto/issue_88/oneof_options.proto:12:5] Found an incorrect indentation style "    ". "  " is correct.
-{% endhighlight %}
+```
+
 
 * From Source
   + The binary can be installed from source if Go is available. However, I recommend using one of the pre-built binaries instead because it doesn't include the version info.
 
-{% highlight bash %}
+```bash
 go install github.com/yoheimuta/protolint/cmd/protolint@latest
-{% endhighlight %}
+```
+
 
 * Within `JavaScript` / `TypeScript`
   + You can use protolint using your nodejs package manager like `npm` or `yarn`.
 
-{% highlight bash %}
+```bash
 $ npm install protolint --save-dev
-{% endhighlight %}
+```
+
 
 This will add a reference to a development dependency to your local `package.json`.
 
@@ -177,7 +187,7 @@ This will add a reference to a development dependency to your local `package.jso
 
 `protolint` does not require configuration by default, for the majority of projects it should work out of the box.
 
-{% highlight bash %}
+```bash
 protolint lint example.proto example2.proto # file mode, specify multiple specific files
 protolint lint .                            # directory mode, search for all .proto files recursively
 protolint .                                 # same as "protolint lint ."
@@ -195,28 +205,31 @@ protolint list                              # list all current lint rules being 
 protolint version                           # print protolint version
 protolint --version                         # print protolint version (global flag)
 protolint -v                                # print protolint version (when used as the only argument)
-{% endhighlight %}
+```
+
 
 # Version Control Integration
 
 `protolint` is available as a [pre-commit hook](https://pre-commit.com/). Add this to your `.pre-commit-config.yaml` in your repository to run protolint with Go:
 
-{% highlight yaml %}
+```yaml
 repos:
   - repo: https://github.com/yoheimuta/protolint
     rev: v0.56.3 # Select a release here
     hooks:
       - id: protolint
-{% endhighlight %}
+```
+
 
 For Docker-based execution, use the `protolint-docker` hook:
 
-{% highlight yaml %}
+```yaml
 repos:
   - repo: https://github.com/yoheimuta/protolint
     hooks:
       - id: protolint-docker # Uses yoheimuta/protolint:latest by default
-{% endhighlight %}
+```
+
 
 
 # Editor Integration
@@ -233,7 +246,7 @@ repos:
 
 You can also use `protolint` from Go code. See [Go Documentation](https://pkg.go.dev/github.com/yoheimuta/protolint/lib) and [lib/lint_test.go](https://github.com/yoheimuta/protolint/blob/master/lib/lint_test.go) in detail.
 
-{% highlight go %}
+```go
 import (
     "bytes"
 
@@ -252,7 +265,8 @@ func main() {
 
     // Process output in stdout and stderr
 }
-{% endhighlight %}
+```
+
 
 # Rules
 
@@ -271,7 +285,7 @@ The `-auto_disable` option on the command line can automatically disable all the
 
 Run `protolint list` to see all available rules.
 
-{% highlight text %}
+```text
 $ protolint list
 FILE_HAS_COMMENT: Verifies that a file starts with a doc comment.
 SYNTAX_CONSISTENT: Verifies that syntax is a specified version(default is proto3).
@@ -304,7 +318,8 @@ SERVICE_NAMES_UPPER_CAMEL_CASE: Verifies that all service names are CamelCase (w
 SERVICE_NAMES_END_WITH: Verifies that all service names end with the specified value.
 SERVICES_HAVE_COMMENT: Verifies that all services have a comment.
 FIELD_NUMBERS_ORDER_ASCENDING: Verifies the order of fields.
-{% endhighlight %}
+```
+
 
 
 # Examples
@@ -313,67 +328,73 @@ Here are some examples that show good style enabled by default. `-` is a bad sty
 
 ## ENUM_FIELD_NAMES_PREFIX
 
-{% highlight text %}
+```text
 enum FooBar {
 -  UNSPECIFIED = 0;
 +  FOO_BAR_UNSPECIFIED = 0;
 }
-{% endhighlight %}
+```
+
 
 ## ENUM_FIELD_NAMES_UPPER_SNAKE_CASE
 
-{% highlight text %}
+```text
 enum Foo {
 -  firstValue = 0;
 +  FIRST_VALUE = 0;
 -  second_value = 1;
 +  SECOND_VALUE = 1;
 }
-{% endhighlight %}
+```
+
 
 ## ENUM_FIELD_NAMES_ZERO_VALUE_END_WITH
 
-{% highlight text %}
+```text
 enum Foo {
 -  FOO_FIRST = 0;
 +  FOO_UNSPECIFIED = 0;
 }
-{% endhighlight %}
+```
+
 
 参考：https://github.com/yoheimuta/protolint/issues/256
 
 `ENUM_FIELD_NAMES_ZERO_VALUE_END_WITH` conforms to [the style guide](https://developers.google.com/protocol-buffers/docs/style).
 
-{% highlight text %}
+```text
 The zero value enum should have the suffix `UNSPECIFIED`.
-{% endhighlight %}
+```
+
 
 ![protolint2](/assets/images/202512/protolint2.png)
 
 
 ## ENUM_NAMES_UPPER_CAMEL_CASE
 
-{% highlight text %}
+```text
 - enum foobar {
 + enum FooBar {
   FIRST_VALUE = 0;
   SECOND_VALUE = 1;
 }
-{% endhighlight %}
+```
+
 
 
 ## FIELD_NAMES_LOWER_SNAKE_CASE
 
-{% highlight text %}
+```text
 message SongServerRequest {
 -  required string SongName = 1;
 +  required string song_name = 1;
 }
-{% endhighlight %}
+```
+
 
 ## IMPORTS_SORTED
 
-{% highlight text %}
+```text
 - import public "new.proto";
 + import "myproject/other_protos.proto";
 - import "myproject/other_protos.proto";
@@ -381,21 +402,23 @@ message SongServerRequest {
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
-{% endhighlight %}
+```
+
 
 ## MESSAGE_NAMES_UPPER_CAMEL_CASE
 
-{% highlight text %}
+```text
 - message song_server_request {
 + message SongServerRequest {
   required string SongName = 1;
   required string song_name = 1;
 }
-{% endhighlight %}
+```
+
 
 ## ORDER
 
-{% highlight text %}
+```text
 - option java_package = "com.example.foo";
 - syntax = "proto3";
 - package examplePb;
@@ -406,44 +429,49 @@ import "google/protobuf/timestamp.proto";
 + import "other.proto";
 + option java_package = "com.example.foo";
 + message song_server_request { }
-{% endhighlight %}
+```
+
 
 ## PACKAGE_NAME_LOWER_CASE
 
-{% highlight text %}
+```text
 - package myPackage
 + package my.package
-{% endhighlight %}
+```
+
 
 ## RPC_NAMES_UPPER_CAMEL_CASE
 
-{% highlight text %}
+```text
 service FooService {
 -  rpc get_something(FooRequest) returns (FooResponse);
 +  rpc GetSomething(FooRequest) returns (FooResponse);
 }
-{% endhighlight %}
+```
+
 
 ## RPC_SERVICES_UPPER_CAMEL_CASE
 
-{% highlight text %}
+```text
 - service foo_service {
 + service FooService {
   rpc get_something(FooRequest) returns (FooResponse);
   rpc GetSomething(FooRequest) returns (FooResponse);
 }
-{% endhighlight %}
+```
+
 
 ## REPEATED_FIELD_NAMES_PLURALIZED
 
-{% highlight text %}
+```text
 -  repeated string song_name = 1;
 +  repeated string song_names = 1;
-{% endhighlight %}
+```
+
 
 ## INDENT
 
-{% highlight text %}
+```text
  enum enumAllowingAlias {
    UNKNOWN = 0;
 -        option allow_alias = true;
@@ -453,22 +481,25 @@ service FooService {
 +  RUNNING = 2 [(custom_option) = "hello world"];
 - }
 +}
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 -   message TestMessage { string test_field = 1; }
 + message TestMessage {
 +  string test_field = 1;
 +}
-{% endhighlight %}
+```
+
 
 ## QUOTE_CONSISTENT
 
-{% highlight text %}
+```text
  option java_package = "com.example.foo";
 - option go_package = 'example';
 + option go_package = "example";
-{% endhighlight %}
+```
+
 
 # Creating your custom rules
 
@@ -501,24 +532,26 @@ The built-in reporter options are:
 
 Rules can be disabled with a comment inside a Protocol Buffer file with the following format. The rules will be disabled until the end of the file or until the linter sees a matching enable comment:
 
-{% highlight text %}
+```text
 // protolint:disable <ruleID1> [<ruleID2> <ruleID3>...]
 ...
 // protolint:enable <ruleID1> [<ruleID2> <ruleID3>...]
-{% endhighlight %}
+```
+
 
 It's also possible to modify a disable command by appending `:next` or `:this` for only applying the command to this(current) or the next line respectively.
 
 For example:
 
-{% highlight text %}
+```text
 enum Foo {
   // protolint:disable:next ENUM_FIELD_NAMES_UPPER_SNAKE_CASE
   firstValue = 0;    // no error
   second_value = 1;  // protolint:disable:this ENUM_FIELD_NAMES_UPPER_SNAKE_CASE
   THIRD_VALUE = 2;   // spits out an error
 }
-{% endhighlight %}
+```
+
 
 Setting the command-line option `-auto_disable` to `next` or `this` inserts disable commands whenever spotting problems.
 
@@ -533,7 +566,7 @@ Refer to [_example/config/.protolint.yaml](https://github.com/yoheimuta/protolin
 
 `protolint` will automatically search a current working directory for the config file by default and successive parent directories all the way up to the root directory of the filesystem. And it can search the specified directory with `-config_dir_path` flag. It can also search the specified file with `--config_path` flag.
 
-{% highlight yaml %}
+```yaml
 # .protolint.yaml
 # Lint directives.
 lint:
@@ -709,7 +742,8 @@ lint:
     syntax_consistent:
       # Default is proto3.
       version: proto2
-{% endhighlight %}
+```
+
 
 # Exit codes
 

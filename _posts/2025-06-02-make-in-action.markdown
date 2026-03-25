@@ -55,20 +55,22 @@ make 程序本身有许多选项，其中最常用的3个选项为：
 
 例子：
 
-{% highlight makefile %}
+```makefile
 myapp: main.o 2.o 3.o
 main.o: main.c a.h
 2.o: 2.c a.h b.h
 3.o: 3.c b.h c.h
-{% endhighlight %}
+```
+
 
 它表示目标 `myapp` 依赖于 `main.o`、`2.o` 和 `3.o`，而 `main.o` 依赖于 `main.c` 和 `a.h`，等等。这组依赖关系形成一个层次结构，它显示了源文件之间的关系。可以很容易看出，如果文件 `b.h` 发生改变，你就需重新编译 `2.o` 和 `3.o`，而由于 `2.o` 和 `3.o` 发生了改变，你还需要重新创建目标 `myapp`。
 
 **如果想一次创建多个文件，可以利用伪目标 `all`**。假设应用程序由二进制文件 `myapp` 和使用手册 `myapp.1` 组成，可以用下面这行语句进行定义：
 
-{% highlight makefile %}
+```makefile
 all: myapp myapp.1
-{% endhighlight %}
+```
+
 
 > 注意：如果未指定一个 `all` 目标，则 `make` 命令将只创建它在文件 `makefile` 中找到的第一个目标。
 
@@ -84,7 +86,7 @@ makefile 文件的第二部分内容是规则，它们定义了目标的创建�
 
 一个简单的 makefile 文件：
 
-{% highlight makefile %}
+```makefile
 myapp: main.o 2.o 3.o
     gcc -o myapp main.o 2.o 3.o            # 注意：开头的为 tab，不能是空格
 main.o: main.c a.h
@@ -93,7 +95,8 @@ main.o: main.c a.h
     gcc -c 2.c
 3.o: 3.c b.h c.h
     gcc -c 3.c
-{% endhighlight %}
+```
+
 
 
 make 命令处理 makefile 文件中定义的依赖关系，确定需要创建的文件以及创建顺序。虽然把如何创建目标 `myapp` 列在最前面，但 make 命令能够自行判断出创建文件的正确顺序。它调用你在规则部分给出的命令来创建相应的文件，同时会在执行时在屏幕上将命令显示出来。
@@ -114,23 +117,26 @@ makefile 文件允许你使用宏，以一种更通用的格式来书写它们�
 
 在 makefile 文件中定义宏：
 
-{% highlight makefile %}
+```makefile
 MACRONAME=value
-{% endhighlight %}
+```
+
 
 引用宏的方法：
 
-{% highlight makefile %}
+```makefile
 $(MACRONAME)
 # or
 ${MACRONAME}    # make 的有些版本还允许 $MACRONAME
-{% endhighlight %}
+```
+
 
 把一个宏的值设置为空的方法：
 
-{% highlight makefile %}
+```makefile
 MACRONAME=                  # 将等号后面留空
-{% endhighlight %}
+```
+
 
 > 注意：
 
@@ -144,7 +150,7 @@ MACRONAME=                  # 将等号后面留空
 
 例子：带宏定义的 makefile 文件
 
-{% highlight c %}
+```c
 /* main.c */
 #include <stdlib.h>
 #include "a.h"
@@ -158,9 +164,10 @@ int main()
 	function_three();
 	exit(EXIT_SUCCESS);
 }
-{% endhighlight %}
+```
 
-{% highlight c %}
+
+```c
 /* 2.c */
 #include "a.h"
 #include "b.h"
@@ -170,9 +177,10 @@ void function_two()
 {
 	printf("call function_two/n");
 }
-{% endhighlight %}
+```
 
-{% highlight c %}
+
+```c
 /* 3.c */
 #include "b.h"
 #include "c.h"
@@ -182,13 +190,14 @@ void function_three()
 {
 	printf("call function_three/n");
 }
-{% endhighlight %}
+```
+
 
 3个头文件 a.h、b.h、c.h 都为空
 
 makefile 文件：
 
-{% highlight makefile %}
+```makefile
 all: myapp
 
 # Which compiler
@@ -214,7 +223,8 @@ main.o: main.c a.h
 
 3.o: 3.c b.h c.h
 	$(CC) -I$(INCLUDE) $(CFLAGS) -c 3.c
-{% endhighlight %}
+```
+
 
 事实上，make 命令内置了一些特殊的宏定义，通过使用它们，可以让 makefile 文件变得更加简洁。这些宏在使用前才展开，所以它们的含义会随着 makefile 文件的处理进展而发生变化 —— 这才是特殊宏用法的关键。
 
@@ -241,7 +251,7 @@ main.c、2.c、3.c、a.h、b.h、c.h 文件内容与上例相同。
 
 makefile 文件：
 
-{% highlight makefile %}
+```makefile
 all: myapp
 
 # Which compiler
@@ -285,7 +295,8 @@ install: myapp
 	else/
 		echo "Sorry, $(INSTDIR) does not exist";/
 	fi
-{% endhighlight %}
+```
+
 
 > 注意：
 
@@ -303,7 +314,7 @@ install: myapp
 
 将这些命令用符号 `&&` 连接起来，在执行下一个命令前检查前一个命令的执行是否成功：
 
-{% highlight makefile %}
+```makefile
 install: myapp
 	@if [ -d $(INSTDIR) ];/
 		then/
@@ -314,7 +325,8 @@ install: myapp
 	else/
 		echo "Sorry, $(INSTDIR) does not exist";/
 	fi
-{% endhighlight %}
+```
+
 
 测试输入：
 
@@ -325,7 +337,7 @@ install: myapp
 
 目前为止，你在 makefile 文件中对每个操作步骤的执行都做了精确的说明。事实上，make 命令本身带有大量的内置规则，它们可以极大地简化 makefile 文件的内容，尤其在拥有许多源文件时更是如此。
 
-{% highlight c %}
+```c
 /* foo.c */
 #include <stdlib.h>
 #include <stdio.h>
@@ -335,14 +347,16 @@ int main()
 	printf("Hello World/n");
 	exit(EXIT_SUCCESS);
 }
-{% endhighlight %}
+```
+
 
 在不指定 makefile 文件时，尝试用 make 命令来编译它：
 
-{% highlight bash %}
+```bash
 $ make foo
 cc          foo.c          -o   foo
-{% endhighlight %}
+```
+
 
 可以看到，make 命令知道如何调用编译器，虽然此例中，它选择的是 `cc` 而不是 `gcc`（在 Linux 系统中，这没有问题，因为 `cc` 通常是 `gcc` 的一个连接文件）。
 
@@ -355,9 +369,10 @@ cc          foo.c          -o   foo
 
 可以通过下面命令打印出make命令所有内置规则：
 
-{% highlight bash %}
+```bash
 $ make -p | more
-{% endhighlight %}
+```
+
 
 内置规则较多。
 
@@ -365,11 +380,12 @@ $ make -p | more
 
 **考虑到存在这些内置规则，可以将文件 makefile 中用于制作目标的规则去掉，而只需要指定依赖关系，从而达到简化 makefile 文件的目的**。
 
-{% highlight makefile %}
+```makefile
 main.o: main.c a.h
 2.o: 2.c a.h b.h
 3.o: 3.c b.h c.h
-{% endhighlight %}
+```
+
 
 
 # Tips

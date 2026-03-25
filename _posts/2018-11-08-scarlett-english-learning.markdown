@@ -77,7 +77,7 @@ Key Gestures
 * Snake - Place your hands together in front of you and move the forward like a snake moving across the ground.
 * Polar bear - Spread your fingers wide like big paws, and move your arms slowly like a swimming polar bear.
 
-{% highlight text %}
+```text
 Stomp like elephants !
 Let's go
 And stomp like the elephants do.
@@ -125,7 +125,8 @@ Let's go to the zoo.
 And dance like the animals do. [Do a silly dance !]
 Let's go to the zoo.
 And dance like the animals do.
-{% endhighlight %}
+```
+
 
 
 
@@ -294,9 +295,10 @@ Assistent: Diya (迪亚)
 ## 学习内容
 
 * 自我介绍。要求在没有老师的提示下可以整句表达。
-{% highlight text %}
+```text
 Good morning, my name is ..., I amm ... years old. I like (animal).
-{% endhighlight %}
+```
+
 
 * 游戏抢凳子。锻炼孩子的反应能力与团队精神，能自己独立明白老师所说的游戏规则并遵守。
 
@@ -313,10 +315,11 @@ Good morning, my name is ..., I amm ... years old. I like (animal).
 | legos | /'leɡəu/ |  乐高积木
 
 * Toy Store，玩具商店。让孩子们学会使用一元，五元，十元，二十元去购买自己想要的物品。涉及：
-{% highlight text %}
+```text
 Hi thank you, you're welcome.
 what do you want? I want cars. 5 yuan, thank you.
-{% endhighlight %}
+```
+
 * 涂色。
 
 * ABCs歌曲。(已下载)
@@ -358,9 +361,10 @@ Assistent: Diya (迪亚)
 * AEIOU原因发音练习，并让孩子在白板上写出来。
 
 * 自我介绍。
-{% highlight text %}
+```text
 hello my name is ..., today I am happy/tired. My favorite color is blue.
-{% endhighlight %}
+```
+
 
 * 学习新单词
 

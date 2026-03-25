@@ -42,7 +42,7 @@ D: select id from table where A = “x” and C = “z”
 
 * C++多态
 
-{% highlight cpp %}
+```cpp
 #include <stdio.h>
 
 class Base
@@ -66,7 +66,8 @@ if(ptr != NULL) ptr->bar();
 
 return 0;
 }
-{% endhighlight %}
+```
+
 
 A: call Derive::bar().
 call Derive::foo().
@@ -110,7 +111,7 @@ D: 线程不安全函数通过加锁可以改造成可重入函数
 
 * C++实现单例模式
 
-{% highlight cpp %}
+```cpp
 class A
 {
 private:
@@ -125,32 +126,36 @@ public:
 
 //外部初始化
 const A* A::m_instance = new A;
-{% endhighlight %}
+```
+
 
 * 用宏定义MAX(a,b,c)求三个数最大值
 
-{% highlight cpp %}
+```cpp
 #define MAX(a,b,c) (a>b?(a>c?a:c):(b>c?b:c))
-{% endhighlight %}
+```
+
 
 * 用一个表达式，判断一个数X是否是2^N次方，不可用循环语句
 
-{% highlight cpp %}
+```cpp
 !(X & (X-1))
-{% endhighlight %}
+```
+
 
 * 下面代码的作用，求平均值
 
-{% highlight cpp %}
+```cpp
 int f(int x, int y)
 {
     return (x&y) + ((x^y)>>1);
 }
-{% endhighlight %}
+```
+
 
 * [翻转一个字符串](https://blog.csdn.net/Solstice/article/details/5166912)，例如把 "12345" 变成 "54321"
 
-{% highlight cpp %}
+```cpp
 void reverse_by_swap(char* str, int n) {
   char* begin = str;
   char* end = str + n - 1;
@@ -166,11 +171,12 @@ void reverse_by_swap(char* str, int n) {
 void reverse_by_std(char* str, int n){
   std::reverse(str, str + n);
 }
-{% endhighlight %}
+```
+
 
 *  在32位或64位系统中，以下代码输出可能是哪些？
 
-{% highlight cpp %}
+```cpp
 void test(int a[], int size)
 {
   int n = sizeof(a)/sizeof(int);
@@ -185,7 +191,8 @@ int main()
   test(a, sizeof(a)/sizeof(int));
   return 0;
 }
-{% endhighlight %}
+```
+
 
 数组作为函数参数会退化为指针，指针在32位系统中大小是4字节，在64位系统大小是8字节。
 
@@ -195,7 +202,7 @@ int main()
 
 * 以下代码可能输出有：
 
-{% highlight cpp %}
+```cpp
 union U {
   char* a;
   char b;
@@ -220,7 +227,8 @@ int main()
   printf("%zu ", sizeof(char[2]));
   printf("%zu ", sizeof(char *));
 }
-{% endhighlight %}
+```
+
 
 字节对齐，32位或64位系统。
 
@@ -228,7 +236,7 @@ int main()
 
 * 当输入参数是2018时，函数返回值是：
 
-{% highlight cpp %}
+```cpp
 int func(int n) {
   if (n > 0) {
     return n + func(n-1);
@@ -236,7 +244,8 @@ int func(int n) {
     return 0;
   }
 }
-{% endhighlight %}
+```
+
 
 计算累加和，(1 + 2018) / 2 * 2018 = 2037171
 
@@ -274,9 +283,10 @@ refer:
 
 * 为数据动态分配内存时，有时要求对内存的起始地址做对齐操作以提高其访问效率。请问将某个指针地址Addr对齐到8字节可以使用下列哪条语句实现：
 
-{% highlight cpp %}
+```cpp
 (Addr + 7) & (~7)
-{% endhighlight %}
+```
+
 
 * 请选择对商业应用友好（可允许对代码进行修改后，再进行商用发布）的开源license：
 
@@ -313,7 +323,7 @@ https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-de
 
 如何实现下面的转换
 
-{% highlight cpp %}
+```cpp
 // operator()
 std::string operator()() const
 {
@@ -323,7 +333,8 @@ std::string operator()() const
 myclass obj;
 std::string str = obj();
 
-{% endhighlight %}
+```
+
 
 * 函数是否占用对象的空间
 
@@ -351,10 +362,11 @@ C++支持函数重载，C不支持函数重载。http://blog.csdn.net/delphiwcdj
 
 默认情况下，如果new不能分配所要求的内存空间，它会抛出一个类型为bad_alloc的异常。我们可以改变使用new的方式来阻止它抛出异常：
 
-{% highlight cpp %}
+```cpp
 int *p1 = new int;           // 如果分配失败，new抛出std::bad_alloc
 int *p2 = new (nothrow) int; // 如果分配失败，new返回一个空指针
-{% endhighlight %}
+```
+
 bad_alloc和nothrow都定义在头文件new中。
 
 http://www.cplusplus.com/reference/new/operator%20new[]/
@@ -420,7 +432,7 @@ https://cpppatterns.com/patterns/pimpl.html
 
 * 指针定义
 
-{% highlight cpp %}
+```cpp
 int a;               // an integer
 int *a;              // a pointer to an integer
 int **a;             // a pointer to a pointer to an integer
@@ -429,11 +441,12 @@ int *a[10];          // an array of 10 pointers to integers
 int (*a)[10];        // a pointer to an array of 10 integers
 int (*a)(int);       // a pointer to a function that takes an integer argument and returns an integer
 int (*a[10])(int);   // an array of 10 pointers to functions that take an integer argument and return an integer
-{% endhighlight %}
+```
+
 
 * 双指针
 
-{% highlight cpp %}
+```cpp
 int a[] = {1, 2, 3, 4, 5};
 int *ptr = (int *)(&a + 1);
 printf("%d %d", *(a + 1), *(ptr - 1));// 2 5
@@ -442,7 +455,8 @@ char *a[] = {"hello", "the", "world"};
 char **pa = a;
 pa++;
 std::cout << *pa << endl; // the
-{% endhighlight %}
+```
+
 
 * C++中有了malloc/free，为什么还需要new/delete ?
 
@@ -482,11 +496,12 @@ In C++, you should NOT throw exceptions from:
 
 * 指向常量的指针，和常量指针分别如何定义
 
-{% highlight cpp %}
+```cpp
 const int * p1 = 1;
 int i;
 int * const p2 = &i;
-{% endhighlight %}
+```
+
 
 * 一个连续递增的整数序列，如何计算中位数
 比如，3,4,5,6,7
@@ -497,17 +512,19 @@ int * const p2 = &i;
 * 宏
 
 测试方法：
-{% highlight text %}
+```text
 gcc –E  macro.test.c
-{% endhighlight %}
+```
+
 
 https://gcc.gnu.org/onlinedocs/cpp/Macros.html
 
 * 在16位机器上，使用预处理指令 #define 声明一个常数，用以表明1年中有多少秒（忽略闰年问题）
 
-{% highlight cpp %}
+```cpp
 #define SECONDS_PER_YEAR (60 * 60 * 24 * 365)UL
-{% endhighlight %}
+```
+
 
 * sizeof和strlen的区别
 
@@ -529,7 +546,7 @@ http://www.javadude.com/articles/passbyvalue.htm
 
 告诉编译器取消结构在编译过程中的优化对齐按照实际占用字节数进行对齐，是GCC特有的语法。这个功能是跟操作系统没关系，跟编译器有关，gcc编译器不是紧凑模式的。
 
-{% highlight cpp %}
+```cpp
 struct stCoRoutineAttr_t
 {
     int stack_size;
@@ -540,7 +557,8 @@ struct stCoRoutineAttr_t
         share_stack = NULL;
     }
 }__attribute__ ((packed));
-{% endhighlight %}
+```
+
 
 * `__thread`
 
@@ -554,7 +572,7 @@ struct stCoRoutineAttr_t
 
 * `__sync_fetch_and_add`
 
-{% highlight cpp %}
+```cpp
 volatile unsigned int g_var = 0;
 
 int atom_op()
@@ -567,11 +585,12 @@ int atom_op()
 
     return 0;
 }
-{% endhighlight %}
+```
+
 
 * 条件编译
 
-{% highlight cpp %}
+```cpp
 static pid_t GetPid()
 {
     static __thread pid_t pid = 0;
@@ -614,7 +633,8 @@ static unsigned long long GetTickMS()
     return u;
 #endif
 }
-{% endhighlight %}
+```
+
 
 
 ## 网络部分
@@ -731,9 +751,10 @@ accept锁，nginx的做法
 
 REUSEPORT，允许将任意数目的socket绑定到完全相同的源地址端口对上
 
-{% highlight c %}
+```c
 set_sock_opt(socket, SO_REUSERPORT);
-{% endhighlight %}
+```
+
 
 ## Linux系统编程部分
 
@@ -774,11 +795,12 @@ f 0
 
 * malloc是如何分配内存的？malloc分配多大的内存，就占用多大的物理内存空间吗？free 的内存真的释放了吗（还给 OS ）? 既然堆内内存不能直接释放，为什么不全部使用 mmap 来分配？
 malloc,calloc,realloc函数之间的区别？
-{% highlight cpp %}
+```cpp
 void * malloc(int n);
 void * calloc(int n, int size);
 void * realloc(void * p, int n);
-{% endhighlight %}
+```
+
 
 * 如何查看进程虚拟地址空间的使用情况？
 
@@ -817,7 +839,7 @@ sysv共享内存
 shmget, shmat, shmdt
 注意：每次shmat使用共享内存之后要shmdt，否则会导致打开句柄泄露（Too many open files in system(23)），通过ipcs -m可以看到nattch列有多少次attach。
 
-{% highlight cpp %}
+```cpp
 // 如果已存在就使用之前的共享内存，如果不存在则创建共享内存并初始化
 int shmid = shmget(MY_SHM_ID, sizeof(int), IPC_CREAT | 0666);
 if (shmid == -1) {
@@ -834,34 +856,38 @@ if (shmdt(p_sn) == -1) {
 	printf("shmdt failed, %s(%d,id=%x)", strerror(errno), errno, MY_SHM_ID);
 	return FAIL;
 }
-{% endhighlight %}
+```
+
 http://www.csl.mtu.edu/cs4411.ck/www/NOTES/process/shm/shmget.html
 
 * wait命令
 
 wait命令一个很重要用途就是在Bash shell的并行编程中，可以在Bash shell脚本中启动多个后台进程（使用&），然后调用wait命令，等待所有后台进程都运行完毕，Bash shell脚本再继续向下执行。
 
-{% highlight bash %}
+```bash
 command1 &
 command2 &
 wait
-{% endhighlight %}
+```
+
 
 * Linux上的内存如计算？
 
 `top`:
-{% highlight text %}
+```text
 Mem:  131997524k total, 130328500k used,  1669024k free,   793232k buffers
 Swap:  2105272k total,   428816k used,  1676456k free, 122989268k cached
-{% endhighlight %}
+```
+
 
 `free -m`
-{% highlight text %}
+```text
              total       used       free     shared    buffers     cached
 Mem:        128903     128567        336          0        776     121401
 -/+ buffers/cache:       6389     122514
 Swap:         2055        418       1637
-{% endhighlight %}
+```
+
 
 可用内存：
 122514 （-/+ buffers/cache free） = 336 （free）+ 776 （buffers）+ 121401 （cached）
@@ -894,7 +920,7 @@ https://techtalk.intersec.com/2013/12/memory-part-5-debugging-tools/
 一个工程中的源文件不计其数，其按类型、功能、模块分别放在若干个目录中，makefile定义了一系列的规则来指定，哪些文件需要先编译，哪些文件需要后编译，哪些文件需要重新编译，甚至于进行更复杂的功能操作。
 
 比如有一个test.c文件，gcc针对上面几个过程，对应的命令如下：
-{% highlight text %}
+```text
 预处理：gcc -E test.c -o test.i
 
 编译：gcc -S test.c -o test.s
@@ -902,23 +928,26 @@ https://techtalk.intersec.com/2013/12/memory-part-5-debugging-tools/
 汇编：gcc -c test.s -o test.o
 
 连接：gcc test.o -o test
-{% endhighlight %}
+```
+
 
 并行编译。工程比较大时，并行编译非常会充分利用多CPU的优势，缩短编译的时间。
-{% highlight text %}
+```text
 make -f makefile -j 8
-{% endhighlight %}
+```
+
 
 两个函数patsubst，wildcard
 
 makefile函数定义格式为：$(<function><arguments>)。<function>就是函数名，make支持的函数不多。<arguments>是函数的参数，参数间以逗号“,”分隔，而函数名和参数之间以“空格”分隔
-{% highlight text %}
+```text
 $(wildcard *.cpp)：表示展开工作目录下所有的.cpp文件；
 $(patsubst %.cpp,%.o,$(wildcard *.cpp))：表示对.cpp文件列表字符串进行替换，替换为.o文件后缀的列表字符串；
-{% endhighlight %}
+```
+
 
 Makefile.comm
-{% highlight text %}
+```text
 CXX = g++
 OBJS = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 OBJS_I = $(patsubst %.cpp,%.i,$(wildcard *.cpp))
@@ -932,7 +961,8 @@ else
     PLAT_FLAGS := 32
 endif
 MYFLAGS += -m${PLAT_FLAGS}
-{% endhighlight %}
+```
+
 
 常用编译选项
 
@@ -953,7 +983,7 @@ MYFLAGS += -m${PLAT_FLAGS}
 $(strip $(shell  echo `uname -m`))：打印操作系统版本出来；
 
 Makefile
-{% highlight text %}
+```text
 include ./Makefile.comm
 
 TARGET = your_bin
@@ -979,7 +1009,8 @@ clean:
     rm -f $(OBJS) $(TARGET) $(DEPENDS)
 
 -include $(DEPENDS)
-{% endhighlight %}
+```
+
 PHONY：定义了显示执行makefile的命令名称，告诉编译系统，all，clean，init假定这些目标需要更新。有两个作用：a）如果clean为一个文件时，make clean将失效；b）如果all后面加上clean，但clean未声明为PHONY，编译系统会认为clean没有依赖，clean文件已经是最新的，不需要执行；
 
 可以看见makefile的第一个目标为all，因此只执行make不加目标名的时候，将执行该伪目标；
@@ -998,7 +1029,7 @@ include表示包含一个外部的makefile文件进来，-include和include功�
 
 * [Include guard](https://en.wikipedia.org/wiki/Include_guard)
 
-{% highlight cpp %}
+```cpp
 #ifndef GRANDPARENT_H
 #define GRANDPARENT_H
 
@@ -1010,7 +1041,8 @@ struct foo {
 
 // or
 #pragma once  // most C and C++ implementations provide a non-standard #pragma once directive. This directive, inserted at the top of a header file, will ensure that the file is included only once.
-{% endhighlight %}
+```
+
 
 ## 数据库部分
 
@@ -1059,7 +1091,7 @@ http://www.jianshu.com/p/4427db9337d7
 
 数组 + 链表（桶）。简单地说，HashMap 在底层将 key-value 当成一个整体进行处理，这个整体就是一个 Entry 对象。HashMap 底层采用一个 Entry[] 数组来保存所有的 key-value 对，当需要存储一个 Entry 对象时，会根据 hash 算法来决定其在数组中的存储位置，在根据 equals 方法决定其在该数组位置上的链表中的存储位置；当需要取出一个Entry 时，也会根据 hash 算法找到其在数组中的存储位置，再根据 equals 方法从该位置上的链表中取出该Entry。
 
-{% highlight java %}
+```java
 public HashMap(int initialCapacity, float loadFactor) {
         if (initialCapacity < 0)
             throw new IllegalArgumentException("Illegal initial capacity: " +
@@ -1100,7 +1132,8 @@ static int hash(int h) {
 static int indexFor(int h, int length) {
         return h & (length-1);
  }
-{% endhighlight %}
+```
+
 [Why initialCapacity of Hashtable is 11 while the DEFAULT_INITIAL_CAPACITY in HashMap is 16 and requires a power of 2](https://stackoverflow.com/questions/9413966/why-initialcapacity-of-hashtable-is-11-while-the-default-initial-capacity-in-has)
 
 [HashMap requires a better hashCode() - JDK 1.4 Part II](http://www.javaspecialists.eu/archive/Issue054.html)
@@ -1139,7 +1172,7 @@ https://www.zhihu.com/question/35172305
 
 * 红黑树
 
-{% highlight cpp %}
+```cpp
 // 红黑树结点定义
 typedef struct RBTNode
 {
@@ -1148,7 +1181,8 @@ struct RBTNode *parent, *left, *right;
 int color;
 int size; //扩张红黑树
 } RBTNode, *RBTree;
-{% endhighlight %}
+```
+
 
 ## 内核相关
 
@@ -1162,11 +1196,12 @@ X86-64 64位的寄存器一般都是叫RXX，其低32位向下兼容一般称为
 
 现代编译器做了这些改变，除了通过寄存器传递参数比之前参数压栈要快之外。对于我们debug好处，就是当出现堆栈溢出，向上冲破到FunA的栈帧的时候，不会覆盖到这些参数，那么core的时候我们依然可以看到FunA传递给FunB的参数，这样我们就能够定位到底是不是由于FunA传递进来的参数引起的。
 
-{% highlight text %}
+```text
 # 查看RBP指向的区域
 p $rbp
 x/64ag $rbp
-{% endhighlight %}
+```
+
 
 局部变量都在栈底rbp的下方，即$rbp-Offset的区域。如果知道了对应的Offset值，不就能够p去查看了
 
@@ -1296,7 +1331,7 @@ https://www.guokr.com/post/61605/
 * the zero-cost exception model
 It offers zero runtime overhead for an error-free execution, which surpasses even that of C return-value error handling. As a trade-off, the propagation of an exception has a large overhead.
 
-{% highlight text %}
+```text
 Exception Frames
 
 Exceptions are handled in frames. The simplest of these frames is a ‘try/catch’ block in the source code. The ‘try’ opens an exception frame and the ‘catch’ defines the handler for that frame. Exceptions within that frame flow to the handler: either they match and the exception is handled, or they do not match and the exception is propagated further.
@@ -1306,7 +1341,8 @@ In addition to ‘catch’ handlers, are cleanup handlers. This is code that mus
 Languages with ‘defer’ statements, like Leaf, also introduce exception frames. These are very similar to destructors: the ‘defer’ statement opens a frame which ends with the enclosing scope. Any language feature which requires code to execute during an exception will require an exception frame.
 
 **It’s important to see all of these frames; compilers used to generate code at each ‘try’ statement to handle exceptions. One technique was ‘setjmp/longjmp’: each ‘try’ adds a jump address to an exception handler stack and the ‘finally’ clauses remove it. Even if no exception was thrown the work of adding/removing from the handler stack would still be done. One of the key goals of zero-cost exceptions was to get rid of this needless setup/teardown work.**
-{% endhighlight %}
+```
+
 
 https://mortoray.com/2013/09/12/the-true-cost-of-zero-cost-exceptions/
 http://ithare.com/infographics-operation-costs-in-cpu-clock-cycles/
@@ -1450,7 +1486,7 @@ Send packet CA->Netherlands->CA .... 150,000,000 ns = 150 ms
 	* UUID。当前时间 + 时钟序列 + 全局唯一的IEEE机器识别号（比如，网卡）。优点：API简单易用；缺点：占用空间大，字符串本身无法加工，可读性不强。
 	* ID生成表。使用MySQL自增长ID的机制。启用两台数据库服务器来生成ID，通过区分auto_increment的起始值和步长来生成奇偶数的ID。
 
-{% highlight sql %}
+```sql
 CREATE TABLE `Tickets64` (
     `id` bigint(20) unsigned NOT NULL auto_increment,
     `stub` char(1) NOT NULL default '',
@@ -1462,7 +1498,8 @@ CREATE TABLE `Tickets64` (
 
 REPLACE INTO Tickets(stub) VALUES('a');
 SELECT LAST_INSERT_ID();
-{% endhighlight %}
+```
+
 	* [Snowflake（Twitter）](https://github.com/twitter/snowflake)，生成64位的ID = 41位的时间序列 + 10位机器标识(最多支持1024个节点) + 12位的计数顺序号(支持每个节点每毫秒产生4096个ID序号) Snowflake is a network service for generating unique ID numbers at high scale with some simple guarantees.
 
 * 哈希取模
@@ -1493,13 +1530,14 @@ SELECT LAST_INSERT_ID();
 
 可以用`START TRANSACTION`语句开始一个事务，然后要么使用`COMMIT`提交事务将修改的数据持久保留，要么使用`ROLLBACK`撤销所有的修改。 事务SQL的样本如下：
 
-{% highlight sql %}
+```sql
 START TRANSACTION;
 SELECT balance FROM checking WHERE customer_id = 'gerry';
 UPDATE checking SET balance = balance - 200.00 WHERE customer_id = 'gerry';
 UPDATE savings SET balance = balance + 200.00 WHERE customer_id = 'gerry';
 COMMIT;
-{% endhighlight %}
+```
+
 
 `ACID`表示原子性，一致性，隔离性和持久性。一个运行良好的事务处理系统，必须具备这些标准特征。事务的ACID特性可以确保银行不会弄丢你的钱
 
@@ -1546,15 +1584,16 @@ http://www.bytesoft.org/tcc-intro/
 
 Q: 分布式事务场景, 设置成串行化隔离级别, 是否有必要？MySQL默认是RR隔离级别。
 
-{% highlight sql %}
+```sql
 set session transaction isolation level SERIALIZABLE;
-{% endhighlight %}
+```
+
 
 A: 如果数据库不支持分布式MVCC，就有必要。否则可能RM1的本地事务提交了，RM2还没提交，这样就会读取到RM1已经提交的结果和RM2上未提交的结果，数据就不一致了。
 
 补充说明：数据库为什么要横向扩展（既可以按数据分片扩展，也可以按功能扩展）？当单台 RM 机器达到资源性能瓶颈，无法满足业务增长需求时，就需要横向扩展 RM 资源，形成 RM 集群。通过横向扩展资源，提升非热点数据的并发性能，这对于大体量的互联网产品来说，是至关重要的。基于 XA 协议实现的分布式事务并不能提升热点并发性能，其意义在于横向扩展资源提升非热点数据并发性能时，能严格保证对多资源访问的事务 ACID 特性。至于热点数据并发性能问题，对于一般的应用来说，经过 SQL 层面一定的性能优化之后，其并发性能基本就能够满足业务的需求。如果经过优化，达到性能极限之后，还不能满足，就需要上升到业务层面，根据业务特点，通过专门的业务逻辑或业务架构优化来实现。
 
-{% highlight sql %}
+```sql
 xa start xid;  // request for db1
 update db1.t_user_balance set balance = balance - 1 where user = 'Bob' and balance > 1;
 xa start xid;  // request for db2
@@ -1571,7 +1610,8 @@ xa commit xid; // for db2
 // 如果do_other_something失败，需要回滚之前的db事务
 xa rollback xid; // for db1
 xa rollback xid; // for db2
-{% endhighlight %}
+```
+
 
 **说明：**
 

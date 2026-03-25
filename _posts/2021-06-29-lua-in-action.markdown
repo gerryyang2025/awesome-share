@@ -35,18 +35,19 @@ tags:
 * Lua 中连续的连字符 `--` 表示单行注释。`--[[ ]]` 表示多行注释。
 * 从 [Lua 官网](www.lua.org) 上下载解释器的源码，建议尝试从源码编译并安装。
 
-{% highlight bash %}
+```bash
 # 下载 lua-5.3.6.tar.gz
 wget http://www.lua.org/ftp/lua-5.3.6.tar.gz  # released on 14 Sep 2020
 tar zxvf lua-5.3.6.tar.gz
 cd lua-5.3.6
 make linux -j 16
 make install  # 指定 INSTALL_TOP 变量设置安装目录
-{% endhighlight %}
+```
+
 
 安装目录：
 
-{% highlight text %}
+```text
 $tree
 .
 ├── bin
@@ -71,7 +72,8 @@ $tree
         └── 5.3
 
 10 directories, 10 files
-{% endhighlight %}
+```
+
 
 # 基础
 
@@ -80,7 +82,7 @@ $tree
     + `userdata` 类型允许把任意的 C 语言数据保存在 Lua 语言变量中。在 Lua 语言中，用户数据类型除了赋值和相等性测试外，没有其他预定义的操作。用户数据被用来表示由应用或 C 语言编写的库所创建的新类型。
     + **变量没有预定义的类型，任何变量都可以包含任何类型的值**。一般情况下，将一个变量用作不同类型时，会导致代码的可读性不佳，但是，在某些情况下谨慎地使用这个特性，可能会带来一定程度的便利。例如，当代码发生异常时可以返回一个 nil 以区别于其他正常情况下的返回值
 
-{% highlight text %}
+```text
 nil (空)
 boolean (布尔)
 number (数值)
@@ -89,9 +91,10 @@ userdata (用户数据)
 function (函数)
 thread (线程)
 table (表)
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 Lua 5.1.4  Copyright (C) 1994-2008 Lua.org, PUC-Rio
 > type(nil)
 > print(type(nil))
@@ -112,7 +115,8 @@ function
 table
 > print(type(type(X)))
 string
-{% endhighlight %}
+```
+
 
 * Lua 语言中的标识符是由任意字母，数字和下划线组成的字符串，注意不能以数字开头。其中，下划线 + 大写字母（例如：_VERSION）组成的标识符通常被用作特殊用途。
 
@@ -130,7 +134,7 @@ string
     + (x>y) and x or y 与 C 语言的三目运算符 a ? b : c 含义等价
     + not 运算符永远返回 Boolean 类型的值
 
-{% highlight text %}
+```text
 > print(not nil)
 true
 > print(not false)
@@ -141,13 +145,14 @@ false
 true
 > print(not not nil)
 false
-{% endhighlight %}
+```
 
 
 
 
 
-{% highlight text %}
+
+```text
 > print(4 and 5)
 5
 > print(nil and 13)
@@ -159,16 +164,18 @@ false
 > print(false or "hi")
 hi
 > print(nil or false)
-{% endhighlight %}
+```
+
 
 
 # 相关用法
 
 ## [lua_call](https://www.lua.org/manual/5.3/manual.html#lua_call)
 
-{% highlight cpp %}
+```cpp
 void lua_call (lua_State *L, int nargs, int nresults);
-{% endhighlight %}
+```
+
 
 Calls a function.
 
@@ -188,13 +195,14 @@ Any error inside the called function is propagated upwards (with a `longjmp`).
 
 The following example shows how the host program can do the equivalent to this Lua code:
 
-{% highlight lua %}
+```lua
 a = f("how", t.x, 14)
-{% endhighlight %}
+```
+
 
 Here it is in C:
 
-{% highlight c %}
+```c
 lua_getglobal(L, "f");                  /* function to be called */
 lua_pushliteral(L, "how");                       /* 1st argument */
 lua_getglobal(L, "t");                    /* table to be indexed */
@@ -203,7 +211,8 @@ lua_remove(L, -2);                  /* remove 't' from the stack */
 lua_pushinteger(L, 14);                          /* 3rd argument */
 lua_call(L, 3, 1);     /* call 'f' with 3 arguments and 1 result */
 lua_setglobal(L, "a");                         /* set global 'a' */
-{% endhighlight %}
+```
+
 
 Note that the code above is balanced: at its end, the stack is back to its original configuration. This is considered good programming practice.
 
@@ -211,9 +220,10 @@ Note that the code above is balanced: at its end, the stack is back to its origi
 
 ## [lua_pcall](https://www.lua.org/manual/5.3/manual.html#lua_pcall)
 
-{% highlight cpp %}
+```cpp
 int lua_pcall (lua_State *L, int nargs, int nresults, int msgh);
-{% endhighlight %}
+```
+
 
 Calls a function in protected mode.
 
@@ -234,7 +244,7 @@ The `lua_pcall` function returns one of the following constants (defined in `lua
 
 测试代码：
 
-{% highlight lua %}
+```lua
 function printmsg()
         -- ok
         --print("hello world")
@@ -246,9 +256,10 @@ end
 function errorhandle(str)
         return string.upper(str)
 end
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include<iostream>
 #include<string>
 
@@ -308,15 +319,17 @@ test.lua:7: attempt to call a nil value (global 'print_not_exist')
 3 function call error: 2
 ATTEMPT TO CALL A STRING VALUE
 */
-{% endhighlight %}
+```
 
-{% highlight bash %}
+
+```bash
 #!/bin/bash
 
 # lua 5.3.5
 g++ -g -I../lua_5.3.5/include -L../lua_5.3.5/lib lua_pcall.cc -llua  -ldl
 echo "done"
-{% endhighlight %}
+```
+
 
 
 
@@ -354,9 +367,10 @@ LuaBridge is a lightweight and dependency-free library for mapping data, functio
 
 下面这条语句的结果是：10992432728506384
 
-{% highlight lua %}
+```lua
 print(string.format("%d", 186312419127226*59 + 49))
-{% endhighlight %}
+```
+
 
 但是这个算术得到的结果应该是：10992432728506383
 
@@ -373,11 +387,12 @@ LuaJIT 版本：2.1.0-alpha
 在 LuaJIT 中，Lua number 的默认精度上限是双精度浮点数（double）。如果你想进行无精度损失的 64 位整数计算，须使用
 FFI cdata 的包装整数类型。例如，对于你这里的例子：
 
-{% highlight lua %}
+```lua
 local ffi = require "ffi"
 local res = ffi.new("int64_t", 186312419127226)*59 + 49)
 print(tostring(res))
-{% endhighlight %}
+```
+
 
 使用 LuaJIT 运行这三行 Lua 代码得到的结果是
 
@@ -387,10 +402,11 @@ print(tostring(res))
 
 好吧，这可以进一步化简为
 
-{% highlight lua %}
+```lua
 $ luajit -e 'print(186312419127226LL*59 + 49)'
 10992432728506383LL
-{% endhighlight %}
+```
+
 
 不用显式地使用 ffi 模块。貌似这已经足够简单了。
 
@@ -414,20 +430,22 @@ From [Lua 5.3 reference manual](http://www.lua.org/manual/5.3/manual.html#2.1)
 ## [Using lua_checkstack?](https://stackoverflow.com/questions/63272970/using-lua-checkstack)
 
 
-{% highlight c %}
+```c
 void luaL_checkstack (lua_State *L, int sz, const char *msg);
 
 // Grows the stack size to top + sz elements, raising an error if the stack cannot grow to that size. msg is an additional text to go into the error message (or NULL for no additional text).
-{% endhighlight %}
+```
+
 
 * https://github.com/starwing/lua-protobuf/commit/d5f144b0f2a1930f700b5a7cce106374c0e64adf
 
 
 # Lua 5.3 升级注意事项
 
-{% highlight bash %}
+```bash
 sudo yum install readline-devel
-{% endhighlight %}
+```
+
 
 * [Lua 5.3 升级注意](https://blog.codingnow.com/2015/01/lua_53_update.html)
 

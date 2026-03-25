@@ -79,7 +79,7 @@ refer: [Operation Costs in CPU Clock Cycles](http://ithare.com/infographics-oper
 
 例子1: 比较不同查找实现的执行效率。
 
-{% highlight cpp %}
+```cpp
 static void VectorFind(benchmark::State& state) {
   int max = 10000;
   std::string last_v = std::to_string(max - 1);
@@ -110,13 +110,14 @@ static void SetFind(benchmark::State& state) {
   }
 }
 BENCHMARK(SetFind);
-{% endhighlight %}
+```
+
 
 ![share15](/assets/images/202110/share15.png)
 
 例子2：循环展开优化（`Loop unwinding`），使用循环展开减少分支预测的错误次数，从而提高程序执行的速度。但是代码中进行循环展开会导致代码膨胀以及可读性的下降，通常情况使用编译器优化即可。
 
-{% highlight cpp %}
+```cpp
 static void test1(benchmark::State& state) {
   int sum = 0;
   for (auto _ : state) {
@@ -149,11 +150,12 @@ static void test3(benchmark::State& state) {
   sum = sum1 + sum2;
 }
 BENCHMARK(test3);
-{% endhighlight %}
+```
+
 
 选择合适的Benchmarking 工具，提供标准的量化比较。[其他情况测试](https://github.com/gerryyang/mac-utils/blob/master/programing/protocol-buffers/tutorial/src/celero_benchmark.cc)
 
-{% highlight text %}
+```text
  $ ./celero_benchmark
 Celero
 Timer resolution: 0.001000 us
@@ -165,7 +167,8 @@ Timer resolution: 0.001000 us
 | find  | unordered_set |    Null     |   10    |     20     | 0.00029  |   0.05000    |  20000000.00   |  51777536   |
 | find  |   flat_set    |    Null     |   10    |     20     | 0.00058  |   0.10000    |  10000000.00   |  51777536   |
 Completed in 00:00:00.028138
-{% endhighlight %}
+```
+
 
 # 性能热点分析
 
@@ -178,13 +181,14 @@ Completed in 00:00:00.028138
 
 异常情况：（模拟I/O异常）
 
-{% highlight text %}
+```text
 # spawn 1 workers spinning on sync()
 # spawn 1 workers spinning on write()/unlink()
 $ stress  -i 1 --hdd 1 --timeout 600
 stress: info: [15180] dispatching hogs: 0 cpu, 1 io, 0 vm, 1 hdd
 stress: info: [15180] successful run completed in 601s
-{% endhighlight %}
+```
+
 
 ![share1](/assets/images/202110/share1.png)
 
@@ -228,7 +232,7 @@ stress: info: [15180] successful run completed in 601s
 
 `fio`的测试方法：
 
-{% highlight text %}
+```text
 # 随机读
 fio -name=randread -direct=1 -iodepth=64 -rw=randread -ioengine=libaio -bs=4k -size=1G -numjobs=1 -runtime=1000 -group_reporting -filename=/dev/sdb
 
@@ -240,7 +244,8 @@ fio -name=read -direct=1 -iodepth=64 -rw=read -ioengine=libaio -bs=4k -size=1G -
 
 # 顺序写
 fio -name=write -direct=1 -iodepth=64 -rw=write -ioengine=libaio -bs=4k -size=1G -numjobs=1 -runtime=1000 -group_reporting -filename=/dev/sdb
-{% endhighlight %}
+```
+
 
 > 对于性能指标，最大 IOPS 在 4KiB IO 大小下可得出测试结果，最大吞吐量在 256KiB IO 大小下可得出测试结果。具体测试方法请参见：[如何衡量云硬盘的性能](https://cloud.tencent.com/document/product/362/6741)。
 
@@ -262,7 +267,7 @@ More:
 
 使用`enum hack`
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 template<int a, int b>
@@ -276,11 +281,12 @@ int main()
 {
     std::cout << Add<1, 2>::result << std::endl;
 }
-{% endhighlight %}
+```
+
 
 使用C++11的`constexpr`
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 template<typename T1, typename T2>
@@ -293,7 +299,8 @@ int main()
 {
     std::cout << add(1, 2) << std::endl;
 }
-{% endhighlight %}
+```
+
 
 ## 数据对齐
 
@@ -301,7 +308,7 @@ int main()
 
 C++11之前的方法：使用`offsetof`宏获取member的偏移量，从而获取指定类型的对齐字节长度。
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 #define ALIGNOF(type, result) do {\
@@ -336,11 +343,12 @@ int main()
     ALIGNOF(f, len);
     std::cout << len << std::endl; // 8
 }
-{% endhighlight %}
+```
+
 
 更好的方法：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 template<typename T>
@@ -364,11 +372,12 @@ int main()
     std::cout << ALIGNOF(long long) << std::endl; // 8
     std::cout << ALIGNOF(f) << std::endl; // 8
 }
-{% endhighlight %}
+```
+
 
 使用编译器的扩展功能：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 // GCC
@@ -386,11 +395,12 @@ int main()
     std::cout << ALIGNOF(long long) << std::endl; // 8
     std::cout << ALIGNOF(f) << std::endl; // 8
 }
-{% endhighlight %}
+```
+
 
 设置数据对齐。
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 // GCC
@@ -404,11 +414,12 @@ int main()
     std::cout << ALIGNOF(x1) << std::endl; // 2
     std::cout << ALIGNOF(x2) << std::endl; // 8
 }
-{% endhighlight %}
+```
+
 
 由于不同的编译器需要采用不同的扩展功能来控制类型的对齐字节长度，对可移植性不太友好，因此，C++11标准中新增了`alignof`和`alignas`两个关键字。
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 // GCC
@@ -424,11 +435,12 @@ int main()
     ALIGNAS(8) short x2;
     std::cout << ALIGNOF(decltype(x2)) << std::endl; // 2 TODO
 }
-{% endhighlight %}
+```
+
 
 也提供了一些模板方法：例如，`std::alignment_of`
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 int main()
@@ -436,7 +448,8 @@ int main()
     std::cout << std::alignment_of<int>::value << std::endl; // 4
     std::cout << std::alignment_of<int>() << std::endl; // 4
 }
-{% endhighlight %}
+```
+
 
 性能测试对比：(10000000 * 10000 B = 100 GB)
 
@@ -457,7 +470,7 @@ int main()
 使用 [tinymembench](https://github.com/ssvb/tinymembench) 测试内存的性能：
 
 
-{% highlight text %}
+```text
 $ lscpu
 Architecture:        x86_64
 CPU op-mode(s):      32-bit, 64-bit
@@ -482,9 +495,10 @@ L1i cache:           32K
 L2 cache:            4096K
 NUMA node0 CPU(s):   0
 Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx lm constant_tsc rep_good nopl cpuid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm pti bmi1 avx2 bmi2 xsaveopt
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $ ./tinymembench
 tinymembench v0.4.9 (simple benchmark for memory throughput and latency)
 
@@ -534,9 +548,10 @@ tinymembench v0.4.9 (simple benchmark for memory throughput and latency)
  SSE2 fill                                            :   8482.4 MB/s (3.2%)
  SSE2 nontemporal fill                                :  16543.7 MB/s (0.8%)
 
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include <iostream>
 #include <memory>
 #include <chrono>
@@ -585,7 +600,8 @@ int main(int argc, char *argv[])
     std::chrono::duration<double> diff = end - beg;
     std::cout << "elapsed time: " << diff.count() << std::endl;
 }
-{% endhighlight %}
+```
+
 
 ## 数字类型转换
 
@@ -599,7 +615,7 @@ int main(int argc, char *argv[])
 * https://en.cppreference.com/w/cpp/compiler_support
 * https://stackoverflow.com/questions/65083544/format-no-such-file-or-directory
 
-{% highlight cpp %}
+```cpp
 // {fmt} is an open-source formatting library providing a fast and safe alternative to C stdio and C++ iostreams.
 // Format string syntax similar to Python's format.
 // https://github.com/fmtlib/fmt
@@ -614,7 +630,8 @@ int main() {
   std::vector<int> v = {1, 2, 3};
   fmt::print("{}\n", v); // {1, 2, 3}
 }
-{% endhighlight %}
+```
+
 
 `fmtlib`的benchmark数据：
 
@@ -631,9 +648,10 @@ int main() {
 
 This benchmark evaluates the performance of conversion from double precision IEEE-754 floating point (double) to ASCII string. The function prototype is:
 
-{% highlight cpp %}
+```cpp
 void dtoa(double value, char* buffer);
-{% endhighlight %}
+```
+
 
 RandomDigit: Generates 1000 random double values, filtered out +/-inf and nan. Then convert them to limited precision (1 to 17 decimal digits in significand). Finally convert these numbers into ASCII. Each digit group is run for 100 times. The minimum time duration is measured for 10 trials.
 
@@ -664,7 +682,7 @@ RandomDigit: Generates 1000 random double values, filtered out +/-inf and nan. T
 
 例如，如果转换的数字小于10000，正常展开需要每次计算`%10`或`/10`获取每一位数字，需要计算4次除法。而查表的方法，只需要计算一次`%100`和`/100`，然后通过查表得到结果，需要执行1次除法，减少了执行除法运算的次数。
 
-{% highlight cpp %}
+```cpp
 // 1. std::to_chars
 std::array<char, std::numeric_limits<int>::digits10 + 2> buffer;
 auto result = std::to_chars(buffer.data(),
@@ -679,12 +697,13 @@ if (result.ec == std::errc()) {
 // 2. fmtlib
 auto f = fmt::format_int(42);
 // f.data() is the data, f.size() is the size
-{% endhighlight %}
+```
+
 
 
 [几种实现方案的测试对比](https://gcc.godbolt.org/z/9xGz6jhc8)：运行期计算，编译期计算，查表等方案。
 
-{% highlight cpp %}
+```cpp
 #include <stdio.h>
 #include <iostream>
 #include <string>
@@ -953,7 +972,8 @@ int main()
     compilea_string();
     compileb_string();
 }
-{% endhighlight %}
+```
+
 
 测试结果：
 
@@ -997,7 +1017,7 @@ GCC内置宏[__builtin_expect](https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins
 
 C++20支持了[C++ attribute: likely, unlikely](https://en.cppreference.com/w/cpp/language/attributes/likely) 分支预测的属性设置，帮助编译器实现优化。
 
-{% highlight cpp %}
+```cpp
 if (a > b) [[likely]] {
   do_something();
 } else {
@@ -1014,11 +1034,12 @@ switch (x) {
   default:
     h();
 }
-{% endhighlight %}
+```
+
 
 例如：
 
-{% highlight cpp %}
+```cpp
 // long __builtin_expect (long exp, long c)
 // we do not expect to call foo, since we expect x to be zero
 if (__builtin_expect (x, 0)) {
@@ -1028,16 +1049,18 @@ if (__builtin_expect (x, 0)) {
 if (__builtin_expect (ptr != NULL, 1)) {
   foo (*ptr);
 }
-{% endhighlight %}
+```
+
 
 为了方便使用，Linux内核代码（[include/linux/compiler.h](https://github.com/torvalds/linux/blob/master/include/linux/compiler.h)）定义了两个接口。
 
-{% highlight cpp %}
+```cpp
 // expect x is true
 # define likely(x)	__builtin_expect(!!(x), 1)
 // expect x is false
 # define unlikely(x)	__builtin_expect(!!(x), 0)
-{% endhighlight %}
+```
+
 
 > 解释：Why use !!(x) ? If foo is not of type bool, then !!foo will be. So !!foo can be 1 or 0.
 
@@ -1046,7 +1069,7 @@ if (__builtin_expect (ptr != NULL, 1)) {
 
 程序1:
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 #include <iostream>
 #include <unistd.h>
@@ -1068,9 +1091,10 @@ int main()
   func(a);
   return 0;
 }
-{% endhighlight %}
+```
 
-{% highlight asm %}
+
+```asm
 0000000000000710 <main>:
  710:   55                      push   %rbp
  711:   53                      push   %rbx
@@ -1106,11 +1130,12 @@ int main()
  889:   48 83 c4 08             add    $0x8,%rsp
  88d:   c3                      retq
  88e:   66 90                   xchg   %ax,%ax
-{% endhighlight %}
+```
+
 
 程序2:
 
-{% highlight cpp %}
+```cpp
 #define LIKELY(x)  __builtin_expect(!!(x), 1)
 #define UNLIKELY(x)  __builtin_expect(!!(x), 0)
 
@@ -1123,9 +1148,10 @@ __attribute__ ((noinline)) int func(int a)
   }
   return 0;
 }
-{% endhighlight %}
+```
 
-{% highlight asm %}
+
+```asm
 0000000000000850 <_Z4funci>:
  850:   48 83 ec 08             sub    $0x8,%rsp
  854:   85 ff                   test   %edi,%edi
@@ -1141,12 +1167,13 @@ __attribute__ ((noinline)) int func(int a)
  875:   e8 66 fe ff ff          callq  6e0 <usleep@plt>
  87a:   eb e3                   jmp    85f <_Z4funci+0xf>
  87c:   0f 1f 40 00             nopl   0x0(%rax)
-{% endhighlight %}
+```
+
 
 关于性能的测试比较: 参考[文章](http://blog.man7.org/2012/10/how-much-do-builtinexpect-likely-and.html)提供的[测试程序](https://man7.org/linux/tests/gcc/builtin_expect_test.c)
 
 
-{% highlight cpp %}
+```cpp
 /* builtin_expect_test.c */
 
 #include <stdio.h>
@@ -1248,7 +1275,8 @@ main(int argc, char *argv[])
 
     exit(EXIT_SUCCESS);
 }
-{% endhighlight %}
+```
+
 
 
 [GCC官方文档](http://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html) 给出了使用`__builtin_expect()`的相关建议:
@@ -1266,7 +1294,7 @@ Building the programming now involves two steps: **a profiling phase** and **an 
 > To optimize the program based on the collected profile information, use -fprofile-use.
 > Enable profile feedback-directed optimizations, and the following optimizations, many of which are generally profitable only with profile feedback available:
 
-{% highlight text %}
+```text
 -fbranch-probabilities  -fprofile-values
 -funroll-loops  -fpeel-loops  -ftracer  -fvpt
 -finline-functions  -fipa-cp  -fipa-cp-clone  -fipa-bit-cp
@@ -1274,15 +1302,17 @@ Building the programming now involves two steps: **a profiling phase** and **an 
 -fgcse-after-reload  -ftree-loop-vectorize  -ftree-slp-vectorize
 -fvect-cost-model=dynamic  -ftree-loop-distribute-patterns
 -fprofile-reorder-functions
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 # profiling phase
 g++ -O2 -fprofile-generate a.cc -o a.prof
 
 # optimized compile
 g++ -O2 -fprofile-use a.cc -o a.opt
-{% endhighlight %}
+```
+
 
 More:
 
@@ -1327,13 +1357,14 @@ refer: https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-i
 
 下面的宏定义用于读取TSC的值：
 
-{% highlight c %}
+```c
 #ifdef __x86_64__
 #define RDTSC() ({ unsigned int tickl, tickh; __asm__ __volatile__("rdtsc":"=a"(tickl),"=d"(tickh)); ((unsigned long long)tickh << 32)|tickl; })
 #else
 #define RDTSC() ({ unsigned long long tick; __asm__ __volatile__( "rdtsc" : "=A"(tick)); tick; })
 #endif
-{% endhighlight %}
+```
+
 
 32位和64位的区别：
 
@@ -1341,32 +1372,34 @@ refer: https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-i
 
 The `a` and `d` registers. This class is used for instructions that return **double word(2 * 32)** results in the `ax:dx` register pair. Single word values will be allocated either in `ax` or `dx`. For example on `i386` the following implements `rdtsc`:
 
-{% highlight c %}
+```c
 unsigned long long rdtsc (void)
 {
   unsigned long long tick;
   __asm__ __volatile__("rdtsc":"=A"(tick));
   return tick;
 }
-{% endhighlight %}
+```
+
 
 This is not correct on `x86-64` as it would allocate tick in either `ax` or `dx`. You have to use the following variant instead:
 
-{% highlight c %}
+```c
 unsigned long long rdtsc (void)
 {
   unsigned int tickl, tickh;
   __asm__ __volatile__("rdtsc":"=a"(tickl),"=d"(tickh));
   return ((unsigned long long)tickh << 32)|tickl;
 }
-{% endhighlight %}
+```
+
 
 ![rdtsc_disassemble](/assets/images/202106/rdtsc_disassemble.png)
 
 
 `TSC`是一个**64位的寄存器，相当与一个计数器(It counts the number of CPU cycles since its reset)，但我们所需要的是时间，而不是计数。由于`TSC`的值是每个CPU时钟周期增加1，所以只要知道了CPU的时间频率，就可以将这个值换算成时间**。因为对精度的要求并不是很高（微秒级），我们只需要获得以兆为单位的大约值就可以了。下面的函数获得**CPU的频率**：
 
-{% highlight cpp %}
+```cpp
 static inline int getcpuspeed_mhz(unsigned int wait_us)
 {
    uint64_t tsc1, tsc2;
@@ -1385,7 +1418,8 @@ static inline int getcpuspeed_mhz(unsigned int wait_us)
      tsc2 = RDTSC();
      return (tsc2 - tsc1) / (wait_us);
 }
-{% endhighlight %}
+```
+
 
 CPU频率和TSC的换算公式如下：知道了**TSC的偏移**和**CPU频率**，就可以获得**时间偏移**了。
 
@@ -1393,7 +1427,7 @@ CPU频率和TSC的换算公式如下：知道了**TSC的偏移**和**CPU频率**
 
 对于 Windows 比较简单，直接提供了对应的指令`__rdtsc`。
 
-{% highlight cpp %}
+```cpp
 // rdtsc.cpp
 // processor: x86, x64
 #include <stdio.h>
@@ -1407,11 +1441,12 @@ int main()
     i = __rdtsc();
     printf_s("%I64d ticks\n", i);
 }
-{% endhighlight %}
+```
+
 
 测试程序：
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 #include <time.h>
 #include <sys/time.h>
@@ -1456,7 +1491,8 @@ int main()
         return 0;
 
 }
-{% endhighlight %}
+```
+
 
 系统调用优化，通过`vsyscall`和`vdso`(**virtual dynamic shared object**)两种机制用来加速系统调用的处理。
 
@@ -1464,7 +1500,7 @@ int main()
 
 > `vsyscall` is an obsolete concept and replaced by the `vDSO` or `virtual dynamic shared object`. The main difference between the `vsyscall` and `vDSO` mechanisms is that `vDSO` maps memory pages into each process in a shared object form, but `vsyscall` is static in memory and has the same address every time. For the x86_64 architecture it is called `linux-vdso.so.1`. All userspace applications linked with this shared library via the `glibc`.
 
-{% highlight text %}
+```text
 $ cat /proc/1/maps | grep vsyscall
 ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
 
@@ -1477,15 +1513,17 @@ $ ldd /bin/uname
 
 $ sudo cat /proc/1/maps | grep vdso
 7fff93f0a000-7fff93f0c000 r-xp 00000000 00:00 0                          [vdso]
-{% endhighlight %}
+```
+
 
 有些情况可能不支持`vdso`：
 
 * 有些时钟源，可能不支持vdso。例如，[Two frequently used system calls are ~77% slower on AWS EC2](https://blog.packagecloud.io/eng/2017/03/08/system-calls-are-much-slower-on-ec2/)
 
-{% highlight text %}
+```text
 The two system calls listed cannot use the vDSO as they normally would on any other system. This is because the virtualized clock source on xen (and some kvm configurations) do not support reading the time in userland via the vDSO.
-{% endhighlight %}
+```
+
 
 * 有些系统调用的参数选项，可能不支持vdso，比如`clock_gettime`的第一个参数。当为`CLOCK_REALTIME`, `CLOCK_MONOTONIC`, `CLOCK_REALTIME_COARSE`, `CLOCK_MONOTONIC_COARSE` 时会使用vdso，而其他选项时则不会。具体参数可见 `man 2 clock_gettime`
 
@@ -1501,21 +1539,24 @@ The two system calls listed cannot use the vDSO as they normally would on any ot
 
 要使用 `-pg` 选项，请在编译和链接时都加上 `-pg`，例如：
 
-{% highlight bash %}
+```bash
 gcc -pg -o my_program my_program.c
-{% endhighlight %}
+```
+
 
 然后运行程序：
 
-{% highlight bash %}
+```bash
 ./my_program
-{% endhighlight %}
+```
+
 
 这将生成 `gmon.out` 文件。接下来，使用 `gprof` 分析性能数据：
 
-{% highlight bash %}
+```bash
 gprof my_program gmon.out > analysis.txt
-{% endhighlight %}
+```
+
 
 现在，可以查看 `analysis.txt` 文件以获取程序的性能概况。
 
@@ -1526,7 +1567,7 @@ gprof my_program gmon.out > analysis.txt
 
 因为 [ntohl](https://linux.die.net/man/3/ntohl) 不支持 64位，而 [be64toh](https://linux.die.net/man/3/be64toh) 支持 64位。
 
-{% highlight cpp %}
+```cpp
 // htonl, htons, ntohl, ntohs - convert values between host and network byte order
 
 #include <arpa/inet.h>
@@ -1534,9 +1575,10 @@ uint32_t htonl(uint32_t hostlong);
 uint16_t htons(uint16_t hostshort);
 uint32_t ntohl(uint32_t netlong);
 uint16_t ntohs(uint16_t netshort);
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 // htobe16, htole16, be16toh, le16toh, htobe32, htole32, be32toh, le32toh, htobe64, htole64, be64toh, le64toh - convert values between host and big-/little-endian byte order
 
 #define _BSD_SOURCE             /* See feature_test_macros(7) */
@@ -1556,11 +1598,12 @@ uint64_t htobe64(uint64_t host_64bits);
 uint64_t htole64(uint64_t host_64bits);
 uint64_t be64toh(uint64_t big_endian_64bits);
 uint64_t le64toh(uint64_t little_endian_64bits);
-{% endhighlight %}
+```
+
 
 下面的 `ByteOrderSwap64` 是造轮子的实现方式。
 
-{% highlight cpp %}
+```cpp
 inline uint64 ByteOrderSwap64(uint64 x)
 {
     return ((((x)&0xff00000000000000ull) >> 56) | (((x)&0x00ff000000000000ull) >> 40) | (((x)&0x0000ff0000000000ull) >> 24) |
@@ -1581,7 +1624,8 @@ inline uint64 ByteOrderSwap64(uint64 x)
 #else
 #    error "__BYTE_ORDER != __BIG_ENDIAN && __BYTE_ORDER != __LITTLE_ENDIAN"
 #endif
-{% endhighlight %}
+```
+
 
 这段代码定义了一个名为 ByteOrderSwap64 的内联函数，用于将一个 64 位无符号整数（uint64 类型）的字节顺序进行反转。这个函数在处理不同字节序的数据时非常有用，例如在网络编程或文件 I/O 中，不同系统可能使用不同的字节序来表示数据。通过使用这个函数，我们可以确保数据在不同系统之间正确地传输和解析。
 
@@ -1642,7 +1686,7 @@ io_uring 正如名字中提到的 ring，其主要结构就是两个循环队列
 
 **SQ Entry** 作为保存提交操作的类型，其结构如下：
 
-{% highlight cpp %}
+```cpp
 // tkernel4 version
 /*
  * IO submission data structure (Submission Queue Entry)
@@ -1669,7 +1713,8 @@ struct io_uring_sqe {
         __u64   __pad2[3];
     };
 };
-{% endhighlight %}
+```
+
 
 在最新的 kernel v5.18 中，`opcode` 已经多达 41 种，**包括了磁盘，网络，事件循环，超时控制，文件系统五大方面**，而且还在不断演进中。
 
@@ -1677,7 +1722,7 @@ struct io_uring_sqe {
 
 **CQ Entry** 则相对简单，只有三个字段：
 
-{% highlight cpp %}
+```cpp
 // tkernel4 version
 /*
  * IO completion data structure (Completion Queue Entry)
@@ -1687,20 +1732,22 @@ struct io_uring_cqe {
     __s32   res;        /* result code for this event */
     __u32   flags;
 };
-{% endhighlight %}
+```
+
 
 ![io_uring3](/assets/images/202409/io_uring3.png)
 
 io_uring 原生提供了 3 个系统调用：
 
-{% highlight cpp %}
+```cpp
 int io_uring_setup(unsigned entries, struct io_uring_params *params);
 int io_uring_enter(unsigned int fd, unsigned int to_submit,
                    unsigned int min_complete, unsigned int flags,
                    sigset_t sig);
 int io_uring_register(int fd, unsigned int opcode, const void *arg,
                       unsigned int nr_args);
-{% endhighlight %}
+```
+
 
 ![io_uring4](/assets/images/202409/io_uring4.png)
 
@@ -1774,20 +1821,21 @@ TDR 牺牲了易用性获取了高性能，而 ProtocolBuffers 通过部分性�
 
 程序1:
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 int main()
 {
     printf("Hello world");
     return 0;
 }
-{% endhighlight %}
+```
+
 
 g++ -Os example.cc
 
 程序2:
 
-{% highlight asm %}
+```asm
 section .data
   some_string dq "Hello world"
   some_string_size dq 11
@@ -1807,7 +1855,8 @@ _start:
   mov rax, 60  ; sys_exit
   mov rdi, 0   ; param 1
   syscall
-{% endhighlight %}
+```
+
 
 nasm -f elf64 -o example.o example.asm
 ld -o example example.o
@@ -1844,15 +1893,17 @@ strip example
   + 对非0值，例如，将常量1赋给`eax`（方法1使用5个字节，而方法2只使用3个字节）
 
 方法1：
-{% highlight text %}
+```text
   4000b0:       b8 01 00 00 00          mov    $0x1,%eax
-{% endhighlight %}
+```
+
 
 方法2：8086 指令
-{% highlight text %}
+```text
   4000b0:       6a 01                   pushq  $0x1
   4000b2:       58                      pop    %rax
-{% endhighlight %}
+```
+
 
 * 32位 or 64位寄存器（x86-64有一个特性，目标操作数是32位寄存器时，会同时清空对应64位寄存器的高32位。所以，`xor eax, eax`等价`xor rax, rax`，`mov eax, 1`等价`mov rax, 1`）。使用32位寄存器通常可以省1个字节（`r8-r15`除外），但注意，在作为地址时，情况相反，64位少1个字节。
 * 进程初始状态（简化OS的初始化操作）

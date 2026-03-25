@@ -20,12 +20,13 @@ tags:
 
 查看当前环境C++版本：
 
-{% highlight text %}
+```text
 $ ls -l /lib64/libstdc++.so.6
 lrwxrwxrwx 1 root root 19 Aug 18  2020 /lib64/libstdc++.so.6 -> libstdc++.so.6.0.25
 $ rpm -qf /lib64/libstdc++.so.6
 libstdc++-8.3.1-5.el8.0.2.x86_64
-{% endhighlight %}
+```
+
 
 # 编译器
 
@@ -33,7 +34,7 @@ libstdc++-8.3.1-5.el8.0.2.x86_64
 
 I wrote a very simple test code of printf uint64_t:
 
-{% highlight cpp %}
+```cpp
 #include <inttypes.h>
 #include <stdio.h>
 
@@ -43,26 +44,29 @@ int main()
   printf("test uint64_t : %" PRIu64 "\n", ui64);
   return 0;
 }
-{% endhighlight %}
+```
+
 
 I use ubuntu 11.10 (64 bit) and gcc version 4.6.1 to compile it, but failed:
 
-{% highlight text %}
+```text
 main.cpp: In function ‘int main()’:
 main.cpp:9:30: error: expected ‘)’ before ‘PRIu64’
 main.cpp:9:47: warning: spurious trailing ‘%’ in format [-Wformat]
-{% endhighlight %}
+```
+
 
 Answers:
 
 The ISO C99 standard specifies that these macros must only be defined if explicitly requested.
 
-{% highlight cpp %}
+```cpp
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
 ... now PRIu64 will work
-{% endhighlight %}
+```
+
 
 Hm, just including the header should suffice. The `__STDC_FORMAT_MACROS` macro is only required for inclusion in C++.
 
@@ -88,7 +92,7 @@ Read-only methods never invalidate iterators or references. Methods which modify
 
 ![iterator_invalidation](/assets/images/202305/iterator_invalidation.png)
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <map>
 
@@ -112,7 +116,8 @@ int main() {
     std::cout << iter3->first << "," << iter3->second << std::endl;
     std::cout << iter6->first << "," << iter6->second << std::endl;
 }
-{% endhighlight %}
+```
+
 
 
 ## std::map (自定义 Key 比较)
@@ -140,7 +145,7 @@ Everywhere the standard library uses the **Compare** requirements, uniqueness is
 
 
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <map>
 
@@ -287,7 +292,8 @@ true
 a b c
 find
 */
-{% endhighlight %}
+```
+
 
 
 
@@ -295,15 +301,16 @@ find
 
 ## std::numeric_limits
 
-{% highlight cpp %}
+```cpp
 template< class T > class numeric_limits;
-{% endhighlight %}
+```
+
 
 The `std::numeric_limits` class template provides a standardized way to query various properties of arithmetic types (e.g. the largest possible value for type int is `std::numeric_limits<int>::max()`).
 
 This information is provided via specializations of the std::numeric_limits template. The standard library makes available specializations for all arithmetic types (only lists the specializations for cv-unqualified arithmetic types)
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <limits>
 
@@ -331,18 +338,20 @@ int main()
               << std::numeric_limits<double>::min() << "\t│ "
               << std::numeric_limits<double>::max() << '\n';
 }
-{% endhighlight %}
+```
+
 
 Possible output:
 
-{% highlight text %}
+```text
 type	│ lowest()	│ min()		│ max()
 bool	│ 0		│ 0		│ 1
 uchar	│ 0		│ 0		│ 255
 int	│ -2147483648	│ -2147483648	│ 2147483647
 float	│ -3.40282e+38	│ 1.17549e-38	│ 3.40282e+38
 double	│ -1.79769e+308	│ 2.22507e-308	│ 1.79769e+308
-{% endhighlight %}
+```
+
 
 https://en.cppreference.com/w/cpp/types/numeric_limits
 
@@ -350,7 +359,7 @@ https://en.cppreference.com/w/cpp/types/numeric_limits
 
 If you use a constructor that doesn't specify any other value, then the 1234 would be used to initialize a, but if you use a constructor that specifies some other value, then the 1234 is basically ignored.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 class X {
@@ -375,7 +384,8 @@ int main() {
 1234
 5678
 */
-{% endhighlight %}
+```
+
 
 * [C++11 allows in-class initialization of non-static and non-const members. What changed?](https://stackoverflow.com/questions/13662441/c11-allows-in-class-initialization-of-non-static-and-non-const-members-what-c)
 * [How do I define an in-class constant?](https://www.stroustrup.com/bs_faq2.html#in-class)
@@ -384,7 +394,7 @@ int main() {
 
 `auto`没有指定`&`时，会推导为值拷贝。例如，`auto s : vec`
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -396,11 +406,12 @@ int main()
       printf("%s\n", s.c_str());
     }
 }
-{% endhighlight %}
+```
+
 
 使用[https://cppinsights.io/](https://cppinsights.io/)翻译可以得到：
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -419,19 +430,21 @@ int main()
 
   }
 }
-{% endhighlight %}
+```
+
 
 若将`auto s : vec`改为`auto& s : vec`，则会变为引用：
 
-{% highlight cpp %}
+```cpp
 std::basic_string<char> & s = __begin1.operator*();
-{% endhighlight %}
+```
+
 
 ## move
 
 例子：
 
-{% highlight cpp %}
+```cpp
 #include <functional>
 #include <iostream>
 
@@ -479,7 +492,8 @@ A::print x(1)
 A::~A()
 A::~A()
 */
-{% endhighlight %}
+```
+
 
 注意：
 
@@ -487,7 +501,7 @@ A::~A()
 
 
 
-{% highlight cpp %}
+```cpp
 #include <string>
 #include <iostream>
 #include <utility>
@@ -558,7 +572,8 @@ int main()
     D d1, d2;
     d2 = std::move(d1);
 }
-{% endhighlight %}
+```
+
 
 refer:
 
@@ -595,7 +610,7 @@ https://en.cppreference.com/w/cpp/types/integer
 
 枚举（包括作用域枚举和非作用域枚举）的命名应当和常量保持一致而不是宏。即使用`kEnumName`形式命名而不是`ENUM_NAME`形式。对于非作用域枚举，还应当将枚举类型作为枚举名的前缀，以减少潜在的命名冲突。如果使用 `C++11` 之后的编译器开发，优先考虑使用 `enum class`，它可以提供更强的类型检测，并减少潜在的命名冲突。
 
-{% highlight cpp %}
+```cpp
 enum class UrlTableErrors {
   kOk = 0,
   kOutOfMemory,
@@ -607,7 +622,8 @@ enum UrlParseError{
   kUrlParseErrorInvalidCharacter,
   kUrlParseErrorOutOfMemory,
 };
-{% endhighlight %}
+```
+
 
 [Forcing enum to be of unsigned long type](https://stackoverflow.com/questions/5084542/forcing-enum-to-be-of-unsigned-long-type)
 
@@ -615,11 +631,12 @@ Is it possible to force the underlying type of an enumeration to be unsigned lon
 
 In `C++11` and higher, you can explicitly mention what type you want:
 
-{% highlight cpp %}
+```cpp
 enum MyEnumeration: unsigned long {
    /* ... values go here ... */
 };
-{% endhighlight %}
+```
+
 
 This will allow you to explicitly control the underlying type.
 
@@ -635,7 +652,7 @@ This is a pretty lax condition and says that not only can you not necessarily kn
 
 Specifies that a [virtual function](https://en.cppreference.com/w/cpp/language/virtual) cannot be overridden in a derived class or that a class cannot be [derived from](https://en.cppreference.com/w/cpp/language/derived_class).
 
-{% highlight cpp %}
+```cpp
 struct Base
 {
     virtual void foo();
@@ -653,11 +670,12 @@ struct B final : A // struct B is final
 };
 
 struct C : B {}; // Error: B is final
-{% endhighlight %}
+```
+
 
 Possible output:
 
-{% highlight text %}
+```text
 main.cpp:9:10: error: 'void A::bar()' marked 'final', but is not virtual
     9 |     void bar() final; // Error: bar cannot be final as it is non-virtual
       |          ^~~
@@ -670,7 +688,8 @@ main.cpp:8:10: note: overridden function is 'virtual void A::foo()'
 main.cpp:17:8: error: cannot derive from 'final' base 'B' in derived type 'C'
    17 | struct C : B // Error: B is final
       |
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/language/final
 
@@ -678,9 +697,10 @@ main.cpp:17:8: error: cannot derive from 'final' base 'B' in derived type 'C'
 
 ## lambda
 
-{% highlight cpp %}
+```cpp
 [captures] (params) specifiers exception -> ret { body }
-{% endhighlight %}
+```
+
 
 * 作用域
   + 捕获列表中的变量存在于两个作用域：lambda 表达式定义的函数作用域（用于捕获变量），以及 lambda 表达式函数体的作用域（用于使用变量）
@@ -698,7 +718,7 @@ main.cpp:17:8: error: cannot derive from 'final' base 'B' in derived type 'C'
 > 注意：新的C++20标准，不再支持`[=]`或`[&]`隐式捕获`this`指针了，而是提示用户显式添加`this`或者`*this`。
 
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 class A
@@ -739,7 +759,8 @@ int main()
     A a;
     a.test();
 }
-{% endhighlight %}
+```
+
 
 ### lambda 表达式与仿函数（函数对象）的区别
 
@@ -750,7 +771,7 @@ int main()
 
 lambda 表达式在编译期会有编译器自动生成一个闭包类，在运行时由这个闭包类产生一个对象，称它为`闭包`。在C++中，所谓的`闭包`可以简单地理解为一个匿名且可以包含定义时作用域上下文的函数对象。
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 int main()
@@ -759,11 +780,12 @@ int main()
   auto foo = [=]  { return x * y; };
   int z = foo();
 }
-{% endhighlight %}
+```
+
 
 使用[https://cppinsights.io/](https://cppinsights.io/)翻译一下，生成如下代码：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 int main()
@@ -794,13 +816,14 @@ int main()
   __lambda_6_14 foo = __lambda_6_14{x, y};
   int z = foo.operator()();
 }
-{% endhighlight %}
+```
+
 
 因此，从某种程度上说，lambda 表达式是C++11提供的一种语法糖，让代码编写更加轻松。
 
 ### 关于生命周期的错误用法
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <functional>
 
@@ -828,13 +851,14 @@ int main()
     }
     f2();  // Oops! a1.x: 2, but this is error
 }
-{% endhighlight %}
+```
+
 
 对象a1通过引用的方式捕获，在调用f2()时，a1的生命周期已经结束。
 
 验证程序：f2() 之所以输出正确，是因为编译器对堆栈没有复用，可以通过变量地址验证。
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <functional>
 
@@ -877,12 +901,13 @@ A::~A()
 &b(0x7ffe0e1c3440) b(0)
 &a1.x(0x7ffe0e1c3430) a1.x(3)
 */
-{% endhighlight %}
+```
+
 
 [Move semantic with std::function](https://stackoverflow.com/questions/13680587/move-semantic-with-stdfunction)
 
 
-{% highlight cpp %}
+```cpp
 #include <functional>
 #include <iostream>
 
@@ -900,7 +925,8 @@ int main()
     }
     h(); // hello
 }
-{% endhighlight %}
+```
+
 
 ### 性能影响
 
@@ -913,7 +939,7 @@ int main()
 
 有了 lambda 表达式后，可以直接在STL算法函数的参数列表内实现辅助函数。
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -923,13 +949,14 @@ int main()
     std::vector<int> x = {1, 2, 3, 4, 5};
     std::cout << *std::find_if(x.cbegin(), x.cend(), [](int i){ return (i % 3) == 0; }) << std::endl; // 3
 }
-{% endhighlight %}
+```
+
 
 在 C++14 标准中，定义广义捕获。分为：
     + 简单捕获。例如，`[identifier]`，`[&identifier]`，`[this]`等
     + 初始化捕获。除了捕获 lambda 表达式定义上下文的变量，也可以捕获表达式结果，以及自定义捕获变量名
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 int main()
@@ -939,13 +966,14 @@ int main()
     auto foo = [r = x + 1] { return r; };
     std::cout << foo(); // 6
 }
-{% endhighlight %}
+```
+
 
 ### 泛型 lambda 表达式 (C++14)
 
 C++14标准让 lambda 表达式具备了模板函数的能力，称为`泛型 lambda 表达式`。虽然具备模板函数的能力，但是它的定义却用不到`template`关键字。
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 int main()
@@ -957,11 +985,12 @@ int main()
 
     std::cout << b << " " << c << std::endl;// 3 hello
 }
-{% endhighlight %}
+```
+
 
 ### lambda 展开实现
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <functional>
 
@@ -981,11 +1010,12 @@ int main()
 {
     g( [](){ std::cout << "hello\n";} );
 }
-{% endhighlight %}
+```
+
 
 展开后：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <functional>
 
@@ -1047,11 +1077,12 @@ int main()
 {
     g(std::function<void()>(CLambda()));
 }
-{% endhighlight %}
+```
+
 
 输出：
 
-{% highlight text %}
+```text
 CLambda()
 CLambda(CLambda&&)
 hello
@@ -1059,11 +1090,12 @@ h()
 g()
 ~CLambda()
 ~CLambda()
-{% endhighlight %}
+```
+
 
 ### 示例
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <ctime>
 
@@ -1095,11 +1127,12 @@ int main()
         }
 
 }
-{% endhighlight %}
+```
+
 
 ## std::hash
 
-{% highlight cpp %}
+```cpp
 // functional header
 // for hash<class template> class
 #include <functional>
@@ -1129,21 +1162,23 @@ int main()
 String hash values: 4457761756728957899
 Int hash values: 12345
 */
-{% endhighlight %}
+```
+
 
 
 https://en.cppreference.com/w/cpp/utility/hash
 
 ## std::function
 
-{% highlight cpp %}
+```cpp
 template< class R, class... Args >
 class function<R(Args...)>
-{% endhighlight %}
+```
+
 
 Class template std::function is a general-purpose polymorphic function wrapper. Instances of std::function can store, copy, and invoke any Callable target -- functions, lambda expressions, bind expressions, or other function objects, as well as pointers to member functions and pointers to data members.
 
-{% highlight cpp %}
+```cpp
 #include <functional>
 #include <iostream>
 
@@ -1206,7 +1241,8 @@ int main()
 314162
 18
 */
-{% endhighlight %}
+```
+
 
 * https://www.enseignement.polytechnique.fr/informatique/INF478/docs/Cpp/en/cpp/utility/functional/function.html
 
@@ -1214,7 +1250,7 @@ int main()
 
 ## std::thread
 
-{% highlight cpp %}
+```cpp
 #include <iostream>       // std::cout
 #include <thread>         // std::thread
 
@@ -1249,7 +1285,8 @@ foo()
 bar(0)
 foo and bar completed.
 */
-{% endhighlight %}
+```
+
 
 * https://www.cplusplus.com/reference/thread/thread/
 
@@ -1272,11 +1309,12 @@ Thread-local storage (TLS) is a mechanism by which variables are allocated such 
 
 At the user level, the extension is visible with a new storage class keyword: `__thread`. For example:
 
-{% highlight cpp %}
+```cpp
     __thread int i;
     extern __thread struct state s;
     static __thread char *p;
-{% endhighlight %}
+```
+
 
 The `__thread` specifier may be used alone, with the `extern` or `static` specifiers, but with no other storage class specifier. When used with `extern` or `static`, `__thread` must appear immediately after the other storage class specifier.
 
@@ -1287,7 +1325,7 @@ The `__thread` specifier may be used alone, with the `extern` or `static` specif
 
 The `thread_local` keyword is only allowed for objects declared at namespace scope, objects declared at block scope, and static data members. It indicates that the object has thread storage duration. It can be combined with `static` or `extern` to specify internal or external linkage (except for static data members which always have external linkage), respectively, but that additional static doesn't affect the storage duration.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 class foo
@@ -1302,9 +1340,10 @@ int main()
 {
   std::cout << foo::a; // 1
 }
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include <iostream>
 #include <cstdint>
 #include <unistd.h>
@@ -1357,11 +1396,12 @@ thread 1 sees this value at *commonVar=0, commonVar=0x7f8fea8556fc
 thread 1 sets commonVar pointer to his myVar and now *commonVar=1, commonVar=0x7f8fea0546fc
 all done
 */
-{% endhighlight %}
+```
+
 
 ### 使用 thread_local 减少栈空间
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 
 void f()
@@ -1376,7 +1416,8 @@ int main()
 {
     f();
 }
-{% endhighlight %}
+```
+
 
 ![thread_local_stack](/assets/images/202307/thread_local_stack.png)
 
@@ -1398,7 +1439,7 @@ int main()
 
 ## inline namespace
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -1415,14 +1456,15 @@ void foo() { cout << "xyz::v1::foo()" << endl; }
 int main() {
   xyz::foo();  // 直接调用 xyz::v2::foo()，而不用 using
 }
-{% endhighlight %}
+```
+
 
 
 ## std::vector<T,Allocator>::shrink_to_fit
 
 Requests the removal of unused capacity. It is a non-binding request to reduce `capacity()` to `size()`. It depends on the implementation whether the request is fulfilled. If reallocation occurs, all iterators, including the past the end iterator, and all references to the elements are invalidated. If no reallocation takes place, no iterators or references are invalidated.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <vector>
 
@@ -1456,19 +1498,21 @@ Capacity after shrink_to_fit() is 0
 Capacity after adding 300 elements is 512
 Capacity after shrink_to_fit() is 300
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/container/vector/shrink_to_fit
 ## std::map<Key,T,Compare,Allocator>::emplace
 
-{% highlight cpp %}
+```cpp
 template< class... Args >
 std::pair<iterator,bool> emplace( Args&&... args );
-{% endhighlight %}
+```
+
 
 Inserts a new element into the container constructed in-place with the given args if there is no element with the key in the container.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <utility>
 #include <string>
@@ -1503,14 +1547,15 @@ b => abcd
 c => cccccccccc
 d => ddd
 */
-{% endhighlight %}
+```
+
 
 ## std::enable_shared_from_this
 
 * `std::enable_shared_from_this` allows an object `t` that is currently managed by a `std::shared_ptr` named `pt` to safely generate additional `std::shared_ptr` instances pt1, pt2, ... that all share ownership of `t` with `pt`.
 * **Publicly inheriting** from `std::enable_shared_from_this<T>` provides the type T with a member function `shared_from_this`. If an object t of type `T` is managed by a `std::shared_ptr<T>` named `pt`, then calling `T::shared_from_this` will return a new `std::shared_ptr<T>` that shares ownership of t with `pt`.
 
-{% highlight cpp %}
+```cpp
 #include <memory>
 #include <iostream>
 
@@ -1559,17 +1604,19 @@ Bad::~Bad() called
 Bad::~Bad() called
 *** glibc detected *** ./test: double free or corruption
 */
-{% endhighlight %}
+```
+
 
 https://en.cppreference.com/w/cpp/memory/enable_shared_from_this
 
 
 ## [std::chrono::duration](https://cplusplus.com/reference/chrono/duration/)
 
-{% highlight cpp %}
+```cpp
 template <class Rep, class Period = ratio<1> >
 class duration;
-{% endhighlight %}
+```
+
 
 A **duration** object expresses a time span by means of a **count** and a **period**.
 
@@ -1601,7 +1648,7 @@ The following convenience typedefs of instantiations of `duration` are also defi
 | microseconds | signed integral type of at least 55 bits | ratio<1,1000000>
 | nanoseconds | signed integral type of at least 64 bits | ratio<1,1000000000>
 
-{% highlight cpp %}
+```cpp
 // duration constructor
 #include <iostream>
 #include <ratio>
@@ -1626,12 +1673,13 @@ int main ()
 
   return 0;
 }
-{% endhighlight %}
+```
+
 
 
 ## std::this_thread::sleep_for
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -1651,7 +1699,8 @@ int main()
     std::chrono::duration<double, std::milli> elapsed = end-start;
     std::cout << "Waited " << elapsed.count() << " ms\n";
 }
-{% endhighlight %}
+```
+
 * https://en.cppreference.com/w/cpp/thread/sleep_for
 * https://en.cppreference.com/w/cpp/chrono/duration
 
@@ -1659,7 +1708,7 @@ int main()
 
 * Function template `std::mem_fn` generates wrapper objects for pointers to members, which can store, copy, and invoke a pointer to member. Both references and pointers (including smart pointers) to an object can be used when invoking a `std::mem_fn`.
 
-{% highlight cpp %}
+```cpp
 #include <functional>
 #include <iostream>
 
@@ -1685,7 +1734,8 @@ int main() {
     auto access_data = std::mem_fn(&Foo::data);
     std::cout << "data: " << access_data(f) << '\n';
 }
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/utility/functional/mem_fn
 
@@ -1693,7 +1743,7 @@ int main() {
 
 * Produces random integer values `i`, uniformly distributed on the closed interval `[a, b]`, that is, distributed according to the discrete probability function `P(i|a,b) = 1/(b - a + 1)`
 
-{% highlight cpp %}
+```cpp
 #include <random>
 #include <iostream>
 
@@ -1711,7 +1761,8 @@ int main()
 /*
 3 6 5 6 1 2 2 4 3 3
 */
-{% endhighlight %}
+```
+
 * https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
 
 ## std::bind
@@ -1724,7 +1775,7 @@ The function template `bind` generates a forwarding call wrapper for `f`. Callin
 * The arguments to bind are **copied or moved, and are never passed by reference unless wrapped in `std::ref` or `std::cref`**.
 * Duplicate placeholders in the same bind expression (multiple `_1`'s for example) are allowed, but the results are only well defined if the corresponding argument (u1) is an `lvalue` or `non-movable rvalue`.
 
-{% highlight cpp %}
+```cpp
 #include <random>
 #include <iostream>
 #include <memory>
@@ -1798,7 +1849,8 @@ bind to a pointer to data member:
 use smart pointers to call members of the referenced objects:
 10 10
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/utility/functional/bind
 
@@ -1811,7 +1863,7 @@ The override keyword serves two purposes:
 1. It shows the reader of the code that "this is a virtual method, that is overriding a virtual method of the base class."
 2. The compiler also knows that it's an override, so it can "check" that you are not altering/adding new methods that you think are overrides.
 
-{% highlight cpp %}
+```cpp
 class base
 {
   public:
@@ -1827,7 +1879,8 @@ class derived2: public base
    public:
      int foo(int x) override { ... } // ERROR
 };
-{% endhighlight %}
+```
+
 
 In derived2 the compiler will issue an error for "changing the type". Without override, at most the compiler would give a warning for "you are hiding virtual method by same name".
 
@@ -1839,7 +1892,7 @@ In derived2 the compiler will issue an error for "changing the type". Without ov
 
 Causes abnormal program termination unless `SIGABRT` is being caught by a signal handler passed to `std::signal` and the handler does not return.
 
-{% highlight cpp %}
+```cpp
 #include <csignal>
 #include <iostream>
 #include <cstdlib>
@@ -1881,7 +1934,8 @@ Tester ctor
 Tester ctor
 SIGABRT received
 */
-{% endhighlight %}
+```
+
 
 ## std::is_class
 
@@ -1889,7 +1943,7 @@ Checks whether T is a non-union class type. Provides the member constant value w
 
 [How does this implementation of std::is_class work?](https://stackoverflow.com/questions/35213658/how-does-this-implementation-of-stdis-class-work)
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -1916,13 +1970,14 @@ true
 false
 false
 */
-{% endhighlight %}
+```
+
 
 ## decltype specifier
 
 Inspects the declared type of an entity or the type and value category of an expression.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -1981,7 +2036,8 @@ i and j are the same type? true
 i = 33, j = 66
 i = 4, j = 9
 */
-{% endhighlight %}
+```
+
 
 
 https://en.cppreference.com/w/cpp/language/decltype
@@ -1998,7 +2054,7 @@ Note that `std::declval` can only be used in [unevaluated contexts](https://en.c
 
 Possible implementation:
 
-{% highlight cpp %}
+```cpp
 template<typename T>
 constexpr bool always_false = false;
 
@@ -2007,11 +2063,12 @@ typename std::add_rvalue_reference<T>::type declval() noexcept
 {
     static_assert(always_false<T>, "declval not allowed in an evaluated context");
 }
-{% endhighlight %}
+```
+
 
 Example:
 
-{% highlight cpp %}
+```cpp
 #include <utility>
 #include <iostream>
 
@@ -2038,7 +2095,8 @@ int main()
 n1 = 1
 n2 = 1
 */
-{% endhighlight %}
+```
+
 
 https://en.cppreference.com/w/cpp/utility/declval
 
@@ -2052,7 +2110,7 @@ https://en.cppreference.com/w/cpp/types/is_convertible
 
 Checks whether T is a union type. Provides the member constant value, which is equal to true if T is a union type. Otherwise, value is equal to false.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -2081,13 +2139,14 @@ true
 false
 false
 */
-{% endhighlight %}
+```
+
 
 ## std::next
 
 Return the `n`th successor of iterator it.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <iterator>
 #include <vector>
@@ -2108,7 +2167,8 @@ int main()
 4 6
  5
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/iterator/next
 
@@ -2116,7 +2176,7 @@ int main()
 
 Returns the number of hops from first to last.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <iterator>
 #include <vector>
@@ -2139,7 +2199,8 @@ int main()
 distance(first, last) = 3
 distance(last, first) = -3
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/iterator/distance
 
@@ -2147,7 +2208,7 @@ distance(last, first) = -3
 
 If `T` is a type with a virtual destructor, provides the member constant value equal to **true**. For any other type, value is **false**.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 #include <string>
@@ -2165,25 +2226,28 @@ int main()
 std::string has a virtual destructor? false
 std::runtime_error has a virtual destructor? true
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/types/has_virtual_destructor
 
 ## std::align
 
-{% highlight cpp %}
+```cpp
 void* align( std::size_t alignment,
              std::size_t size,
              void*& ptr,
              std::size_t& space );
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 alignment: the desired alignment
 size: the size of the storage to be aligned
 ptr: pointer to contiguous storage (a buffer) of at least space bytes
 space: the size of the buffer in which to operate
-{% endhighlight %}
+```
+
 
 Given a pointer `ptr` to a buffer of `size` space, returns a pointer aligned by the specified `alignment` for size number of bytes and decreases `space` argument by the number of bytes used for alignment. The first aligned address is returned.
 
@@ -2193,7 +2257,7 @@ The function modifies the pointer only if it would be possible to fit the wanted
 
 Example: demonstrates the use of std::align to place objects of different type in memory
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <memory>
 
@@ -2248,7 +2312,8 @@ allocated a char at 0x7ffd8d5dd980
 allocated an int at 0x7ffd8d5dd984
 allocated an int at 0x7ffd8d5dd9a0 (32 byte alignment)
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/memory/align
 
@@ -2260,7 +2325,7 @@ A user-provided Compare can be supplied to change the ordering, e.g. using `std:
 
 Working with a `priority_queue` is similar to managing a [heap](https://en.cppreference.com/w/cpp/algorithm/make_heap) in some random access container, with the benefit of not being able to accidentally invalidate the heap.
 
-{% highlight cpp %}
+```cpp
 #include <functional>
 #include <queue>
 #include <vector>
@@ -2304,14 +2369,15 @@ int main() {
 0 1 2 3 4 5 6 7 8 9
 8 9 6 7 4 5 2 3 0 1
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/container/priority_queue
 * https://blog.csdn.net/fengbingchun/article/details/70505628
 
 ## std::tie
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <string>
 #include <set>
@@ -2345,24 +2411,26 @@ int main()
         std::cout << "Value was inserted successfully\n";
 }
 // Value was inserted successfully
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/utility/tuple/tie
 
 ## std::is_integral
 
-{% highlight cpp %}
+```cpp
 template< class T >
 struct is_integral;
 
 // since C++17
 template< class T >
 inline constexpr bool is_integral_v = is_integral<T>::value;
-{% endhighlight %}
+```
+
 
 Checks whether `T` is an integral type. Provides the member constant value which is equal to `true`, if `T` is the type `bool`, `char`, `char8_t` (since C++20), `char16_t`, `char32_t`, `wchar_t`, `short`, `int`, `long`, `long long`, or any implementation-defined extended integer types, including any signed, unsigned, and cv-qualified variants. Otherwise, value is equal to `false`.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <iomanip>
 #include <type_traits>
@@ -2401,23 +2469,25 @@ std::is_integral_v<const int> == true
      std::is_integral_v<bool> == true
                        f(123) == 123
 */
-{% endhighlight %}
+```
+
 
 https://en.cppreference.com/w/cpp/types/is_integral
 
 
 ## std::is_floating_point
 
-{% highlight cpp %}
+```cpp
 template< class T >
 struct is_floating_point;
 
 // since C++17
 template< class T >
 inline constexpr bool is_floating_point_v = is_floating_point<T>::value;
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 // Possible implementation
 template< class T >
 struct is_floating_point
@@ -2427,11 +2497,12 @@ struct is_floating_point
          std::is_same<double, typename std::remove_cv<T>::type>::value  ||
          std::is_same<long double, typename std::remove_cv<T>::type>::value
      > {};
-{% endhighlight %}
+```
+
 
 Checks whether `T` is a floating-point type. Provides the member constant value which is equal to `true`, if `T` is the type `float`, `double`, `long double`, including any cv-qualified variants. Otherwise, value is equal to `false`.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <type_traits>
 
@@ -2455,14 +2526,15 @@ int main()
 double&: false
     int: false
 */
-{% endhighlight %}
+```
+
 
 https://en.cppreference.com/w/cpp/types/is_floating_point
 
 
 ## std::remove / std::remove_if
 
-{% highlight cpp %}
+```cpp
 #include <algorithm>
 #include <cctype>
 #include <iostream>
@@ -2497,16 +2569,18 @@ Textwithsomespaces size: 23
 Textwithsomespaces size: 18
 Textwithsomewhitespaces
 */
-{% endhighlight %}
+```
+
 
 https://en.cppreference.com/w/cpp/algorithm/remove
 
 ## std::enable_if
 
-{% highlight cpp %}
+```cpp
 template< bool B, class T = void >
 struct enable_if;
-{% endhighlight %}
+```
+
 
 If B is true, std::enable_if has a public member typedef type, equal to T; otherwise, there is no member typedef.
 
@@ -2542,7 +2616,7 @@ Let's look at [the code you cite](https://gist.github.com/HappyCerberus/3886984)
 
 It does rely on ordering and atomicity. The change from the other thread must become visible to this one. Which means it must become ordered before some operation in this thread. Since `volatile` doesn't deal with ordering, there is no guarantee that it will become visible.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -2575,22 +2649,25 @@ int main()
 
 	return 0;
 }
-{% endhighlight %}
+```
+
 
 编译：
 
-{% highlight text %}
+```text
 g++ volatile.cc -std=c++11 -lpthread
-{% endhighlight %}
+```
+
 
 执行：
 
-{% highlight text %}
+```text
 Waiting.
 Waiting.
 Notification sent.
 Notification received.
-{% endhighlight %}
+```
+
 
 Without such protection, without some form of synchronization or ordering, 1.10 p21 comes in:
 
@@ -2611,13 +2688,14 @@ Oh, and you don't need to make x `volatile` too. Anytime you call a (non-inline)
 
 
 
-{% highlight cpp %}
+```cpp
 template< class T >
 struct atomic;
 
 template< class U >
 struct atomic<U*>;
-{% endhighlight %}
+```
+
 
 
 Each instantiation and full specialization of the std::atomic template defines an atomic type. If one thread writes to an atomic object while another thread reads from it, the behavior is well-defined (see [memory model](https://en.cppreference.com/w/cpp/language/memory_model) for details on data races).
@@ -2626,11 +2704,12 @@ In addition, accesses to atomic objects may establish inter-thread synchronizati
 
 std::atomic is neither copyable nor movable.
 
-{% highlight cpp %}
+```cpp
 // std::atomic<T>::load
 T load( std::memory_order order = std::memory_order_seq_cst ) const noexcept;
 T load( std::memory_order order = std::memory_order_seq_cst ) const volatile noexcept;
-{% endhighlight %}
+```
+
 
 Atomically loads and returns the current value of the atomic variable. Memory is affected according to the value of `order`.
 
@@ -2654,7 +2733,7 @@ What doesn't exist until C++20 are **atomic RMW operations like** `x.fetch_add(3
 
 测试代码：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <atomic>
 
@@ -2670,7 +2749,8 @@ int main () {
 
     return 0;
 }
-{% endhighlight %}
+```
+
 
 * int 使用 x86-64 gcc 4.8.5 编译正常
 * int 使用 x86-64 clang 3.5.2，编译提示：undefined reference to __atomic_load_8 错误，编译需要额外链接 `-latomic`
@@ -2692,7 +2772,7 @@ int main () {
 
 在 CentOS 上安装 libatomic 库：
 
-{% highlight bash %}
+```bash
 # 安装
 sudo yum install libatomic
 
@@ -2701,7 +2781,8 @@ rpm -qa | grep libatomic
 
 # 查看所在目录
 ldconfig -p | grep libatomic
-{% endhighlight %}
+```
+
 
 
 参考问题：[C++ 11 undefined reference to __atomic_*](https://stackoverflow.com/questions/25403736/c-11-undefined-reference-to-atomic-store-16)
@@ -2723,14 +2804,15 @@ refer:
 
 ## [std::is_base_of](https://en.cppreference.com/w/cpp/types/is_base_of)
 
-{% highlight cpp %}
+```cpp
 template< class Base, class Derived >
 struct is_base_of;
-{% endhighlight %}
+```
+
 
 If Derived is derived from Base or if both are the same non-union class (in both cases ignoring cv-qualification), the base characteristic is [std::true_type](https://en.cppreference.com/w/cpp/types/integral_constant). Otherwise the base characteristic is [std::false_type](https://en.cppreference.com/w/cpp/types/integral_constant).
 
-{% highlight cpp %}
+```cpp
 #include <type_traits>
 
 class A {};
@@ -2752,18 +2834,20 @@ static_assert
 );
 
 int main() {}
-{% endhighlight %}
+```
+
 
 ## [std::begin](https://en.cppreference.com/w/cpp/iterator/begin) / std::end
 
 在 C++11 及更高版本的标准中使用 `std::begin` 和 `std::end` 函数处理 C 风格数组（例如 `uint64 auTime[TEST_CNT]`）。这是因为 C++11 标准库提供了针对 C 风格数组的 `std::begin` 和 `std::end` 函数模板特化，这些特化允许您使用这些函数处理 C 风格数组。
 
-{% highlight cpp %}
+```cpp
 uint64 auTime[kTestCount];
 std::sort(std::begin(auTime), std::end(auTime));  // [frist, last)
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include <iostream>
 #include <iterator>
 #include <vector>
@@ -2782,13 +2866,14 @@ int main()
 +3
 -5
 */
-{% endhighlight %}
+```
+
 
 
 ## [std::sort](https://en.cppreference.com/w/cpp/algorithm/sort)
 
 
-{% highlight cpp %}
+```cpp
 #include <algorithm>
 #include <array>
 #include <functional>
@@ -2833,20 +2918,23 @@ int main()
 0 1 2 3 4 5 6 7 8 9 : sorted with a custom function object
 9 8 7 6 5 4 3 2 1 0 : sorted with a lambda expression
 */
-{% endhighlight %}
+```
+
 
 ## std::extent
 
-{% highlight cpp %}
+```cpp
 template< class T, unsigned N = 0 >
 struct extent;
-{% endhighlight %}
+```
+
 
 std::extent 是 C++ 标准库中的一个模板类，**用于获取数组的维度和大小**。它接受一个数组类型和一个可选的非负整数常量作为参数，**返回指定维度的数组大小**。如果 T 是数组类型，则提供成员常量 value，该成员常量等于数组第 N 维的元素数量（如果 N 位于 `[0, std::rank<T>::value)` 中）。对于任何其他类型，或者如果 T 是沿其第一维度未知边界的数组，并且 N 是 0，则 value 是 0。
 
 {% raw %}
 
-{% highlight cpp %}
+{% raw %}
+```cpp
 #include <iostream>ch
 #include <type_traits>
 
@@ -2879,7 +2967,9 @@ int main()
 /*
 42
 */
-{% endhighlight %}
+```
+{% endraw %}
+
 
 {% endraw %}
 
@@ -2890,7 +2980,7 @@ https://en.cppreference.com/w/cpp/types/extent
 
 `std::error_code` represents a platform-dependent error code value. Each std::error_code object holds an error code value originating from the operating system or some low-level interface and a pointer to an object of type [std::error_category](https://en.cppreference.com/w/cpp/error/error_category.html), which corresponds to the said interface. The error code values are not required to be unique across different error categories.
 
-{% highlight cpp %}
+```cpp
 #include <system_error>
 #include <iostream>
 #include <fstream>
@@ -2914,7 +3004,8 @@ Error value: 2
 Error message: No such file or directory
 Error category: generic
 */
-{% endhighlight %}
+```
+
 
 
 
@@ -2926,12 +3017,13 @@ Error category: generic
 
 Indicates that the name or entity declared with this attribute is [deprecated](https://en.wikipedia.org/wiki/Deprecation), that is, the use is allowed, but discouraged for some reason.
 
-{% highlight cpp %}
+```cpp
 [[deprecated]]
 
 // string-literal - an unevaluated string literal that could be used to explain the rationale for deprecation and/or to suggest a replacing entity
 [[deprecated( string-literal )]]
-{% endhighlight %}
+```
+
 
 Indicates that the use of the name or entity declared with this attribute is allowed, but discouraged for some reason. Compilers typically issue warnings on such uses. The string-literal, if specified, is usually included in the warnings.
 
@@ -2939,63 +3031,72 @@ This attribute is allowed in declarations of the following names or entities:
 
 * class/struct/union
 
-{% highlight cpp %}
+```cpp
 struct [[deprecated]] S;
-{% endhighlight %}
+```
+
 
 * typedef-name, including those declared by alias declaration
 
-{% highlight cpp %}
+```cpp
 [[deprecated]] typedef S* PS;
 
 using PS [[deprecated]] = S*;
-{% endhighlight %}
+```
+
 
 * (non-member) variable
 
-{% highlight cpp %}
+```cpp
 [[deprecated]] int x;
-{% endhighlight %}
+```
+
 
 * static data member
 
-{% highlight cpp %}
+```cpp
 struct S { [[deprecated]] static constexpr char CR{13}; };
-{% endhighlight %}
+```
+
 
 * non-static data member
 
-{% highlight cpp %}
+```cpp
 union U { [[deprecated]] int n; };
-{% endhighlight %}
+```
+
 
 * function
 
-{% highlight cpp %}
+```cpp
 [[deprecated]] void f();
-{% endhighlight %}
+```
+
 
 * namespace
 
-{% highlight cpp %}
+```cpp
 namespace [[deprecated]] NS { int x; }
-{% endhighlight %}
+```
+
 
 * enumeration
 
-{% highlight cpp %}
+```cpp
 enum [[deprecated]] E {};
-{% endhighlight %}
+```
+
 
 * template specialization
 
-{% highlight cpp %}
+```cpp
 template<> struct [[deprecated]] X<int> {};
-{% endhighlight %}
+```
+
 
 代码示例：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 [[deprecated]]
@@ -3021,11 +3122,12 @@ int main()
     TriassicPeriod();
     JurassicPeriod();
 }
-{% endhighlight %}
+```
+
 
 输出：
 
-{% highlight text %}
+```text
 <source>:23:5: warning: 'TriassicPeriod' is deprecated [-Wdeprecated-declarations]
     TriassicPeriod();
     ^
@@ -3057,11 +3159,12 @@ Execution build compiler returned: 0
 Program returned: 0
 Triassic Period: [251.9 - 208.5] million years ago.
 Jurassic Period: [201.3 - 152.1] million years ago.
-{% endhighlight %}
+```
+
 
 老的实现方式：
 
-{% highlight cpp %}
+```cpp
 #if defined(__GNUC__) || defined(__clang__)
 #define DEPRECATED(func) func __attribute__ ((deprecated))
 #elif defined(_MSC_VER)
@@ -3070,14 +3173,15 @@ Jurassic Period: [201.3 - 152.1] million years ago.
 #pragma message("WARNING: You need to implement DEPRECATED for this compiler")
 #define DEPRECATED(func) func
 #endif
-{% endhighlight %}
+```
+
 
 
 https://en.cppreference.com/w/cpp/language/attributes/deprecated
 
 ## std::for_each
 
-{% highlight cpp %}
+```cpp
 #include <map>
 #include <algorithm>
 
@@ -3097,16 +3201,18 @@ int main()
     std::cout << m.size() << std::endl; // 1
     std::for_each(m.begin(), m.end(), [](const auto& pair) {std::cout << pair.first << std::endl;}); // 2
 }
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/algorithm/for_each
 
 ## Integer literal (1'000'000)
 
-{% highlight cpp %}
+```cpp
 // This feature is introduced since C++14. It uses single quote (') as digit separator
 int i = 1'000'000;
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/language/integer_literal
 
@@ -3114,10 +3220,11 @@ int i = 1'000'000;
 
 ## std::scoped_lock
 
-{% highlight cpp %}
+```cpp
 template< class... MutexTypes >
 class scoped_lock;
-{% endhighlight %}
+```
+
 
 The class `scoped_lock` is a mutex wrapper that provides a convenient RAII-style mechanism for owning zero or more mutexes for the duration of a scoped block.
 
@@ -3125,7 +3232,7 @@ When a `scoped_lock` object is created, it attempts to take ownership of the mut
 
 The following example uses `std::scoped_lock` to lock pairs of mutexes without deadlock and is RAII-style.
 
-{% highlight cpp %}
+```cpp
 #include <chrono>
 #include <functional>
 #include <iostream>
@@ -3209,11 +3316,12 @@ int main()
     std::cout << alice.partners() << '\n'  << bob.partners() << '\n'
               << christina.partners() << '\n' << dave.partners() << '\n';
 }
-{% endhighlight %}
+```
+
 
 Possible output:
 
-{% highlight text %}
+```text
 Alice and Bob are waiting for locks
 Alice and Bob got locks
 Christina and Bob are waiting for locks
@@ -3226,7 +3334,8 @@ Employee Alice has lunch partners: Bob, Christina
 Employee Bob has lunch partners: Alice, Dave, Christina
 Employee Christina has lunch partners: Alice, Bob
 Employee Dave has lunch partners: Bob
-{% endhighlight %}
+```
+
 
 
 https://en.cppreference.com/w/cpp/thread/scoped_lock
@@ -3254,7 +3363,7 @@ The `shared_mutex` class is a synchronization primitive that can be used to prot
 1. **shared** - several threads can share ownership of the same mutex.
 2. **exclusive** - only one thread can own the mutex.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <mutex>
 #include <shared_mutex>
@@ -3312,18 +3421,20 @@ int main()
     thread1.join();
     thread2.join();
 }
-{% endhighlight %}
+```
+
 
 clang16 -std=c++20 编译：
 
-{% highlight text %}
+```text
 123550899889728 2
 123550899889728 3
 123550899889728 4
 123550908282432 4
 123550908282432 5
 123550908282432 6
-{% endhighlight %}
+```
+
 
 
 https://en.cppreference.com/w/cpp/thread/shared_mutex
@@ -3341,7 +3452,7 @@ In a manner similar to [timed_mutex](https://en.cppreference.com/w/cpp/thread/ti
 
 The shared_timed_mutex class satisfies all requirements of [SharedTimedMutex](https://en.cppreference.com/w/cpp/named_req/SharedTimedMutex) and [StandardLayoutType](https://en.cppreference.com/w/cpp/named_req/StandardLayoutType).
 
-{% highlight cpp %}
+```cpp
 #include <chrono>
 #include <iostream>
 #include <shared_mutex>
@@ -3370,16 +3481,18 @@ int main()
      r1.join();
      r2.join();
 }
-{% endhighlight %}
+```
+
 
 Possible output:
 
-{% highlight text %}
+```text
 #2 read i as 10...
 #1 read i as 10...
 #2 woke up...
 #1 woke up...
-{% endhighlight %}
+```
+
 
 https://en.cppreference.com/w/cpp/thread/shared_timed_mutex
 
@@ -3387,7 +3500,7 @@ https://en.cppreference.com/w/cpp/thread/shared_timed_mutex
 
 The class `unique_lock` is a general-purpose mutex ownership wrapper allowing deferred locking, time-constrained attempts at locking, recursive locking, transfer of lock ownership, and use with condition variables.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <mutex>
 #include <thread>
@@ -3433,7 +3546,8 @@ int main()
 acc1: 95
 acc2: 55
 */
-{% endhighlight %}
+```
+
 
 https://en.cppreference.com/w/cpp/thread/unique_lock
 
@@ -3459,10 +3573,11 @@ Which one you should use depends on the pattern you are looking for. There are p
 
 ## std::lock (C++11)
 
-{% highlight cpp %}
+```cpp
 template< class Lockable1, class Lockable2, class... LockableN >
 void lock( Lockable1& lock1, Lockable2& lock2, LockableN&... lockn );
-{% endhighlight %}
+```
+
 
 Locks the given [Lockable](https://en.cppreference.com/w/cpp/named_req/Lockable) objects `lock1`, `lock2`, ..., `lockn` using a deadlock avoidance algorithm to avoid deadlock.
 
@@ -3470,7 +3585,7 @@ The objects are locked by an unspecified series of calls to lock, try_lock, and 
 
 The following example uses `std::lock` to **lock pairs of mutexes without deadlock**.
 
-{% highlight cpp %}
+```cpp
 #include <chrono>
 #include <functional>
 #include <iostream>
@@ -3551,11 +3666,12 @@ int main()
               << christina.output() << '\n'
               << dave.output() << '\n';
 }
-{% endhighlight %}
+```
+
 
 Possible output:
 
-{% highlight text %}
+```text
 Alice and Bob are waiting for locks
 Alice and Bob got locks
 Christina and Bob are waiting for locks
@@ -3568,7 +3684,8 @@ Employee Alice has lunch partners: Bob, Christina
 Employee Bob has lunch partners: Alice, Christina, Dave
 Employee Christina has lunch partners: Bob, Alice
 Employee Dave has lunch partners: Bob
-{% endhighlight %}
+```
+
 
 https://en.cppreference.com/w/cpp/thread/lock
 
@@ -3576,7 +3693,7 @@ https://en.cppreference.com/w/cpp/thread/lock
 
 ## std::size
 
-{% highlight cpp %}
+```cpp
 // Returns c.size(), converted to the return type if necessary.
 // c - a container or view with a size member function
 // May throw implementation-defined exceptions.
@@ -3587,13 +3704,14 @@ constexpr auto size( const C& c ) -> decltype(c.size());
 // array - an array of arbitrary type
 template< class T, std::size_t N >
 constexpr std::size_t size( const T (&array)[N] ) noexcept;
-{% endhighlight %}
+```
+
 
 Returns the size of the given range.
 
 代码示例：
 
-{% highlight cpp %}
+```cpp
 #include <cassert>
 #include <cstring>
 #include <iostream>
@@ -3642,7 +3760,8 @@ size of a[]: 12
 8
 4 1 3
 */
-{% endhighlight %}
+```
+
 
 https://en.cppreference.com/w/cpp/iterator/size
 
@@ -3650,17 +3769,18 @@ https://en.cppreference.com/w/cpp/iterator/size
 
 A typical implementation holds only two members: a pointer to constant CharT and a size. Several typedefs for common character types are provided:
 
-{% highlight cpp %}
+```cpp
 // std::basic_string_view<char> == std::string_view
 template<
     class CharT,
     class Traits = std::char_traits<CharT>
 > class basic_string_view;
-{% endhighlight %}
+```
+
 
 It is the programmer's responsibility to ensure that std::string_view does not outlive the pointed-to character array:
 
-{% highlight cpp %}
+```cpp
 std::string_view good{"a string literal"};
   // "Good" case: `good` points to a static array (string literals are usually
   // resided in persistent data segments).
@@ -3668,9 +3788,10 @@ std::string_view good{"a string literal"};
 std::string_view bad{"a temporary string"s};
   // "Bad" case: `bad` holds a dangling pointer since the std::string temporary,
   // created by std::operator""s, will be destroyed at the end of the statement.
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include <iostream>
 #include <string>
 #include <string_view>
@@ -3699,7 +3820,8 @@ array_v: "Bar"
 cppstr_v: "Foo"
 s_v: "hello"
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/string/basic_string_view
 
@@ -3708,13 +3830,14 @@ s_v: "hello"
 
 Provides compile-time indexed access to the types of the alternatives of the possibly cv-qualified variant, combining cv-qualifications of the variant (if any) with the cv-qualifications of the alternative.
 
-{% highlight cpp %}
+```cpp
 // Helper template alias
 template <size_t I, class T>
 using variant_alternative_t = typename variant_alternative<I, T>::type;
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include <variant>
 #include <iostream>
 
@@ -3734,7 +3857,8 @@ int main()
 /*
 All static assertions passed.
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/utility/variant/variant_alternative
 
@@ -3742,7 +3866,7 @@ All static assertions passed.
 
 Applies the visitor `vis` (a Callable that can be called with any combination of types from variants) to the variants `vars`.
 
-{% highlight cpp %}
+```cpp
 // gcc 14.2
 #include <iomanip>
 #include <iostream>
@@ -3813,14 +3937,15 @@ int main()
 hello. After doubling, variant holds std::string with value "hellohello"
 10 15 1.500000 "hello"
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/utility/variant/visit
 
 
 ## maybe_unused
 
-{% highlight cpp %}
+```cpp
 #include <cassert>
 
 [[maybe_unused]] void f([[maybe_unused]] bool thing1,
@@ -3832,7 +3957,8 @@ hello. After doubling, variant holds std::string with value "hellohello"
 } // parameters thing1 and thing2 are not used, no warning
 
 int main() {;}
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/language/attributes/maybe_unused
 
@@ -3845,7 +3971,7 @@ The `source_location` class represents certain information about the source code
 
 gcc 11.1.0
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <string_view>
 #include <source_location>
@@ -3876,13 +4002,14 @@ int main(int, char*[])
 file: prog.cc(24:8) `int main(int, char**)`: Hello world!
 file: prog.cc(19:8) `void fun(T) [with T = const char*]`: Hello C++20!
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/utility/source_location
 
 ## Text formatting
 
-{% highlight cpp %}
+```cpp
 #include <format>
 #include <iostream>
 #include <string>
@@ -3910,7 +4037,8 @@ Hello world!
 {} {}  : alpha Z
 {} {} {}  : alpha Z 3.14
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/utility/format
 * https://github.com/fmtlib/fmt
@@ -3949,7 +4077,7 @@ The difficulty with the hash function is that if your key type consists of sever
 
 A fairly good starting point for a hash function is one that uses bit shifting and bitwise XOR to combine the individual hash values. For example, assuming a key-type like this:
 
-{% highlight cpp %}
+```cpp
 struct Key
 {
   std::string first;
@@ -3962,11 +4090,12 @@ struct Key
             && third == other.third);
   }
 };
-{% endhighlight %}
+```
+
 
 Here is a simple hash function (adapted from the one used in the [cppreference example for user-defined hash functions](http://en.cppreference.com/w/cpp/utility/hash)):
 
-{% highlight cpp %}
+```cpp
 template <>
 struct std::hash<Key>
 {
@@ -3985,11 +4114,12 @@ struct std::hash<Key>
              ^ (hash<int>()(k.third) << 1);
   }
 };
-{% endhighlight %}
+```
+
 
 With this in place, you can instantiate a `std::unordered_map` for the key-type:
 
-{% highlight cpp %}
+```cpp
 int main()
 {
   std::unordered_map<Key,std::string> m6 = {
@@ -3997,13 +4127,14 @@ int main()
     { {"Mary", "Sue", 21}, "another"}
   };
 }
-{% endhighlight %}
+```
+
 
 It will automatically use `std::hash<Key>` as defined above for the hash value calculations, and the `operator==` defined as member function of `Key` for equality checks.
 
 If you don't want to specialize template inside the `std` namespace (although it's perfectly legal in this case), you can define the hash function as a separate class and add it to the template argument list for the map:
 
-{% highlight cpp %}
+```cpp
 struct KeyHasher
 {
   std::size_t operator()(const Key& k) const
@@ -4025,13 +4156,14 @@ int main()
     { {"Mary", "Sue", 21}, "another"}
   };
 }
-{% endhighlight %}
+```
+
 
 How to define a better hash function? As said above, defining a good hash function is important to avoid collisions and get good performance. For a real good one you need to take into account the distribution of possible values of all fields and define a hash function that projects that distribution to a space of possible results as wide and evenly distributed as possible.
 
 This can be difficult; the XOR/bit-shifting method above is probably not a bad start. For a slightly better start, you may use the `hash_value` and `hash_combine` function template from the Boost library. The former acts in a similar way as `std::hash` for standard types (recently also including tuples and other useful standard types); the latter helps you combine individual hash values into one. Here is a rewrite of the hash function that uses the Boost helper functions:
 
-{% highlight cpp %}
+```cpp
 #include <boost/functional/hash.hpp>
 
 struct KeyHasher
@@ -4054,11 +4186,12 @@ struct KeyHasher
       return seed;
   }
 };
-{% endhighlight %}
+```
+
 
 And here's a rewrite that doesn't use boost, yet uses good method of combining the hashes:
 
-{% highlight cpp %}
+```cpp
 template <>
 struct std::hash<Key>
 {
@@ -4073,7 +4206,8 @@ struct std::hash<Key>
         return res;
     }
 };
-{% endhighlight %}
+```
+
 
 
 
@@ -4086,7 +4220,7 @@ struct std::hash<Key>
 * `find_if` searches for an element for which predicate p returns true
 * `find_if_not` searches for an element for which predicate q returns false
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -4120,11 +4254,12 @@ v contains 3
 v does not contain 5
 v contains an even number: 2
 */
-{% endhighlight %}
+```
+
 
 ## std::any_of / std::all_of / std::none_of
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -4136,26 +4271,28 @@ int main()
   std::cout <<  std::all_of(v.cbegin(), v.cend(), [&](int i) { if (i > 0) {return true;} return false; }) << std::endl;    // 1   全部大于 0
   std::cout <<  std::none_of(v.cbegin(), v.cend(), [&](int i) { if (i > 0) {return true;} return false; }) << std::endl;   // 0   没有一个大于 0
 }
-{% endhighlight %}
+```
+
 
 https://en.cppreference.com/w/cpp/algorithm/all_any_none_of
 
 ## std::lower_bound (下界)
 
-{% highlight cpp %}
+```cpp
 template< class ForwardIt, class T >
 ForwardIt lower_bound( ForwardIt first, ForwardIt last, const T& value );
 
 template< class ForwardIt, class T, class Compare >
 ForwardIt lower_bound( ForwardIt first, ForwardIt last, const T& value, Compare comp );
-{% endhighlight %}
+```
+
 
 Returns an iterator pointing to the first element in the range [first, last) that is not less than (i.e. greater or equal to) value, or last if no such element is found.
 
 * `[frist, last]` 顺序为非严格递增
 * 顺序：`value <= [frist, last]`
 
-{% highlight cpp %}
+```cpp
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -4201,9 +4338,10 @@ int main()
 102.5 at index 2
 110.2 not found
 */
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -4236,7 +4374,8 @@ int main()
         std::cout << "end\n";
     }
 }
-{% endhighlight %}
+```
+
 
 
 * https://www.cplusplus.com/reference/algorithm/lower_bound/
@@ -4248,7 +4387,7 @@ Returns an iterator pointing to the first element in the range [first, last) tha
 * `[frist, last]` 顺序为非严格递增
 * 顺序：`[frist, last] <= value`
 
-{% highlight cpp %}
+```cpp
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -4293,7 +4432,8 @@ int main()
 107.3 at index 4
 110.2 not found
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/algorithm/upper_bound
 
@@ -4301,7 +4441,7 @@ int main()
 
 Reorders the elements in the range [first, last) in such a way that all elements for which the predicate p returns true precede the elements for which predicate p returns false. Relative order of the elements is not preserved.
 
-{% highlight cpp %}
+```cpp
 #include <algorithm>
 #include <iostream>
 #include <iterator>
@@ -4354,7 +4494,8 @@ Unsorted list:
 Sorted using quicksort:
     -8 -5 -4 -4 1 1 1 2 3 5 6 30 64 92
 */
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/algorithm/partition
 
@@ -4371,11 +4512,12 @@ Sorted using quicksort:
 
 ## [offsetof](https://en.cppreference.com/w/cpp/types/offsetof) (macro)
 
-{% highlight cpp %}
+```cpp
 #define offsetof(type, member) /*implementation-defined*/
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include <iostream>
 #include <cstddef>
 
@@ -4400,14 +4542,16 @@ offset of double m1 = 8
 offset of short  m2 = 16
 offset of char   m3 = 18
 */
-{% endhighlight %}
+```
+
 
 ## [aligned_alloc](https://en.cppreference.com/w/c/memory/aligned_alloc)
 
-{% highlight c %}
+```c
 #include <stdlib.h>
 void *aligned_alloc( size_t alignment, size_t size ); // since C11
-{% endhighlight %}
+```
+
 
 Allocate `size` bytes of uninitialized storage whose alignment is specified by `alignment`. The `size` parameter must be an integral multiple of `alignment`.
 
@@ -4426,7 +4570,7 @@ On failure, returns a null pointer.
 
 **Example**
 
-{% highlight c %}
+```c
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -4440,19 +4584,21 @@ int main(void)
     printf("1024-byte aligned addr: %p\n", (void*)p2);
     free(p2);
 }
-{% endhighlight %}
+```
+
 
 Possible output:
 
-{% highlight text %}
+```text
 default-aligned addr:   0x1e40c20
 1024-byte aligned addr: 0x1e41000
-{% endhighlight %}
+```
+
 
 
 ## operator<<
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <string>
 #include <vector>
@@ -4474,13 +4620,14 @@ int main()
     };
     std::cout << vec << std::endl;
 }
-{% endhighlight %}
+```
+
 
 ## Unsigned overflow
 
 问题示例，unsigned 类型的 overflow 属于合法的 wraparound。
 
-{% highlight cpp %}
+```cpp
 #include<iostream>
 	int main()
 	{
@@ -4489,7 +4636,8 @@ int main()
             std::cout << "a\n";
         }
 	}
-{% endhighlight %}
+```
+
 
 [How to obtain warning for forgotten cast in arithmetic?](https://stackoverflow.com/questions/54261433/how-to-obtain-warning-for-forgotten-cast-in-arithmetic)
 
@@ -4499,7 +4647,7 @@ Unfortunately GCC only supports `-fsanitize=signed-integer-overflow`. There's no
 
 ## gethostbyname
 
-{% highlight cpp %}
+```cpp
 #include <stdio.h>
 #include <netdb.h>
 
@@ -4520,7 +4668,8 @@ int main()
 localhost
 127.0.0.1
 */
-{% endhighlight %}
+```
+
 
 https://man7.org/linux/man-pages/man3/gethostbyname.3.html
 
@@ -4528,7 +4677,7 @@ https://man7.org/linux/man-pages/man3/gethostbyname.3.html
 
 Although not defined by the C standard, this is almost always an integral value holding the number of seconds (not counting leap seconds) since 00:00, Jan 1 1970 UTC, corresponding to POSIX time.
 
-{% highlight cpp %}
+```cpp
 #include <stdio.h>
 #include <time.h>
 #include <stdint.h>
@@ -4543,13 +4692,14 @@ int main(void)
 0 seconds since the epoch began
 Thu Jan  1 00:00:00 1970
 */
-{% endhighlight %}
+```
+
 
 The `time_t` datatype is a data type in the ISO C library defined for storing system time values. Such values are returned from the standard time() library function. This type is a typedef defined in the standard header. **ISO C defines time_t as an arithmetic type, but does not specify any particular type**, range, resolution, or encoding for it. Also unspecified are the meanings of arithmetic operations applied to time values.
 
 **Unix and POSIX-compliant systems implement the `time_t` type as a `signed integer` (typically 32 or 64 bits wide) which represents the number of seconds since the start of the Unix epoch**: midnight UTC of January 1, 1970 (not counting leap seconds). Some systems correctly handle negative time values, while others do not. Systems using a 32-bit time_t type are susceptible to the [Year 2038 problem](http://en.wikipedia.org/wiki/Year_2038_problem).
 
-{% highlight cpp %}
+```cpp
 #include <time.h>
 
 int main(int argc, char** argv)
@@ -4561,7 +4711,8 @@ int main(int argc, char** argv)
 gcc -E time.c | grep __time_t
 typedef long int __time_t;
 */
-{% endhighlight %}
+```
+
 
 
 * https://en.cppreference.com/w/c/chrono/time_t
@@ -4583,7 +4734,7 @@ It depends on your compiler. It shouldn't be any slower than calling `memset()` 
 
 The initializer is easier to read than imperatively overwriting the array; it also adapts well if the element type is changed to something where all-bit-zero isn't what you want.
 
-{% highlight cpp %}
+```cpp
 #include <string.h>
 
 int f1()
@@ -4598,7 +4749,8 @@ int f2()
     memset(a, 0, sizeof a);
     return a[31];
 }
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/language/zero_initialization
 * https://en.cppreference.com/w/c/language/struct_initialization
@@ -4611,7 +4763,7 @@ Argument-dependent lookup, also known as ADL, or Koenig lookup, is the set of ru
 
 Argument-dependent lookup makes it possible to use operators defined in a different namespace. Example:
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 int main()
@@ -4631,7 +4783,8 @@ int main()
     (endl)(std::cout); // Error: 'endl' is not declared in this namespace.
                        // The sub-expression (endl) is not a function call expression
 }
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/language/adl
 
@@ -4663,7 +4816,7 @@ A qualified name is a name that appears on the right hand side of the scope reso
 
 If there is nothing on the left hand side of the `::`, the lookup considers only declarations made in the global namespace scope (or introduced into the global namespace by a [using declaration](https://en.cppreference.com/w/cpp/language/namespace)). This makes it possible to refer to such names even if they were hidden by a local declaration:
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 int main()
@@ -4673,7 +4826,8 @@ int main()
     std::cout << "fail\n"; // Error: unqualified lookup for 'std' finds the struct
     ::std::cout << "ok\n"; // OK: ::std finds the namespace std
 }
-{% endhighlight %}
+```
+
 
 
 #### Unqualified name lookup (无限定名查找)
@@ -4689,7 +4843,7 @@ For an unqualified name, that is a name that does not appear to the right of a s
 
 问题：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 void g(double) { std::cout << "g(double)\n"; }
@@ -4712,11 +4866,12 @@ int main()
     S<int> s;
     s.f(2);  // g(double).   why?
 }
-{% endhighlight %}
+```
+
 
 使用ADL:
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 class A // 没有命名空间
@@ -4748,11 +4903,12 @@ int main()
     A a;
     s2.f(a);  // g(A&).   use ADL
 }
-{% endhighlight %}
+```
+
 
 当使用命名空间后，ADL好像没办法生效
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 namespace t // 使用命名空间
@@ -4787,12 +4943,13 @@ int main()
     t::A a;
     s2.f(a);  // g(A&).  添加了命名空间后，必现在模版定义前声明
 }
-{% endhighlight %}
+```
+
 
 
 Inside the definition of a [template](https://en.cppreference.com/w/cpp/language/templates) (both [class template](https://en.cppreference.com/w/cpp/language/class_template) and [function template](https://en.cppreference.com/w/cpp/language/function_template)), the meaning of some constructs may differ from one instantiation to another. In particular, types and expressions may depend on types of type template parameters and values of non-type template parameters.
 
-{% highlight cpp %}
+```cpp
 template<typename T>
 struct X : B<T> // "B<T>" is dependent on T
 {
@@ -4804,7 +4961,8 @@ struct X : B<T> // "B<T>" is dependent on T
         pb->j++; // "pb->j" is dependent on T
     }
 };
-{% endhighlight %}
+```
+
 
 Name lookup and binding are different for **dependent names** and **non-dependent names**
 
@@ -4812,7 +4970,7 @@ Binding rules
 
 **Non-dependent names** are looked up and bound at the point of template definition. This binding holds even if at the point of template instantiation there is a better match:
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 void g(double) { std::cout << "g(double)\n"; }
@@ -4835,7 +4993,8 @@ int main()
     S<int> s;
     s.f(); // calls g(double)
 }
-{% endhighlight %}
+```
+
 
 Binding of **dependent names** is postponed until lookup takes place.
 
@@ -4853,7 +5012,7 @@ To make ADL examine a user-defined namespace, either std::vector should be repla
 
 ## Difference between auto and auto* when storing a pointer
 
-{% highlight cpp %}
+```cpp
 int main()
 {
     int a = 1;
@@ -4865,7 +5024,8 @@ int main()
 
     std::cout << *pa2;  // 1
 }
-{% endhighlight %}
+```
+
 
 * https://stackoverflow.com/questions/12773257/does-auto-type-assignments-of-a-pointer-in-c11-require
 * https://stackoverflow.com/questions/36211703/difference-between-auto-and-auto-when-storing-a-pointer
@@ -4894,7 +5054,7 @@ refer:
 
 ## Color print
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 
 #define kColorNrm  "\x1B[0m"
@@ -4914,17 +5074,19 @@ int main()
         printf(kColorBlue"abc\n"kColorNrm);
         printf("abc\n");
 }
-{% endhighlight %}
+```
+
 
 * https://stackoverflow.com/questions/5412761/using-colors-with-printf
 
 
 ## Printf alignment
 
-{% highlight cpp %}
+```cpp
     printf("%-32s%-32s\n", "Type", "123");
     printf("%-32s%-32s\n", "Name", "456789");
-{% endhighlight %}
+```
+
 
 And then whatever's printed with that field will be blank-padded to the width you indicate. The `-` left-justifies your text in that field.
 
@@ -4939,10 +5101,11 @@ The `format` attribute allows you to identify your own functions that take forma
 
 The `format` attribute specifies that a function takes `printf`, `scanf`, `strftime` or `strfmon` style arguments that should be type-checked against a format string. For example, the declaration:
 
-{% highlight cpp %}
+```cpp
 extern int
 my_printf (void *my_object, const char *my_format, ...) __attribute__ ((format (printf, 2, 3)));
-{% endhighlight %}
+```
+
 
 causes the compiler to check the arguments in calls to `my_printf` for consistency with the `printf` style format string argument `my_format`.
 
@@ -4956,7 +5119,7 @@ In the example above, the format string (`my_format`) is the second argument of 
 
 使用示例：
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 #include <cstdarg>
 
@@ -4974,22 +5137,24 @@ int main()
         char b = '2';
         func("a=%d&b=%c", a, b);
 }
-{% endhighlight %}
+```
+
 
 clang++ prog.cc -Wall -Wextra -I/opt/wandbox/boost-1.75.0-clang-7.1.0/include -std=gnu++11
 
-{% highlight text %}
+```text
 prog.cc:17:27: warning: format specifies type 'int' but the argument has type 'long long' [-Wformat]
         func("a=%d&b=%c", a, b);
                 ~~        ^
                 %lld
 1 warning generated.
 fmt(a=%d&b=%c)
-{% endhighlight %}
+```
+
 
 在类中使用：
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 #include <cstdarg>
 
@@ -5011,9 +5176,10 @@ int main()
         char b = '2';
         Foo::func("a=%d&b=%c", a, b);
 }
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include <cstdio>
 #include <cstdarg>
 
@@ -5036,7 +5202,8 @@ int main()
         Foo foo;
         foo.func("a=%d&b=%c", a, b);
 }
-{% endhighlight %}
+```
+
 
 
 * [How should I properly use __attribute__ ((format (printf, x, y))) inside a class method in C++?](https://stackoverflow.com/questions/11621043/how-should-i-properly-use-attribute-format-printf-x-y-inside-a-class)
@@ -5046,7 +5213,7 @@ int main()
 
 ## __attribute__((deprecated))
 
-{% highlight cpp %}
+```cpp
 class foo {
 public:
   void my_func() __attribute__((deprecated)) {
@@ -5062,15 +5229,17 @@ int main()
   f.my_func();
   f.my_func2();
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $ g++ -c -Wall -pedantic a.cpp
 a.cpp: In function int main():
 a.cpp:12:13: warning: void foo::my_func() is deprecated (declared at a.cpp:3) [-Wdeprecated-declarations]
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #ifdef __GNUC__
 #define DEPRECATED(func) func __attribute__ ((deprecated))
 #elif defined(_MSC_VER)
@@ -5085,7 +5254,8 @@ DEPRECATED(void OldFunc(int a, float b));
 
 //use me instead
 void NewFunc(int a, double b);
-{% endhighlight %}
+```
+
 
 However, you will encounter problems if a function return type has a commas in its name e.g. `std::pair<int, int>` as this will be interpreted by the preprocesor as passing 2 arguments to the DEPRECATED macro. In that case you would have to typedef the return type.
 
@@ -5093,7 +5263,7 @@ However, you will encounter problems if a function return type has a commas in i
 
 ## 空值类型转换
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <string.h>
 
@@ -5110,13 +5280,14 @@ int main()
 
     ((A*)nullptr)->test();  // test
 }
-{% endhighlight %}
+```
+
 
 ## 禁止函数内敛
 
 更多参考：[GCC/Clang Compilation Optimize](http://gerryyang.com/gcc/clang/2021/02/13/gcc-clang-compilation-optimize.html)
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <string.h>
 
@@ -5131,13 +5302,14 @@ int main()
     Test1();
     Test2();
 }
-{% endhighlight %}
+```
+
 
 [clang ignoring attribute noinline](https://stackoverflow.com/questions/54481855/clang-ignoring-attribute-noinline)
 
 ## 多继承的指针偏移
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 struct A
@@ -5160,9 +5332,10 @@ int main()
 {
     printf("%p\n", (B*)(C*)1); // 多重继承时，对象 C 的地址 0x1 在进行类型转换 B 时，会偏移 A 的大小 = 0x1 + 4 + 4 = 0x9
 }
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 #include <iostream>
 
 struct A
@@ -5196,13 +5369,14 @@ pc: 0xddff40
 pb: 0xddff44
 pa: 0xddff40
 */
-{% endhighlight %}
+```
+
 
 ## delete-non-virtual-dtor warning
 
 测试代码：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 struct Foo
@@ -5221,22 +5395,24 @@ int main()
     f->func();
     delete f;
 }
-{% endhighlight %}
+```
+
 
 编译选项：-std=c++11 -Wall
 
 编译告警：
 
-{% highlight text %}
+```text
 <source>:18:5: warning: delete called on non-final 'Foo' that has virtual functions but non-virtual destructor [-Wdelete-non-abstract-non-virtual-dtor]
     delete f;
     ^
 1 warning generated.
-{% endhighlight %}
+```
+
 
 由于父类不是虚析构，因此在对象销毁时，只会调用父类的析构函数，而不会调用子类的析构函数。在父类定义中添加虚析构函数，可去除编译告警：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 struct Foo
@@ -5256,11 +5432,12 @@ int main()
     f->func();
     delete f;
 }
-{% endhighlight %}
+```
+
 
 或者添加 final 去除告警：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 struct Foo
@@ -5280,12 +5457,13 @@ int main()
     f->doStuff();
     delete f;
 }
-{% endhighlight %}
+```
+
 
 
 参考 [Bug 53596 - g++-4.7 -Wall shouldn't complain for non-virtual protected dtor](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53596) 中的例子：
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 class Base {
@@ -5307,7 +5485,8 @@ int main() {
   delete derived; // legal, there must be no warning!
   return 0;
 }
-{% endhighlight %}
+```
+
 
 问题：
 
@@ -5321,7 +5500,7 @@ The warning is valid, the fact `Base` is `protected` is irrelevant, you're not u
 
 Consider:
 
-{% highlight cpp %}
+```cpp
 class MoreDerived : public Derived {
 public:
   ~Derived() { std::cout << "MoreDerived::~MoreDerived()" << std::endl; }
@@ -5332,7 +5511,8 @@ int main() {
   morederived->foo();
   delete morederived; // undefined behaviour
 }
-{% endhighlight %}
+```
+
 
 **Now the warning is entirely correct**, you are deleting a `Derived*` which is a polymorphic type without a virtual destructor, so the program has undefined behaviour. That's substantially the same as your example, on the line:
 
@@ -5357,7 +5537,7 @@ We can define class members static using `static` keyword. When we declare a mem
 
 A static member is shared by all objects of the class. All static data is initialized to zero when the first object is created, if no other initialization is present. We can't put it in the class definition but it can be initialized outside the class as done in the following example by redeclaring the static variable, using the scope resolution operator `::` to identify which class it belongs to.
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -5403,7 +5583,8 @@ int main(void) {
 
    return 0;
 }
-{% endhighlight %}
+```
+
 
 * https://www.tutorialspoint.com/cplusplus/cpp_static_members.htm
 
@@ -5418,7 +5599,7 @@ int main(void) {
 
 在C++中有了引用语法，可以把数组类型进行传递。
 
-{% highlight cpp %}
+```cpp
 void f1(int (&arr)[5]) // 必须传 int[5] 类型
 {
     (void)arr;
@@ -5432,16 +5613,18 @@ int main()
   f1(arr1);      // ok
   //f1(arr2);   // err
 }
-{% endhighlight %}
+```
+
 
 一些新兴语言（例如 Go）注意到了这一点，因此将其进行了区分。在 Go 语言中，区分了“数组”和“切片”的概念，数组就是长度固定的，整体来传递；而切片则类似于首地址+长度的方式传递。
 
-{% highlight go %}
+```go
 func f1(arr [5]int) {
 }
 func f2(arr []int) {
 }
-{% endhighlight %}
+```
+
 
 f1 就必须传递长度是5的数组类型，而 f2 则可以传递任意长度的切片类型。
 
@@ -5452,10 +5635,11 @@ f1 就必须传递长度是5的数组类型，而 f2 则可以传递任意长度
 
 There are situations when we don't want to rely upon Free Store for allocating memory and we want to use custom memory allocations using new. For these situations we can use **Placement New**, where we can tell `new' operator to allocate memory from a pre-allocated memory location.
 
-{% highlight cpp %}
+```cpp
 int a4byteInteger;
 char *a4byteChar = new (&a4byteInteger) char[4];
-{% endhighlight %}
+```
+
 
 In this example, the memory pointed by `a4byteChar` is 4 byte allocated to 'stack' via integer variable `a4byteInteger`.
 
@@ -5463,16 +5647,17 @@ The benefit of this kind of memory allocation is the fact that programmers contr
 
 Same behavior can be achieved for dynamic allocated memory also. For example
 
-{% highlight cpp %}
+```cpp
 int *a8byteDynamicInteger = new int[2];
 char *a8byteChar = new (a8byteDynamicInteger) char[8];
-{% endhighlight %}
+```
+
 
 In this case, the memory pointer by `a8byteChar` will be referring to dynamic memory allocated by `a8byteDynamicInteger`. In this case however, we need to explicitly call `delete a8byteDynamicInteger` to release the memory.
 
 Another example for C++ Class
 
-{% highlight cpp %}
+```cpp
 struct ComplexType {
     int a;
 
@@ -5500,7 +5685,8 @@ int main() {
 
     return 0;
 }
-{% endhighlight %}
+```
+
 
 * https://en.cppreference.com/w/cpp/language/new
 * https://en.cppreference.com/w/cpp/language/new#Placement_new
@@ -5521,7 +5707,7 @@ There is some additional maintenance involved but I feel that it is minimal.
 
 Here is an example:
 
-{% highlight cpp %}
+```cpp
 /* interface.h */
 
 struct library {
@@ -5532,9 +5718,10 @@ struct library {
 };
 
 extern const struct library Library;
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 /* interface.c */
 #include "interface.h"
 
@@ -5552,9 +5739,10 @@ const struct library Library = {
     .method2 = method2,
     .some_value = 36
 };
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 /* client code */
 #include "interface.h"
 
@@ -5565,13 +5753,14 @@ int main(void)
     printf("%d\n", Library.some_value);
     return 0;
 }
-{% endhighlight %}
+```
+
 
 The use of `.` syntax creates a strong association over the classic Library_function() Library_some_value method. There are some limitations however, for one you can't use **macros** as functions.
 
 ## 指向 const 的指针 / const 指针
 
-{% highlight cpp %}
+```cpp
 // 指向 const 的指针：p 这个指针可以修改，但是指针指向地址里面的值不能改变
 const int *p;
 int const *p;
@@ -5583,7 +5772,8 @@ int * const p = &a;
 // 指针和内容都不可变：结合上面两种情况
 int a;
 const int * const p = &a;
-{% endhighlight %}
+```
+
 
 ## [C++'s extern-"C" functionality to languages other than C](https://stackoverflow.com/questions/21484500/cs-extern-c-functionality-to-languages-other-than-c)
 
@@ -5601,11 +5791,13 @@ The C++ standard, 7.5.2 dcl.link, says:
 
 > Linkage between C++ and non-C++ code fragments can be achieved using a linkage-specification:
 >
-> {% highlight cpp %}
+> ```cpp
 > linkage-specification:
 >   extern string-literal { declaration-seqopt}
 >   extern string-literal declaration
-> {% endhighlight %}
+> 
+```
+
 >
 > The string-literal indicates the required language linkage. This International Standard specifies the semantics for the string-literals "C" and "C++". Use of a string-literal other than "C" or "C++" is conditionally supported, with implementation-defined semantics. [ Note: Therefore, a linkage-specification with a string literal that is unknown to the implementation requires a diagnostic. —end note ] [ Note: It is recommended that the spelling of the string-literal be taken from the document defining that language. For example, Ada (not ADA) and Fortran or FORTRAN, depending on the vintage. —end note ]
 
@@ -5616,12 +5808,13 @@ In practise however, on all modern platforms, C linkage is the lowest common den
 
 ## AlignUpTo8 (参考 protobuf/arena_impl.h)
 
-{% highlight cpp %}
+```cpp
 inline size_t AlignUpTo8(size_t n) {
   // Align n to next multiple of 8 (from Hacker's Delight, Chapter 3.)
   return (n + 7) & static_cast<size_t>(-8);
 }
-{% endhighlight %}
+```
+
 
 ## Variable-length array (C99)
 
@@ -5655,7 +5848,7 @@ Instead of taking a `value_type` it takes a variadic list of arguments, so that 
 
 > The default arguments are not part of the function type
 
-{% highlight cpp %}
+```cpp
 int f(int = 0);
 
 void h()
@@ -5666,7 +5859,8 @@ void h()
 
 int (*p1)(int) = &f;
 int (*p2)()    = &f; // Error: the type of f is int(int)
-{% endhighlight %}
+```
+
 
 ## [What is the difference between new/delete and malloc/free?](https://stackoverflow.com/questions/240212/what-is-the-difference-between-new-delete-and-malloc-free)
 
@@ -5712,18 +5906,19 @@ https://en.cppreference.com/w/cpp/language/new
 
 My example is very simple:
 
-{% highlight cpp %}
+```cpp
 extern int fun(int arr[]);
 int foo(void)
 {
     int arr[64] = {0};
     return fun(arr);
 }
-{% endhighlight %}
+```
+
 
 When I compile it using **clang**, the asm code is very straightforward:
 
-{% highlight cpp %}
+```cpp
 foo:                                    # @foo
         .cfi_startproc
 # %bb.0:
@@ -5751,11 +5946,12 @@ foo:                                    # @foo
         addq    $264, %rsp              # imm = 0x108
         .cfi_def_cfa_offset 8
         retq
-{% endhighlight %}
+```
+
 
 Though **gcc** generate shorter asm code, I can't really understand it.Here is the code from **gcc**:
 
-{% highlight text %}
+```text
 foo:
 .LFB0:
         .cfi_startproc
@@ -5770,7 +5966,8 @@ foo:
         addq    $264, %rsp
         .cfi_def_cfa_offset 8
         ret
-{% endhighlight %}
+```
+
 
 I am an asm code novice. Sorry about that if my question is stupid. But any guidance is welcome.
 
@@ -5789,7 +5986,7 @@ It doesn't actually call memset, there's no call instruction. It invokes the opt
 * https://gcc.godbolt.org/z/r4z6n6az8 (clang 11)
 * https://gcc.godbolt.org/z/x6K8h95Te (gcc 4.8.5)
 
-{% highlight cpp %}
+```cpp
 int main() {
 
   char s[256] = {0};
@@ -5797,7 +5994,8 @@ int main() {
   printf("%s\n", s);
   return 0;
 }
-{% endhighlight %}
+```
+
 
 ![array-init-asm](/assets/images/202210/array-init-asm.png)
 
@@ -5840,9 +6038,10 @@ You don't need to do anything else. GCC comes with its own implementation of the
 
 In the new Standard for C++ (C++11), you can do this:
 
-{% highlight cpp %}
+```cpp
 int* a = new int[10] { 1,2,3,4,5,6,7,8,9,10 };
-{% endhighlight %}
+```
+
 
 It's called an initializer list. But in previous versions of the standard that was not possible.
 
@@ -5851,7 +6050,7 @@ The relevant online reference with further details (and very hard to read) is [h
 
 ## 空指针类型转换，执行函数
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 
 struct X
@@ -5873,7 +6072,8 @@ int main()
     x->test();     // ok, print "123"
     x->test2();   // error, Segmentation fault
 }
-{% endhighlight %}
+```
+
 
 
 # C++ 异常
@@ -5884,7 +6084,7 @@ int main()
 
 
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <stdexcept>
 
@@ -5898,9 +6098,10 @@ int main()
 {
   f();
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 (gdb) bt
 #0  0x00007f1b122862e7 in __GI_raise (sig=sig@entry=6) at ../nptl/sysdeps/unix/sysv/linux/raise.c:56
 #1  0x00007f1b122876c8 in __GI_abort () at abort.c:89
@@ -5910,7 +6111,8 @@ int main()
 #5  0x00007f1b12b73c53 in __cxa_throw () from /lib64/libstdc++.so.6
 #6  0x0000000000400bbe in f() ()
 #7  0x0000000000400bfa in main ()
-{% endhighlight %}
+```
+
 
 ## abort (异常没有捕获触发系统 abort 产生 core-dump)
 
@@ -5918,7 +6120,7 @@ int main()
 
 参考 `glibc-2.18/stdlib/abort.c` 代码：
 
-{% highlight cpp %}
+```cpp
 /* Cause an abnormal program termination with core-dump.  */
 void
 abort (void)
@@ -6012,7 +6214,8 @@ abort (void)
     /* Try for ever and ever.  */
     ABORT_INSTRUCTION;
 }
-{% endhighlight %}
+```
+
 
 ## 异常产生 core 但无法显示正确的函数调用栈信息
 
@@ -6025,7 +6228,7 @@ abort (void)
 
 When rethrowing exceptions, the second form must be used to avoid object slicing in the (typical) case where exception objects use inheritance:
 
-{% highlight cpp %}
+```cpp
 try
 {
     std::string("abc").substr(10); // throws std::length_error
@@ -6037,7 +6240,8 @@ catch (const std::exception& e)
     //  throw e; // copy-initializes a new exception object of type std::exception
     throw;   // rethrows the exception object of type std::length_error
 }
-{% endhighlight %}
+```
+
 
 ## Stack unwinding
 
@@ -6046,7 +6250,7 @@ If the exception is thrown from a constructor that is invoked by a new-expressio
 This process is called stack unwinding.
 
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <stdexcept>
 
@@ -6106,11 +6310,12 @@ catch (const std::exception& e)
 {
     std::cout << "main() failed to create C with: " << e.what();
 }
-{% endhighlight %}
+```
+
 
 Output:
 
-{% highlight text %}
+```text
 A(0) constructed successfully
 A(1) constructed successfully
 A(1) destroyed
@@ -6118,13 +6323,14 @@ B::B() exiting with exception
 A(0) destroyed
 C::C() exiting with exception
 main() failed to create C with: error
-{% endhighlight %}
+```
+
 
 ## 异常性能测试
 
 当平凡触发异常的时候，性能开销非常大。测试代码 https://quick-bench.com/q/OvaL3gUmfugz1YfSjwelTEimCho
 
-{% highlight cpp %}
+```cpp
 static void A(benchmark::State& state) {
   int a = -1;
   auto f = [](int& a)
@@ -6160,17 +6366,19 @@ static void B(benchmark::State& state) {
   }
 }
 BENCHMARK(B);
-{% endhighlight %}
+```
+
 
 ![exception-performance](/assets/images/202210/exception-performance.png)
 
 
 ## [noexcept](https://en.cppreference.com/w/cpp/language/noexcept)
 
-{% highlight cpp %}
+```cpp
 // Returns a prvalue of type bool.
 noexcept( expression )
-{% endhighlight %}
+```
+
 
 The `noexcept` operator performs a compile-time check that returns **true** if an expression is declared to not throw any exceptions.
 
@@ -6178,7 +6386,7 @@ It can be used within a function template's noexcept specifier to declare that t
 
 [When should I really use noexcept?](https://stackoverflow.com/questions/10787766/when-should-i-really-use-noexcept)
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -6243,19 +6451,21 @@ Is U(lvalue U) noexcept? false
 Is V(rvalue V) noexcept? true
 Is V(lvalue V) noexcept? false
 */
-{% endhighlight %}
+```
+
 
 ## setjmp / longjmp (Thread safety)
 
 setjmp, sigsetjmp, longjmp, siglongjmp  - **performing a nonlocal goto**, refer [setjmp(3) — Linux manual page](https://man7.org/linux/man-pages/man3/longjmp.3.html)
 
 
-{% highlight c %}
+```c
 #include <setjmp.h>
 
 int setjmp(jmp_buf env);
 [[noreturn]] void longjmp(jmp_buf env, int val);
-{% endhighlight %}
+```
+
 
 The functions described on this page are used for performing "**nonlocal gotos**": transferring execution from one function to a predetermined location in another function. The `setjmp()` function dynamically establishes the target to which control will later be transferred, and `longjmp()` performs the transfer of execution.
 
@@ -6278,7 +6488,7 @@ NOTES:
 
 示例代码：
 
-{% highlight c %}
+```c
 #include <setjmp.h>
 #include <stdio.h>
 #include <sanitizer/asan_interface.h>
@@ -6311,14 +6521,16 @@ int main() {
         my_function();
         return 0;
 }
-{% endhighlight %}
+```
+
 
 输出：
 
-{% highlight text %}
+```text
 Exception occurred!
 Returned from exception handler
-{% endhighlight %}
+```
+
 
 
 
@@ -6367,7 +6579,7 @@ Asio is a cross-platform C++ library for network and low-level I/O programming t
 
 ## 构造函数
 
-{% highlight cpp %}
+```cpp
 #include <cassert>
 #include <cctype>
 #include <iomanip>
@@ -6434,13 +6646,14 @@ int main()
 //  std::string sc{zero()}; // Before C++23: throws std::logic_error
                             // Since C++23: won't compile, see overload (12)
 }
-{% endhighlight %}
+```
+
 
 ## str2hex / hex2string
 
 [C++ convert string to hexadecimal and vice versa](https://stackoverflow.com/questions/3381614/c-convert-string-to-hexadecimal-and-vice-versa)
 
-{% highlight cpp %}
+```cpp
 #include <string>
 #include <cstdint>
 #include <sstream>
@@ -6477,13 +6690,14 @@ std::string hex_to_string(const std::string& in) {
 
     return output;
 }
-{% endhighlight %}
+```
+
 
 ## std::setw / std::left (输出对齐)
 
 可以使用 `std::setw()` 函数和 `std::left`、`std::right`、`std::internal` 等标志来控制输出的对齐方式。
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -6497,18 +6711,20 @@ int main() {
     std::cout << ss.str();
     return 0;
 }
-{% endhighlight %}
+```
+
 
 使用 `std::setw` 函数设置输出的宽度，使用 `std::left` 标志控制输出的对齐方式。需要注意的是，`std::setw` 函数只对下一个输出字段起作用，因此在输出多个字段时，需要多次调用该函数。
 
 输出的结果如下：
 
-{% highlight text %}
+```text
 thread         reporttime     status(0:OK, 1:Exception, 2:Timeout)
 NetMsgThread   1684460218     0
 unittest       1684460218     0
 unittestsvr    1684460223     0
-{% endhighlight %}
+```
+
 
 
 # abi Namespace Reference
@@ -6521,7 +6737,7 @@ If you have read the [source documentation for namespace abi](http://gcc.gnu.org
 
 In programs like `c++filt`, the linker, and other tools have the ability to decode C++ ABI names, and now so can you.
 
-{% highlight cpp %}
+```cpp
 #include <cxxabi.h>
 #include <string>
 #include <iostream>
@@ -6541,7 +6757,8 @@ int main() {
 /*
 Demangled: JLib::CApolloServiceMgr::STCfg
 */
-{% endhighlight %}
+```
+
 
 * https://gcc.gnu.org/onlinedocs/libstdc++/manual/ext_demangling.html
 * https://gcc.gnu.org/onlinedocs/libstdc++/libstdc++-html-USERS-4.3/a01696.html
@@ -6561,7 +6778,7 @@ Demangled: JLib::CApolloServiceMgr::STCfg
 
 ## 拷贝构造/赋值构造/移动拷贝构造/移动赋值构造
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 class A
@@ -6619,13 +6836,14 @@ int main()
     b = a;
     std::cout << b.a << " " << b.b << std::endl;
 }
-{% endhighlight %}
+```
+
 
 ## 拷贝构造在继承场景下的使用问题 (子类禁止拷贝，父类没有禁止拷贝，导致父类仍然可以拷贝)
 
 https://gcc.godbolt.org/z/4Y5G1vxvn
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <map>
 #include <string>
@@ -6668,20 +6886,22 @@ int main()
     A b = Get();
     std::cout << __clang_major__;
 }
-{% endhighlight %}
+```
+
 
 输出：
 
-{% highlight text %}
+```text
 A()
 A()
 12
-{% endhighlight %}
+```
+
 
 
 ## static 单例线程安全
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -6717,7 +6937,8 @@ int main()
         th_vec[i].join();
     }
 }
-{% endhighlight %}
+```
+
 
 https://blog.csdn.net/qq_44951325/article/details/124676268
 
@@ -6728,7 +6949,7 @@ https://blog.csdn.net/qq_44951325/article/details/124676268
 
 So I have this code in 2 separate translation units:
 
-{% highlight cpp %}
+```cpp
 // a.cpp
 #include <stdio.h>
 inline int func() { return 5; }
@@ -6738,7 +6959,8 @@ int main() { printf("%d", func() + proxy()); }
 // b.cpp
 inline int func() { return 6; }
 int proxy() { return func(); }
-{% endhighlight %}
+```
+
 
 When compiled normally the result is `10`. When compiled with `-O3` (`inlining` on) I get `11`.
 

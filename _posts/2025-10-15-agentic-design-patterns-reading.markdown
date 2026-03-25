@@ -106,7 +106,7 @@ tags:
 
 提示链示例代码：https://colab.research.google.com/drive/15XCzDOvBhIQaZ__xkvruf5sP9OznAbK9
 
-{% highlight python %}
+```python
 import os
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -151,7 +151,8 @@ final_result = full_chain.invoke({"text_input": input_text})
 
 print("\n--- Final JSON Output ---")
 print(final_result)
-{% endhighlight %}
+```
+
 
 此 Python 代码演示了如何用 LangChain 处理文本。分两步提示：先从输入字符串提取技术规格，再将规格转为 JSON。用 ChatOpenAI 进行模型交互，StrOutputParser 保证输出为可用字符串。**LangChain 表达式语言（LCEL）优雅地将提示和模型串联**。extraction_chain 负责提取规格，full_chain 用提取结果作为转换提示输入。示例输入为笔记本参数，full_chain 依次处理，最终输出 JSON 字符串。
 
@@ -208,7 +209,7 @@ LangChain 、 LangGraph 和 Google 的 Agent Developer Kit (ADK) 等计算框架
 
 路由示例代码：https://colab.research.google.com/drive/1Yh3eUcvajJfgTFKhEQga6bJ3yyKodAmg
 
-{% highlight python %}
+```python
 # Copyright (c) 2025 Marco Fago
 #
 # This code is licensed under the MIT License.
@@ -308,7 +309,8 @@ def main():
 
 if __name__ == "__main__":
     main()
-{% endhighlight %}
+```
+
 
 如上，Python 代码利用 LangChain 和 Google 生成式 AI（gemini-2.5-flash）构建了一个简单智能体系统。定义了 `booking_handler`、`info_handler`、`unclear_handler` 三个模拟子智能体处理器，分别处理不同类型请求。
 

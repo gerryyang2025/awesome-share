@@ -16,7 +16,7 @@ tags:
 
 https://github.com/gflags/example
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 #include <gflags/gflags.h>
 
@@ -52,11 +52,12 @@ int main(int argc, char **argv)
 
     return 0;
 }
-{% endhighlight %}
+```
+
 
 输出示例：
 
-{% highlight text %}
+```text
 $ ./agent -help
 agent: This program is an example.
 
@@ -69,15 +70,17 @@ Usage:
     -verbose (Display agent's version information) type: bool default: false
 
 ...
-{% endhighlight %}
+```
+
 
 # Introduction, and Comparison to Other Commandline Flags Libraries
 
 **Commandline flags** are flags that users specify on the command line when they run an executable. In the command
 
-{% highlight bash %}
+```bash
 fgrep -l -f /var/tmp/foo johannes brahms
-{% endhighlight %}
+```
+
 
 `-l` and `-f /var/tmp/foo` are the **two commandline flags**. (`johannes` and `brahms`, which don't start with a **dash**, are **commandline arguments**.)
 
@@ -93,9 +96,10 @@ The rest of this document describes how to use the commandlineflag library. It's
 
 The `gflags` library can be downloaded from [GitHub](https://github.com/gflags/gflags). You can clone the project using the command:
 
-{% highlight text %}
+```text
 git clone https://github.com/gflags/gflags.git
-{% endhighlight %}
+```
+
 
 Build and installation instructions are provided in the [INSTALL](https://github.com/gflags/gflags/blob/master/INSTALL.md) file. The installation of the gflags package includes configuration files for popular build systems such as [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/), [CMake](https://gflags.github.io/gflags/#cmake), and [Bazel](https://gflags.github.io/gflags/#bazel).
 
@@ -110,31 +114,33 @@ Using gflags within a project which uses [CMake](http://www.cmake.org/) for its 
 
 To use `gflags` within a project which uses [Bazel](https://bazel.build/) as build tool, add the following lines to your `WORKSPACE` file (see also Bazel documentation of [git_repository](https://www.bazel.io/versions/master/docs/be/workspace.html#git_repository)):
 
-{% highlight text %}
+```text
 git_repository(
     name = "com_github_gflags_gflags",
     remote = "https://github.com/gflags/gflags.git",
     tag = "v2.2.2"
 )
-{% endhighlight %}
+```
+
 
 You can then add `@com_github_gflags_gflags//:gflags` to the deps section of a `cc_binary` or `cc_library` rule, and `#include "gflags/gflags.h"` to include it in your source code. This uses the shared gflags library with multi-threading enabled. In order to use the single-threaded shared gflags library, use the dependency `@com_github_gflags_gflags//:gflags_nothreads` instead.
 
 For example, see the following `BUILD` rule of the `gflags/example` project:
 
-{% highlight text %}
+```text
 cc_binary(
     name = "foo",
     srcs = ["main.cc"],
     deps = ["@com_github_gflags_gflags//:gflags"],
 )
-{% endhighlight %}
+```
+
 
 # DEFINE: Defining Flags In Program
 
 Defining a flag is easy: just use the appropriate macro for the type you want the flag to be, as defined at the bottom of `gflags/gflags.h`. Here's an example file, `foo.cc`:
 
-{% highlight cpp %}
+```cpp
 // foo.cc
 
 #include <gflags/gflags.h>
@@ -142,7 +148,8 @@ Defining a flag is easy: just use the appropriate macro for the type you want th
 DEFINE_bool(big_menu, true, "Include 'advanced' options in the menu listing");
 DEFINE_string(languages, "english,french,german",
                 "comma-separated list of languages to offer in the 'lang' menu");
-{% endhighlight %}
+```
+
 
 `DEFINE_bool` defines a boolean flag. Here are the types supported:
 
@@ -170,13 +177,14 @@ All defined flags are available to the program as just a normal variable, with t
 
 You can read and write to the flag just like any other variable:
 
-{% highlight cpp %}
+```cpp
 if (FLAGS_consider_made_up_languages)
     FLAGS_languages += ",klingon";   // implied by --consider_made_up_languages
 
 if (FLAGS_languages.find("finnish") != string::npos)
     HandleFinnish();
-{% endhighlight %}
+```
+
 
 You can also get and set flag values via special functions in `gflags.h`. That's a rarer use case, though.
 
@@ -192,7 +200,7 @@ After DEFINE-ing a flag, you may optionally register a validator function with t
 
 Here is an example use of this functionality:
 
-{% highlight cpp %}
+```cpp
 static bool ValidatePort(const char* flagname, int32 value) {
    if (value > 0 && value < 32768)   // value is ok
      return true;
@@ -201,7 +209,8 @@ static bool ValidatePort(const char* flagname, int32 value) {
 }
 DEFINE_int32(port, 0, "What port to listen on");
 DEFINE_validator(port, &ValidatePort);
-{% endhighlight %}
+```
+
 
 By doing the registration at global initialization time (right after the DEFINE_int32), we ensure that the registration happens before the commandline is parsed at the beginning of `main()`.
 
@@ -216,9 +225,10 @@ The return value is available as global static boolean variable named `<flag>_va
 
 The final piece is the one that tells the executable to process the commandline flags, and set the `FLAGS_*` variables to the appropriate, non-default value based on what is seen on the commandline. This is equivalent to the `getopt()` call in the getopt library, but has much less overhead to use. In fact, it's just a single function call:
 
-{% highlight cpp %}
+```cpp
 gflags::ParseCommandLineFlags(&argc, &argv, true);
-{% endhighlight %}
+```
+
 
 Usually, this code is at the beginning of `main()`. `argc` and `argv` are exactly as passed in to `main()`. This routine might modify them, which is why pointers to them are passed in.
 
@@ -241,29 +251,32 @@ In either case, the `FLAGS_*` variables are modified based on what was [passed i
 
 The reason you make something a flag instead of a compile-time constant, is so users can specify a non-default value on the commandline. Here's how they might do it for an application that links in `foo.cc`:
 
-{% highlight bash %}
+```bash
 app_containing_foo --nobig_menu -languages="chinese,japanese,korean" ...
-{% endhighlight %}
+```
+
 
 This sets `FLAGS_big_menu = false`; and `FLAGS_languages = "chinese,japanese,korean"`, when `ParseCommandLineFlags` is run.
 
 Note the **atypical syntax** for setting a boolean flag to **false**: putting "no" in front of its name. There's a fair bit of flexibility to how flags may be specified. Here's an example of all the ways to specify the "languages" flag:
 
-{% highlight text %}
+```text
 app_containing_foo --languages="chinese,japanese,korean"
 app_containing_foo -languages="chinese,japanese,korean"
 app_containing_foo --languages "chinese,japanese,korean"
 app_containing_foo -languages "chinese,japanese,korean"
-{% endhighlight %}
+```
+
 
 For boolean flags, the possibilities are slightly different:
 
-{% highlight text %}
+```text
 app_containing_foo --big_menu
 app_containing_foo --nobig_menu
 app_containing_foo --big_menu=true
 app_containing_foo --big_menu=false
-{% endhighlight %}
+```
+
 
 (as well as the single-dash variant on all of these).
 
@@ -286,14 +299,15 @@ Note that flags do not have single-letter synonyms, like they do in the `getopt`
 
 Sometimes a flag is defined in a library, and you want to change its default value in one application but not others. It's simple to do this: just assign a new value to the flag in `main()`, before calling `ParseCommandLineFlags()`:
 
-{% highlight cpp %}
+```cpp
 DECLARE_bool(lib_verbose);   // mylib has a lib_verbose flag, default is false
 
 int main(int argc, char** argv) {
     FLAGS_lib_verbose = true;  // in my app, I want a verbose lib by default
     ParseCommandLineFlags(...);
 }
-{% endhighlight %}
+```
+
 
 For this application, users can still set the flag value on the commandline, but if they do not, the flag's value will default to true.
 
@@ -304,7 +318,7 @@ There are a few flags defined by the commandlineflags module itself, and are ava
 
 **First are the 'reporting' flags** that, when found, cause the application to print some information about itself and exit.
 
-{% highlight text %}
+```text
 --help	shows all flags from all files, sorted by file and then by name; shows the flagname, its default value, and its help string
 --helpfull	same as -help, but unambiguously asks for all flags (in case -help changes in the future)
 --helpshort	shows only flags for the file with the same name as the executable (usually the one containing main())
@@ -313,15 +327,17 @@ There are a few flags defined by the commandlineflags module itself, and are ava
 --helpmatch=S	shows only flags defined in *S*.*
 --helppackage	shows flags defined in files in same directory as main()
 --version	prints version info for the executable
-{% endhighlight %}
+```
+
 
 **Second are the flags that affect how other flags are parsed**.
 
-{% highlight text %}
+```text
 --undefok=flagname,flagname,...
 
 for those names listed as the argument to --undefok, suppress the normal error-exit that occurs when --name is seen on the commandline, but name has not been DEFINED anywhere in the application
-{% endhighlight %}
+```
+
 
 **Third are the 'recursive' flags**, that cause other flag values to be set: --fromenv, --tryfromenv, --flagfile. These are described below in more detail.
 
@@ -329,11 +345,12 @@ for those names listed as the argument to --undefok, suppress the normal error-e
 
 `--fromenv=foo,bar` says to read the values for the `foo` and `bar` flags from the **environment**. In concert with this flag, you must actually set the values in the environment, via a line like one of the two below:
 
-{% highlight bash %}
+```bash
 export FLAGS_foo=xxx; export FLAGS_bar=yyy   # sh
 
 setenv FLAGS_foo xxx; setenv FLAGS_bar yyy   # tcsh
-{% endhighlight %}
+```
+
 
 This is equivalent to specifying `--foo=xxx`, `--bar=yyy` on the commandline.
 
@@ -353,17 +370,19 @@ Note it is still an error to say `--tryfromenv=foo` if foo is not DEFINED somewh
 
 In its simplest form, `f` should just be a list of flag assignments, one per line. Unlike on the commandline, the equals sign separating a flagname from its argument is required for flagfiles. An example flagfile, `/tmp/myflags`:
 
-{% highlight text %}
+```text
 --nobig_menus
 --languages=english,french
-{% endhighlight %}
+```
+
 
 With this flagfile, the following two lines are equivalent:
 
-{% highlight bash %}
+```bash
 ./myapp --foo --nobig_menus --languages=english,french --bar
 ./myapp --foo --flagfile=/tmp/myflags --bar
-{% endhighlight %}
+```
+
 
 # The API
 
@@ -375,10 +394,11 @@ For more information about these routines, and other useful helper methods such 
 
 If your application has code like this:
 
-{% highlight cpp %}
+```cpp
 #define STRIP_FLAG_HELP 1    // this must go before the #include!
 #include <gflags/gflags.h>
-{% endhighlight %}
+```
+
 
 we will remove the help messages from the compiled source. This can reduce the size of the resulting binary somewhat, and may also be useful for security reasons.
 
@@ -396,7 +416,7 @@ https://www.man7.org/linux/man-pages/man3/getopt.3.html
 
 The following trivial example program uses `getopt()` to handle two program options: `-n`, with no associated value; and `-t val`, which expects an associated value.
 
-{% highlight cpp %}
+```cpp
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -439,7 +459,8 @@ int main(int argc, char *argv[])
 
     exit(EXIT_SUCCESS);
 }
-{% endhighlight %}
+```
+
 
 
 
@@ -456,7 +477,7 @@ int main(int argc, char *argv[])
 
 `Program_options` 正是解决这个问题的。这个代码有点老了，不过还挺实用；懒得去找特别的处理库时，至少这个伸手可用。使用这个库需要链接 `boost_program_options` 库。
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <string>
 #include <stdlib.h>
@@ -517,7 +538,8 @@ int main(int argc, char* argv[])
     exit(1);
   }
 }
-{% endhighlight %}
+```
+
 
 * `options_description` 是基本的选项描述对象的类型，构造时我们给出对选项的基本描述。
 * `options_description` 对象的 `add_options` 成员函数会返回一个函数对象，然后我们直接用括号就可以添加一系列的选项。

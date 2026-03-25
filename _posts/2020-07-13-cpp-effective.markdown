@@ -20,18 +20,19 @@ tags:
 
 被声明为`explicit`的构造函数通常比`non-explicit`更受欢迎，因为它们禁止编译器执行非预期的类型转换。除非有一个好理由允许构造函数被用于隐式类型转换，否则把它声明为`explicit`。
 
-{% highlight cpp %}
+```cpp
 class foo {
 public:
     explicit foo(int x);
 };
-{% endhighlight %}
+```
+
 
 ## 2 对象的复制
 
  `copy构造函数`被用来“以同型对象初始化自我对象”，`copy assignment操作符`被用来“从另一个同型对象中拷贝其值到自我对象”。
 
-{% highlight cpp %}
+```cpp
 class Widget {
 public:
     Widget();                               // default构造函数
@@ -43,7 +44,8 @@ Widget w1;        // 调用default构造函数
 Widget w2(w1);    // 调用copy构造函数
 w1 = w2;          // 调用copy assignment操作符
 Widget w3 = w2;   // 调用copy构造函数
-{% endhighlight %}
+```
+
 
 > **copy构造和copy assignment操作符的区别**：如果一个新对象被定义，一定会有一个构造函数被调用，不可能调用赋值操作。如果没有新对象被定义，就不会有构造函数被调用，那么就是赋值操作被调用。
 
@@ -73,7 +75,7 @@ Widget w3 = w2;   // 调用copy构造函数
 
 > [C语言可以重载吗](https://zhidao.baidu.com/question/688652288977496364.html)
 
-{% highlight cpp %}
+```cpp
 // http://www.cplusplus.com/reference/cstdlib/qsort/
 /* qsort example */
 #include <stdio.h>      /* printf */
@@ -122,7 +124,8 @@ int main ()
 
   return 0;
 }
-{% endhighlight %}
+```
+
 
 ### 5.2 Object-Oriented C++
 
@@ -145,27 +148,30 @@ int main ()
 ## 6 尽量以const, enum, inline替换#define
 
 宁可以`编译器`替换`预处理器`。当你做出这样的事情：
-{% highlight cpp %}
+```cpp
 #define ASPECT_RATIO 1.653
-{% endhighlight %}
+```
+
 记号名称ASPECT_RATIO也许从未被编译器看见，也许在编译器开始处理源码之前就被预处理器替换了，于是记号名称有可能没有进入`记号表（symbol table）`内，当你运用此常量但获得一个编译错误时可能会带来困惑，因为这个错误信息提到的是1.653而不是ASPECT_RATIO。尤其是如果ASPECT_RATIO被定义在一个非你所写的头文件内，你肯定对1.653来自何处毫无概念。解决的方法是：以一个常量替换上述的`宏（#define）`。
-{% highlight cpp %}
+```cpp
 const double AspectRatio = 1.653;   // 大写名称通常用于宏
-{% endhighlight %}
+```
+
 好处是：
 
 * 作为一个语言常量，AspectRatio肯定会被编译器看到，当然就会进入记号表内。
 * 使用常量可能比使用#define导致较小量的目标代码，因为预处理器盲目地将宏名称进行替换会导致目标代码出现多份1.653，而若改用常量则不会出现。
 * 字符串常量，`string`对象通常比`char*-based`合适。
 
-{% highlight cpp %}
+```cpp
 const char* const authorName = "gerry";
 const std::string authorName("gerry");
-{% endhighlight %}
+```
+
 
 * class专属常量。为了将常量的作用域（scope）限制在class内，你必须让它成为class的一个`成员（member）`，另外为了保证此常量至多只有一份实体，必须让它成为一个`static成员`。
 
-{% highlight cpp %}
+```cpp
 #include<stdio.h>
 
 class GamePlayer {
@@ -212,12 +218,13 @@ GamePlayer::NumTurns[5]
 0 1 2 3 4
 player.NumTurns[5] player2.NumTurns[5]
  */
-{% endhighlight %}
+```
+
 然而，上面你所看到的是NumTurns的`声明式`，而非`定义式`。通常C++要求所使用的任何东西提供一个定义式，**但如果它是class专属常量且又是static整数类型，只要不取它们的地址，你可以声明并使用它们而无须提供定义式**。
 
 但是，如果你需要取某个class专属常量的地址，或者编译器要求（比如，老编译器）需要看到一个定义式，**那么需要另外提供定义式**。
 
-{% highlight cpp %}
+```cpp
 #include<stdio.h>
 
 class GamePlayer {
@@ -269,7 +276,8 @@ addr GamePlayer::NumTurns[0x102092f30]
 addr GamePlayer::NumTurns[0x102092f30]
 player.NumTurns[5] player2.NumTurns[5]
 */
-{% endhighlight %}
+```
+
 通过提供定义式，我们就可以获取class专属常量的地址。
 
 > 注意：
@@ -279,7 +287,7 @@ player.NumTurns[5] player2.NumTurns[5]
 
 如果想具备作用域，但又不想取地址，可以使用`enum`来实现这个约束。
 
-{% highlight cpp %}
+```cpp
 class GamePlayer {
 
 public:
@@ -307,27 +315,30 @@ private:
   };
   int scores[NumTurns];            // 使用该常量
 };
-{% endhighlight %}
+```
+
 
 预处理器和宏的陷阱：
 
 宏看起来像函数，但是不会招致`函数调用（function call）`带来的额外开销。
 糟糕的做法：（有效率，但不安全）
 
-{% highlight cpp %}
+```cpp
 // 以a和b的较大值调用f函数
 #define CALL_WITH_MAX(a, b) f((a) > (b) ? (a) : (b))
-{% endhighlight %}
+```
+
 
 好的做法：（效率和安全同时得到保证）
 
-{% highlight cpp %}
+```cpp
 template<typename T>
 inline void callWithMax(const T& a, const T& b)
 {
     f(a > b ? a : b);
 }
-{% endhighlight %}
+```
+
 这个`template`根据实例化可以产出一整群函数，每个函数都接受两个同类型对象，并以其中较大的调用f。这里不需要在函数本体中为参数加上括号，也不需要操心参数被计算的次数，同时，由于callWithMax是个真正的函数，它遵守作用域和访问规则，因此可以写出**一个class内的private inline函数，而对于宏是无法完成的**。
 
 > 请记住：
@@ -339,26 +350,28 @@ inline void callWithMax(const T& a, const T& b)
 
 `const`允许你指定一个语义约束，也就是指定一个“不该被改动”的对象，而编译器会强制实施该项约束。
 
-{% highlight cpp %}
+```cpp
 char greeting[] = "Hello";
 
 char* p = greeting;             // non-const pointer, non-const data
 const char* p = greeting;       // non-const pointer, const data
 char* const p = greeting;       // const pointer, non-const data
 const char* const p = greeting; // const pointer, const data
-{% endhighlight %}
+```
+
 如果关键字`const`出现在星号左边，表示被指物是常量；如果出现在星号右边，表示指针自身是常量；如果出现在星号两边，表示被指物和指针两者都是常量。
 
 注意：如果被指物是常量，将关键字`const`写在类型之前，和写在类型之后星号之前，这两种写法的意义相同。
 
-{% highlight cpp %}
+```cpp
 void f1(const Widget* pw);
 void f2(Widget const * pw);
-{% endhighlight %}
+```
+
 
 `STL迭代器`系以`指针`为根据塑模出来，所以迭代器的作用就像个`T*`指针。如果你希望迭代器所指的东西不可被改变，则需要使用`const_iterator`。
 
-{% highlight cpp %}
+```cpp
 std::vector<int> vec;
 
 const std::vector<int>::iterator iter = vec.begin();
@@ -368,7 +381,8 @@ const std::vector<int>::iterator iter = vec.begin();
 std::vector<int>::const_iterator citer = vec.begin();
 *citer = 10;    // error
 ++citer;        // ok
-{% endhighlight %}
+```
+
 
 const成员函数
 
@@ -379,7 +393,7 @@ const成员函数
 
 > 注意：**两个成员函数如果只是常量性不同，可以被重载（overload）**。只有返回值类型不同的两个函数不能重载（functions that differ only in their return type cannot be overloaded）。
 
-{% highlight cpp %}
+```cpp
 #include<stdio.h>
 #include<iostream>
 #include<string>
@@ -420,7 +434,8 @@ int main()
 
   return 0;
 }
-{% endhighlight %}
+```
+
 
 成员函数如果是`const`意味着什么？—— `bitwise constness或者physical constness` VS `logical constness`
 
@@ -430,7 +445,7 @@ int main()
 
 下面这段代码，可以通过`bitwise`测试，但是实际上改变了对象的值。
 
-{% highlight cpp %}
+```cpp
 #include<stdio.h>
 #include<iostream>
 #include<string>
@@ -475,11 +490,12 @@ int main()
 
   return 0;
 }
-{% endhighlight %}
+```
+
 
 `logical constness`主张，一个`const`成员函数可以修改它所处理的对象的某些`bits`，但只有在客户端侦测不出的情况才可以（即，对客户端是透明的，但是实际上对象的某些值允许改变）。正常情况下，由于`bitwise const`的约束，`const`成员函数内是不允许修改non-static成员变量的，但是通过将一些变量声明为`mutable`则可以躲过编译器的`bitwise const`约束。
 
-{% highlight cpp %}
+```cpp
 #include<stdio.h>
 #include<iostream>
 #include<string>
@@ -547,7 +563,8 @@ length: do strlen... 5
 J
 length: 5
  */
-{% endhighlight %}
+```
+
 
 在`const`和`non-const`成员函数中避免重复
 
@@ -555,7 +572,7 @@ length: 5
 
 不好的做法（因为有重复代码）：
 
-{% highlight cpp %}
+```cpp
   // operator[] for const object
   const char& operator[] (std::size_t position) const
   {
@@ -577,11 +594,12 @@ length: 5
 
     return text[position];
   }
-{% endhighlight %}
+```
+
 
 好的做法（实现`operator[]`的机能一次并使用它两次，令其中一个调用另一个）：
 
-{% highlight cpp %}
+```cpp
 #include<stdio.h>
 #include<iostream>
 #include<string>
@@ -648,7 +666,8 @@ g
 const char& operator[]() const
 y
  */
-{% endhighlight %}
+```
+
 
 > 请记住：
 >
@@ -664,7 +683,7 @@ y
 
 构造函数初始化的正确方法是：**使用`member initialization list(成员初值列)`，而不是在构造函数中的赋值。因为第一种方法的执行效率通常较高**（对于大多数类型而言，比起先调用`default`构造函数，然后再调用`copy assignment`操作符，单只调用一次`copy`构造函数是比较高效的。对于内置类型，其初始化和赋值的成本相同，但为了一致性最好也通过成员初值列来初始化）。
 
-{% highlight cpp %}
+```cpp
 ABEntry:ABEntry(const std::string& name, const std::string& address,
                  const std::list<PhoneNumber>& phones)
 : theName(name),        // 成员初值列表，这些都是初始化
@@ -679,7 +698,8 @@ ABEntry::ABEntry()
   thePhones(),          // 同上
   numTimesConsulted(0)  // 将内置类型int显示初始化为0
 { }
-{% endhighlight %}
+```
+
 
 C++有着十分固定的"成员初始化次序"：总是`base classes`更早于其`derived classes`被初始化。而class的成员变量总是以其声明次序被初始化，而和它们在成员初始值列中的出现次序无关。**建议，当你在成员初值列中初始化各个成员时，最好总是和其声明的次序一致**。
 
@@ -692,14 +712,15 @@ C++有着十分固定的"成员初始化次序"：总是`base classes`更早于�
 **针对上面这个问题的解决方法是**：
 将每个`non-local static`对象搬到自己的专属函数内，这些函数返回一个reference指向它所含的对象。即，`non-local static`对象被`local static`对象替换了。
 
-{% highlight cpp %}
+```cpp
 class FileSystem { ... };
 FileSystem& tfs()
 {
     static FileSystem fs;
     return fs;
 }
-{% endhighlight %}
+```
+
 
 注意：这些函数内含static对象的事实使它们在多线程系统中带有不确定性。处理这种麻烦的方法是，在程序的单线程启动阶段，手工调用所有reference-returning函数，这可消除与初始化有关的`race conditions（竞速形势）`。
 
@@ -722,7 +743,7 @@ FileSystem& tfs()
 
 以上这些函数都是`public`且`inline`的。
 
-{% highlight cpp %}
+```cpp
 class Empty {};
 
 // 等价于
@@ -737,23 +758,25 @@ public:
     Empty& operator=(const Empty& rhs)  // copy assignment操作符
     {}
 };
-{% endhighlight %}
+```
+
 
 注意：
 
 * 惟有当这些函数被调用，它们才会被编译器创建出来。
 
-{% highlight cpp %}
+```cpp
 Empty e1;       // default构造函数
                 // 析构函数
 Empty e2(e1);   // copy构造函数
 e2 = e1;        // copy assignment操作符
-{% endhighlight %}
+```
+
 
 * 编译器生成的析构函数是个`non-virtual`，除非这个class的base class自身声明有`virtual`析构函数。
 * `copy`构造函数和`copy assignment`操作符，编译器创建的版本只是单纯地将来源对象的每一个`non-static`成员变量拷贝到目标对象。
 
-{% highlight cpp %}
+```cpp
 #include<iostream>
 #include<string>
 
@@ -795,7 +818,8 @@ NamedObject(const char* name, const T& value)
 NamedObject(const char* name, const T& value)
 gerry
 */
-{% endhighlight %}
+```
+
 
 NamedObject没有声明`copy`构造函数，也没有声明`copy assignment`操作符，所以编译器会创建这些函数当它们被调用的时候。编译器生成的`copy`构造函数必须以`no1.nameValue`和`no1.objectValue`为初值设定`no2.nameValue`和`no2.objectValue`。两者之中，`nameValue`的类型是`string`，而标准的`string`有个`copy`构造函数，所以`no2.nameValue`的初始化方式是调用`string`的`copy`构造函数并以`no1.nameValue`为实参。另一个成员`NameObject<int>::objectValue`的类型是`int`（对此template具现体而言`T`是`int`），是个内置类型，所以`no2.objectValue`会以拷贝`no1.objectValue`内的**每一个bits**来完成初始化。编译器为`NamedObject<int>`所生成的`copy assignment`操作符，其行为基本上与`copy`构造函数一样。
 
@@ -816,7 +840,7 @@ Explicitly disallow the use of compiler-generated functions you do not want.
 
 例子：
 
-{% highlight cpp %}
+```cpp
 #include<iostream>
 #include<string>
 
@@ -880,13 +904,14 @@ int main()
 
   return 0;
 }
-{% endhighlight %}
+```
+
 
 当用户企图拷贝HomeForSale对象，编译器会阻挠他。如果你不慎在member函数或friend函数之内那么做，会轮到连接器发出抱怨。
 
 > 若为private且提供了实现，则通过friend的方式仍然可以实现复制。
 
-{% highlight cpp %}
+```cpp
 #include<iostream>
 #include<string>
 
@@ -924,7 +949,8 @@ int main()
 
   return 0;
 }
-{% endhighlight %}
+```
+
 
 *另一种方法*
 
@@ -934,7 +960,7 @@ int main()
 
 这种方法也有一个问题，由于它总是扮演`base class`，因此使用此项技术可能导致**多重继承**，因为你往往还可能需要继承其他class，而多重继承有时会阻止`empty base class optimization`。
 
-{% highlight cpp %}
+```cpp
 #include<iostream>
 #include<string>
 
@@ -996,7 +1022,8 @@ int main()
 
   return 0;
 }
-{% endhighlight %}
+```
+
 
 **请记住**
 > 为驳回编译器自动提供的机能，可将相应的成员函数声明为private并且不予实现。使用像Uncopyable这样的base class也是一种做法。
@@ -1007,7 +1034,7 @@ C++指出，当`derived class`对象经由一个`base class`指针被删除，�
 
 base类没有使用virtual析构函数：
 
-{% highlight cpp %}
+```cpp
 #include <stdio.h>
 #include <iostream>
 using namespace std;
@@ -1045,11 +1072,12 @@ base()
 derived()
 ~base()
  */
-{% endhighlight %}
+```
+
 
 base类使用virtual析构函数：
 
-{% highlight cpp %}
+```cpp
 #include <stdio.h>
 #include <iostream>
 using namespace std;
@@ -1088,7 +1116,8 @@ derived()
 ~derived()
 ~base()
  */
-{% endhighlight %}
+```
+
 
 > *观点1*：任何class只要带有virtual函数，都几乎确定应该也有一个virtual析构函数。
 >
@@ -1096,7 +1125,7 @@ derived()
 >
 > *观点3*：**标准库string不含任何virtual函数，但有时程序员会错误地把它当做base class**。那么，当你在程序任意某处无意间将一个`pointer-to-specialstring`转换为一个`pointer-to-string`，然后将转换所得的那个`string指针`delete掉，则立刻被流放到"不明确行为上"。很不幸C++目前没有提供类似Java的`final classes`禁止派生的机制。
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <string>
 
@@ -1141,7 +1170,8 @@ Dummy(const char *str)
 hello
 5
 */
-{% endhighlight %}
+```
+
 
 **请记住**
 > 1. 从里向外构造（ctor），从外向里析构（dtor）
@@ -1151,7 +1181,7 @@ hello
 ## 4 别让异常逃离析构函数
 
 C++`并不禁止析构函数吐出异常`，但它不鼓励你这样做。
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <exception>
 #include <vector>
@@ -1188,12 +1218,13 @@ Widget()
 libc++abi.dylib: terminating with unexpected exception of type std::runtime_error: ~Widget()
 Abort trap: 6
  */
-{% endhighlight %}
+```
+
 当vector对象被销毁，它有责任销毁其内含的所有对象。假设vector内含10个对象，而在析构第一个元素期间，有个异常抛出，其他9个对象还是应该被销毁，否则它们保存的任何资源都会发生泄漏。因此，应该调用它们各个析构函数。
 
 *正确的处理方法*：在析构函数里捕获每一个异常
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <exception>
 #include <vector>
@@ -1242,7 +1273,8 @@ catch exception at ~Widget()
 ~Widget()
 catch exception at ~Widget()
 */
-{% endhighlight %}
+```
+
 
 **请记住**
 > 1. 析构函数绝对不要吐出异常。如果一个被析构函数调用的函数可能抛出异常，析构函数应该捕捉任何异常，然后吞下它们（不传播）或结束程序。
@@ -1254,7 +1286,7 @@ catch exception at ~Widget()
 
 例如：假设你有个class继承体系，用来塑模股市交易如买进、卖出的订单等等，这样的交易一定要经过审计，所以每当创建一个交易对象，在审计日志中也需要创建一笔适当记录。
 
-{% highlight cpp %}
+```cpp
 #include<stdio.h>
 #include<iostream>
 
@@ -1306,10 +1338,11 @@ no_virtual_in_ctor_dtor.cpp:9:2: note: 'logTransaction' declared here
 1 warning generated.
 
  */
-{% endhighlight %}
+```
+
 发现无法调用`derived class`的函数，在编译期间就报错了。把`pure virtual`去掉：
 
-{% highlight cpp %}
+```cpp
 #include<stdio.h>
 #include<iostream>
 
@@ -1357,7 +1390,8 @@ Transaction()
 Transaction::logTransaction()
  */
 
-{% endhighlight %}
+```
+
 这次可以编译过了，但是发现调用的并不是派生类的virtual函数。
 
 **原因分析**：
@@ -1374,7 +1408,7 @@ Transaction::logTransaction()
 **一种做法**：
 是在class Transaction内将logTransaction函数改为`non-virtual`，然后要求`derived class`构造函数传递必要信息给Transaction构造函数，而后那个构造函数便可安全地调用`non-virtual`logTransaction。
 
-{% highlight cpp %}
+```cpp
 #include <stdio.h>
 #include <iostream>
 #include <string>
@@ -1427,22 +1461,24 @@ Transaction::logTransaction(): 1+
 Transaction()
 Transaction::logTransaction(): 2+
  */
-{% endhighlight %}
+```
+
 
 **请记住**
 > 在构造和析构期间不要调用virtual函数，因为这类调用从不下降至`derived class`。
 
 ## 6 令operator=返回一个`reference to *this`
 
-{% highlight cpp %}
+```cpp
 int x, y, z;
 x = y = z = 10;      // 赋值连锁形式
 x = (y = (z = 10));  // 赋值采用右结合律
-{% endhighlight %}
+```
+
 
 为了实现“连锁赋值”，赋值操作符必须返回一个reference指向操作符的左侧实参。这是你为classes实现赋值操作符时应该遵循的协议。
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 class Widget {
@@ -1501,7 +1537,8 @@ int main()
 100
 102
  */
-{% endhighlight %}
+```
+
 
 **请记住**
 > 令赋值（assignment）操作符返回一个`reference to *this`。
@@ -1510,27 +1547,29 @@ int main()
 
 自我赋值发生在对象被赋值给自己时，这看起来有点愚蠢，但是它合法。所以不要认定客户绝不会那么做。此外自我赋值动作并不总是可以一眼看出来。
 
-{% highlight cpp %}
+```cpp
 // 潜在的自我赋值
 a[i] = a[j];
 *px = *py;
-{% endhighlight %}
+```
+
 
 这些并不明显的自我赋值，是名带来的结果。实际上，两个对象只要来自同一个继承体系，它们甚至不需要声明为相同类型就可能造成别名，因为一个base class的reference或pointer可以指向一个derived class对象。
 
-{% highlight cpp %}
+```cpp
 class Base { ... };
 class Derived: public Base { ... };
 
 // rb和*pb有可能其实是同一对象
 void doSomething(const Base& rb, Derived* pd);
-{% endhighlight %}
+```
+
 
 因此，在处理自我赋值时应该注意保证：
 1. 自我赋值安全问题
 2. 异常问题
 
-{% highlight cpp %}
+```cpp
 class Bitmap { ... };
 
 class Widget {
@@ -1569,7 +1608,8 @@ Widget& Widget::operator=(const Widget& rhs)
   delete pOrig;
   return *this;
 }
-{% endhighlight %}
+```
+
 
 对于第三个版本的补充说明：
 如果你很关心效率，可以把identity test再次放回函数起始处。然而这样做之前先问问自己，你估计自我赋值的发生概率有多高？因为这项测试也需要成本，它会使代码变得大一些并导入一个新的控制流分支，而两者都会降低执行速度。Prefetching, caching和pipelining等指令的效率都会因此降低。
@@ -1588,7 +1628,7 @@ Widget& Widget::operator=(const Widget& rhs)
 4. 任何时候，只要你承担起为derived class撰写copying函数的责任，必须很小心地也复制其base class成分，那些成分往往是private，所以你无法直接访问它们，你应该让derived class的copying函数调用相应的base class函数。
 5. 如果你发现你的copy构造函数和copy assginment操作符有相近的代码，消除重复代码的做法是，建立一个新的成员函数给两者调用，这样的函数往往是private而且常被命名为init。
 
-{% highlight cpp %}
+```cpp
 // 调用base class的copy构造函数
 Derived::Derived(const Derived& rhs): Base(rhs), xxx(rhs.xxx)
 {
@@ -1600,7 +1640,8 @@ Derived& Derived::operator=(const Derived& rhs)
   xxx = rhs.xxx;
   return *this;
 }
-{% endhighlight %}
+```
+
 
 当你编写一个copying函数，请确保：
 * 复制所有local成员变量
@@ -1622,7 +1663,7 @@ Derived& Derived::operator=(const Derived& rhs)
 
 > Use objects to manage resources.
 
-{% highlight cpp %}
+```cpp
 void f()
 {
     Investment* pInv = createInvestment();  // 调用factory函数，返回一个动态对象
@@ -1631,7 +1672,8 @@ void f()
 
     delete pInv;  // 释放动态对象
 }
-{% endhighlight %}
+```
+
 问题：在若干情况下（例如，中途过早返回，或抛出异常等），f可能无法删除动态对象。当然，谨慎地编写程序可以防止上面的错误，但是随着代码的修改和维护，这种保障总是显得吃力。
 
 好的做法：为确保返回的资源总是被释放，我们需要将资源放进对象内，当控制流离开f，该对象的析构函数会自动释放那些资源。许多资源被动态分配于heap内，而后被用于单一区块或函数内。它们应该在控制流离开那个区域或函数时被释放。
@@ -1640,7 +1682,7 @@ void f()
 
 标准程序库提供的`auto_ptr`正是针对这种形势而设计的，`auto_ptr`是个类指针对象（智能指针），其析构函数自动对其所指对象调用delete。
 
-{% highlight cpp %}
+```cpp
 void f()
 {
     std::auto_ptr<Investment> pInv(createInvestment());
@@ -1650,7 +1692,8 @@ void f()
 
     // 最后由auto_ptr的析构函数自动删除pInv
 }
-{% endhighlight %}
+```
+
 
 **想法：**
 
@@ -1664,7 +1707,7 @@ void f()
 
 > 注意：**由于auto_ptr被销毁时会自动删除它所指之物，所以一定要注意别让多个auto_ptr同时指向同一对象，否则对象会被删除一次以上**。为了预防这个问题，auto_ptr有一个特性是，**若通过copy构造函数或copy assignment操作符复制它们，它们会变成null，而复制所得的指针将取得资源的唯一拥有权**。
 
-{% highlight cpp %}
+```cpp
 // pInv1指向createInvestment返回物
 std::auto_ptr<Investment> pInv1(createInvestment());
 
@@ -1673,7 +1716,8 @@ std::auto_ptr<Investment> pInv2(pInv1);
 
 // 现在pInv1指向对象，pInv2被设为null
 pInv1 = pInv2;
-{% endhighlight %}
+```
+
 
 **带来的问题**：由于STL容器要求其元素发挥**“正常的”复制行为**，而auto_ptr的这种诡异的复制行为，导致其不符合STL的容器要求。
 
@@ -1685,7 +1729,7 @@ auto_ptr的替代方案是**"引用计数型智能指针（reference-counting sm
 
 TR1的`tr1::shared_ptr`就是个RCSP，所以你可以这么写f：
 
-{% highlight cpp %}
+```cpp
 void f()
 {
     // 使用shared_ptr
@@ -1711,7 +1755,8 @@ void f()
 
     // pInv1和pInv2被销毁，它们所指的对象也就被自动销毁
 }
-{% endhighlight %}
+```
+
 
 > 解决auto_ptr的问题：由于tr1::shared_ptr的复制行为"一如预期"，因此，它们可以被用于STL容器。
 
@@ -1719,7 +1764,7 @@ void f()
 `auto_ptr`和`tr1::shared_ptr`两者都在其析构函数内**做delete，而不是delete[]动作**，那么意味着，在动态分配而得的array身上使用auto_ptr或tr1::shared_ptr是个馊主意。
 
 问题
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <string>
 #include <memory>
@@ -1732,7 +1777,8 @@ int main()
   std::auto_ptr<std::string> aps(new std::string[10]);
   std::shared_ptr<int> spi(new int[1024]);
 }
-{% endhighlight %}
+```
+
 
 你会发现：并没有特别针对“C++动态分配数组”而设计的类似auto_ptr或tr1::shared_ptr那样的东西。那是因为，`vecotr`和`string`几乎总是可以取代动态分配而得的数组。
 
@@ -1750,13 +1796,14 @@ TODO scope_ptr
 `auto_ptr`和`shared_ptr`可以实现对`heap-based`资源的`RAII`，然后对于非`heap-based`的资源并不合适。因此，有时需要建立自己的`资源管理类`。
 
 例如：
-{% highlight cpp %}
+```cpp
 void lock(Mutex* pm);     // 加锁
 void unlock(Mutex* pm);   // 解锁
-{% endhighlight %}
+```
+
 为了确保不会将一个被锁住的Mutex解锁，需要建立一个class用来管理锁。这样的class的基本结构由RAII守则支配，也就是“资源在构造期间获得，在析构期间释放”。
 
-{% highlight cpp %}
+```cpp
 class Lock
 {
     public:
@@ -1770,11 +1817,12 @@ class Lock
     private:
         Mutex *mutexPtr;
 };
-{% endhighlight %}
+```
+
 
 客户在使用时：
 
-{% highlight cpp %}
+```cpp
 Mutex m; // 定义互斥器
 
 // 建立一个区块用来定义critical section
@@ -1783,14 +1831,16 @@ Mutex m; // 定义互斥器
                  // 执行critical section内的操作
                  // 在区块最末尾，自动解除互斥器锁定
 }
-{% endhighlight %}
+```
+
 
 > 问题：如果Lock对象被复制，会发生什么事情？
 
-{% highlight cpp %}
+```cpp
 Lock m1(&m);  // 锁定m
 Lock m2(m1);  // 将m1复制到m2身上，会发生什么？
-{% endhighlight %}
+```
+
 
 一般有**两种选择**：
 
@@ -1814,7 +1864,7 @@ Lock m2(m1);  // 将m1复制到m2身上，会发生什么？
 ### 问题
 我们期望通过使用resource-managing classes对抗资源泄露，但是许多APIs直接指涉资源，导致下面问题。
 
-{% highlight cpp %}
+```cpp
 std::tr1::shared_ptr<Investment> pInv(createInvestment());
 
 // 假设需要下面的函数处理Investment对象
@@ -1822,7 +1872,8 @@ int daysHeld(const Investment* pi);// 返回投资天数
 
 // 正常需要这样调用
 int days = daysHeld(pInv); // 错误，无法通过编译，因为daysHeld需要的是Investment* 指针，而我们传递的却是个类型为tr1::shared_ptr<Investment>的对象
-{% endhighlight %}
+```
+
 
 ### 解决方法
 
@@ -1832,18 +1883,20 @@ int days = daysHeld(pInv); // 错误，无法通过编译，因为daysHeld需要
 
 `shared_ptr`和`auto_ptr`都提供了一个`get成员函数`（它会返回智能指针内部的原始指针），用来执行显式转换。
 
-{% highlight cpp %}
+```cpp
 int days = daysHeld(pInv.get()); // ok
-{% endhighlight %}
+```
+
 
 * 隐式转换
 
 `shared_ptr`和`auto_ptr`也重载了指针取值操作符（`operator->`和`operator*`），它们允许隐式转换至底部原始指针。
 
-{% highlight cpp %}
+```cpp
 bool taxable1 = !(pInv->isTaxFree());   // 经由operator->访问资源
 bool taxable2 = !((*pInv).isTaxFree()); // 经由operator*访问资源
-{% endhighlight %}
+```
+
 
 ### 最佳实践
 
@@ -1858,11 +1911,12 @@ bool taxable2 = !((*pInv).isTaxFree()); // 经由operator*访问资源
 
 ### 问题
 
-{% highlight cpp %}
+```cpp
 std::string* array = new std::string[100];
 // ...
 delete array;
-{% endhighlight %}
+```
+
 
 上面array所含的100个string对象中的99个不太可能被适当删除，因为它们的析构函数很可能没有被调用。
 
@@ -1884,7 +1938,7 @@ delete array;
 
 ### 正确做法
 
-{% highlight cpp %}
+```cpp
 std::string* ptr1 = new std::string;
 std::string* ptr2 = new std::string[100];
 
@@ -1892,7 +1946,8 @@ std::string* ptr2 = new std::string[100];
 
 delete ptr1;    // 删除一个对象
 delete [] ptr2; // 删除一个由对象组成的数组
-{% endhighlight %}
+```
+
 
 > 请记住
 > 如果调用`new`时使用`[]`，那么必须在对应调用`delete`时也使用`[]`。如果调用`new`时没有使用`[]`，那么也不应该在对应调用`delete`时使用`[]`。
@@ -1902,9 +1957,10 @@ delete [] ptr2; // 删除一个由对象组成的数组
 
 ### 问题
 
-{% highlight cpp %}
+```cpp
 processWidget(std::tr1::shared_ptr<Widget>(new Widget), priority());
-{% endhighlight %}
+```
+
 
 `new Widget`一定执行于`tr1::shared_ptr`构造函数被调用之前，因为这个表达式的结果还要被传递作为`tr1::shared_ptr`构造函数的一个实参，但对`priority`的调用则可以排在第一或第二或第三执行。如果编译器选择以第二执行它，则操作序列为：
 
@@ -1916,11 +1972,12 @@ processWidget(std::tr1::shared_ptr<Widget>(new Widget), priority());
 
 在此情况下，`new Widget`返回的指针将会遗失，因为它尚未被置入`tr1::shared_ptr`内。因此，避免此类问题的办法是，**使用分离语句**。
 
-{% highlight cpp %}
+```cpp
 std::tr1::shared_ptr<Widget> pw(new Widget);
 // 这个调用动作不会造成泄漏
 processWidget(pw, priority());
-{% endhighlight %}
+```
+
 
 > 请记住
 > 以独立语句将`new`对象存储于智能指针内。如果不这样做，一旦异常被抛出，有可能导致难以察觉的资源泄漏。
@@ -1935,13 +1992,14 @@ processWidget(pw, priority());
 
 一个例子：假设你为一个用来表现日期的class设计构造函数。
 
-{% highlight cpp %}
+```cpp
 class Data {
 public:
     Data(int month, int day, int year);
     // ...
 };
-{% endhighlight %}
+```
+
 
 咋见之下，这个接口通情达理（至少在美国如此），但它的客户很容易犯下至少两个错误。
 1. 他们也许会以错误的次序传递参数。
@@ -1950,7 +2008,7 @@ public:
 好的做法：
 许多客户端错误可以因为导入新类型而获得`预防`。在防范"不值得拥有的代码"上，`类型系统（type system）`是你的主要同盟国。既然这样，我们可以导入简单的`外覆类型（wrapper types）`来区别天数，月份和年份，然后于`Data构造函数`中使用这些类型。
 
-{% highlight cpp %}
+```cpp
 struct Day {
 explicit Day(int d) : val(d) {}
 int val;
@@ -1975,11 +2033,12 @@ public:
 Date d(30, 3, 1995);                   // 错误，类型不匹配
 Date d(Day(30), Month(3), Year(1995)); // 错误，类型不匹配
 Date d(Month(3), Day(30), Year(1995)); // OK
-{% endhighlight %}
+```
+
 
 可见，明智而审慎地导入`新类型`对预防"接口被误用"有神奇疗效。但是，当保证了正确的类型后，如何限制其合理的值呢。例如，一年只有12个月，所以Month应该反映这一事实。一个办法是利用enum表现月份，但enum不具备我们系统拥有的类型安全性，例如，enum可被拿来当一个int使用。比较安全的做法是，`预先定义所有有效的Month`。
 
-{% highlight cpp %}
+```cpp
 class Month {
 public:
     static Month Jan() { return Month(1); }
@@ -1992,7 +2051,8 @@ private:
 };
 
 Date d(Month::Mar(), Day(30), Year(1995));
-{% endhighlight %}
+```
+
 
 其他预防方法还包括：
 
@@ -2003,26 +2063,28 @@ Date d(Month::Mar(), Day(30), Year(1995));
 > 注意：任何接口，如果要求客户必须记得做某些事情，就是有着“不正确使用”的倾向。因为客户可能会忘记做那件事。
 
  例如：
-{% highlight cpp %}
+```cpp
 // 返回一个指针指向一个动态分配对象，为避免资源泄漏，返回的指针最终必须被删除，但客户有可能忘记
 Investment* createInvestment();
 
 // 将返回值存储于一个智能指针，因而将delete责任推给智能指针
 std::tr1::shared_ptr<Investment> createInvestment();
 
-{% endhighlight %}
+```
+
 返回`tr1::shared_ptr`让接口设计者得以阻止一大群客户犯下资源泄漏的错误。因为，`tr1::shared_ptr`允许当智能指针被建立起来时指定一个资源释放函数（所谓删除器，deleter）绑定于智能指针身上（但是，`auto_ptr`没有这个能力）。
 
 比如，下面的方法：
 
-{% highlight cpp %}
+```cpp
 std::tr1::shared_ptr<Investment> createInvestment()
 {
     std::tr1::shared_ptr<Investment> retVal(static_cast<Investment*>(0), getRidofInvestment);
     retVal = ...; // 令retVal指向正确对象
     return retVal;
 }
-{% endhighlight %}
+```
+
 `tr1::shared_ptr`构造函数坚持其第一个参数必须是个`指针`，而0不是指针，是个int。是的，它可以被转换为指针，使用`转型(cast)`可以解决这个问题。
 
 > 任何事情都有两面性，`tr1::shared_ptr`使用上有什么副作用吗？
@@ -2079,7 +2141,7 @@ C++就像在其他OOP语言一样，当你定义一个新`class`，也就定义�
 
 例子：
 
-{% highlight cpp %}
+```cpp
 class Person {
 public:
     Person();
@@ -2097,15 +2159,17 @@ private:
     std::string schoolName;
     std::string schoolAddress;
 };
-{% endhighlight %}
+```
+
 
 现在考虑以下代码：
-{% highlight cpp %}
+```cpp
 bool validateStudent(Student s); // 函数以by value方式接受学生
 
 Student plato;
 bool platoIsOK = validateStudent(plato);
-{% endhighlight %}
+```
+
 
 当上述函数被调用时，发生什么事？
 
@@ -2121,22 +2185,24 @@ Student对象内有两个string对象，所以每次构造一个Student对象也
 
 虽然上面的行为是正确的，但是不是推荐的。如何回避所有那些构造和析构呢？
 
-{% highlight cpp %}
+```cpp
 // pass by reference-to-const
 bool validateStudent(const Student& s);
-{% endhighlight %}
+```
+
 这种传递方式的效率高很多：没有任何构造函数和析构函数被调用，因为，没有任何新对象被创建。原先的的`by value`方式，调用者知道参数受到保护，函数内绝不会对传入的参数做任何改变，而只能对参数的复件（副本）做修改。而现在的`by reference`方式，将它声明为`const`是必要的，因此不这样的话调用者会忧虑函数内部会不会改变他们传入的参数。
 
 同时，以`by reference`方式传递参数，也可以避免`slicing（对象切割）问题`。
 > 当一个derived class对象以by value方式传递，并被视为一个base class对象。base class的copy构造函数会被调用，而"造成此对对象的行为像个derived class对象"的那些特化性质全被切割掉了，仅仅留下了一个base class对象。
 
-{% highlight cpp %}
+```cpp
 void printNameAndDisplay(const Window& w) // 很好，参数不会被切割
 {
     std::cout << w.name();
     w.display(); // 现在，传进来的窗口是什么类型，w就表现出那种类型
 }
-{% endhighlight %}
+```
+
 如果窥视C++编译器的底层，`references`往往以指针实现出来，因此，`pass by reference`通常意味真正传递的是`指针`。如果对象为`内置类型`（例如，int），`pass by value`往往比`pass by reference`的效率高些。
 
 例外：上面这个忠告，也适用于STL的迭代器和函数对象，因为，习惯上它们都被设计为`passed by value`。它们的设计者有责任看看它们是否高效且不受切割问题的影响。
@@ -2149,12 +2215,13 @@ void printNameAndDisplay(const Window& w) // 很好，参数不会被切割
 虽然`pass-by-value`存在传值效率的问题，但是在某些情况下必须使用`pass-by-value`。
 
 一个“必须返回新对象”的函数的正确写法是：就是让那个函数返回一个新对象
-{% highlight cpp %}
+```cpp
 inline const Rational operator * (const Rational& lhs, const Rational& rhs)
 {
     return Rational(lhs.n * rhs.n, lhs.d * rhs.d);
 }
-{% endhighlight %}
+```
+
 你需要承受`operator *`返回值的构造成本和析构成本，然而长远来看那只是为了获得正确行为而付出的一个小小代价。
 
 但是，别忘了C++允许编译器实现者施行最优化，用以改善产出码的效率却不改变其可观察的行为。因此，某些情况下`operator *`返回值的构造和析构可被安全地消除。
@@ -2179,13 +2246,14 @@ inline const Rational operator * (const Rational& lhs, const Rational& rhs)
 
 在C++，比较自然的做法是让`clearBrowser`成为一个`non-member`函数，并且位于`WebBrowser`所在的同一个`namespace`内。
 
-{% highlight cpp %}
+```cpp
 namespace WebBrowserStuff {
     class WebBrowser { // ... };
     void clearBrowser(WebBrowser& wb);
     // ...
 }
-{% endhighlight %}
+```
+
 
 `namespace`和`classes`不同，前者可以跨多个源码文件，而后者不能。
 
@@ -2196,7 +2264,7 @@ namespace WebBrowserStuff {
 混合式算数运算：
 
 方法：让`operator*`成为一个`non-member`函数，这样允许编译器在每一个实参上执行隐式类型转换。
-{% highlight cpp %}
+```cpp
 class Rational {
    // ...
 };
@@ -2211,13 +2279,14 @@ Rational oneFourth(1, 4);
 Rational result;
 result = oneFourth * 2;   // ok
 result = 2 * oneFourth;   // 也可以支持
-{% endhighlight %}
+```
+
 
 ## 8 Consider support for a non-throwing swap
 
 缺省情况下，标准程序库提供的swap算法如下：
 
-{% highlight cpp %}
+```cpp
 namespace std {
     template<typename T>
     void swap(T& a, T& b)
@@ -2227,7 +2296,8 @@ namespace std {
         b = temp;
     }
 }
-{% endhighlight %}
+```
+
 
 只要类型`T`支持`copying`（copy构造函数和copy assignment操作符），缺省的swap实现代码就会帮你置换类型`T`的对象，你不需要为此另外再做任何工作。
 
@@ -2236,7 +2306,7 @@ namespace std {
 
 `pimpl手法`：就是`pointer to implementation`，即，以指针指向一个对象，内含真正的数据。
 
-{% highlight cpp %}
+```cpp
 class WidgetImpl {
 public:
     // ...
@@ -2256,7 +2326,8 @@ public:
 private:
     WidgetImpl* pImpl;   // 指针，所指对象内含Widget数据
 };
-{% endhighlight %}
+```
+
 
 > 问题
 > 置换两个Widget对象值，我们唯一需要做的就是置换其`pImpl`指针，但是，缺省的swap算法不知道这一点，它不只复制三个Widgets，还复制三个WidgetImpl对象，效率非常低。
@@ -2265,7 +2336,7 @@ private:
 
 一种做法是：**将`std::swap`针对`Widget`特化。**
 
-{% highlight cpp %}
+```cpp
 class Widget {
 public:
     void swap(Widget& other) {
@@ -2281,7 +2352,8 @@ namespace std {
         a.swap(b);
     }
 }
-{% endhighlight %}
+```
+
 
 # Effective C++ - Implementations
 
@@ -2294,22 +2366,24 @@ namespace std {
 
 方法A
 
-{% highlight cpp %}
+```cpp
 Widget w;
 for (int i = 0; i < n; ++i) {
     w = "取决于i的某个值";
     // ...
 }
-{% endhighlight %}
+```
+
 
 方法B
 
-{% highlight cpp %}
+```cpp
 for (int i = 0; i < n; ++i) {
     Widget w("取决于i的某个值");
     // ...
 }
-{% endhighlight %}
+```
+
 上面两种方法，哪种好？
 方法A：1个构造函数 + 1个析构函数 + n个赋值操作
 方法B：n个构造函数 + n个析构函数
@@ -2326,14 +2400,15 @@ C++规则的设计目标之一是，**保证"类型错误"绝不可能发生**�
 
 1. 旧式转型（C风格）
 
-{% highlight cpp %}
+```cpp
 (T) expression;   // 将expression转型为T
 T(expression);    // 同上
-{% endhighlight %}
+```
+
 
 2. C++的风格
 
-{% highlight cpp %}
+```cpp
 // 通常被用来将对象的常量性移除（cast away the constness）
 const_cast<T>(expression);
 
@@ -2345,7 +2420,8 @@ reinterpret_cast<T>(expression);
 
 // 用来强迫隐士转换（implicit conversions）。例如，将non-const对象转为cosnt对象，或将int转为double。但是，它无法将const转换为non-const，这个只有const_cast才能办到
 static_cast<T>(expression);
-{% endhighlight %}
+```
+
 
 旧式转型仍然合法，但**新式转型更受欢迎** 。原因是：
 * 它们很容易在代码中识别出来，不论是人工识别还是使用工具如grep，因此可以简化"找出类型系统在哪个点被破坏的过程"。
@@ -2355,13 +2431,14 @@ static_cast<T>(expression);
 
 例子：
 
-{% highlight cpp %}
+```cpp
 class Base { // ... };
 class Derived: public Base { // ... };
 
 Derived d;
 Base* pb = &d; // 隐式地将Derived* 转换为Base*
-{% endhighlight %}
+```
+
 
 这里建立了一个base class指针指向一个derived class对象，**但有时候上述的两个指针值并不相同。这种情况下，会有一个偏移量在运行期被施行于Derived*指针身上，用以取得正确的Base*指针值。**
 
@@ -2380,7 +2457,7 @@ Base* pb = &d; // 隐式地将Derived* 转换为Base*
 
 例如：
 
-{% highlight cpp %}
+```cpp
 class Base {
 public:
     virtual void dosomething() {} // 空实现
@@ -2400,7 +2477,8 @@ base_ptr_t bp;
 for (base_ptr_t::iterator iter = bp.begin(); iter != bp.end(); ++iter) {
     (*iter)->dosomething();  // 注意，这里没有使用dynamic_cast，而使用虚函数的特性
 }
-{% endhighlight %}
+```
+
 
 > 请记住
 > * 如果可以，尽量避免转型，特别是在注重效率的代码中避免dynamic_casts。如果有个设计需要转型动作，**试着发展无需转型的代替设计**。
@@ -2412,7 +2490,7 @@ for (base_ptr_t::iterator iter = bp.begin(); iter != bp.end(); ++iter) {
 不论handle是个指针，或迭代器，或reference，也不论这个handle是否为const，也不论那个返回handle的成员函数是否为const。这里的唯一关键是，有个handle被传出去了，一旦如此你就暴露在**handle比其所指对象更长寿**的风险下。
 
 例子：
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 class Point {
@@ -2478,7 +2556,8 @@ int main()
   point_mgr.getPoint().show(); // 1,1
 
 }
-{% endhighlight %}
+```
+
 
 **例外：**
 这并不意味你绝对不可以让成员函数返回handle。有时候你必须这么做。例如，`operator[]`就允许你获取strings和vectors的个别元素，而这些`operator[]s`就是返回`reference指向容器内的数据`，那些数据会随着容器被销毁而销毁。尽管如此，这样的函数毕竟是例外，不是常态。
@@ -2491,7 +2570,7 @@ int main()
 > Strive for exception-safe code.
 
 一个不符合异常安全的代码：
-{% highlight cpp %}
+```cpp
 void PrettyMenu::changeBackground(std::istream& imgSrc)
 {
     lock(&mutex);                 // 取得互斥器
@@ -2500,7 +2579,8 @@ void PrettyMenu::changeBackground(std::istream& imgSrc)
     bgImage = new Image(imgSrc);  // 安装新的背景图像
     unlock(&mutex);               // 释放互斥器
 }
-{% endhighlight %}
+```
+
 
 异常安全有**两个条件**：当异常被抛出时，带有异常安全性的函数会：
 1. **不泄露任何资源**。上述代码中，一旦`new Image(imgSrc)`导致异常，对`unlock`的调用就绝不会执行，于是互斥器就永远被把持住了。
@@ -2520,7 +2600,7 @@ void PrettyMenu::changeBackground(std::istream& imgSrc)
 **pimpl idiom**
 实现上，通常是将所有"隶属对象的数据"从原对象放进另一个对象内，然后赋予原对象一个指针，指向那个所谓的实现对象。
 
-{% highlight cpp %}
+```cpp
 struct PMImpl {
     std::tr1::shared_ptr<Image> bgImage; // PMImpl = PrettyMenu Impl
     int imageChanges;
@@ -2545,7 +2625,8 @@ void PrettyMenu::changeBackground(std::istream& imgSrc)
 
     swap(pImpl, pNew);  // 置换数据，释放mutex
 }
-{% endhighlight %}
+```
+
 
 > 请记住
 > 1. 异常安全函数（Exception-safe functions）即使发生异常，也不会泄露资源，或允许任何数据结构败坏。这样的函数区分为三种可能的保证：**基本型、强烈型、不抛异常性**。
@@ -2567,26 +2648,28 @@ inline函数，背后的整体观念是，将“对此函数的每一个调用�
 
 例如：
 
-{% highlight cpp %}
+```cpp
 class Person {
 public:
   int age() const { return theAge }; // 一个隐喻的inline申请，age被定义于class定义式内
 private:
   int theAge;
 };
-{% endhighlight %}
+```
+
 
 * 明确声明inline函数的做法则是在其定义式前加上关键字inline。
 
 例如：标准的`max template`（来自`<algorithm>`）
 
-{% highlight cpp %}
+```cpp
 template<typename T>
 inline const T& std::max(const T& a, const T& b)
 {
     return a < b ? b : a;
 }
-{% endhighlight %}
+```
+
 
 总结：
 
@@ -2603,13 +2686,14 @@ inline const T& std::max(const T& a, const T& b)
 
 ## 6 将文件间的编译依存关系降至最低
 
-{% highlight cpp %}
+```cpp
 int main()
 {
     int x;              // 定义一个int
     Person p(params);   // 定义一个Person
 }
-{% endhighlight %}
+```
+
 
 当编译器看到`x`的定义式，它知道必须分配多少内存（通常位于stack内）才能够持有一个`int`。（每个编译器都知道`int`有多大）
 
@@ -2621,7 +2705,7 @@ int main()
 
 例如：
 
-{% highlight cpp %}
+```cpp
 class PersonImpl;   // Person实现类的前置声明
 class Date;
 class Address;
@@ -2636,7 +2720,8 @@ public:
 private:
     std::tr1::shared_ptr<PersonImpl> pImpl; // 指针，指向实现物，隐藏实现细节
 };
-{% endhighlight %}
+```
+
 
 `Person`class只内含一个指针成员，指向其实现类`PersonImpl`。这种设计被称为：**pimpl idion (pimpl是 Pointer to implementation的缩写)**。这样的设计下，`Person`的客户端就完全与`Date`,`Addresses`以及`Persons`的实现细节分离了。这些class的任何实现修改都不需要`Person`客户端重新编译。同时，由于客户无法看到`Person`的实现细节，也就不会写出什么：取决于内部细节的代码。**这真正是“接口与实现分离”**。
 
@@ -2648,7 +2733,7 @@ private:
 2，如果能够，尽量以class声明式替换class定义式。（注意，当你声明一个函数，而它用到某个class时，你并不需要该class的定义，即使函数以`by value`的方式传递该类型参数或返回值）。
 
 例如：定义func函数，但不需要Person的定义。但是，在调用func函数时，就需要知道Person的定义。也就是，比如一个函数库有非常多的函数，但是我们可能只用到了其中很少的函数，对我们用到的函数，在客户端通过前置声明的方式（而不是包含所有定义的方式），可以减少对不必要类型定义的依赖。
-{% highlight cpp %}
+```cpp
 #include <stdio.h>
 
 class Person;
@@ -2665,7 +2750,8 @@ int main()
 $g++ -o declare_var declare_var.cpp
 $./declare_var
 main
-{% endhighlight %}
+```
+
 
 3，为声明式和定义式提供不同的头文件。为了促进严守上述准则，需要两个头文件，一个用于声明式，一个用于定义式。当然，这些文件必须保持一致性，如果有一个声明式被改变了，两个文件都得改变。**因此，程序库客户应该总是#include一个声明文件而非前置声明若干函数，程序库作者也应该提供这两个头文件。**
 
@@ -2679,7 +2765,7 @@ C++标准程序库头文件`<iosfwd>`内含`iostream`各组件的声明式，其
 
 例如：下面是`Person`两个成员函数的实现。
 
-{% highlight cpp %}
+```cpp
 #include "Person.h"
 #include "PersonImpl.h"
 
@@ -2690,7 +2776,8 @@ std::string Person::name() const
 {
     return pImpl->name();   // 相同的名字
 }
-{% endhighlight %}
+```
+
 
 ### Interface classes
 
@@ -2698,7 +2785,7 @@ std::string Person::name() const
 
 例如：
 
-{% highlight cpp %}
+```cpp
 class Person {
 public:
     virtual ~Person();
@@ -2723,7 +2810,8 @@ private:
     Date theBirthDate;
     Address theAddress;
 };
-{% endhighlight %}
+```
+
 
 ### Handle classes和Interface classes的利弊
 
@@ -2756,7 +2844,7 @@ Make sure public inheritance models "is-a".
 
 例子：
 
-{% highlight cpp %}
+```cpp
 class Person {
     // ...
 };
@@ -2764,7 +2852,8 @@ class Person {
 class Student: public Person {
     // ...
 };
-{% endhighlight %}
+```
+
 
 每个学生都是人，但并非每个人都是学生。人的概念比学生更一般化，学生是人的一种特殊形式。
 
@@ -2775,7 +2864,7 @@ class Student: public Person {
 
 ## 2 避免遮掩继承而来的名称
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 
 class Base {
@@ -2822,7 +2911,8 @@ virtual void Base::f1(int)
 virtual void Base::f2()
 void Derived::f3()
  */
-{% endhighlight %}
+```
+
 
 >  请记住
 >  * derived classes内的名称会遮掩base classes内的名称。在public继承下，正常是不希望被遮掩的。
@@ -2837,7 +2927,7 @@ Differentiate between inheritance of interface and inheritance of implementation
 * 函数接口（function interfaces）继承
 * 函数实现（function implementations）继承
 
-{% highlight cpp %}
+```cpp
 class Shape {
 public:
     // 三种被继承的接口
@@ -2854,7 +2944,8 @@ class Rectangle: public Shape {
 class Ellipse: public Shape {
     // ...
 };
-{% endhighlight %}
+```
+
 
 Shape是一个抽象class，它的pure virtual函数draw使它成为一个抽象class。所以客户不能够创建Shape class的实体，只能创建其derived classes的实体。
 
@@ -2869,13 +2960,14 @@ Shape是一个抽象class，它的pure virtual函数draw使它成为一个抽象
 
 Consider alternatives to virtual functions.
 
-{% highlight cpp %}
+```cpp
 class GameCharacter {
 public:
     virtual int healthValue() const;  // 返回游戏中人物的健康指数，derived classes可以重新定义此函数
     // ...
 };
-{% endhighlight %}
+```
+
 
 healthValue并未被声明为`pure virtual`，这暗示我们将会有个计算健康指数的**缺省算法**。
 
@@ -2885,7 +2977,7 @@ healthValue并未被声明为`pure virtual`，这暗示我们将会有个计算�
 
 就是，令客户通过public non-virtual成员函数间接调用private virtual函数。这样做的好处是，可以在public non-virtual函数（也就是virutal函数的wrapper函数）中完成一些事前和事后的工作。
 
-{% highlight cpp %}
+```cpp
 class GameCharacter {
 public:
     int healthValue() const { // 返回游戏中人物的健康指数，derived classes不重新定义此函数
@@ -2900,13 +2992,14 @@ private:
         // 缺省实现
     }
 };
-{% endhighlight %}
+```
+
 
 ### 4.2 Function Pointers 实现 Strategy 模式
 
 这种方法的思路是，人物健康指数的计算与人物类型无关。这样的计算完全不需要人物这个成分。例如，我们可能会要求每个人物的构造函数接受一个指针，指向一个健康计算函数，而我们可以调用该函数进行实际计算。
 
-{% highlight cpp %}
+```cpp
 class GameCharacter;   // 前置声明 forward declaration
 
 int defaultHealthCalc(const GameCharacter& gc);
@@ -2927,7 +3020,8 @@ public:
 private:
     HealthCalcFunc healthFunc;   // 函数指针
 };
-{% endhighlight %}
+```
+
 
 这种实现更加具有弹性：
 

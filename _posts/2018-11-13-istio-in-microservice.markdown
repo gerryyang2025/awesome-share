@@ -138,7 +138,7 @@ An **open service mesh platform** to connect， observe, secure, and control mic
 How does it work ?
 
 
-{% highlight call %}
+```plaintext
        A ------------------> B
 
                 |
@@ -208,7 +208,8 @@ How does it work ?
 
      Envoy    Envoy         Envoy       Envoy
      Pilot   Telemetry      Citadel     Policy
-{% endhighlight %}
+```
+
 
 1. Deploy a proxy (`Envoy`) beside your application ("sidecar deployment")
 2. Deploy `Pilot` to configure the sidecars
@@ -293,7 +294,7 @@ Envoy - sidecar proxy in Istio:
 
 https://istio.io/docs/setup/kubernetes/download-release/
 
-{% highlight text %}
+```text
 root@ubuntu-s-2vcpu-4gb-sfo2-01:~# istioctl
 
 Istio configuration command line utility.
@@ -345,7 +346,8 @@ Flags:
   -p, --platform string               Istio host platform (default "kube")
 
 Use "istioctl [command] --help" for more information about a command.
-{% endhighlight %}
+```
+
 
 ### Quick Start with Kubernetes
 
@@ -358,7 +360,7 @@ https://kubernetes.io/docs/tasks/tools/install-kubectl/
 
 Install kubectl binary using native package management:
 
-{% highlight bash %}
+```bash
 #!/bin/bashls
 # install-kubectl.sh
 # ubuntu
@@ -368,11 +370,12 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update
 sudo apt-get install -y kubectl
-{% endhighlight %}
+```
+
 
 安装后：
 
-{% highlight text %}
+```text
 # minikube start
 Starting local Kubernetes v1.10.0 cluster...
 Starting VM...
@@ -388,13 +391,14 @@ Loading cached images from config file.
 # kubectl version
 Client Version: version.Info{Major:"1", Minor:"12", GitVersion:"v1.12.2", GitCommit:"17c77c7898218073f14c8d573582e8d2313dc740", GitTreeState:"clean", BuildDate:"2018-10-24T06:54:59Z", GoVersion:"go1.10.4", Compiler:"gc", Platform:"linux/amd64"}
 Server Version: version.Info{Major:"1", Minor:"10", GitVersion:"v1.10.0", GitCommit:"fc32d2f3698e36b93322a3465f63a14e9f0eaead", GitTreeState:"clean", BuildDate:"2018-03-26T16:44:10Z", GoVersion:"go1.9.3", Compiler:"gc", Platform:"linux/amd64"}
-{% endhighlight %}
+```
+
 
 #### install Hypervisor
 
 https://kubernetes.io/docs/tasks/tools/install-minikube/#install-a-hypervisor
 
-{% highlight text %}
+```text
 sudo apt-get update
 # 5.2
 sudo apt-get install virtualbox
@@ -403,21 +407,23 @@ sudo dpkg -i packagename.deb
 # check version
 vboxmanage --version
 5.2.18_Ubuntur123745
-{% endhighlight %}
+```
+
 
 #### install minikube
 
 https://github.com/kubernetes/minikube/releases
 
-{% highlight text %}
+```text
 curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.30.0/minikube-linux-amd64 && chmod +x minikube && sudo cp minikube /usr/local/bin/ && rm minikube
-{% endhighlight %}
+```
+
 
 https://istio.io/docs/setup/kubernetes/platform-setup/minikube/
 
 启动minkube的方法：
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 # start_minikube.sh
 
@@ -439,10 +445,11 @@ for i in {1..150}; do # timeout for 5 minutes
 	fi
 	sleep 2
 done
-{% endhighlight %}
+```
 
 
-{% highlight text %}
+
+```text
 # minikube start --vm-driver=virtualbox
 Starting local Kubernetes v1.10.0 cluster...
 Starting VM...
@@ -461,20 +468,23 @@ Loading cached images from config file.
 
 # ps ux|grep mini
 root      3075  166 31.4 3338904 1270108 ?     Sl   08:24  24:56 /usr/lib/virtualbox/VBoxHeadless --comment minikube --startvm fd44ccb2-d4ca-4923-a09e-e9dce20f02ca --vrde config
-{% endhighlight %}
+```
+
 
 
 #### Install Istio’s Custom Resource Definitions via kubectl apply
 
-{% highlight text %}
+```text
 kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
-{% endhighlight %}
+```
+
 
 #### Install Istio without mutual TLS authentication between sidecars
 
-{% highlight text %}
+```text
 kubectl apply -f install/kubernetes/istio-demo.yaml
-{% endhighlight %}
+```
+
 
 #### Verifying the installation
 

@@ -28,12 +28,13 @@ You can use our binary releases, build infer from source, or use our Docker imag
 
 Find our latest [binary release here](https://github.com/facebook/infer/releases/latest). Download the tarball then extract it anywhere on your system to start using infer. For example, this downloads infer in `/opt` on Linux (replace `VERSION` with the latest release, eg `VERSION=1.0.0`):
 
-{% highlight bash %}
+```bash
 VERSION=0.XX.Y; \
 curl -sSL "https://github.com/facebook/infer/releases/download/v$VERSION/infer-linux64-v$VERSION.tar.xz" \
 | sudo tar -C /opt -xJ && \
 sudo ln -s "/opt/infer-linux64-v$VERSION/bin/infer" /usr/local/bin/infer
-{% endhighlight %}
+```
+
 
 If the binaries do not work for you, or if you would rather build infer from source, follow the [install from source](https://github.com/facebook/infer/blob/main/INSTALL.md#install-infer-from-source) instructions to install Infer on your system.
 
@@ -55,7 +56,7 @@ All these examples can be found in the [infer/examples](https://github.com/faceb
 
 Here is a simple Java example to illustrate Infer at work.
 
-{% highlight java %}
+```java
 // Hello.java
 class Hello {
   int test() {
@@ -63,29 +64,33 @@ class Hello {
     return s.length();
   }
 }
-{% endhighlight %}
+```
+
 
 To run `Infer`, type the following in your terminal from the same directory as `Hello.java`.
 
-{% highlight bash %}
+```bash
 infer run -- javac Hello.java
-{% endhighlight %}
+```
+
 
 You should see the following error reported by `Infer`.
 
-{% highlight text %}
+```text
 Hello.java:5: error: NULL_DEREFERENCE
   object s last assigned on line 4 could be null and is dereferenced at line 5
-{% endhighlight %}
+```
+
 
 Now edit the file to add null checks:
 
-{% highlight java %}
+```java
   int test() {
     String s = null;
     return s == null ? 0 : s.length();
   }
-{% endhighlight %}
+```
+
 
 Run `Infer` again. This time we get no error: `Infer` reports **No issues found**.
 
@@ -93,7 +98,7 @@ Run `Infer` again. This time we get no error: `Infer` reports **No issues found*
 
 Here is a simple C example to illustrate Infer at work.
 
-{% highlight c %}
+```c
 // hello.c
 #include <stdlib.h>
 
@@ -101,13 +106,15 @@ void test() {
   int *s = NULL;
   *s = 42;
 }
-{% endhighlight %}
+```
+
 
 To run `Infer`, type the following in your terminal from the same directory as `hello.c`.
 
-{% highlight bash %}
+```bash
 infer run -- gcc -c hello.c
-{% endhighlight %}
+```
+
 
 You should see the following error reported by Infer.
 
@@ -115,14 +122,15 @@ You should see the following error reported by Infer.
 
 Now edit the file to add null checks:
 
-{% highlight c %}
+```c
 void test() {
   int *s = NULL;
   if (s != NULL) {
     *s = 42;
   }
 }
-{% endhighlight %}
+```
+
 
 Run Infer again. This time we get no error.
 
@@ -130,10 +138,11 @@ Run Infer again. This time we get no error.
 
 When analyzing C files, `Infer` captures the `gcc` command and runs `clang` instead to parse them. Thus you may get compiler errors and warnings that differ from gcc's. So in particular, the following two commands are equivalent:
 
-{% highlight bash %}
+```bash
 infer run -- gcc -c hello.c
 infer run -- clang -c hello.c
-{% endhighlight %}
+```
+
 
 
 # Infer workflow (Version: 1.2.0)
@@ -159,15 +168,17 @@ This translation is similar to compilation, so `Infer` takes information from th
 
 `Infer` stores the intermediate files in the results directory which by default is created in the folder where the `infer` command is invoked, and is called `infer-out/`. You can change the name of the results directory with the option `-o`, e.g.
 
-{% highlight bash %}
+```bash
 infer run -o /tmp/out -- javac Test.java
-{% endhighlight %}
+```
+
 
 You can run just the capture phase using the `capture` subcommand instead of the `run` subcommand:
 
-{% highlight bash %}
+```bash
 infer capture -- javac Test.java
-{% endhighlight %}
+```
+
 
 
 ### 2. The analysis phase
@@ -182,10 +193,11 @@ The errors will be displayed in the standard output and also in a file `infer-ou
 
 There are exceptions to this. In particular, you can run only one of the phases above. For instance, `infer run -- javac Hello.java` is equivalent to running these two commands:
 
-{% highlight bash %}
+```bash
 infer capture -- javac Hello.java
 infer analyze
-{% endhighlight %}
+```
+
 
 Notice that the second command does not erase `infer-out/`, as the files it needs to analyze live there!
 
@@ -198,9 +210,10 @@ Let us highlight when you may need global and differential workflows.
 
 The global workflow is well suited to running `Infer` **on all the files in a project**, e.g., for a Gradle-based project that compiles using the `gradle build` command:
 
-{% highlight bash %}
+```bash
 infer run -- gradle build
-{% endhighlight %}
+```
+
 
 In general, running Infer on your project is as simple as running `infer run -- <your build command here>` where the build command is the one you would normally use to compile your source code.
 
@@ -215,10 +228,11 @@ Software projects such as mobile apps use incremental build systems, where code 
 
 You can get more information about the reports generated by Infer by running `infer explore` in the same directory. For instance
 
-{% highlight bash %}
+```bash
 infer run -- gradle build
 infer explore
-{% endhighlight %}
+```
+
 
 This tool allows you to see error traces leading to each bug reported by Infer, which can be helpful in tracking down the precise cause of each bug. See the output of `infer explore --help` for more information.
 

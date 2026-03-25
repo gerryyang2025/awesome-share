@@ -73,16 +73,17 @@ tags:
 * 标准包安装。
 * 第三方工具安装。例如，Ubuntu的`apt-get`，Mac的`homebrew`。
 
-{% highlight text %}
+```text
 $go version
 go version go1.17.6 linux/amd64
-{% endhighlight %}
+```
+
 
 ## 环境变量
 
 编辑 `~/.bashrc` 添加如下内容，之后执行 `source ~/.bashrc`。
 
-{% highlight bash %}
+```bash
 # go的安装路径
 export GOROOT=/usr/local/go
 export PATH=$GOROOT/bin:$PATH
@@ -92,7 +93,8 @@ export GOBIN=$HOME/go
 
 # @refer https://learnku.com/go/t/39086#0b3da8
 export GO111MODULE=on
-{% endhighlight %}
+```
+
 
 refer: [Compile and install the application](https://go.dev/doc/tutorial/compile-install)
 
@@ -127,9 +129,10 @@ Go 1.11 引入了 Go 模块。 `Go Modules` 不使用 `GOPATH` 存储每个软�
 
 通过`go get`命令获取源码，构建和安装。
 
-{% highlight text %}
+```text
 $go get gopl.io/ch1/helloworld
-{% endhighlight %}
+```
+
 
 注意：从 Go 1.17 版本开始，go get 已废弃，不建议再使用。
 
@@ -138,18 +141,19 @@ $go get gopl.io/ch1/helloworld
 > go help get
 > The -d flag instructs get not to build or install packages. get will only update go.mod and download source code needed to build packages.
 
-{% highlight text %}
+```text
 go get: installing executables with 'go get' in module mode is deprecated.
         Use 'go install pkg@version' instead.
         For more information, see https://golang.org/doc/go-get-install-deprecation
         or run 'go help get' or 'go help install'.
-{% endhighlight %}
+```
+
 
 
 源码在`$(GOBIN)/src/gopl.io/ch1/helloworld/main.go`。
 
 
-{% highlight go %}
+```go
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
@@ -166,17 +170,19 @@ func main() {
 }
 
 //!-
-{% endhighlight %}
+```
+
 
 编译执行：
 
-{% highlight text %}
+```text
 $go build .
 $ls
 helloworld main.go
 $./helloworld
 Hello, 世界
-{% endhighlight %}
+```
+
 
 # Go入门示例
 
@@ -195,7 +201,7 @@ Hello, 世界
 
 * `os包`提供了一些函数和变量，以平台无关的方式和操作系统打交道。命令行参数以os包中的`Args`名字的变量供程序访问。变量`os.Args`是一个字符串`slice`。
 
-{% highlight go %}
+```go
 // go get gopl.io/ch1/echo1
 package main
 
@@ -212,7 +218,8 @@ func main() {
 	}
 	fmt.Println(s)
 }
-{% endhighlight %}
+```
+
 * 注释以`\\`开头。习惯上，在一个包声明前，使用注释对其进行描述。
 * `var`关键字声明了两个`string`类型的变量。变量可以在声明的时候初始化，如果变量没有明确地初始化，它将隐式地初始化为这个类型的空值。例如，对于数字初始化结果是0，对于字符串是空字符串。
 * 对于数字，Go提供常规的算术和逻辑操作符；对于字符串，`+`操作符表示追加操作。
@@ -224,7 +231,7 @@ func main() {
 	- `condition`是一个布尔表达式，在循环的每一次迭代开始前推演。
 	- 三部分都可以省略。
 
-{% highlight go %}
+```go
 for initialization; condition; post {
 	// ...
 }
@@ -240,11 +247,12 @@ for {
 	// break
 	// return
 }
-{% endhighlight %}
+```
+
 
 * 另一种形式的**for循环**在`字符串`或`slice数据`上迭代。
 
-{% highlight go %}
+```go
 // Echo2 prints its command-line arguments.
 package main
 
@@ -261,25 +269,27 @@ func main() {
 	}
 	fmt.Println(s)
 }
-{% endhighlight %}
+```
+
 
 * 每一次迭代，`range`产生一对值：`索引`和`这个索引处元素的值`。
 * 在这个例子中，不需要索引，但是语法上range循环需要处理，因此也必须处理索引。一个主意是将索引赋予一个`临时变量`然后忽略它。但是，**Go不允许存在无用的临时变量，不然会出现编译错误**。解决方案是使用空标识符`_`，**空标识符可以用在任何语法需要变量名但是程序逻辑不需要的地方**。例如，丢弃每次迭代产生的无用的索引。
 * 这个版本使用`短的变量声明`来声明和初始化。原则：使用`显式的初始化`来说明初始化变量的重要性，使用`隐式的初始化`来表明初始化变量不重要。
 
-{% highlight go %}
+```go
 // 以下几种声明字符串变量的方式是等价的
 s := ""              // 此方式，更加简洁，通常在一个函数内部使用，不适合包级别的变量 (推荐)
 var s string         // 默认初始化为空字符串 (推荐)
 var s = ""           // 很少用
 var s string = ""    // 显式的变量类型，在类型一致的情况下是冗余的信息，在类型不一致时是必需的
-{% endhighlight %}
+```
+
 
 * 上面程序的问题：每次循环，字符串`s`有了新的内容，`+=`语句通过追加旧的字符串，空格字符，和下一个参数，生成一个新的字符串，然后把新字符串赋给`s`。旧的内容不再需要使用，会被`例行垃圾回收`。如果有大量的数据需要处理，这样的代价会比较大。(**TODO: 测试确认**)
 
 * 一个高效的方式是使用`strings`包中的`Join`函数。
 
-{% highlight go %}
+```go
 // Echo3 prints its command-line arguments.
 package main
 
@@ -292,19 +302,21 @@ import (
 func main() {
 	fmt.Println(strings.Join(os.Args[1:], " "))
 }
-{% endhighlight %}
+```
+
 * 如果关心格式只是想看下值或调试，那么使用`Println`格式化结果就可以了。
 
-{% highlight go %}
+```go
 // 任何slice都能以这样的方式输出
 fmt.Println(os.Args[1:])
-{% endhighlight %}
+```
+
 
 ## 找出重复行
 
 * 用于文件复制，打印，检索，排序，统计的程序，通常有一个相似的结构：在输入接口上循环读取，然后对每一个元素进行一些计算。
 
-{% highlight go %}
+```go
 // Dup1 prints the text of each line that appears more than
 // once in the standard input, preceded by its count.
 package main
@@ -328,18 +340,20 @@ func main() {
 		}
 	}
 }
-{% endhighlight %}
+```
+
 * 像`for`一样，`if`语句中的条件部分也不放在圆括号里，但是程序体中需要用到大括号。
 * `map`存储一个`键/值对集合`，并且提供常量时间的操作来存储，获取，或测试集合中某个元素。内置的函数`make`可以用来新建map。
 	- `键`可以是其值能够进行相等比较的任意类型。比如，字符串。
 	- `值`可以是任意类型。
 * 每次从输入读取一行内容，这一行就作为map中的键，对应的值递增1。
-{% highlight go %}
+```go
 counts[input.Text()]++
 // 等价于
 line := input.Text()
 counts[line] = counts[line] + 1
-{% endhighlight %}
+```
+
 * `键`在map中不存在时也是没有问题的。当一个新的行第一次出现时，右边的表达式`counts[line]`根据值类型被推演为`零值`，int的零值是0。
 * 为了输出结果，使用基于`range`的for循环，这次在map类型的counts变量上遍历。每次迭代输出两个结果，map里面一个元素对应的键和值。
 * map里面的键的迭代顺序不是固定的，通常是随机地。每次运行都不一致，这是有意设计的，以防止程序依赖某种特定的序列，此处不对排序做任何保证。
@@ -363,7 +377,7 @@ counts[line] = counts[line] + 1
 
 * 除了从`标准输入`读取，也可以从具体的`文件`读取。使用`os.Open`函数来逐个打开。
 
-{% highlight go %}
+```go
 // Dup2 prints the count and text of lines that appear more than once
 // in the input.  It reads from stdin or from a list of named files.
 package main
@@ -404,7 +418,8 @@ func countLines(f *os.File, counts map[string]int) {
 	}
 	// NOTE: ignoring potential errors from input.Err()
 }
-{% endhighlight %}
+```
+
 * 函数`os.Open`返回两个值，第一个是打开的文件`*os.File`；第二个是一个内置的`error`类型的值。
 	- 如果`error`等于特殊的内置`nil`值，表示文件成功打开。文件在被读到结尾的时候，`Close`函数关闭文件，然后释放相应的资源。
 	- 如果`error`不是`nil`，表示出错了。这时`error`的值描述错误原因。简单的错误处理是使用`Fprintf`和`%v`在标准错误流上输出一条消息，`%v`可以使用默认格式显示任意类型的值。错误处理后，开始处理下一个文件。`continue`语句让循环进入下一个迭代。
@@ -412,7 +427,7 @@ func countLines(f *os.File, counts map[string]int) {
 * `map`是一个使用`make`创建的数据结构的`引用`。当一个map传递给一个函数时，函数接收到这个引用的副本，所以，被调用函数中对于map数据结构中的改变，对函数调用者使用的map引用也是`可见的`。
 * 第三种方式，是一次读取整个输入到大块内存中，一次性地分割所有行，然后处理这些行。使用`ReadFile`函数读取整个命名文件的内容，返回一个可以转化成字符串的字节`slice`，再用`string.Split`函数将一个字符串分割为一个由子串组成的`slice`。
 
-{% highlight go %}
+```go
 // Dup3 prints the count and text of lines that
 // appear more than once in the named input files.
 package main
@@ -442,7 +457,8 @@ func main() {
 		}
 	}
 }
-{% endhighlight %}
+```
+
 * 实际上，`bufio.Scanner`，`ioutil.ReadFile`以及`ioutil.WriteFile`使用`*os.File`中的`Read`和`Write`方法。但是大多数情况很少需要直接访问底层的函数，而是像`bufio`和`io/ioutil`包中的**上层的方法**更易使用。
 
 ## GIF动画
@@ -453,7 +469,7 @@ func main() {
 * 表达式`[]color.Color{...}`是`复合字面量`，即用一系列元素的值初始化Go的复合类型的紧凑表达方式。这里，第一个是`slice`，第二个是`结构体`。
 * `gif.GIF`是一个结构体类型。结构体由一组称为`字段`的值组成，字段通常有不同的数据类型，它们一起组成单个对象，作为一个单位被对待。`anim`变量是`gif.GIF`结构体类型，这个结构体字面量创建一个结构体`LoopCount`，其值设置为`nframes`，其他字段的值是对应类型的**零值**。结构体的每个字段可以通过**点记法**来访问。
 
-{% highlight go %}
+```go
 // Lissajous generates GIF animations of random Lissajous figures.
 package main
 
@@ -531,7 +547,8 @@ func lissajous(out io.Writer) {
 	}
 	gif.EncodeAll(out, &anim) // NOTE: ignoring encoding errors
 }
-{% endhighlight %}
+```
+
 
 ## 获取一个URL
 
@@ -539,7 +556,7 @@ func lissajous(out io.Writer) {
 * 使用两个包：`net/http`和`io/ioutil`。
 * `http.Get`产生一个`HTTP`请求。如果没有错，返回结果存在响应结构`resp`里面。其中，`resp.Body`包含服务器端响应的一个可读取数据流，随后通过`ioutil.ReadAll`读取整个响应结果并存入`b`。
 
-{% highlight go %}
+```go
 // Fetch prints the content found at each specified URL.
 package main
 
@@ -566,11 +583,12 @@ func main() {
 		fmt.Printf("%s", b)
 	}
 }
-{% endhighlight %}
+```
+
 
 测试输出：
 
-{% highlight text %}
+```text
 $./fetch http://gerryyang.com
 <!DOCTYPE html>
 <html lang="en"><head>
@@ -580,7 +598,8 @@ $./fetch http://gerryyang.com
 <title>Gerry’s blog | 他山之石，可以攻玉</title>
 
 ...
-{% endhighlight %}
+```
+
 
 ## 获取多个URL
 
@@ -594,7 +613,7 @@ $./fetch http://gerryyang.com
 
 > 注意：当一个`goroutine`试图在一个通道上进行发送或接收操作时，它会阻塞，直到另一个`goroutine`试图进行接收或发送操作，才传递值，并开始处理两个`goroutine`。在示例中，每一个`fetch`在通道`ch`上发送一个值（`ch <- expression`），main函数接收它们（`<-ch`），由main来处理所有的输出确保来每个`goroutine`作为一个整体单元处理，这样就避免了两个`goroutine`同时完成造成输出交织带来的风险。
 
-{% highlight go %}
+```go
 // Fetchall fetches URLs in parallel and reports their times and sizes.
 package main
 
@@ -636,17 +655,19 @@ func fetch(url string, ch chan<- string) {
 	secs := time.Since(start).Seconds()
 	ch <- fmt.Sprintf("%.2fs  %7d  %s", secs, nbytes, url)
 }
-{% endhighlight %}
+```
+
 
 测试输出：
 
-{% highlight text %}
+```text
 $./fetchall http://gerryyang.com https://godoc.org http://baidu.com
 1.13s       81  http://baidu.com
 1.29s    33353  http://gerryyang.com
 2.40s    17406  https://godoc.org
 2.40s elapsed
-{% endhighlight %}
+```
+
 
 ## 一个Web服务器
 
@@ -656,7 +677,7 @@ $./fetchall http://gerryyang.com https://godoc.org http://baidu.com
 * 当一个请求到达时，它被转交给处理函数，并从请求的URL中提取路径部分（`/hello`），使用`fmt.Printf`格式化，然后作为响应发送回去。
 
 
-{% highlight go %}
+```go
 // Server1 is a minimal "echo" server.
 package main
 
@@ -675,7 +696,8 @@ func main() {
 func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "URL.Path = %q\n", r.URL.Path)
 }
-{% endhighlight %}
+```
+
 
 对上述功能进行扩展：
 
@@ -683,7 +705,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 * 对于传入的请求，服务器在不同的`goroutine`中运行该处理函数，这样它可以同时处理多个请求。然而，如果两个并发的请求试图同时更新计数值`count`，它可能会不一致地增加，程序会产生一个**严重的竞态bug**。为避免该问题，必现确保最多只有一个`goroutine`在同一时间访问变量，这正是`mu.Lock()`和`mu.Unlock()`语句的作用。
 
 
-{% highlight go %}
+```go
 // Server2 is a minimal "echo" and counter server.
 package main
 
@@ -717,14 +739,15 @@ func counter(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Count %d\n", count)
 	mu.Unlock()
 }
-{% endhighlight %}
+```
+
 
 作为更完整的例子，处理函数可以报告它接收到的消息头和表单数据，这样可以方便服务器审查和调试请求：
 
 * 注意，Go允许一个简单的语句（如一个局部变量声明）跟在`if`条件的前面，这在错误处理的时候特别有用，合并的语句更短而且可以缩小`err`变量的作用域，这是一个好实践。
 
 
-{% highlight go %}
+```go
 // Server3 is an "echo" server that displays request parameters.
 package main
 
@@ -755,7 +778,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Form[%q] = %q\n", k, v)
 	}
 }
-{% endhighlight %}
+```
+
 
 ## 其他内容
 
@@ -763,12 +787,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 * 控制流。除了两个基础的控制语句`if`和`for`，还有一个支持多路分支的`switch`语句。
 * 命名类型。`type`声明给已有类型命名。因为结构体类型通常很长，所以她们基本上都独立命名。
 
-{% highlight go %}
+```go
 type Point struct {
 	X, Y int
 }
 var p Point
-{% endhighlight %}
+```
+
 
 * 指针。Go提供了指针，它的值是变量的地址。
 
@@ -783,7 +808,7 @@ var p Point
 	+ 社区贡献的包：https://godoc.org
 	+ 使用`go doc`工具可以方便地通过命令行访问这些文档
 
-{% highlight go %}
+```go
 $go doc http.ListenAndServe
 go: finding golang.org/x/sys v0.0.0-20210423082822-04245dca01da
 go: finding golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1
@@ -798,7 +823,8 @@ func ListenAndServe(addr string, handler Handler) error
     The handler is typically nil, in which case the DefaultServeMux is used.
 
     ListenAndServe always returns a non-nil error.
-{% endhighlight %}
+```
+
 
 * 注释。在声明任何函数前，写一段注释来说明它的行为是一个好的风格，这个约定很重要，因为它们可以被`go doc`和`godoc`工具定位和作为文档显示。对于跨越多行的注视，可以使用类似其他语言中的`/* .... */`注释。这样可以避免在文件的开始有一大块说明文本时每一行都有`//`。在注释内部，`//`和`/*`没有特殊的含义，所以注释不能嵌套。
 
@@ -828,7 +854,7 @@ func ListenAndServe(addr string, handler Handler) error
 * 结构体成员 `Year` 对应地转换为 `released`，`Color`转换为`color`，这个是通过成员标签定义（`field tag`）实现的。成员标签定义是结构体成员在编译期间关联的一些元信息。标签值的第一部分指定了 Go 结构体成员对应 JSON 中字段的名字，`Color`标签还有一个额外的选项`omitempty`，它表示如果这个成员的值是零值或者为空，则不输出这个成员到 JSON 中。
 * 将 JSON 字符串解码为 Go 数据结构，这个过程叫做`unmarshal`，这个是由`json.Unmarshal`实现的。通过合理地定义 Go 的数据结构，可以选择将哪部分 JSON 数据解码到结构对象中，哪些数据可以丢弃。例如，当函数`Unmarshal`调用完成后，它将填充结构体`slice`中`Title`的值，JSON 中其他的字段就丢弃了。
 
-{% highlight go %}
+```go
 // Movie prints Movies as JSON.
 package main
 
@@ -887,11 +913,12 @@ func main() {
 		//!-Unmarshal
 	}
 }
-{% endhighlight %}
+```
+
 
 输出：
 
-{% highlight text %}
+```text
 $./movie
 [{"Title":"Casablanca","released":1942,"Actors":["Humphrey Bogart","Ingrid Bergman"]},{"Title":"Cool Hand Luke","released":1967,"color":true,"Actors":["Paul Newman"]},{"Title":"Bullitt","released":1968,"color":true,"Actors":["Steve McQueen","Jacqueline Bisset"]}]
 [
@@ -922,14 +949,15 @@ $./movie
     }
 ]
 [{Casablanca} {Cool Hand Luke} {Bullitt}]
-{% endhighlight %}
+```
+
 
 ## Github
 
 * 由于用户的查询请求参数中可能存在一些字符，这些字符在 URL 中是特殊字符，比如`?`或者`&`，因此使用`url.QueryEscape`函数来确保它们拥有正确的含义。
 * 这里使用流式解码器`json.Decoder`来依次从字节流里面解码出多个JSON实体。对应有一个`json.Encoder`的流式编码器。
 
-{% highlight go %}
+```go
 // github.go
 
 // Package github provides a Go API for the GitHub issue tracker.
@@ -959,10 +987,11 @@ type User struct {
 	Login   string
 	HTMLURL string `json:"html_url"`
 }
-{% endhighlight %}
+```
 
 
-{% highlight go %}
+
+```go
 // search.go
 
 package github
@@ -1011,11 +1040,12 @@ func SearchIssues(terms []string) (*IssuesSearchResult, error) {
 	resp.Body.Close()
 	return &result, nil
 }
-{% endhighlight %}
+```
+
 
 主程序：
 
-{% highlight go %}
+```go
 // main.go
 
 // Issues prints a table of GitHub issues matching the search terms.
@@ -1060,7 +1090,8 @@ $ ./issues repo:golang/go is:open json decoder
 #6647    btracey x/tools/cmd/godoc: display type kind of each named type
 #4237  gjemiller encoding/base64: URLEncoding padding is optional
 */
-{% endhighlight %}
+```
+
 
 ## HTML模版
 
@@ -1074,7 +1105,8 @@ $ ./issues repo:golang/go is:open json decoder
 
 
 {% raw %}
-{% highlight go %}
+{% raw %}
+```go
 // Issuesreport prints a report of issues matching the search terms.
 package main
 
@@ -1158,14 +1190,17 @@ Age:    695 days
 ...
 //!-output
 */
-{% endhighlight %}
+```
+{% endraw %}
+
 {% endraw %}
 
 
 `html/template`包和`text/template`包里面使用一样的API和表达式语句。
 
 {% raw %}
-{% highlight go %}
+{% raw %}
+```go
 // Issueshtml prints an HTML table of issues matching the search terms.
 package main
 
@@ -1211,12 +1246,14 @@ func main() {
 		log.Fatal(err)
 	}
 }
-{% endhighlight %}
+```
+{% endraw %}
+
 {% endraw %}
 
 ./issueshtml repo:golang/go commenter:gopherbot json encoder > issues.html
 
-{% highlight html %}
+```html
 <h1>65 issues</h1>
 <table>
 <tr style='text-align: left'>
@@ -1239,14 +1276,16 @@ func main() {
   <td><a href='https://github.com/rsc'>rsc</a></td>
   <td><a href='https://github.com/golang/go/issues/5901'>encoding/json: allow per-Encoder/per-Decoder registration of marshal/unmarshal functions</a></td>
 </tr>
-{% endhighlight %}
+```
+
 
 ![issueshtml](/assets/images/202202/issueshtml.png)
 
 注意：`html/template`包自动将 HTML 元字符转义，这样显示才能正常。
 
 {% raw %}
-{% highlight go %}
+{% raw %}
+```go
 // Autoescape demonstrates automatic HTML escaping in html/template.
 package main
 
@@ -1270,15 +1309,18 @@ func main() {
 		log.Fatal(err)
 	}
 }
-{% endhighlight %}
+```
+{% endraw %}
+
 {% endraw %}
 
 输出：
 
-{% highlight text %}
+```text
 $./autoescape
 <p>A: &lt;b&gt;Hello!&lt;/b&gt;</p><p>B: <b>Hello!</b></p>
-{% endhighlight %}
+```
+
 
 
 # 惯例用法
@@ -1291,26 +1333,29 @@ $./autoescape
 
 You can pass a slice `s` directly to **a variadic function** if you unpack it with the `s...` notation. In this case no new slice is created. In this example, we pass a slice to the Sum function.
 
-{% highlight go %}
+```go
 primes := []int{2, 3, 5, 7}
 fmt.Println(Sum(primes...)) // 17
-{% endhighlight %}
+```
+
 
 ### Array literals
 
 In an array literal, the `...` notation specifies a length equal to the number of elements in the literal.
 
-{% highlight go %}
+```go
 stooges := [...]string{"Moe", "Larry", "Curly"} // len(stooges) == 3
-{% endhighlight %}
+```
+
 
 ### The go command
 
 Three dots are used by the go command as a **wildcard** when describing package lists. This command tests all packages in the current directory and its subdirectories.
 
-{% highlight bash %}
+```bash
 $ go test ./...
-{% endhighlight %}
+```
+
 
 # 模版生成代码（go generate / ast）
 
@@ -1350,7 +1395,7 @@ https://blog.csdn.net/delphiwcdj/article/details/17611699
 * Defer 接口
 * 错误处理, Panic/Recover
 
-{% highlight go %}
+```go
 package main
 
 import (
@@ -1600,7 +1645,8 @@ CopyFile success:  8
 ------------
 4 3 2 1 0
 */
-{% endhighlight %}
+```
+
 
 
 # Tips
@@ -1626,26 +1672,28 @@ CopyFile success:  8
 
 Use `%v` for an error val.
 
-{% highlight go %}
+```go
 if err != nil {
     return fmt.Errorf("pack %v: %v", name, err)
 }
-{% endhighlight %}
+```
+
 
 But, In `Go 1.13`, the `fmt.Errorf` function supports a new `%w` verb. When this verb is present, the error returned by `fmt.Errorf` will have an **Unwrap** method returning the argument of `%w`, which must be an error. In all other ways, `%w` is identical to `%v`.
 
-{% highlight go %}
+```go
 if err != nil {
     // Return an error which unwraps to err.
     return fmt.Errorf("pack %v: %w", name, err)
 }
-{% endhighlight %}
+```
+
 
 Places where you need to differentiate between `%w` and `%v`:
 
 Read comments in the codeblock
 
-{% highlight go %}
+```go
 f, err := os.Open(filename)
 if err != nil {
     // The *os.PathError returned by os.Open is an internal detail.
@@ -1657,7 +1705,8 @@ if err != nil {
     // %w would permit the caller to unwrap the original *os.PathError.
     return fmt.Errorf("%v", err)
 }
-{% endhighlight %}
+```
+
 
 Read: [For an error, when should I switch to w](https://github.com/golang/go/wiki/ErrorValueFAQ#i-am-already-using-fmterrorf-with-v-or-s-to-provide-context-for-an-error-when-should-i-switch-to-w)
 
@@ -1665,14 +1714,15 @@ Also, the built-in error interface allows Go programmers to add whatever informa
 
 Example:
 
-{% highlight go %}
+```go
 type QueryError struct {
     Query string
     Err   error
 }
 
 func (e *QueryError) Error() string { return e.Query + ": " + e.Err.Error() }
-{% endhighlight %}
+```
+
 
 So, mostly most examples have a similar type of implementation where `err` has an `Error` method which returns `string` for which you can use `%s`
 
@@ -1690,7 +1740,7 @@ Package `exec` runs external commands. It wraps os.StartProcess to make it easie
 
 https://pkg.go.dev/os/exec#Cmd.Start
 
-{% highlight golang %}
+```go
 package main
 
 import (
@@ -1708,10 +1758,11 @@ func main() {
 	err = cmd.Wait()
 	log.Printf("Command finished with error: %v", err)
 }
-{% endhighlight %}
+```
 
 
-{% highlight golang %}
+
+```go
 package main
 
 import (
@@ -1741,13 +1792,14 @@ func main() {
 	// 打印命令的输出
 	fmt.Println(string(output))
 }
-{% endhighlight %}
+```
+
 
 ## time.Duration
 
 在 Go 语言中，`time.Duration` 类型表示两个时间点之间的时间差，单位为**纳秒**。`time.Duration` 的初始化可以通过以下几种方式完成：
 
-{% highlight go %}
+```go
 // 直接使用整数，单位为纳秒
 var duration time.Duration = 1000 // 1000纳秒
 
@@ -1760,7 +1812,8 @@ duration, err := time.ParseDuration("1h30m") // 1小时30分钟
 if err != nil {
     log.Fatal(err)
 }
-{% endhighlight %}
+```
+
 
 
 # 代码检查
@@ -1769,12 +1822,13 @@ if err != nil {
 
 [golangci-lint](https://golangci-lint.run/) is a Go linters aggregator.
 
-{% highlight text %}
+```text
 # binary will be $(go env GOPATH)/bin/golangci-lint
 curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.52.2
 
 golangci-lint --version
-{% endhighlight %}
+```
+
 
 ## [静态代码分析 Staticcheck](https://staticcheck.io/docs/)
 
@@ -1793,9 +1847,10 @@ Staticcheck can be used from the command line, in CI, and even [directly from yo
 
 * https://stackoverflow.com/questions/70208440/how-to-disable-golang-unused-function-error
 
-{% highlight go %}
+```go
 //lint:ignore U1000 Ignore unused function temporarily for debugging
-{% endhighlight %}
+```
+
 
 
 ## 数据竞争检查 (go build -race)
@@ -1808,7 +1863,7 @@ go build -race 命令是 Go 语言工具链中的一个选项，用于启用数�
 
 测试代码：
 
-{% highlight go %}
+```go
 package main
 
 import (
@@ -1832,13 +1887,14 @@ func main() {
     wg.Wait()
     fmt.Println("Counter:", counter)
 }
-{% endhighlight %}
+```
+
 
 go build -race main.go
 
 测试输出：
 
-{% highlight text %}
+```text
 ./main
 ==================
 WARNING: DATA RACE
@@ -1860,7 +1916,8 @@ Goroutine 6 (running) created at:
 ==================
 Counter: 990
 Found 1 data race(s)
-{% endhighlight %}
+```
+
 
 
 # 问题调试 (delve)
@@ -1869,16 +1926,18 @@ Found 1 data race(s)
 
 服务启动前加上 `GOTRACEBACK=crash`，可以生成 corefile，和 `gdb` 类似，可以用 `dlv` 进行调试。
 
-{% highlight bash %}
+```bash
 ulimit -c unlimited
 export GOTRACEBACK=crash
-{% endhighlight %}
+```
+
 
 安装：
 
-{% highlight bash %}
+```bash
 go install github.com/go-delve/delve/cmd/dlv@latest
-{% endhighlight %}
+```
+
 
 `GOTRACEBACK` 是一个环境变量，用于控制当 Go 程序崩溃时，运行时系统生成的调试信息的详细程度。这些调试信息通常包括堆栈跟踪（stack trace），帮助开发者定位问题。
 
@@ -1892,9 +1951,10 @@ GOTRACEBACK 的可选参数如下：
 
 调试 coredump 文件执行指令：
 
-{% highlight bash %}
+```bash
 dlv core your_program your_corefile --check-go-version=false
-{% endhighlight %}
+```
+
 
 `--check-go-version=false` 是忽略 go 版本和 dlv 版本的区别，不然会报错。
 
@@ -1945,7 +2005,7 @@ https://github.com/cheekybits/genny
 
 * 通过 https://github.com/skip2/go-qrcode 或 https://github.com/yeqown/go-qrcode 方案自己生成。
 
-{% highlight go %}
+```go
 package main
 
 import (
@@ -1959,7 +2019,8 @@ func main() {
 		panic(err)
 	}
 }
-{% endhighlight %}
+```
+
 
 ## Protocol Buffers go_package
 
@@ -1981,13 +2042,14 @@ An alternative is to use [goimports](https://pkg.go.dev/golang.org/x/tools/cmd/g
 
 See https://go.dev/doc/effective_go#commentary. Comments documenting declarations should be full sentences, even if that seems a little redundant. This approach makes them format well when extracted into godoc documentation. Comments should begin with the name of the thing being described and end in a period:
 
-{% highlight golang %}
+```go
 // Request represents a request to run a command.
 type Request struct { ...
 
 // Encode writes the JSON encoding of req to w.
 func Encode(w io.Writer, req *Request) { ...
-{% endhighlight %}
+```
+
 
 and so on.
 
@@ -1997,9 +2059,10 @@ Values of the context.Context type carry security credentials, tracing informati
 
 Most functions that use a Context should accept it as their first parameter:
 
-{% highlight golang %}
+```go
 func F(ctx context.Context, /* other arguments */) {}
-{% endhighlight %}
+```
+
 
 A function that is never request-specific may use context.Background(), but err on the side of passing a Context even if you think you don’t need to. The default case is to pass a Context; only use context.Background() directly if you have a good reason why the alternative is a mistake.
 
@@ -2021,12 +2084,14 @@ In general, do not copy a value of type T if its methods are associated with the
 
 When declaring an empty slice, prefer
 
-{% highlight golang %}
+```go
 var t []string
-{% endhighlight %}
-{% highlight golang %}
+```
+
+```go
 t := []string{}
-{% endhighlight %}
+```
+
 
 **The former declares a nil slice value, while the latter is non-nil but zero-length**. They are functionally equivalent—their len and cap are both zero—but the nil slice is the preferred style.
 

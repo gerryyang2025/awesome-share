@@ -52,7 +52,7 @@ More: https://llvm.org/
 make.sh
 
 
-{% highlight text %}
+```text
 #!/bin/bash
 
 export LLVM_DIR=$HOME/llvm
@@ -75,12 +75,13 @@ cmake --build .
 
 ## After LLVM has finished building, install it from the build directory
 cmake --build . --target install
-{% endhighlight %}
+```
+
 
 
 CMakeLists.txt
 
-{% highlight text %}
+```text
 cmake_minimum_required(VERSION 3.13.4)
 project(SimpleProject)
 
@@ -107,7 +108,8 @@ llvm_map_components_to_libnames(llvm_libs support core irreader)
 # Link against LLVM libraries
 target_link_libraries(simple-tool ${llvm_libs})
 
-{% endhighlight %}
+```
+
 
 
 refer:
@@ -138,10 +140,11 @@ Information on the LLVM project:  http://llvm.org/
 
 [Ubuntu安装Clang版本和切换](https://blog.csdn.net/DumpDoctorWang/article/details/84567757)
 
-{% highlight text %}
+```text
 apt-get install clang
 apt-get install clang-3.9
-{% endhighlight %}
+```
+
 
 ### Building Clang and Working with the Code
 
@@ -200,13 +203,14 @@ Note:
 * Note: For subsequent Clang development, you can just run make clang.
 * CMake allows you to generate project files for several IDEs: Xcode, Eclipse CDT4, CodeBlocks, Qt-Creator (use the CodeBlocks generator), KDevelop3. For more details see [Building LLVM with CMake](https://llvm.org/docs/CMake.html) page.
 
-{% highlight text %}
+```text
 cd llvm-project
 mkdir build (in-tree build is not supported)
 cd build
 cmake -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" ../llvm
 make
-{% endhighlight %}
+```
+
 
 #### Others
 
@@ -214,25 +218,27 @@ If you intend to use Clang's C++ support, you may need to tell it how to find yo
 
 Try it out (assuming you add llvm/build/bin to your path):
 
-{% highlight text %}
+```text
 clang --help
 clang file.c -fsyntax-only (check for correctness)
 clang file.c -S -emit-llvm -o - (print out unoptimized llvm code)
 clang file.c -S -emit-llvm -o - -O3
 clang file.c -S -O3 -o - (output native machine code)
-{% endhighlight %}
+```
+
 
 Run the testsuite:
 
-{% highlight text %}
+```text
 make check-clang
-{% endhighlight %}
+```
+
 
 ### Clang Compiler Driver (Drop-in Substitute for GCC)
 
 The `clang` tool is the compiler driver and front-end, which is designed to be a drop-in replacement for the `gcc` command. Here are some examples of how to use the high-level driver:
 
-{% highlight text %}
+```text
 $clang -v
 clang version 3.5.2 (tags/RELEASE_352/final)
 Target: x86_64-unknown-linux-gnu
@@ -244,31 +250,34 @@ Selected GCC installation: /usr/lib/gcc/x86_64-redhat-linux/4.8.5
 Candidate multilib: .;@m64
 Candidate multilib: 32;@m32
 Selected multilib: .;@m64
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $ cat t.c
 #include <stdio.h>
 int main(int argc, char **argv) { printf("hello world\n"); }
 $ clang t.c
 $ ./a.out
 hello world
-{% endhighlight %}
+```
+
 
 The clang driver is designed to work as closely to GCC as possible to maximize portability. The only major difference between the two is that Clang defaults to `gnu99` mode while GCC defaults to gnu89 mode. If you see weird link-time errors relating to inline functions, try passing `-std=gnu89` to clang.
 
-{% highlight c %}
+```c
 // test.c
 typedef float V __attribute__((vector_size(16)));
 V foo(V a, V b)
 {
     return a + b * a;
 }
-{% endhighlight %}
+```
+
 
 Preprocessing:
 
-{% highlight cpp %}
+```cpp
 //$clang test.c -E
 # 1 "test.c"
 # 1 "<built-in>" 1
@@ -284,36 +293,40 @@ V foo(V a, V b)
 {
  return a + b * a;
 }
-{% endhighlight %}
+```
+
 
 Type checking:
 
-{% highlight text %}
+```text
 $clang -fsyntax-only test.c
-{% endhighlight %}
+```
+
 
 GCC options:
 
-{% highlight text %}
+```text
 $clang -fsyntax-only test.c -pedantic
-{% endhighlight %}
+```
+
 
 Pretty printing from the AST:
 
 > Note, the `-cc1` argument indicates the compiler front-end, and not the driver, should be run. The compiler front-end has several additional Clang specific features which are not exposed through the GCC compatible driver interface.
 
-{% highlight cpp %}
+```cpp
 // $clang -cc1 test.c -ast-print
 typedef __attribute__((__vector_size__(4 * sizeof(float)))) float V;
 V foo(V a, V b) {
     return a + b * a;
 }
-{% endhighlight %}
+```
+
 
 Code generation with LLVM:
 
 
-{% highlight cpp %}
+```cpp
 // $clang test.c -S -emit-llvm -o -
 ; ModuleID = 'test.c'
 target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
@@ -338,7 +351,8 @@ attributes #0 = { nounwind uwtable "less-precise-fpmad"="false" "no-frame-pointe
 !llvm.ident = !{!0}
 
 !0 = metadata !{metadata !"clang version 3.5.2 (tags/RELEASE_352/final)"}
-{% endhighlight %}
+```
+
 
 refer:
 
@@ -362,62 +376,70 @@ https://github.com/owent-utils/bash-shell/tree/main/LLVM&Clang%20Installer
 
 下载 llvm 源码：
 
-{% highlight text %}
+```text
 wget http://releases.llvm.org/3.5.2/llvm-3.5.2.src.tar.xz
 tar xf llvm-3.5.2.src.tar.xz
 mv llvm-3.5.2.src llvm
-{% endhighlight %}
+```
+
 
 下载 clang 源码：
 
-{% highlight text %}
+```text
 cd llvm/tools
 wget http://releases.llvm.org/3.5.2/cfe-3.5.2.src.tar.xz
 tar xf cfe-3.5.2.src.tar.xz
 mv cfe-3.5.2.src clang
-{% endhighlight %}
+```
+
 
 下载 compiler-rt 源码：
 
-{% highlight text %}
+```text
 cd ../projects
 wget http://releases.llvm.org/3.5.2/compiler-rt-3.5.2.src.tar.xz
 tar xf compiler-rt-3.5.2.src.tar.xz
 mv compiler-rt-3.5.2.src compiler-rt
-{% endhighlight %}
+```
+
 
 配置编译选项：
 
-{% highlight text %}
+```text
 cd ..
 ./configure --enable-optimized CC=gcc CXX=g++
-{% endhighlight %}
+```
+
 
 编译 llvm：
 
-{% highlight text %}
+```text
 make -j16
-{% endhighlight %}
+```
+
 
 编译成功后的提示：
 
-{% highlight text %}
+```text
 llvm[0]: ***** Completed Release+Asserts Build
-{% endhighlight %}
+```
+
 
 安装编译好的 llvm：
 
-{% highlight bash %}
+```bash
 # 会安装在 /usr/local/bin 目录
 make install
-{% endhighlight %}
+```
+
 
 检查 clang 的版本：
 
-{% highlight text %}
+```text
 clang --version
 clang version 3.5.2 (tags/RELEASE_352/final)
-{% endhighlight %}
+```
+
 
 Refer:
 
@@ -428,7 +450,7 @@ Refer:
 
 ## Clang 11.0.0
 
-{% highlight text %}
+```text
 wget https://github.com/llvm/llvm-project/releases/download/llvmorg-11.0.0/llvm-project-11.0.0.tar.xz
 
 xz -d llvm-project-11.0.0.tar.xz
@@ -447,7 +469,8 @@ cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_RTTI=ON -DLLVM_ENABLE_PROJECTS="c
 make -j16 && make install
 
 clang --version
-{% endhighlight %}
+```
+
 
 > LLVM_ENABLE_PROJECTS:STRING  用法参考：https://llvm.org/docs/CMake.html
 >
@@ -456,7 +479,7 @@ clang --version
 
 升级 gcc
 
-{% highlight text %}
+```text
 yum install centos-release-scl -y
 yum install devtoolset-7 -y --skip-broken
 
@@ -469,11 +492,12 @@ scl enable devtoolset-7 bash
 # 如果希望固定到 gcc-7 环境则将配置写入文件
 source /opt/rh/devtoolset-7/enable
 echo "source /opt/rh/devtoolset-7/enable" >> ~/.bash_profile  source /opt/rh/devtoolset-7/enable
-{% endhighlight %}
+```
+
 
 升级 ld 为 2.30
 
-{% highlight text %}
+```text
 wget https://ftp.gnu.org/gnu/binutils/binutils-2.30.tar.gz --no-check-certificate
 tar zxvf binutils-2.30.tar.gz
 cd binutils-2.30
@@ -483,11 +507,12 @@ make -j16 && make install
 
 mv /bin/ld /bin/ld2.23
 ln -s /usr/local/bin/bin/ld /bin/ld
-{% endhighlight %}
+```
+
 
 对 LLVM_ENABLE_PROJECTS 安装项目的解释说明：
 
-{% highlight text %}
+```text
 在上面的编译命令中，启用了以下LLVM项目：clang、clang-tools-extra、libcxx、libcxxabi、libunwind、lldb、compiler-rt、lld和polly。以下是这些项目的功能和使用场景的简要介绍：
 
 Clang：Clang是一个C、C++、Objective-C和Objective-C++编程语言的编译器。它基于LLVM编译器基础结构，提供快速编译、高性能代码生成和更好的诊断信息。使用场景包括编译C/C++代码、静态分析等。
@@ -509,11 +534,12 @@ LLD：LLD是一个高性能、兼容的链接器，支持ELF（Unix）、COFF（
 Polly：Polly是一个LLVM的子项目，提供了高级循环优化和数据局部性分析。它可以自动分析循环结构，以提高内存访问和并行性。使用场景包括高性能计算、科学计算等。
 
 这些项目共同构成了LLVM工具链的核心部分，覆盖了编译、链接、运行时库、调试等方面。它们可以满足C/C++项目的各种需求，从编译和链接到调试和性能优化。
-{% endhighlight %}
+```
+
 
 完整的 clang 安装，包括安装一些辅助工具，例如 lld, lldb, clang-tools-extra 等：
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 # Download the LLVM project
@@ -564,7 +590,8 @@ fi
 
 # Print the installed Clang version
 clang --version
-{% endhighlight %}
+```
+
 
 
 # 升级 GLIBC
@@ -574,7 +601,7 @@ clang --version
 
 例如，升级 glibc 2.18
 
-{% highlight bash %}
+```bash
 mkdir ~/glibc_install; cd ~/glibc_install
 wget http://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz
 tar zxvf glibc-2.18.tar.gz
@@ -587,11 +614,12 @@ cd build
 
 make -j4
 sudo make install
-{% endhighlight %}
+```
+
 
 验证：
 
-{% highlight text %}
+```text
 $ ll /lib64/libc.so.6
 lrwxrwxrwx 1 root root 12 10月 11 21:33 /lib64/libc.so.6 -> libc-2.18.so
 $ strings /lib64/libc.so.6 | grep ^GLIBC
@@ -629,7 +657,8 @@ GLIBC_2.10
 GLIBC_2.17
 GLIBC_2.13
 GLIBC_2.2.6
-{% endhighlight %}
+```
+
 
 refer:
 
@@ -754,18 +783,19 @@ The clangd server also supports a number of feature customizations using its [co
 > 2. clangd 可以单独下载然后在 vscode 配置中指定安装路径，也可以通过 vscode 的 clangd 扩展自动提示下载。
 > 3. 禁用或卸载 C/C++ 扩展，防止相互影响
 
-{% highlight bash %}
+```bash
 code --install-extension llvm-vs-code-extensions.vscode-clangd
 # We also need make sure that Microsoft's C++ extension is not involved and interfering.
 code --uninstall-extension ms-vscode.cpptools
-{% endhighlight %}
+```
+
 
 ## clangd 作为 vscode 扩展的配置方法
 
 
 vscode 上使用 clangd 的配置 (项目根目录 `.vscode/settings.json` )
 
-{% highlight json %}
+```json
 {
     // clangd configuration for jmesh project (C++20, CMake)
     "clangd.arguments": [
@@ -797,7 +827,8 @@ vscode 上使用 clangd 的配置 (项目根目录 `.vscode/settings.json` )
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd" // C 语言文件支持
     }
 }
-{% endhighlight %}
+```
+
 
 
 clangd 需要知道如何编译你的项目，因此需要一个“编译数据库”，通常情况下我们需要向 clangd 提供一个 `compile_commands.json` 文件，这个文件的生成需要依赖你的编译系统.
@@ -814,15 +845,17 @@ CMake-based projects
 
 If your project builds with CMake, it can generate this file. You should enable it with:
 
-{% highlight text %}
+```text
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1
-{% endhighlight %}
+```
+
 
 `compile_commands.json` will be written to your build directory. If your build directory is `$SRC` or `$SRC/build`, clangd will find it. Otherwise, symlink or copy it to `$SRC`, the root of your source tree.
 
-{% highlight text %}
+```text
 ln -s ~/myproject-build/compile_commands.json ~/myproject/
-{% endhighlight %}
+```
+
 
 ## clang-tidy
 
@@ -830,9 +863,10 @@ ln -s ~/myproject-build/compile_commands.json ~/myproject/
 
 Clang 项目也提供了其他一些工具，包括代码的静态检查工具 [Clang-Tidy](https://clang.llvm.org/extra/clang-tidy/) 。这是一个比较全面的工具，它除了会提示你危险的用法，也会告诉你如何去现代化你的代码。默认情况下，Clang-Tidy 只做基本的分析。你也可以告诉它你想现代化你的代码和提高代码的可读性：
 
-{% highlight text %}
+```text
 clang-tidy --checks='clang-analyzer-*,modernize-*,readability-*' test.cpp
-{% endhighlight %}
+```
+
 
 ### 配置方法
 
@@ -840,7 +874,7 @@ clang-tidy --checks='clang-analyzer-*,modernize-*,readability-*' test.cpp
 
 `.clang-tidy `配置内容如下，可根据[官方定义的规则](https://clang.llvm.org/extra/clang-tidy/checks/list.html)进行自定义，同时也可以参考其他开源项目的配置示例。
 
-{% highlight text %}
+```text
 ---
 # @refer
 # https://clang.llvm.org/extra/clang-tidy/checks/list.html
@@ -898,7 +932,8 @@ CheckOptions:
   - { key: readability-function-cognitive-complexity.Threshold, value: 100 }
   - { key: readability-implicit-bool-conversion.AllowPointerConditions, value: 1}
 
-{% endhighlight %}
+```
+
 
 * [Setting a sub-option to clang-tidy](https://stackoverflow.com/questions/53185985/setting-a-sub-option-to-clang-tidy)
 
@@ -917,7 +952,7 @@ All comments can be followed by an optional list of check names in parentheses (
 
 For example:
 
-{% highlight cpp %}
+```cpp
 class Foo {
   // Suppress all the diagnostics for the line
   Foo(int param); // NOLINT
@@ -962,7 +997,8 @@ class Foo {
   int array[10];
   // NOLINTEND(*-avoid-c-arrays)
 };
-{% endhighlight %}
+```
+
 
 ### 基于 clang-tidy AST 语法树代码自定义检查
 
@@ -974,13 +1010,14 @@ class Foo {
 
 * 生成规则代码
 
-{% highlight text %}
+```text
 $ cd llvm-project-11.0.0/clang-tools-extra/clang-tidy
 $ ./add_new_check.py performance JLibTest
 $ cd performance
 $ ls JlibtestCheck.*
 JlibtestCheck.cpp  JlibtestCheck.h
-{% endhighlight %}
+```
+
 
 ![clang-tidy-extend](/assets/images/202306/clang-tidy-extend.png)
 
@@ -989,7 +1026,7 @@ JlibtestCheck.cpp  JlibtestCheck.h
 
 
 
-{% highlight cpp %}
+```cpp
 // JlibtestCheck.h
 
 //===--- JlibtestCheck.h - clang-tidy ---------------------------*- C++ -*-===//
@@ -1026,9 +1063,10 @@ public:
 } // namespace clang
 
 #endif // LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_PERFORMANCE_JLIBTESTCHECK_H
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 // JlibtestCheck.cpp
 
 //===--- JlibtestCheck.cpp - clang-tidy -----------------------------------===//
@@ -1093,26 +1131,29 @@ void JlibtestCheck::check(const MatchFinder::MatchResult &Result) {
 } // namespace performance
 } // namespace tidy
 } // namespace clang
-{% endhighlight %}
+```
+
 
 
 * 构建编译 clang-tidy
 
-{% highlight text %}
+```text
 $ cd llvm-project-11.0.0/build
 $ cmake -DLLVM_ENABLE_PROJECTS="clang-tools-extra" -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles" ../llvm
 $ make -j16
 $ cd bin
 $ ls clang-tidy
 clang-tidy
-{% endhighlight %}
+```
+
 
 * 使用方法
 
-{% highlight text %}
+```text
 $ cd llvm-project-11.0.0/build/bin
 $ ./clang-tidy --checks="-*,performance-JLibTest" test.cc
-{% endhighlight %}
+```
+
 
 ![clang-tidy-extend3](/assets/images/202306/clang-tidy-extend3.png)
 
@@ -1182,7 +1223,7 @@ Explanation:
 * **Clangd's Include Cleaner**: `Clangd`, a powerful language server for C++, integrates IWYU-like functionality through its include cleaner. This feature helps manage includes by suggesting additions, removals, and reordering. The `// IWYU pragma: keep` directive is respected by clangd's include cleaner, preventing it from suggesting the removal of marked includes.
 
 
-{% highlight cpp %}
+```cpp
 #include <vector> // IWYU pragma: keep
 #include "my_utility.h"
 
@@ -1191,7 +1232,8 @@ int main() {
     // ...
     return 0;
 }
-{% endhighlight %}
+```
+
 
 In this example, even if `IWYU` or `clangd` determined that `<vector>` was not strictly necessary (e.g., if `std::vector` was only used in a function called from another translation unit), the `// IWYU pragma: keep` comment would ensure it remains included.
 
@@ -1252,25 +1294,27 @@ https://github.com/llvm/llvm-project/releases/tag/llvmorg-3.5.2 (目前这个版
 
 
 
-{% highlight text %}
+```text
 $ git clone https://github.com/llvm/llvm-project llvm-project    # 最新版本，可以编译成功
 $ mkdir build
 $ cd build
 $ cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS=lld -DCMAKE_INSTALL_PREFIX=/usr/local ../llvm-project/llvm
 $ make install
-{% endhighlight %}
+```
+
 
 > 依赖：
 > 1. cmake 3.20
 > 2. gcc 7.1
 > 3. Python 3.8
 
-{% highlight text %}
+```text
 $ls -lh /usr/local/bin/lld
 -rwxr-xr-x 1 root root 125M 7月  19 16:35 /usr/local/bin/lld
 $ls -lh /usr/local/bin/ld.lld
 lrwxrwxrwx 1 root root 3 7月  19 16:45 /usr/local/bin/ld.lld -> lld
-{% endhighlight %}
+```
+
 
 > 注意：-fuse-ld=lld 用法依赖 /usr/local/bin/ld.lld 软链。
 
@@ -1321,13 +1365,14 @@ If you don’t want to change the system setting, you can use clang’s `-fuse-l
 
 `LLD` leaves its name and version number to a `.comment` section in an output. If you are in doubt whether you are successfully using `LLD` or not, run `readelf --string-dump .comment <output-file>` and examine the output. If the string “Linker: LLD” is included in the output, you are using `LLD`.
 
-{% highlight text %}
+```text
 $lld --version
 lld is a generic driver.
 Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly) instead
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 ~$ls -lh /usr/bin/ld
 lrwxrwxrwx 1 root root 20 3月   5 2021 /usr/bin/ld -> /etc/alternatives/ld
 ~$ls -lh /etc/alternatives/ld
@@ -1340,9 +1385,10 @@ Copyright (C) 2016 Free Software Foundation, Inc.
 这个程序是自由软件；您可以遵循GNU 通用公共授权版本 3 或
 (您自行选择的) 稍后版本以再次散布它。
 这个程序完全没有任何担保。
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 ~$ls -lh /usr/bin/ld.gold
 -rwxr-xr-x 1 root root 5.2M 10月 29 2019 /usr/bin/ld.gold
 ~$/usr/bin/ld.gold --version
@@ -1351,11 +1397,12 @@ Copyright (C) 2016 Free Software Foundation, Inc.
 这个程序是自由软件；您可以遵循GNU 通用公共授权版本 3 或
 (您自行选择的) 稍后版本以再次散布它。
 这个程序完全没有任何担保。
-{% endhighlight %}
+```
+
 
 修改 ld 的软链：
 
-{% highlight text %}
+```text
 # ls -lh /usr/bin/ld
 lrwxrwxrwx 1 root root 20 3月   5 2021 /usr/bin/ld -> /etc/alternatives/ld
 # rm /usr/bin/ld
@@ -1364,11 +1411,12 @@ lrwxrwxrwx 1 root root 20 3月   5 2021 /usr/bin/ld -> /etc/alternatives/ld
 # ln -s /usr/local/bin/ld.lld /usr/bin/ld
 # ls -lh /usr/bin/ld
 lrwxrwxrwx 1 root root 21 7月  19 17:46 /usr/bin/ld -> /usr/local/bin/ld.lld
-{% endhighlight %}
+```
+
 
 生效后：
 
-{% highlight text %}
+```text
 ~$ld --version
 LLD 17.0.0 (compatible with GNU linkers)
 ~$which ld
@@ -1377,7 +1425,8 @@ LLD 17.0.0 (compatible with GNU linkers)
 lrwxrwxrwx 1 root root 21 7月  19 17:46 /bin/ld -> /usr/local/bin/ld.lld
 ~$/usr/local/bin/ld.lld --version
 LLD 17.0.0 (compatible with GNU linkers)
-{% endhighlight %}
+```
+
 
 ## Semantic differences between lld and GNU linkers
 
@@ -1430,7 +1479,7 @@ lld has built-in `LTO` (link-time optimization) support
 
 ## ld 切换脚本
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 CUR_DIR=$(dirname $(readlink -f $0))
@@ -1474,7 +1523,8 @@ fi
 sudo ln -sf "$LD_PATH" "$ORIG_LD_LINK_PATH"
 
 echo "Successfully replaced ld with $1"
-{% endhighlight %}
+```
+
 
 ## [LLD and GNU linker incompatibilities](https://maskray.me/blog/2020-12-19-lld-and-gnu-linker-incompatibilities) - Is ld.lld a drop-in replacement for GNU ld?
 
@@ -1508,9 +1558,10 @@ The default image base for `-no-pie` links is different. For example, on x86-64,
 
 使用 `-Wl,--image-base` 选项可以修改 lld 默认的基址：
 
-{% highlight text %}
+```text
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld -Wl,--image-base=0x400000")
-{% endhighlight %}
+```
+
 
 ## [Mold: A Modern Linker](https://github.com/rui314/mold)
 
@@ -1552,28 +1603,31 @@ LLDB是一个高性能、可扩展的源代码级调试器，它是LLVM项目的
 
 要在命令行中使用LLDB调试程序，请运行以下命令：
 
-{% highlight text %}
+```text
 lldb my_program
-{% endhighlight %}
+```
+
 
 这将启动LLDB并加载my_program可执行文件。在LLDB中，您可以使用各种命令来设置断点、执行代码、检查变量等。例如，要在main函数上设置一个断点，请使用以下命令：
 
-{% highlight text %}
+```text
 (lldb) breakpoint set --name main
-{% endhighlight %}
+```
+
 
 要运行程序，请使用以下命令：
 
-{% highlight text %}
+```text
 (lldb) run
-{% endhighlight %}
+```
+
 
 当程序暂停执行时，您可以使用step、next、finish等命令来逐行执行代码，使用print命令来检查变量的值，使用bt命令来查看调用栈等。
 
 有关LLDB的详细使用方法和命令，请参阅[LLDB官方文档](https://lldb.llvm.org/use/tutorial.html)。
 
 
-{% highlight text %}
+```text
 $lldb -h
 OVERVIEW: LLDB
 
@@ -1694,7 +1748,8 @@ EXAMPLES:
 
   Note: In REPL mode no file is loaded, so commands specified to run after
   loading the file (via -o or -s) will be ignored.
-{% endhighlight %}
+```
+
 
 # Toolchain
 

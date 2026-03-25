@@ -99,7 +99,7 @@ https://clocks.brianmoore.com/
 
 请从英语五年级下册 pdf 中最后的单词列表中解析出 unit1 单元的单词，补充例句和记忆方法，并按照下面的格式输出。
 
-{% highlight md %}
+```md
 # 英语五年级上册
 
 ## Unit 1
@@ -118,7 +118,8 @@ Title:What subjects do you like? Category:学科类
 * subject /ˈsʌbdʒekt/ 学科；主题
   - 例句：What subject do you like? (你喜欢什么学科？)
   - 记忆：sub + ject
-{% endhighlight %}
+```
+
 
 
 
@@ -127,7 +128,7 @@ Title:What subjects do you like? Category:学科类
 
 请从 pdf 中解析 unit1 课文内容并生成对话文本，同时对每个对话添加中文翻译，并总结这个单元的重要句型和知识点。最后按照下面格式输出 ``` markdown xxx ``` 包裹的文本格式。
 
-{% highlight markdown %}
+```markdown
 ## Unit 1
 
 * 题目：Friends (好朋友的共同点)
@@ -147,7 +148,8 @@ Kitty: We both like sport. I like playing table tennis and Alice likes playing v
 Kitty: We both love animals. I have a cat and Alice has a dog. (吉蒂：我们两个都喜爱动物。我有一只猫，艾丽丝有一只狗。)
 Kitty: We both like helping people. We sometimes help old people cross the street. We also help them carry heavy bags. (吉蒂：我们两个都喜欢帮助别人。我们有时帮助老人穿过马路。我们还帮他们提重袋子。)
 Kitty: We like each other. We're good friends. (吉蒂：我们喜欢彼此。我们是好朋友。)
-{% endhighlight %}
+```
+
 
 
 
@@ -285,7 +287,7 @@ Add a realistic {beard_style} to the face in this photo, blended naturally with 
     *   `duration`：视频时长，目前通常为6秒。
     *   `resolution`：分辨率，如 `"1080P"`。
 *   **代码示例**：
-{% highlight python %}
+```python
 import os, time, requests
 api_key = os.environ["MINIMAX_API_KEY"]
 headers = {"Authorization": f"Bearer {api_key}"}
@@ -303,7 +305,8 @@ task_id = response.json()["task_id"]
 
 # 2. 轮询状态... (需实现轮询逻辑)
 # 3. 获取文件... (需实现获取逻辑)
-{% endhighlight %}
+```
+
 
 
 > 模式二：根据图片生成视频 (Image-to-Video)
@@ -314,7 +317,7 @@ task_id = response.json()["task_id"]
     *   `first_frame_image`：起始图片的**可公开访问的URL**。
     *   `prompt`：描述基于首帧图像发生的**运动或变化**，可使用**图生视频Prompt公式**（见下文）。
 *   **代码示例** (关键Payload):
-{% highlight python %}
+```python
 payload = {
     "prompt": "Contemporary dance, the people in the picture are performing contemporary dance.",
     "first_frame_image": "https://filecdn.minimax.chat/public/85c96368-6ead-4eae-af9c-116be878eac3.png",
@@ -322,7 +325,8 @@ payload = {
     "duration": 6,
     "resolution": "1080P",
 }
-{% endhighlight %}
+```
+
 
 > 模式三：首尾帧生成视频 (Start&End-frame-to-Video)
 
@@ -333,7 +337,7 @@ payload = {
     *   `last_frame_image`：结束图片URL。
     *   `prompt`：描述从首帧到尾帧的演变过程，如“A little girl grow up.”。
 *   **代码示例** (关键Payload):
-{% highlight python %}
+```python
 payload = {
     "prompt": "A little girl grow up.",
     "first_frame_image": "https://.../start.jpeg",
@@ -342,7 +346,8 @@ payload = {
     "duration": 6,
     "resolution": "1080P"
 }
-{% endhighlight %}
+```
+
 
 > 模式四：主体参考生成视频 (Subject Reference)
 
@@ -353,7 +358,7 @@ payload = {
     *   `prompt`：详细的场景、动作、镜头描述。
     *   `model`：如 `"S2V-01"`。
 *   **代码示例** (关键Payload):
-{% highlight python %}
+```python
 payload = {
     "prompt": "On an overcast day, in an ancient cobbled alleyway, the model is dressed in a brown corduroy jacket...", # 详细描述
     "subject_reference": [
@@ -366,7 +371,8 @@ payload = {
     "duration": 6,
     "resolution": "1080P",
 }
-{% endhighlight %}
+```
+
 
 
 > 高级功能：使用模板生成视频 (Video Template)
@@ -379,7 +385,7 @@ payload = {
     *   `media_inputs`：填充模板的图片或视频素材URL列表。
     *   `text_inputs`：填充模板的文本列表。
 *   **代码示例** (关键Payload):
-{% highlight python %}
+```python
 url = "https://api.minimaxi.com/v1/video_template_generation"
 payload = {
     "template_id": "393769180141805569",  # 绝地求生模板ID
@@ -387,7 +393,8 @@ payload = {
     "text_inputs": [{"value": "狮子"}],
 }
 # 后续轮询状态，成功后从 response_json["video_url"] 获取视频
-{% endhighlight %}
+```
+
 *   **常用模板示例** (来自官方列表)：
 
 | 模板 ID | 名称 | 说明 | 素材需求 |

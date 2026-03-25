@@ -27,10 +27,11 @@ Git的操作流程：
 
 ![git-mode](/assets/images/201810/git-mode.jpg)
 
-{% highlight text %}
+```text
 工作目录 ------------> 暂存区 ------------> 版本历史
         git add files        git commit
-{% endhighlight %}
+```
+
 
 
 # [Git的设计思想]
@@ -133,16 +134,17 @@ If a particular version of a file is in the git directory, it's considered commi
 
 安装依赖：
 
-{% highlight text %}
+```text
 sudo yum -y install epel-release
 sudo yum -y groupinstall "Development Tools"
 sudo yum -y install wget perl-CPAN gettext-devel perl-devel  openssl-devel  zlib-devel curl-devel expat-devel  getopt asciidoc xmlto docbook2X
 sudo ln -s /usr/bin/db2x_docbook2texi /usr/bin/docbook2x-texi
-{% endhighlight %}
+```
+
 
 下载git源码，并编译：
 
-{% highlight text %}
+```text
 sudo yum -y install wget
 export VER="2.32.0"
 wget https://github.com/git/git/archive/v${VER}.tar.gz
@@ -153,7 +155,8 @@ make configure
 sudo ./configure --prefix=/usr
 sudo make
 sudo make install
-{% endhighlight %}
+```
+
 
 [Install Latest Git ( Git 2.x ) on CentOS 7](https://computingforgeeks.com/how-to-install-latest-version-of-git-git-2-x-on-centos-7/)
 
@@ -161,7 +164,7 @@ sudo make install
 
 安装后，对Git进行配置，通过命令行的方式。首先需要配置用户名和邮箱，如果没有配置在执行Git命令时会提示如下错误：
 
-{% highlight text %}
+```text
 *** Please tell me who you are.
 
 Run
@@ -171,9 +174,10 @@ Run
 
 to set your account's default identity.
 Omit --global to set the identity only in this repository.
-{% endhighlight %}
+```
 
-{% highlight bash %}
+
+```bash
 # Sets the some repo name for git to use when you commit
 git config --local user.name "your_name"
 
@@ -185,11 +189,12 @@ git config --global user.name "your_name"
 
 # Sets the default email for git to use when you commit
 git config --global user.email "your_email@example.com"
-{% endhighlight %}
+```
+
 
 注意上面的设置是对`全局`生效的，若想对`某个repo`使用不同的username或email可以通过下面方法进行设置：
 
-{% highlight bash %}
+```bash
 # Changes the working directory to the repository you need to switch info for
 cd my_other_repo
 
@@ -198,13 +203,15 @@ git config --local user.name "Different Name"
 
 # Sets the user's email for this specific repository
 git config --local user.email "differentemail@email.com"
-{% endhighlight %}
+```
+
 
 查看配置：
 
-{% highlight bash %}
+```bash
 git config --list [--local | --global | --system]
-{% endhighlight %}
+```
+
 
 区别:
 * local：只对某一个仓库生效
@@ -221,18 +228,20 @@ git config --list [--local | --global | --system]
 
 * 把已有的项目代码纳入Git管理
 
-{% highlight bash %}
+```bash
 $ cd your_project
 $ git init
-{% endhighlight %}
+```
+
 
 * 新建的项目直接使用Git管理
 
-{% highlight bash %}
+```bash
 $ cd 某个文件夹
 $ git init your_project   # 会在当前路径下创建your_project目录
 $ cd your_project
-{% endhighlight %}
+```
+
 
 # 特殊文件
 
@@ -260,19 +269,21 @@ A [gitignore](https://git-scm.com/docs/gitignore) file specifies intentionally u
 
 在实际的项目中，比如，临时文件，编译过程文件(例如C/C++编译过程中的`.o`文件)等，是不需要进行代码管理的(即不用提交)。可以在仓库的根目录下创建一个名为`.gitignore`的文件，并配置当前项目需要忽略的文件列表。
 
-{% highlight bash %}
+```bash
 *.[oa]
 *~
-{% endhighlight %}
+```
+
 
 * 忽略所有以`.o`或`.a`结尾的文件
 * 忽略所有以波浪符结尾的文件
 
 如果忘记添加`.gitignore`文件，不小心将一些不需要的日志文件添加到了暂存区(staging area)，可以这么撤销：
 
-{% highlight bash %}
+```bash
 git rm --cached *.log
-{% endhighlight %}
+```
+
 
 此命令会把暂存区域的文件移除，同时文件仍然保留在磁盘。
 
@@ -283,7 +294,7 @@ git rm --cached *.log
 
 [Clear .gitignore cache](https://gist.github.com/ainsofs/2b80771a5582b7528d9e)
 
-{% highlight bash %}
+```bash
 # remove specific file from git cache
 git rm --cached filename
 
@@ -291,11 +302,12 @@ git rm --cached filename
 git rm -r --cached .
 git add .
 git commit -m ".gitignore is now working"
-{% endhighlight %}
+```
+
 
 如果要忽略某个文件，但是又需要此文件在 git 工程中存在，可以：
 
-{% highlight text %}
+```text
 # 先从工程中删除
 git rm --cached filename
 git commit -m "chore: rm filename"
@@ -307,7 +319,8 @@ git push origin master
 git add -f filename
 git commit -m "chore: add filename"
 git push origin master
-{% endhighlight %}
+```
+
 
 
 ![gitignore](/assets/images/201810/gitignore.jpg)
@@ -321,7 +334,7 @@ git push origin master
 
 > An optional prefix `!` which negates the pattern; any matching file excluded by a previous pattern will become included again. If a negated pattern matches, this will override lower precedence patterns sources.
 
-{% highlight text %}
+```text
 # Ignore everything
 *
 
@@ -337,7 +350,8 @@ git push origin master
 # if the files to be tracked are in subdirectories
 !*/a/b/file1.txt
 !*/a/b/c/*
-{% endhighlight %}
+```
+
 
 
 
@@ -385,60 +399,69 @@ git push origin master
 在未进行`git push`前的所有操作，都是在本地仓库中执行的。将**本地仓库的代码还原操作**叫做**撤销**。
 
 * 生成了新的local untracked files
-{% highlight text %}
+```text
 git clean -fd
-{% endhighlight %}
+```
+
 
 * 还原为上一次提交的状态
-{% highlight text %}
+```text
 git restore <file>
-{% endhighlight %}
+```
+
 
 * 文件被修改了，但未执行git add操作(working tree内撤销)
-{% highlight bash %}
+```bash
 git checkout <fileName>
 git checkout .
-{% endhighlight %}
+```
+
 
 * 撤销`typechange`状态的文件  refer: [Git reset files with typechange status](https://stackoverflow.com/questions/24533390/git-reset-files-with-typechange-status/53126931)
 
-{% highlight text %}
+```text
 git status --porcelain | awk '{if ($1=="T") print $2}' | xargs git checkout
-{% endhighlight %}
+```
+
 
 * 同时对多个文件执行了`git add`操作，但本次只想提交其中一部分文件(这种情况是把一个文件修改了add到暂存区了但又想重新放回工作区)
-{% highlight bash %}
+```bash
 git add *
 git status
 # 取消暂存
 git reset HEAD <fileName>
 git reset HEAD
-{% endhighlight %}
+```
+
 
 * 文件执行了`git add`操作，但想撤销对其的修改(index内回滚)
-{% highlight bash %}
+```bash
 # 1. 取消暂存
 git reset HEAD <fileName>
 # 2. 撤销修改
 git checkout <fileName>
-{% endhighlight %}
+```
+
 
 * 修改的文件已被`git commit`，但想再次修改不再产生新的commit
-{% highlight bash %}
+```bash
 # 修改最后一次提交
 git add sample.txt
 git commit --amend -m"说明"
-{% endhighlight %}
+```
+
 
 * 版本已经commit，但是需要回退，会将提交记录和代码全部回滚
-{% highlight bash %}
+```bash
 git reset --hard <commit-id>
-{% endhighlight %}
+```
+
 
 * 将`HEAD`理解为当前分支的别名，`HEAD`表示当前版本，上一个版本就`HEAD^`，上上一个版本就是`HEAD^^`，当然往上100个版本写100个^比较容易数不过来，所以写成`HEAD~100`
-{% highlight bash %}
+```bash
 git reset --hard HEAD^
-{% endhighlight %}
+```
+
 
 > 问题：如果使用`git reset --hard <commit-id>`回退到某个版本，之后想撤回，使用`git log`已经找不到之前的提交记录，怎么办？
 > 解决方法：Git提供了一个`git reflog`命令用来记录你的每一次命令，可以找到之前的commit-id，然后再执行`git reset --hard <commit-id>`。
@@ -459,13 +482,14 @@ refer: [Git撤销&回滚操作]
 
 若不小心把错误的代码merge到主干了怎么办？到项目根目录，执行如下操作：
 
-{% highlight bash %}
+```bash
 git checkout master          # 切换到master
 git pull                     # 拉取最新代码
 git log -l 5                 # 查看想退回到版本号并copy下来，后面到数字可以自己设置。或者使用git reflog
 git reset --hard `版本号`     # 强制将指针回退到指定版本
 git push -f                  # 强制push到远端master
-{% endhighlight %}
+```
+
 
 ## 重写历史
 
@@ -475,7 +499,7 @@ git push -f                  # 强制push到远端master
 
 另一个常见的情形是在你开始工作时忘记运行 `git config` 来设置你的名字与邮箱地址， 或者你想要开源一个项目并且修改所有你的工作邮箱地址为你的个人邮箱地址。 任何情形下，你也可以通过 `filter-branch` 来一次性修改多个提交中的邮箱地址。 需要小心的是只修改你自己的邮箱地址，所以你使用 `--commit-filter`：
 
-{% highlight text %}
+```text
 $ git filter-branch --commit-filter '
         if [ "$GIT_AUTHOR_EMAIL" = "schacon@localhost" ];
         then
@@ -485,7 +509,8 @@ $ git filter-branch --commit-filter '
         else
                 git commit-tree "$@";
         fi' HEAD
-{% endhighlight %}
+```
+
 
 这会遍历并重写每一个提交来包含你的新邮箱地址。 因为提交包含了它们父提交的 SHA-1 校验和，这个命令会修改你的历史中的每一个提交的 SHA-1 校验和， 而不仅仅只是那些匹配邮箱地址的提交。
 
@@ -498,7 +523,7 @@ To be able to collaborate on any Git project, you need to know how to manage you
 
 To see which remote servers you have configured, you can run the `git remote` command. It lists the shortnames of each remote handle you’ve specified. If you’ve cloned your repository, you should at least see `origin` — that is the default name Git gives to the server you cloned from:
 
-{% highlight text %}
+```text
 $ git clone https://github.com/schacon/ticgit
 Cloning into 'ticgit'...
 remote: Reusing existing pack: 1857, done.
@@ -509,19 +534,21 @@ Checking connectivity... done.
 $ cd ticgit
 $ git remote
 origin
-{% endhighlight %}
+```
+
 
 You can also specify -v, which shows you the URLs that Git has stored for the shortname to be used when reading and writing to that remote:
 
-{% highlight text %}
+```text
 $ git remote -v
 origin	https://github.com/schacon/ticgit (fetch)
 origin	https://github.com/schacon/ticgit (push)
-{% endhighlight %}
+```
+
 
 If you have more than one remote, the command lists them all. For example, a repository with multiple remotes for working with several collaborators might look something like this.
 
-{% highlight text %}
+```text
 $ cd grit
 $ git remote -v
 bakkdoor  https://github.com/bakkdoor/grit (fetch)
@@ -534,7 +561,8 @@ koke      git://github.com/koke/grit.git (fetch)
 koke      git://github.com/koke/grit.git (push)
 origin    git@github.com:mojombo/grit.git (fetch)
 origin    git@github.com:mojombo/grit.git (push)
-{% endhighlight %}
+```
+
 
 This means we can pull contributions from any of these users pretty easily. We may additionally have permission to push to one or more of these, though we can’t tell that here.
 
@@ -543,7 +571,7 @@ This means we can pull contributions from any of these users pretty easily. We m
 
 We’ve mentioned and given some demonstrations of how the `git clone` command implicitly adds the `origin` remote for you. Here’s how to add a new remote explicitly. To add a new remote Git repository as a shortname you can reference easily, run `git remote add <shortname> <url>`:
 
-{% highlight text %}
+```text
 $ git remote
 origin
 $ git remote add pb https://github.com/paulboone/ticgit
@@ -552,11 +580,12 @@ origin	https://github.com/schacon/ticgit (fetch)
 origin	https://github.com/schacon/ticgit (push)
 pb	https://github.com/paulboone/ticgit (fetch)
 pb	https://github.com/paulboone/ticgit (push)
-{% endhighlight %}
+```
+
 
 Now you can use the string pb on the command line instead of the whole URL. For example, if you want to fetch all the information that Paul has but that you don’t yet have in your repository, you can run `git fetch pb`:
 
-{% highlight text %}
+```text
 $ git fetch pb
 remote: Counting objects: 43, done.
 remote: Compressing objects: 100% (36/36), done.
@@ -565,7 +594,8 @@ Unpacking objects: 100% (43/43), done.
 From https://github.com/paulboone/ticgit
  * [new branch]      master     -> pb/master
  * [new branch]      ticgit     -> pb/ticgit
-{% endhighlight %}
+```
+
 
 Paul’s master branch is now accessible locally as pb/master — you can merge it into one of your branches, or you can check out a local branch at that point if you want to inspect it. We’ll go over what branches are and how to use them in much more detail in [Git Branching](https://git-scm.com/book/en/v2/ch00/ch03-git-branching).
 
@@ -573,9 +603,10 @@ Paul’s master branch is now accessible locally as pb/master — you can me
 
 As you just saw, to get data from your remote projects, you can run:
 
-{% highlight text %}
+```text
 $ git fetch <remote>
-{% endhighlight %}
+```
+
 
 The command goes out to that remote project and pulls down all the data from that remote project that you don’t have yet. After you do this, you should have references to all the branches from that remote, which you can merge in or inspect at any time.
 
@@ -594,9 +625,10 @@ If your current branch is set up to track a remote branch (see the next section 
 
 When you have your project at a point that you want to share, you have to push it upstream. The command for this is simple: `git push <remote> <branch>`. If you want to push your `master` branch to your `origin` server (again, cloning generally sets up both of those names for you automatically), then you can run this to push any commits you’ve done back up to the server:
 
-{% highlight text %}
+```text
 $ git push origin master
-{% endhighlight %}
+```
+
 
 This command works only if you cloned from a server to which you have write access and if nobody has pushed in the meantime. If you and someone else clone at the same time and they push upstream and then you push upstream, your push will rightly be rejected. You’ll have to fetch their work first and incorporate it into yours before you’ll be allowed to push. See [Git Branching](https://git-scm.com/book/en/v2/ch00/ch03-git-branching) for more detailed information on how to push to remote servers.
 
@@ -604,7 +636,7 @@ This command works only if you cloned from a server to which you have write acce
 
 If you want to see more information about a particular remote, you can use the `git remote show <remote>` command. If you run this command with a particular shortname, such as `origin`, you get something like this:
 
-{% highlight text %}
+```text
 $ git remote show origin
 * remote origin
   Fetch URL: https://github.com/schacon/ticgit
@@ -617,13 +649,14 @@ $ git remote show origin
     master merges with remote master
   Local ref configured for 'git push':
     master pushes to master (up to date)
-{% endhighlight %}
+```
+
 
 It lists the URL for the remote repository as well as the tracking branch information. The command helpfully tells you that if you’re on the `master` branch and you run `git pull`, it will automatically merge the remote’s `master` branch into the local one after it has been fetched. It also lists all the remote references it has pulled down.
 
 That is a simple example you’re likely to encounter. When you’re using Git more heavily, however, you may see much more information from `git remote show`:
 
-{% highlight text %}
+```text
 $ git remote show origin
 * remote origin
   URL: https://github.com/my-org/complex-project
@@ -644,7 +677,8 @@ $ git remote show origin
     dev-branch                     pushes to dev-branch                     (up to date)
     markdown-strip                 pushes to markdown-strip                 (up to date)
     master                         pushes to master                         (up to date)
-{% endhighlight %}
+```
+
 
 This command shows which branch is automatically pushed to when you run `git push` while on certain branches. It also shows you which remote branches on the server you don’t yet have, which remote branches you have that have been removed from the server, and multiple local branches that are able to merge automatically with their remote-tracking branch when you run `git pull`.
 
@@ -653,22 +687,24 @@ This command shows which branch is automatically pushed to when you run `git pus
 
 You can run `git remote rename` to change a remote’s shortname. For instance, if you want to rename `pb` to `paul`, you can do so with `git remote rename`:
 
-{% highlight text %}
+```text
 $ git remote rename pb paul
 $ git remote
 origin
 paul
-{% endhighlight %}
+```
+
 
 It’s worth mentioning that this changes all your remote-tracking branch names, too. What used to be referenced at `pb/master` is now at `paul/master`.
 
 If you want to remove a remote for some reason — you’ve moved the server or are no longer using a particular mirror, or perhaps a contributor isn’t contributing anymore — you can either use `git remote remove` or `git remote rm`:
 
-{% highlight text %}
+```text
 $ git remote remove paul
 $ git remote
 origin
-{% endhighlight %}
+```
+
 
 Once you delete the reference to a remote this way, all remote-tracking branches and configuration settings associated with that remote are also deleted.
 
@@ -707,19 +743,20 @@ Some people refer to Git’s branching model as its “killer feature,” and it
 
 ## 查看和设置Git配置
 
-{% highlight bash %}
+```bash
 # 查看当前Git配置
 git config --list
 
 # 设置用户名和邮箱
 git config --local user.name "your_name"
 git config --local user.email "your_email@example.com"
-{% endhighlight %}
+```
+
 
 ## 创建代码仓库
 
 
-{% highlight bash %}
+```bash
 # 初始化并生成.git子目录存放Git仓库的配置文件
 git init
 
@@ -740,13 +777,14 @@ git remote add origin git@github.com:gerryyang/your_repo.git
 
 # 将本地修改的代码推送到remote仓库
 git push -u origin master
-{% endhighlight %}
+```
+
 
 ## 远程仓库操作 - git clone
 
 从远程主机克隆一个版本库，使用`git clone`命令。该命令会在本地主机生成一个目录，与远程主机的版本库同名。如果要指定不同的目录名，可以将目录名作为`git clone`命令的第二个参数。`git clone`支持多种协议，除了HTTP(s)以外，还支持SSH、Git、本地文件协议等。通常来说，Git协议下载速度最快，SSH协议用于需要用户认证的场合。各种协议优劣的详细讨论请参考[官方文档](http://git-scm.com/book/en/Git-on-the-Server-The-Protocols)。
 
-{% highlight bash %}
+```bash
 # 克隆一个版本库
 git clone <版本库的网址>
 
@@ -768,11 +806,12 @@ git clone /opt/git/project.git
 git clone file:///opt/git/project.git
 git clone ftp[s]://example.com/path/to/repo.git/
 git clone rsync://example.com/path/to/repo.git/
-{% endhighlight %}
+```
+
 
 使用 `git clone --mirror` 完整克隆原仓库的镜像（包含所有分支、标签和提交历史），然后修改远程地址并推送到新仓库。
 
-{% highlight bash %}
+```bash
 # 1. 克隆原仓库的镜像
 git clone --mirror https://git.woa.com/gerryyang/abc.git
 cd abc.git  # 进入克隆生成的目录
@@ -797,14 +836,15 @@ git clone https://git.woa.com/jlib/jlib_mesh.git
 # 处理特殊内容：如原仓库使用 Git LFS，需额外迁移 LFS 对象
   git lfs fetch --all
   git lfs push --all origin
-{% endhighlight %}
+```
+
 
 
 ## 远程仓库操作 - git remote
 
 为了便于管理，Git要求每个远程主机都必须指定一个`主机名`。`git remote`命令就用于管理主机名。不带选项的时候，git remote命令列出所有远程主机。使用`-v`选项，可以参看远程主机的网址。克隆版本库的时候，所使用的远程主机自动被Git命名为origin。如果想用其他的主机名，需要用git clone命令的`-o`选项指定。`git remote show`命令加上`主机名`，可以查看该主机的详细信息。
 
-{% highlight bash %}
+```bash
 # 命令列出所有远程主机
 $ git remote
 origin
@@ -850,7 +890,8 @@ git remote set-url origin <新地址>
 [url "新地址:"]
     insteadOf = 老地址:
 
-{% endhighlight %}
+```
+
 
 ## 远程仓库操作 - git checkout
 
@@ -860,20 +901,21 @@ git remote set-url origin <新地址>
 
 例如，部署更新只需要`lay1/lay2`目录即可
 
-{% highlight text %}
+```text
 git clone git@git.woa.com:gerryyang/proj.git --sparse
 
 cd proj
 git sparse-checkout init --cone
 git sparse-checkout add lay1/lay2
-{% endhighlight %}
+```
+
 
 
 ## 远程仓库操作 - git fetch
 
 一旦远程主机的版本库有了更新（Git术语叫做commit），需要将这些更新取回本地，这时就要用到`git fetch`命令。`git fetch`命令通常用来查看其他人的进程，因为它取回的代码对你本地的开发代码没有影响。取回远程主机的更新以后，可以在它的基础上，使用`git checkout`命令创建一个新的分支。
 
-{% highlight bash %}
+```bash
 # 将某个远程主机的更新，全部取回本地
 $ git fetch <远程主机名>
 
@@ -894,13 +936,14 @@ $ git checkout -b newBrach origin/master
 # 在当前分支上，合并origin/master
 $ git merge origin/master
 $ git rebase origin/master
-{% endhighlight %}
+```
+
 
 ## 远程仓库操作 - git pull
 
 `git pull`命令的作用是，取回远程主机某个分支的更新，再与本地的指定分支合并。它的完整格式稍稍有点复杂。
 
-{% highlight bash %}
+```bash
 $ git pull <远程主机名> <远程分支名>:<本地分支名>
 
 # 取回origin主机的next分支，与本地的master分支合并
@@ -912,14 +955,15 @@ $ git pull origin next
 # 上面命令表示，取回origin/next分支，再与当前分支合并。实质上，这等同于先做git fetch，再做git merge
 $ git fetch origin
 $ git merge origin/next
-{% endhighlight %}
+```
+
 
 ## 远程仓库操作 - git push
 
 `git push`命令用于将本地分支的更新，推送到远程主机。它的格式与git pull命令相仿。注意，分支推送顺序的写法是`<来源地>:<目的地>`，所以`git pull`是`<远程分支>:<本地分支>`，而`git push`是`<本地分支>:<远程分支>`。如果省略远程分支名，则表示将本地分支推送与之存在"追踪关系"的远程分支（通常两者同名），如果该远程分支不存在，则会被新建。
 
 
-{% highlight bash %}
+```bash
 $ git push <远程主机名> <本地分支名>:<远程分支名>
 
 # 将本地的master分支推送到origin主机的master分支。如果后者不存在，则会被新建
@@ -929,7 +973,8 @@ $ git push origin master
 $ git push origin :master
 # 等同于
 $ git push origin --delete master
-{% endhighlight %}
+```
+
 
 ## 添加变更文件 - git add
 
@@ -937,11 +982,12 @@ $ git push origin --delete master
 * `git add .` stages new files and modifications, **without deletions** (on the current directory and its subdirectories).
 * `git add -u` stages modifications and deletions, **without new files**
 
-{% highlight text %}
+```text
 # 设置 git add 别名，以忽略部分目录的变更
 git config alias.adds 'add -- ":!protocol" ":!resources"'
 git add .
-{% endhighlight %}
+```
+
 
 refer:
 
@@ -961,9 +1007,10 @@ refer:
 
 ## 查看某次提交信息 - git show
 
-{% highlight text %}
+```text
 git show <commit-id>
-{% endhighlight %}
+```
+
 
 
 ## 查看文件最后一次修改信息 - git blame
@@ -990,14 +1037,15 @@ git 2.23 版本中 git blame 新增了 -ignore-rev 参数，可用于忽略不�
 
 测试：--ignore-rev 选项
 
-{% highlight text %}
+```text
 $git blame -L 626,626 libs/common/Framework/IThread.cpp
 5cbab33d0 (user00 2021-08-04 12:53:00 +0800 626)     m_stLibEventMgr.SetupSingleton();
 $git blame -L 626,626 --ignore-rev 5cbab33d0 libs/common/Framework/IThread.cpp
 1595edd84 (user01 2020-12-31 01:46:35 +0000 626)     m_stLibEventMgr.SetupSingleton();
 $git blame --ignore-revs-file .git-blame-ignore-revs -L 626,626 JLib/libs/common/Framework/IThread.cpp
 1595edd84 (user01 2020-12-31 01:46:35 +0000 626)     m_stLibEventMgr.SetupSingleton();
-{% endhighlight %}
+```
+
 
 参考 [Flink 文档](https://nightlies.apache.org/flink/flink-docs-release-1.15/docs/flinkdev/ide_setup/#ignoring-refactoring-commits)的一段描述：
 
@@ -1011,37 +1059,41 @@ To limit the impact of such 'unimportant' bulk commits, `git 2.23` adds a new op
 
 When multiple bulk commits were added over time, it takes quite some effort to add a `--ignore-rev` for each of them in order to get a 'clean' output for `git blame`. Luckily, git also provides a way to make this easier on us. In your repository, create a file to hold commit hashes of commits to be ignored by `git blame`. Naming this file `.git-blame-ignore-revs` seems to be a common convention.
 
-{% highlight text %}
+```text
 $ cat .git-blame-ignore-revs
 # Conversion to PSR-2 code style
 237de8a6367a88649a3f161112492d0d70d83707
 
 # Fix line endings
 df0ee6b006ee0f90cccc18b71ced290f6cae18d9
-{% endhighlight %}
+```
+
 
 The file should contain the full (40 char) commit hashes. Lines starting with a `#` are considered comments and can be used to explain what makes the given commit(s) unimportant. Now we can call `git blame` with the `--ignore-revs-file` option to ignore all these commits at once.
 
-{% highlight text %}
+```text
 git blame --ignore-revs-file .git-blame-ignore-revs describeBottles.php
-{% endhighlight %}
+```
+
 
 The `.git-blame-ignore-revs` can be versioned inside the repository, so that all developers can use (and maintain) the same list of ignored commits. To avoid typing the extra option with every command, we can set the `blame.ignoreRevsFile` configuration variable:
 
-{% highlight text %}
+```text
 git config blame.ignoreRevsFile .git-blame-ignore-revs
-{% endhighlight %}
+```
+
 
 
 通过时间搜索需要忽略的 commit 提交记录。
 
-{% highlight text %}
+```text
 git log --pretty=format:"%H %ad - %an: %s" --after="2021-08-04 00:00:00" --until="2021-08-04 23:59:59"
-{% endhighlight %}
+```
+
 
 关于 git log --pretty=format 用法可参考：https://git-scm.com/docs/git-log
 
-{% highlight text %}
+```text
 %H
 commit hash
 
@@ -1053,19 +1105,21 @@ author date (format respects --date= option)
 
 %s
 subject
-{% endhighlight %}
+```
+
 
 在项目根目录执行`git config --local blame.ignoreRevsFile .git-blame-ignore-revs`，验证可以生效。但是需要每个项目都执行这个命令，所以考虑在公用的`.vscode/settings.json`里进行配置，可以使用`git blame`参数来实现这个命令。
 
-{% highlight text %}
+```text
 {
     "gitlens.advanced.blame.customArguments": [
         "--ignore-revs-file=.git-blame-ignore-revs",
     ],
 }
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 $cat .git-blame-ignore-revs
 #
 # @refer https://www.moxio.com/blog/43/ignoring-bulk-change-commits-with-git-blame
@@ -1077,12 +1131,13 @@ $cat .git-blame-ignore-revs
 
 # Wed Aug 4 12:53:00 2021 +0800 - user00: fix(format): xxx
 5cbab33d098e411bfe7cd3ca6871f1ddab8970a9
-{% endhighlight %}
+```
+
 
 ## 查看历史提交信息 - git log
 
 
-{% highlight bash %}
+```bash
 # 查看最近2次的提交统计信息
 git log --stat -2
 
@@ -1110,7 +1165,8 @@ git log --oneline -- .
 # 查看当前目录下特定文件的历史
 git log -- <filename>
 
-{% endhighlight %}
+```
+
 
 更多: [Git-基础-查看提交历史]
 
@@ -1118,13 +1174,14 @@ git log -- <filename>
 
 ## 对比差异 - git diff
 
-{% highlight text %}
+```text
 # 只显示当前一行的差异，而不是三行
 git diff -U0 HEAD^
 
 -U<n>, --unified=<n>
            Generate diffs with <n> lines of context instead of the usual three. Implies --patch. Implies -p.
-{% endhighlight %}
+```
+
 
 
 
@@ -1136,7 +1193,7 @@ Git最核心的特性就是，创建新分支操作几乎能在瞬间完成，�
 
 这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。而在Git中，任何规模的项目都能在瞬间创建新分支。
 
-{% highlight bash %}
+```bash
 # 更新远程分支信息
 git remote update origin --prune
 
@@ -1208,14 +1265,15 @@ Pruning origin
 URL: git@github.com:gerryyang/mac-utils.git
  * [pruned] origin/tmp
 
-{% endhighlight %}
+```
+
 
 注意：若在执行`git merge`时遇到代码冲突，需要先解决冲突。解决完冲突后，执行`git status`可以查看，任何因包含合并冲突而有待解决的文件，都会以未合并状态标识出来。而如果没有，说明所有的冲突都修复了，并且提醒你去提交一下。再执行`git commit -am <comment>`，至此冲突解决完毕并已提交代码。
 
 
 修改分支的名字：
 
-{% highlight bash %}
+```bash
 # Rename the local branch to the new name
 git branch -m <old_name> <new_name>
 
@@ -1230,7 +1288,8 @@ git push <remote> <new_name>
 
 # Reset the upstream branch for the new_name local branch
 git push <remote> -u <new_name>
-{% endhighlight %}
+```
+
 
 
 更多：
@@ -1256,19 +1315,21 @@ git push <remote> -u <new_name>
 
 例子：你可以检出 experiment 分支，然后将它变基到 master 分支上：
 
-{% highlight text %}
+```text
 $ git checkout experiment
 $ git rebase master
 First, rewinding head to replay your work on top of it...
 Applying: added staged command
-{% endhighlight %}
+```
+
 
 现在回到 master 分支，进行一次快进合并。
 
-{% highlight text %}
+```text
 $ git checkout master
 $ git merge experiment
-{% endhighlight %}
+```
+
 
 更多：
 
@@ -1283,7 +1344,7 @@ $ git merge experiment
 
 当前你在开发feature1分支，开发了一半，还要2天才能开发完成，这时候又不想提交。这时突然来了个bug，你必须今天就得修复bug，修复完了后才继续开发需求，怎么办？这里就使用到了暂存的功能。
 
-{% highlight bash %}
+```bash
 # 先把所有的修改暂存起来，这时候你的所有改动都好像消失了一样，但其实是被暂存起来了
 git stash
 # 新建bugfix分支去修复bug
@@ -1299,12 +1360,14 @@ git stash list
 git stash show 0
 git stash pop 0
 git stash drop 0
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 # git stash a specific file
 git stash push -m welcome_cart app/views/cart/welcome.thtml
-{% endhighlight %}
+```
+
 
 * https://stackoverflow.com/questions/5506339/how-can-i-git-stash-a-specific-file
 
@@ -1314,7 +1377,7 @@ git stash push -m welcome_cart app/views/cart/welcome.thtml
 克隆一个含有子模块的项目。当你在克隆这样的项目时，默认会包含该子模块目录，但其中还没有任何文件。你必须运行两个命令：`git submodule init` 用来初始化本地配置文件，而 `git submodule update` 则从该项目中抓取所有数据并检出父项目中列出的合适的提交。现在子目录是处在和之前提交时相同的状态了。不过还有更简单一点的方式。 如果给 `git clone` 命令传递 `--recurse-submodules` 选项，它就会自动初始化并更新仓库中的每一个子模块， 包括可能存在的嵌套子模块。如果你已经克隆了项目但忘记了 `--recurse-submodules`，那么可以运行 `git submodule update --init` 将 `git submodule init` 和 `git submodule update` 合并成一步。如果还要初始化、抓取并检出任何嵌套的子模块， 请使用简明的 `git submodule update --init --recursive`。
 
 
-{% highlight bash %}
+```bash
 # 含有子模块项目的clone
 git clone --recurse-submodule --remote-submodules git@github.com:gerryyang/mac-utils.git mac-utils
 
@@ -1326,24 +1389,27 @@ git submodule add https://github.com/chaconinc/DbConnector
 
 # https://git-scm.com/docs/git-submodule#Documentation/git-submodule.txt-sync--recursive--ltpathgt82308203
 git submodule sync
-{% endhighlight %}
+```
+
 
 在 Git 中，删除子模块可以分为两个步骤：
 
 * 删除子模块的引用：在父仓库中删除子模块的引用，即删除 `.gitmodules` 文件中对应子模块的配置信息和子模块目录下的 `.git` 目录。
 
-{% highlight bash %}
+```bash
 git submodule deinit -f <submodule-path>
 git rm -f <submodule-path>
 rm -rf .git/modules/<submodule-path>
-{% endhighlight %}
+```
+
 
 * 删除子模块的代码：在子模块目录中删除代码，并提交删除操作。
 
-{% highlight bash %}
+```bash
 rm -rf <submodule-path>
 git commit -m "Remove submodule <submodule-path>"
-{% endhighlight %}
+```
+
 
 需要注意的是，删除子模块会删除子模块的所有历史记录，因此在删除子模块之前需要备份子模块的代码和历史记录。另外，删除子模块后，如果需要重新添加子模块，需要重新执行 `git submodule add` 命令来添加子模块。
 
@@ -1359,16 +1425,17 @@ git commit -m "Remove submodule <submodule-path>"
 
 ## 取消某次提交 git revert
 
-{% highlight bash %}
+```bash
 git revert [--[no-]edit] [-n] [-m parent-number] [-s] [-S[<keyid>]] <commit>…​
 git revert (--continue | --skip | --abort | --quit)
-{% endhighlight %}
+```
+
 
 Given one or more existing commits, revert the changes that the related patches introduce, and record some new commits that record them. This requires your working tree to be clean (no modifications from the HEAD commit).
 
 Examples:
 
-{% highlight text %}
+```text
 git revert HEAD~3
 
 Revert the changes specified by the fourth last commit in HEAD and create a new commit with the reverted changes.
@@ -1376,13 +1443,14 @@ Revert the changes specified by the fourth last commit in HEAD and create a new 
 git revert -n master~5..master~2
 
 Revert the changes done by commits from the fifth last commit in master (included) to the third last commit in master (included), but do not create any commit with the reverted changes. The revert only modifies the working tree and the index.
-{% endhighlight %}
+```
+
 
 * https://git-scm.com/docs/git-revert
 
 ## 将指定的提交应用于其他分支 git cherry-pick
 
-{% highlight bash %}
+```bash
 git cherry-pick [--edit] [-n] [-m <parent-number>] [-s] [-x] [--ff] [-S[<keyid>]] <commit>…​
 git cherry-pick (--continue | --skip | --abort | --quit)
 
@@ -1391,7 +1459,8 @@ git cherry-pick <HashA> <HashB>
 git cherry-pick --continue
 
 git cherry-pick A^..B -x   # merge 从 A 到 B 的所有 commit，加不加  ^   就代表包不包括 A 这个 commit，加了就是包含 A，不加就是从 A 后面那个开始
-{% endhighlight %}
+```
+
 
 * `-n，--no-commit`: 只更新工作区和暂存区，不产生新的提交。
 * `-x`: 在提交信息的末尾追加一行 (cherry picked from commit ...)，方便以后查到这个提交是如何产生的。
@@ -1407,28 +1476,32 @@ git cherry-pick A^..B -x   # merge 从 A 到 B 的所有 commit，加不加  ^  
 
 Cherry pick 也支持转移另一个代码库的提交，方法是先将该库加为远程仓库。
 
-{% highlight bash %}
+```bash
 # 添加了一个远程仓库target
 git remote add target git://gitUrl
-{% endhighlight %}
+```
+
 
 然后，将远程代码抓取到本地：
 
-{% highlight bash %}
+```bash
 git fetch target
-{% endhighlight %}
+```
+
 
 接着，检查一下要从远程仓库转移的提交，获取它的哈希值：
 
-{% highlight bash %}
+```bash
 git log target/master
-{% endhighlight %}
+```
+
 
 最后，使用git cherry-pick命令转移提交：
 
-{% highlight bash %}
+```bash
 git cherry-pick <commitHash>
-{% endhighlight %}
+```
+
 
 
 refer:
@@ -1445,21 +1518,23 @@ Using sparse-checkout with an existing repository
 
 To restrict your working directory to a set of directories, run the following commands:
 
-{% highlight bash %}
+```bash
 git sparse-checkout init --cone
 git sparse-checkout set <dir1> <dir2> ...
-{% endhighlight %}
+```
+
 
 If you get stuck, run git sparse-checkout disable to return to a full working directory.
 
 使用示例：
 
-{% highlight text %}
+```text
 git clone $repo --sparse
 cd $repo
 git sparse-checkout init --cone
 git sparse-checkout add $repo_sub_path
-{% endhighlight %}
+```
+
 
 
 
@@ -1492,7 +1567,7 @@ Git LFS 全名 Git Large File Storage，是 Github 带头在 2015 年推出的�
 
 * 下载安装：https://github.com/git-lfs/git-lfs/releases
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 # Download Git LFS v3.4.0
@@ -1520,23 +1595,26 @@ fi
 ./install.sh
 
 echo "Git LFS installation successful"
-{% endhighlight %}
+```
+
 
 * 初始化仓库
 
-{% highlight bash %}
+```bash
 git lfs install
-{% endhighlight %}
+```
+
 
 
 * 配置想要加入 lfs 托管的文件规则
 
 例如，添加目录下所有的.psd 和.a 文件，使其被 LFS 托管
 
-{% highlight bash %}
+```bash
 git lfs track "*.psd"
 git lfs track "*.a"
-{% endhighlight %}
+```
+
 
 或者直接编辑`.gitattributes`文件
 
@@ -1546,12 +1624,13 @@ git lfs track "*.a"
 
 如果自己的相关工作不涉及到被 Git LFS 所管理的文件的话，可以选择只获取 Git 仓库自身的内容，而完全跳过 LFS 对象的获取。
 
-{% highlight bash %}
+```bash
 GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/gerryyang/mac-utils.git
 
 # 或
 git -c filter.lfs.smudge= -c filter.lfs.required=false clone https://github.com/gerryyang/mac-utils.git
-{% endhighlight %}
+```
+
 
 注意：`GIT_LFS_SKIP_SMUDGE=1` 及 `git -c filter.lfs.smudge= -c filter.lfs.required=false` 同样使用于其他 git 命令，如 checkout, reset 等
 
@@ -1559,21 +1638,23 @@ git -c filter.lfs.smudge= -c filter.lfs.required=false clone https://github.com/
 
 如果起初获取代码时，没有一并获取 LFS 对象，而随后又需要这些被 LFS 管理的文件时，可以单独执行 LFS 命令来获取并签出 LFS 对象：
 
-{% highlight bash %}
+```bash
 git lfs fetch
 git lfs checkout
 
 # 或
 git lfs pull
-{% endhighlight %}
+```
+
 
 经过以上几步，psd 和 a 类型的大文件就会在 push 时自动向 LFS 服务器提交了。
 
 * 查看已跟踪的 lfs 对象
 
-{% highlight bash %}
+```bash
 git lfs ls-files
-{% endhighlight %}
+```
+
 
 refer: https://git-lfs.github.com/
 
@@ -1588,13 +1669,14 @@ git bisect 是一个很有用的命令，用来查找哪一次代码提交引入
 
 Lists the contents of a given tree object, like what "/bin/ls -a" does in the current working directory.
 
-{% highlight bash %}
+```bash
 # 列出 Git 仓库中所有文件的大小，并按照文件大小排序
 git ls-tree -r -t -l HEAD | sort -k 4 -n
 
 # 列出 Git 仓库中大小超过指定大小的文件
 git ls-tree -r -t -l HEAD | awk '$4 >= <file-size> {print $0}'
-{% endhighlight %}
+```
+
 
 * https://git-scm.com/docs/git-ls-tree
 
@@ -1604,9 +1686,10 @@ This command manages the information recorded in the reflogs.
 
 `git reflog show `accepts any of the options accepted by `git log`.
 
-{% highlight text %}
+```text
 git reflog show --oneline -n5
-{% endhighlight %}
+```
+
 
 * https://git-scm.com/docs/git-reflog
 
@@ -1615,9 +1698,10 @@ git reflog show --oneline -n5
 
 Lists commit objects in reverse chronological order
 
-{% highlight text %}
+```text
 git rev-list --all --abbrev-commit | head -n5
-{% endhighlight %}
+```
+
 
 * https://git-scm.com/docs/git-rev-list
 
@@ -1625,9 +1709,10 @@ git rev-list --all --abbrev-commit | head -n5
 
 Cleanup unnecessary files and optimize the local repository.
 
-{% highlight text %}
+```text
 git gc --aggressive --prune=now
-{% endhighlight %}
+```
+
 
 * https://git-scm.com/docs/git-gc
 
@@ -1642,13 +1727,14 @@ Rewrite branches
 ## git rev-parse
 
 
-{% highlight bash %}
+```bash
 # 获取当前 HEAD 提交的哈希值
 git rev-parse HEAD
 
 # 获取当前分支名
 git rev-parse --abbrev-ref=strict HEAD
-{% endhighlight %}
+```
+
 
 * https://git-scm.com/docs/git-rev-parse
 * https://stackoverflow.com/questions/15798862/what-does-git-rev-parse-do
@@ -1657,7 +1743,7 @@ git rev-parse --abbrev-ref=strict HEAD
 ## git tag
 
 
-{% highlight bash %}
+```bash
 # 切换到要打 tag 的分支
 git checkout <branch-name>
 
@@ -1688,7 +1774,8 @@ git push <remote-name> :<tag-name>
 
 # 更新远程仓库的 tag 信息
 git fetch --tags
-{% endhighlight %}
+```
+
 
 * https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E6%89%93%E6%A0%87%E7%AD%BE
 
@@ -1702,13 +1789,14 @@ git-describe - Give an object a human readable name based on an available ref
 
 I can find the current git branch name by doing either of these:
 
-{% highlight bash %}
+```bash
 $ git describe --contains --all HEAD
 feature/apollo
 
 $ git branch | awk '/^\*/ { print $2 }'
 feature/apollo
-{% endhighlight %}
+```
+
 
 But when in a detached HEAD state, these commands doesn't work.
 
@@ -1716,7 +1804,7 @@ Answers:
 
 A more porcelain way:
 
-{% highlight text %}
+```text
 $ git describe
 v0.15.1
 
@@ -1728,7 +1816,8 @@ HEAD, tag: v0.15.1
 
 $ git show -s --pretty=%d HEAD
  (HEAD, tag: v0.15.1)
-{% endhighlight %}
+```
+
 
 The refs will be listed in the format (HEAD, master) - you'll have to parse it a little bit if you intend to use this in scripts rather than for human consumption.
 
@@ -1738,17 +1827,18 @@ More: [Make Git show the correct tag on branches with git describe](https://stac
 
 # Git hooks
 
-{% highlight text %}
+```text
 $ .git/hooks$ls
 applypatch-msg.sample  fsmonitor-watchman.sample  pre-applypatch.sample  pre-merge-commit.sample    pre-push.sample    pre-receive.sample       update.sample
 commit-msg.sample      post-update.sample         pre-commit.sample      prepare-commit-msg.sample  pre-rebase.sample  push-to-checkout.sample
-{% endhighlight %}
+```
+
 
 ## pre-commit
 
 通过`.git/hooks/pre-commit`可以在commit前执行自定义操作。通过`ln -s pre-commit ${PROJECT_ROOT}/.git/hooks/pre-commit`指定自定义 pre-commit 的脚本，之后 commit 时自动触发 pre-commit 脚本执行，如存在错误则会报错终止 commit，修复完毕后重新发起 commit 即可。以下是`pre-commit.sample`示例：
 
-{% highlight bash %}
+```bash
 #!/bin/sh
 #
 # An example hook script to verify what is about to be committed.
@@ -1798,11 +1888,12 @@ fi
 
 # If there are whitespace errors, print the offending file names and fail.
 exec git diff-index --check --cached $against --
-{% endhighlight %}
+```
+
 
 实际使用的例子：
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 << COMMENT
@@ -1867,7 +1958,8 @@ elif [ $RESULT -gt 0 ]; then
 fi
 
 echo "pre-commit end"
-{% endhighlight %}
+```
+
 
 
 
@@ -1892,13 +1984,14 @@ echo "pre-commit end"
 * [How can I save username and password in Git?](https://stackoverflow.com/questions/35942754/how-can-i-save-username-and-password-in-git)
 * [Git push requires username and password](https://stackoverflow.com/questions/6565357/git-push-requires-username-and-password)
 
-{% highlight text %}
+```text
 $git remote -v
 origin  git@git.woa.com:gerryyang/jlib_proj.git (fetch)
 origin  git@git.woa.com:gerryyang/jlib_proj.git (push)
 upstream        https://git.woa.com/jlib/jlib_proj.git (fetch)
 upstream        https://git.woa.com/jlib/jlib_proj.git (push)
-{% endhighlight %}
+```
+
 
 ## http 方式在本地保存密钥 (凭证存储)
 
@@ -1916,17 +2009,19 @@ Git 拥有一个凭证系统来处理这个事情。下面有一些 Git 的选�
 
 部分辅助工具有一些选项。 “store” 模式可以接受一个 `--file <path>` 参数，可以自定义存放密码的文件路径（默认是 `~/.git-credentials` ）。 “cache” 模式有 `--timeout <seconds>` 参数，可以设置后台进程的存活时间（默认是 “900”，也就是 15 分钟）。 下面是一个配置 “store” 模式自定义路径的例子：
 
-{% highlight text %}
+```text
 $ git config --global credential.helper 'store --file ~/.my-credentials'
-{% endhighlight %}
+```
+
 
 使用 http 的下载方式，并设置缓存（注意：每次修改密码后需要清理缓存重新设置），但是用户名和密码是以明文的形式存储的，存在安全风险。
 
 执行
 
-{% highlight text %}
+```text
 git config --global credential.helper store
-{% endhighlight %}
+```
+
 
 然后再 pull 或者 clone，正常输入一次密码
 
@@ -1934,7 +2029,7 @@ git config --global credential.helper store
 
 之后在 home 目录会生成如下文件：
 
-{% highlight text %}
+```text
 ~$ls -la .git*
 -rw-r--r-- 1 gerryyang users 85 10月 12 12:17 .gitconfig
 -rw------- 1 gerryyang users 44 10月 12 12:17 .git-credentials
@@ -1946,38 +2041,45 @@ git config --global credential.helper store
         helper = store
 ~$cat .git-credentials
 https://gerryyang:$password@git.woa.com  // $password 密码明文存储
-{% endhighlight %}
+```
+
 
 也可以配置使用 oauth2 的凭证：
 
-{% highlight text %}
+```text
 https://oauth2:$access_toekn@git.woa.com
-{% endhighlight %}
+```
+
 
 Attention: This method saves the credentials in plaintext on your PC's disk. Everyone on your computer can access it, e.g. malicious NPM modules.
 
 Run
 
-{% highlight text %}
+{% raw %}
+```text
 git config --global credential.helper store
-{% highlight then %}
-{% endhighlight %}
+```
+{% endraw %}
+
 git pull
-{% highlight text %}
+```text
 
 provide a username and password and those details will then be remembered later. The credentials are stored in a file on the disk, with the disk permissions of "just user readable/writable" but still in plaintext.
 
 If you want to change the password later
 
-{% endhighlight %}
+```
+
 git pull
-{% highlight text %}
+```text
 
 Will fail, because the password is incorrect, git then removes the offending user+password from the `~/.git-credentials` file, so now re-run
 
-{% endhighlight %}
+```
+
 git pull
-{% highlight text %}
+{% raw %}
+```text
 
 to provide a new password so it works as earlier.
 
@@ -1988,15 +2090,17 @@ refer: [Git 工具 - 凭证存储](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%
 
 使用`ssh认证方式`可以实现免密提交，通过`ssh-keygen`可以生成ssh认证所需的`公钥`和`私钥`。执行`ssh-keygen`后直接回车，不用填写东西，之后会让你输入密码(根据安全性选择是否需要此密码，可以直接回车)，然后就生成一个`.ssh`目录，目录里会生成两个(默认)文件：`id_rsa`和`id_rsa.pub`。
 
-{% highlight bash %}
+```bash
 cd $HOME/.ssh
 ssh-keygen -t rsa -C <email>               # 默认生成 id_rsa 私钥文件和 id_rsa.pub 公钥文件
 ssh-keygen -t rsa -C <email> -f <id_rsa>   # -C "公钥文件中的备注"  -f 指定生成的私钥文件名
-{% endhighlight %}
+```
+{% endraw %}
+
 
 生成公私钥后，复制公钥信息配置在Github上。并注意本地`.git/config`配置中的`url`为ssh要求的格式：
 
-{% highlight text %}
+```text
 [core]
         repositoryformatversion = 0
         filemode = false
@@ -2015,17 +2119,19 @@ ssh-keygen -t rsa -C <email> -f <id_rsa>   # -C "公钥文件中的备注"  -f �
 [user]
         name = gerryyang
         email = gerryyang@tencent.com
-{% endhighlight %}
+```
+
 
 测试是否生效，如果ok以后执行`git push`时就不用再输入用户名和密码验证了。
 
-{% highlight bash %}
+```bash
  ssh -vT git@github.com
-{% endhighlight %}
+```
+
 
 有时需要配置多个ssh key，例如，一个用于Github，一个用于公司内部的git。此时要为不同的域名指定不同的私钥配置。在`$HOME/.ssh`目录下，创建一个`config`配置文件，根据不同域名指定不同的私钥。这样就可以实现多个不同的ssh key免密提交了。
 
-{% highlight text %}
+```text
 # oa
 Host git.code.oa.com
    HostName git.code.oa.com
@@ -2037,7 +2143,8 @@ Host github.com
    HostName github.com
    PreferredAuthentications publickey
    IdentityFile ~/.ssh/id_rsa
-{% endhighlight %}
+```
+
 
 refer:
 
@@ -2079,17 +2186,18 @@ Issue的标题尽量精简易懂。
 
 commit消息结构：
 
-{% highlight text %}
+```text
 <type>[optional scope]: <description>
 
 [optional body]
 
 [optional footer(s)]
-{% endhighlight %}
+```
+
 
 允许的提交类型type：
 
-{% highlight text %}
+```text
 feat -> feature
 fix -> bug fix
 docs -> documentation
@@ -2100,7 +2208,8 @@ chore -> maintenance
 init -> initial commit
 rearrange -> files moved, added, deleted etc
 update -> update code (versions, library compatibility)
-{% endhighlight %}
+```
+
 
 refer:
 
@@ -2125,7 +2234,7 @@ MR场景：MR发起者，对原始项目`A`进行fork，生成自己的项目`B`
 
 * Before you can sync your fork with an upstream repository, you must [configure a remote that points to the upstream repository](https://docs.github.com/en/github/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-for-a-fork) in Git.
 
-{% highlight text %}
+```text
 # List the current configured remote repository for your fork
 $ git remote -v
 > origin  https://github.com/YOUR_USERNAME/YOUR_FORK.git (fetch)
@@ -2140,11 +2249,12 @@ $ git remote -v
 > origin    https://github.com/YOUR_USERNAME/YOUR_FORK.git (push)
 > upstream  https://github.com/ORIGINAL_OWNER/ORIGINAL_REPOSITORY.git (fetch)
 > upstream  https://github.com/ORIGINAL_OWNER/ORIGINAL_REPOSITORY.git (push)
-{% endhighlight %}
+```
+
 
 * 完成本地项目代码与原始项目代码的同步，更新本地项目master代码为最新的代码。[Merge an upstream repo](https://docs.github.com/en/github/collaborating-with-pull-requests/working-with-forks/merging-an-upstream-repository-into-your-fork)
 
-{% highlight text %}
+```text
 # 切换到本地项目 YOUR_BRANCH 分支
 git checkout YOUR_BRANCH
 
@@ -2170,7 +2280,8 @@ git rebase -i HEAD~7
 git push origin master
 
 # 最后提交MR请求
-{% endhighlight %}
+```
+
 
 * 创建`Merge Request`
 
@@ -2205,18 +2316,20 @@ More: https://github.com/git-tips/tips
 
 ##  添加常用的 alias
 
-{% highlight bash %}
+```bash
 git config --global alias.st status
 git config --global alias.co checkout
 git config --global alias.ci commit
 git config --global alias.br branch
-{% endhighlight %}
+```
+
 
 ## Reset author, after author has been changed in the global config
 
-{% highlight bash %}
+```bash
 git commit --amend --reset-author --no-edit
-{% endhighlight %}
+```
+
 
 
 
@@ -2255,7 +2368,7 @@ https://github.com/MestreLion/git-tools
 * Apache许可协议
 * MIT许可协议 (https://opensource.org/licenses/mit-license.php)
 
-{% highlight text %}
+```text
 Copyright <YEAR> <COPYRIGHT HOLDER>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -2263,7 +2376,8 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-{% endhighlight %}
+```
+
 
 关于GitHub的更多功能：
 
@@ -2323,7 +2437,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 在仓库根目录创建 `.github/workflows/deploy.yml`
 
-{% highlight yaml %}
+```yaml
 name: Deploy to GitHub Pages
 
 on:
@@ -2347,7 +2461,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-{% endhighlight %}
+```
+
 
 
 
@@ -2373,9 +2488,10 @@ I almost got a headache with this error but thanks for the previous answers, a c
 
 ## [How do I make Git ignore file mode (chmod) changes?](https://stackoverflow.com/questions/1580596/how-do-i-make-git-ignore-file-mode-chmod-changes)
 
-{% highlight text %}
+```text
 git config core.fileMode false
-{% endhighlight %}
+```
+
 
 ## Automatically closing issue from pull request
 
@@ -2410,7 +2526,7 @@ Remember, after you rewrite the history, whether you use the BFG or filter-branc
 
 Antony Stubbs 提供了一个可以查找 git 大文件的 bash 脚本 [git_find_big.sh](https://stubbisms.wordpress.com/2009/07/10/git-script-to-show-largest-pack-objects-and-trim-your-waist-line/)
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 #set -x
 
@@ -2444,11 +2560,12 @@ do
 done
 
 echo -e $output | column -t -s ', '
-{% endhighlight %}
+```
+
 
 输出：
 
-{% highlight text %}
+```text
 All sizes are in kB's. The pack column is the size of the object, compressed, inside the pack file.
 size    pack   SHA                                       location
 132011  24488  c26f3ca0ad465e93a98aea7d6c9c697dcba05dac  JLib/libs/lib/protobuf/libprotoc.a
@@ -2461,13 +2578,15 @@ size    pack   SHA                                       location
 80495   15869  93995fcad84daef208561c34b2f8a3ac32ce9872  JLib/libs/lib/irpc/lib64/thirdparty/libprotobuf.a
 77920   14125  a607eb72817c4e58494ad5b895d8f8e5e17b1425  JLib/libs/lib/irpc/lib64/submod/libmicro_service_sdk.a
 63532   19468  afb521929d9f4c38fb0a07b644b9eefa36f05874  JLib/bin/tconnd/tconnd
-{% endhighlight %}
+```
+
 
 获得大文件信息后，通过 `git filter-branch` 删除大文件：
 
-{% highlight bash %}
+```bash
 git filter-branch --force --prune-empty --index-filter 'git rm -rf --cached --ignore-unmatch $file' --tag-name-filter cat -- --all
-{% endhighlight %}
+```
+
 
 * `--index-filter` 选项可以修改仓库的索引
 * `--cached` 选项从索引中而不是磁盘来删除文件，这样会更快，因为你不需要在运行这个过滤器前检查每个修订版本
@@ -2475,7 +2594,7 @@ git filter-branch --force --prune-empty --index-filter 'git rm -rf --cached --ig
 
 结合上面 `git_find_big.sh` 的输出 `file.txt`，将删除逻辑封装成 `git_strip.sh` 脚本
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 while read -r path; do
@@ -2483,7 +2602,8 @@ while read -r path; do
 done < <(sed '1,2d' file.txt | awk '{print $NF}')
 
 echo "done"
-{% endhighlight %}
+```
+
 
 * 使用 `sed` 和 `awk` 命令来删除文件的前两行，并提取每一行的最后一个字段
 * `< <()` 语法用于将命令的输出作为输入传递给 `while` 循环
@@ -2491,7 +2611,7 @@ echo "done"
 
 再通过 `git_gc_data.sh` 进行数据回收：
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 # Prune all of the reflog references from now on back (unless you're explicitly only operating on one branch).
@@ -2501,23 +2621,25 @@ git reflog expire --expire=now --all
 git gc --prune=now
 
 echo "done"
-{% endhighlight %}
+```
+
 
 最后推送到远端仓库：
 
-{% highlight bash %}
+```bash
 # Push all your changes back to the Bitbucket repository.
 git push --all --force
 
 # Make sure all your tags are current too
 git push --tags --force
-{% endhighlight %}
+```
+
 
 另外一种完全清除历史记录的方案：[git-clearHistory](https://gist.github.com/stephenhardy/5470814)
 
 Steps to clear out the history of a git/github repository
 
-{% highlight bash %}
+```bash
 # Remove the history from
 rm -rf .git
 
@@ -2529,7 +2651,8 @@ git commit -m "Initial commit"
 # push to the github remote repos ensuring you overwrite history
 git remote add origin git@github.com:<YOUR ACCOUNT>/<YOUR REPOS>.git
 git push -u --force origin master
-{% endhighlight %}
+```
+
 
 
 refer:
@@ -2556,6 +2679,3 @@ refer:
 * [PRACTICAL GIT AND GITHUB](https://devarea.com/practical-git-and-github/#.ZAmpS-xBw0Q)
 
 
-
-{% endhighlight %}
-{% endhighlight %}

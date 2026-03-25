@@ -20,7 +20,7 @@ Order of evaluation of any part of any expression, including order of evaluation
 
 **There is no concept of left-to-right or right-to-left evaluation in C++.** This is not to be confused with left-to-right and right-to-left associativity of operators: the expression a() + b() + c() is parsed as (a() + b()) + c() due to left-to-right associativity of operator+, but the function call to c may be evaluated first, last, or between a() or b() at run time:
 
-{% highlight cpp %}
+```cpp
 #include <cstdio>
 int a() { return std::puts("a"); }
 int b() { return std::puts("b"); }
@@ -30,17 +30,19 @@ int main() {
     z(a(), b(), c());       // all 6 permutations of output are allowed
     return a() + b() + c(); // all 6 permutations of output are allowed
 }
-{% endhighlight %}
+```
+
 
 Possible output:
 
-{% highlight b %}
+```b
 c
 a
 c
 a
 b
-{% endhighlight %}
+```
+
 
 https://en.cppreference.com/w/cpp/language/eval_order
 
@@ -68,7 +70,7 @@ Evaluation of each expression includes:
 
 # std::memory_order (C++11)
 
-{% highlight cpp %}
+```cpp
 // <atomic>
 typedef enum memory_order {
     memory_order_relaxed,
@@ -78,7 +80,8 @@ typedef enum memory_order {
     memory_order_acq_rel,
     memory_order_seq_cst
 } memory_order;
-{% endhighlight %}
+```
+
 
 `std::memory_order` specifies how memory accesses, including regular, non-atomic memory accesses, are to be ordered around an atomic operation. Absent any constraints on a multi-core system, when multiple threads simultaneously read and write to several variables, one thread can observe the values change in an order different from the order another thread wrote them. Indeed, the apparent order of changes can even differ among multiple reader threads. Some similar effects can occur even on uniprocessor systems due to compiler transformations allowed by the memory model.
 
@@ -95,7 +98,7 @@ Atomic operations tagged memory_order_relaxed are not synchronization operations
 
 For example, with x and y initially zero,
 
-{% highlight cpp %}
+```cpp
 // Thread 1:
 r1 = y.load(std::memory_order_relaxed); // A
 x.store(r1, std::memory_order_relaxed); // B
@@ -103,13 +106,14 @@ x.store(r1, std::memory_order_relaxed); // B
 // Thread 2:
 r2 = x.load(std::memory_order_relaxed); // C
 y.store(42, std::memory_order_relaxed); // D
-{% endhighlight %}
+```
+
 
 is allowed to produce `r1 == r2 == 42` because, although A is sequenced-before B within thread 1 and C is sequenced before D within thread 2, nothing prevents D from appearing before A in the modification order of y, and B from appearing before C in the modification order of x. The side-effect of D on y could be visible to the load A in thread 1 while the side effect of B on x could be visible to the load C in thread 2. In particular, this may occur if D is completed before C in thread 2, either due to compiler reordering or at runtime.
 
 Even with relaxed memory model, out-of-thin-air values are not allowed to circularly depend on their own computations, for example, with x and y initially zero,
 
-{% highlight cpp %}
+```cpp
 // Thread 1:
 r1 = y.load(std::memory_order_relaxed);
 if (r1 == 42) x.store(r1, std::memory_order_relaxed);
@@ -117,13 +121,14 @@ if (r1 == 42) x.store(r1, std::memory_order_relaxed);
 // Thread 2:
 r2 = x.load(std::memory_order_relaxed);
 if (r2 == 42) y.store(42, std::memory_order_relaxed);
-{% endhighlight %}
+```
+
 
 is not allowed to produce `r1 == r2 == 42` since the store of 42 to y is only possible if the store to x stores 42, which circularly depends on the store to y storing 42. Note that until C++14, this was technically allowed by the specification, but not recommended for implementors.
 
 Typical use for relaxed memory ordering is incrementing counters, such as the reference counters of std::shared_ptr, since this only requires atomicity, but not ordering or synchronization (note that decrementing the shared_ptr counters requires acquire-release synchronization with the destructor)
 
-{% highlight cpp %}
+```cpp
 #include <vector>
 #include <iostream>
 #include <thread>
@@ -149,7 +154,8 @@ int main()
     }
     std::cout << "Final counter value is " << cnt << '\n'; // 10000
 }
-{% endhighlight %}
+```
+
 
 
 ##  memory_order_release / memory_order_acquire / memory_order_consume
@@ -175,7 +181,7 @@ If an atomic store in thread A is tagged `memory_order_release` and an atomic lo
 
 The synchronization is established only between the threads releasing and acquiring the same atomic variable. Other threads can see different order of memory accesses than either or both of the synchronized threads.
 
-{% highlight cpp %}
+```cpp
 #include <thread>
 #include <atomic>
 #include <cassert>
@@ -206,12 +212,13 @@ int main()
     std::thread t2(consumer);
     t1.join(); t2.join();
 }
-{% endhighlight %}
+```
+
 
 The following example demonstrates transitive release-acquire ordering across three threads
 
 
-{% highlight cpp %}
+```cpp
 #include <thread>
 #include <atomic>
 #include <cassert>
@@ -248,7 +255,8 @@ int main()
     std::thread c(thread_3);
     a.join(); b.join(); c.join();
 }
-{% endhighlight %}
+```
+
 
 Example: memory_order_release / memory_order_consume
 
@@ -258,7 +266,7 @@ The synchronization is established only between the threads releasing and consum
 
 This example demonstrates dependency-ordered synchronization for pointer-mediated publication: the integer data is not related to the pointer to string by a data-dependency relationship, thus its value is undefined in the consumer.
 
-{% highlight cpp %}
+```cpp
 #include <thread>
 #include <atomic>
 #include <cassert>
@@ -289,7 +297,8 @@ int main()
     std::thread t2(consumer);
     t1.join(); t2.join();
 }
-{% endhighlight %}
+```
+
 
 
 ## memory_order_acq_rel
@@ -308,7 +317,7 @@ Atomic operations tagged `memory_order_seq_cst` not only order memory the same w
 
 This example demonstrates a situation where sequential ordering is necessary. Any other ordering may trigger the assert because it would be possible for the threads c and d to observe changes to the atomics x and y in opposite order.
 
-{% highlight cpp %}
+```cpp
 #include <thread>
 #include <atomic>
 #include <cassert>
@@ -354,7 +363,8 @@ int main()
     a.join(); b.join(); c.join(); d.join();
     assert(z.load() != 0);  // will never happen
 }
-{% endhighlight %}
+```
+
 
 
 # Relationship with volatile
@@ -375,14 +385,15 @@ https://en.cppreference.com/w/cpp/language/cv
 
 ## is_lock_free
 
-{% highlight cpp %}
+```cpp
 bool is_lock_free() const noexcept;
 bool is_lock_free() const volatile noexcept;
-{% endhighlight %}
+```
+
 
 Checks whether the atomic operations on all objects of this type are lock-free. (可以检查这个原子对象上的操作是否是无锁的)
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <utility>
 #include <atomic>
@@ -403,23 +414,25 @@ $ g++ prog.cc -Wall -Wextra -std=c++11 -latomic
 std::atomic<A> is lock free? false
 std::atomic<B> is lock free? true
 */
-{% endhighlight %}
+```
+
 
 ## fetch_add
 
 member only of `atomic<Integral>`(C++11)
 
-{% highlight cpp %}
+```cpp
 T fetch_add( T arg,
              std::memory_order order = std::memory_order_seq_cst ) noexcept;
 T fetch_add( T arg,
              std::memory_order order = std::memory_order_seq_cst ) volatile noexcept;
-{% endhighlight %}
+```
+
 
 Atomically replaces the current value with the result of arithmetic addition of the value and arg. That is, it performs atomic post-increment. The operation is read-modify-write operation. Memory is affected according to the value of order.
 
 
-{% highlight cpp %}
+```cpp
 #include <iostream>
 #include <thread>
 #include <atomic>
@@ -448,7 +461,8 @@ thread:1, val:11
 thread:2, val:12
 Result : 13
 */
-{% endhighlight %}
+```
+
 
 ## compare_exchange_weak / compare_exchange_strong
 
@@ -457,7 +471,7 @@ Result : 13
 * 单生产者、单消费者的并发队列，用原子量和获得、释放语义就能简单实现
 * 对于多生产者或多消费者的情况，那实现就比较复杂了，一般会使用 `compare_exchange_strong` 或 `compare_exchange_weak`
 
-{% highlight cpp %}
+```cpp
 bool compare_exchange_weak( T& expected, T desired,
                             std::memory_order success,
                             std::memory_order failure ) noexcept;
@@ -471,7 +485,8 @@ bool compare_exchange_strong( T& expected, T desired,
 
 bool compare_exchange_strong( T& expected, T desired,
                               std::memory_order order = std::memory_order_seq_cst ) noexcept;
-{% endhighlight %}
+```
+
 
 Atomically compares the object representation (until C++20) value representation (since C++20) of *this with that of expected, and if those are bitwise-equal, replaces the former with desired (performs read-modify-write operation). Otherwise, loads the actual value stored in *this into expected (performs load operation).
 
@@ -479,7 +494,7 @@ Return value: true if the underlying atomic value was successfully changed, fals
 
 Compare-and-exchange operations are often used as basic building blocks of [lockfree](https://en.wikipedia.org/wiki/Non-blocking_algorithm) data structures
 
-{% highlight cpp %}
+```cpp
 #include <atomic>
 template<typename T>
 struct node
@@ -528,7 +543,8 @@ int main()
     s.push(2);
     s.push(3);
 }
-{% endhighlight %}
+```
+
 
 
 

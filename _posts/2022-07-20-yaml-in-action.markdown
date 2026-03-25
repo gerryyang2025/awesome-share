@@ -38,41 +38,46 @@ YAML 是一种较为人性化的数据序列化语言，可以配合目前大多
 
 对象的一组键值对，使用冒号结构表示。
 
-{% highlight text %}
+```text
 animal: pets
-{% endhighlight %}
+```
+
 
 Yaml 也允许另一种写法，将所有键值对写成一个行内对象。
 
-{% highlight text %}
+```text
 hash: { name: Steve, foo: bar }
-{% endhighlight %}
+```
+
 
 
 ## 数组
 
 一组连词线开头的行，构成一个数组。
 
-{% highlight text %}
+```text
 - Cat
 - Dog
 - Goldfish
-{% endhighlight %}
+```
+
 
 数据结构的子成员是一个数组，则可以在该项下面缩进一个空格。
 
-{% highlight text %}
+```text
 -
  - Cat
  - Dog
  - Goldfish
-{% endhighlight %}
+```
+
 
 数组也可以采用**行内表示法**。
 
-{% highlight text %}
+```text
 animal: [Cat, Dog]
-{% endhighlight %}
+```
+
 
 
 
@@ -90,46 +95,52 @@ animal: [Cat, Dog]
 
 **数值**直接以字面量的形式表示。
 
-{% highlight text %}
+```text
 number: 12.30
-{% endhighlight %}
+```
+
 
 **布尔值**用`true`和`false`表示。
 
-{% highlight text %}
+```text
 isSet: true
-{% endhighlight %}
+```
+
 
 **null**用`~`表示。
 
-{% highlight text %}
+```text
 parent: ~
-{% endhighlight %}
+```
+
 
 **时间**采用 ISO8601 格式。
 
-{% highlight text %}
+```text
 iso8601: 2001-12-14t21:59:43.10-05:00
-{% endhighlight %}
+```
+
 
 **日期**采用复合 iso8601 格式的年、月、日表示。
 
-{% highlight text %}
+```text
 date: 1976-07-31
-{% endhighlight %}
+```
+
 
 YAML 允许使用两个感叹号，强制转换数据类型。
 
-{% highlight text %}
+```text
 e: !!str 123
 f: !!str true
-{% endhighlight %}
+```
+
 
 ## 复合结构
 
 **对象**和**数组**可以结合使用，形成**复合结构**。
 
-{% highlight text %}
+```text
 languages:
  - Ruby
  - Perl
@@ -139,7 +150,8 @@ websites:
  Ruby: ruby-lang.org
  Python: python.org
  Perl: use.perl.org
-{% endhighlight %}
+```
+
 
 
 
@@ -147,57 +159,64 @@ websites:
 
 字符串是最常见，也是最复杂的一种数据类型。**字符串默认不使用引号表示**。
 
-{% highlight text %}
+```text
 str: 这是一行字符串
-{% endhighlight %}
+```
+
 
 如果字符串之中包含空格或特殊字符，需要放在引号之中。
 
-{% highlight text %}
+```text
 str: '内容： 字符串'
-{% endhighlight %}
+```
+
 
 单引号和双引号都可以使用，双引号不会对特殊字符转义。
 
-{% highlight text %}
+```text
 s1: '内容\n字符串'
 s2: "内容\n字符串"
-{% endhighlight %}
+```
+
 
 单引号之中如果还有单引号，必须连续使用两个单引号转义。
 
-{% highlight text %}
+```text
 str: 'labor''s day'
-{% endhighlight %}
+```
+
 
 字符串可以写成多行，从第二行开始，必须有一个单空格缩进。换行符会被转为空格。
 
-{% highlight text %}
+```text
 str: 这是一段
   多行
   字符串
-{% endhighlight %}
+```
+
 
 多行字符串可以使用`|`保留换行符，也可以使用`>`折叠换行。
 
-{% highlight text %}
+```text
 this: |
   Foo
   Bar
 that: >
   Foo
   Bar
-{% endhighlight %}
+```
+
 
 转为 JavaScript 代码如下。
 
-{% highlight text %}
+```text
 { this: 'Foo\nBar\n', that: 'Foo Bar\n' }
-{% endhighlight %}
+```
+
 
 `+`表示保留文字块末尾的换行，`-`表示删除字符串末尾的换行。
 
-{% highlight text %}
+```text
 s1: |
   Foo
 
@@ -207,19 +226,21 @@ s2: |+
 
 s3: |-
   Foo
-{% endhighlight %}
+```
+
 
 转为 JavaScript 代码如下。
 
-{% highlight text %}
+```text
 { s1: 'Foo\n', s2: 'Foo\n\n\n', s3: 'Foo' }
-{% endhighlight %}
+```
+
 
 # 引用
 
 锚点`&`和别名`*`，可以用来引用。
 
-{% highlight text %}
+```text
 defaults: &defaults
   adapter:  postgres
   host:     localhost
@@ -231,11 +252,12 @@ development:
 test:
   database: myapp_test
   <<: *defaults
-{% endhighlight %}
+```
+
 
 等同于下面的代码。
 
-{% highlight text %}
+```text
 defaults:
   adapter:  postgres
   host:     localhost
@@ -249,25 +271,28 @@ test:
   database: myapp_test
   adapter:  postgres
   host:     localhost
-{% endhighlight %}
+```
+
 
 `&`用来建立锚点（defaults），`<<`表示合并到当前数据，`*`用来引用锚点。
 
 下面是另一个例子。
 
-{% highlight text %}
+```text
 - &showell Steve
 - Clark
 - Brian
 - Oren
 - *showell
-{% endhighlight %}
+```
+
 
 转为 JavaScript 代码如下。
 
-{% highlight text %}
+```text
 [ 'Steve', 'Clark', 'Brian', 'Oren', 'Steve' ]
-{% endhighlight %}
+```
+
 
 
 
@@ -279,7 +304,7 @@ test:
 
 # 使用示例
 
-{% highlight yaml %}
+```yaml
 # YAML Ain't Markup Language
 
 person:
@@ -316,7 +341,8 @@ person:
   foo:
     <<: *base # var1: value1   << 合并标签，类型继承
     var2: value2
-{% endhighlight %}
+```
+
 
 
 
@@ -346,12 +372,13 @@ Let's take a look at the documentation
 
 One example of this can also be found in the [documentation](http://yaml.org/spec/1.1/#YAML%20directive/) for directive `YAML`
 
-{% highlight yaml %}
+```yaml
 %YAML 1.2 # Attempt parsing
            # with a warning
 ---
 "foo"
-{% endhighlight %}
+```
+
 
 
 

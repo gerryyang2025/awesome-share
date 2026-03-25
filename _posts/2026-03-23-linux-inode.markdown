@@ -243,9 +243,10 @@ flowchart LR
 
 与 **普通文件** 的 inode 号、`stat` 长格式字段相关的命令见上文「查看某个文件的 inode 信息」中的 `stat`、`ls -i`、`ls -li`。此处仅补充 **查看目录自身** 的 inode（避免 `ls` 列出的是目录「里面」的条目而非目录本身）：
 
-{% highlight bash %}
+```bash
 ls -idl /path/to/dir
-{% endhighlight %}
+```
+
 
 与 [Red Hat 博文](https://www.redhat.com/en/blog/inodes-linux-filesystem) 中的 `ls -idl` 用法一致。
 
@@ -300,9 +301,10 @@ flowchart LR
 
 查看某挂载点的 inode 总量与使用情况：
 
-{% highlight bash %}
+```bash
 df -i /path   # 或 df -i /dev/sdXN
-{% endhighlight %}
+```
+
 
 [Red Hat 博文](https://www.redhat.com/en/blog/inodes-linux-filesystem) 中的示例输出可读作：`IUsed` / `IFree` / `IUse%` 与容量无关，单独反映 inode 资源。排查与容量相关问题务必 **`df -h` 与 `df -i` 一起看**。
 
@@ -335,10 +337,11 @@ flowchart TB
 
 创建方式：
 
-{% highlight bash %}
+```bash
 ln target name          # 硬链接
 ln -s target name       # 符号链接
-{% endhighlight %}
+```
+
 
 目录的链接数：新建目录时 `.` 与 `..` 会使计数呈现固定规律（子目录数 + 2），日常用 `ls -ld` 观察即可。
 

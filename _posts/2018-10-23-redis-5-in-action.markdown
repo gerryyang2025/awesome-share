@@ -69,45 +69,50 @@ Redis is an open source (BSD licensed), `in-memory` data structure store, used a
 * Redis在`deps`目录下是对外部第三方库的依赖包括，jemalloc, lua, hiredis, linenoise，如果要重新编译第三方库需要先执行`make distclean`，默认不会编译
 * Redis在Linux下默认使用jemalloc，而在其他环境下默认使用libc malloc。jemalloc相比libc malloc对内存碎片问题处理的更好。通过`MALLOC`环境变量指定使用哪种内存分配器。
 
-{% highlight text %}
+```text
 make MALLOC=jemalloc
 make MALLOC=libc
-{% endhighlight %}
+```
+
 
 * 运行Redis的方式，所有redis.conf配置中的选项，也支持在命令行指定
 
-{% highlight text %}
+```text
 cd src
 ./redis-server
 ./redis-server /path/to/redis.conf
 
 ./redis-server --port 9999 --replicaof 127.0.0.1 6379
 ./redis-server /etc/redis/6379.conf --loglevel debug
-{% endhighlight %}
+```
+
 
 * 编译后安装Redis的bin文件，不包括`初始化脚本`和`配置文件`
 
-{% highlight text %}
+```text
 make install    # /usr/local/bin
 make PREFIX=/some/other/directory install
-{% endhighlight %}
+```
+
 
 对于生产环境的部署，如果是Ubuntu或者Debian系统，可以参考以下脚本
 
-{% highlight text %}
+```text
 cd utils
 ./install_server.sh
-{% endhighlight %}
+```
+
 
 * 对Redis实例的起停
 
-{% highlight text %}
+```text
 /etc/init.d/redis_<portnumber>
 
 /etc/init.d/redis_6379
 
 redis-cli shutdown
-{% endhighlight %}
+```
+
 
 # Redis代码结构
 
@@ -131,7 +136,7 @@ Redis的所有配置和一些状态信息，全部记录在`struct redisServer`�
 
 ![redisServer](/assets/images/201810/redisServer.jpg)
 
-{% highlight cpp %}
+```cpp
 struct redisServer {
     /* General */
     pid_t pid;                  /* Main process pid. */
@@ -145,17 +150,19 @@ struct redisServer {
 
     // ...
 };
-{% endhighlight %}
+```
+
 
 需要关心的几个重要结构包括：
 
 ### server.db
 
-{% highlight cpp %}
+```cpp
 redisDb *db;
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 /* Redis database representation. There are multiple databases identified
  * by integers from 0 (the default database) up to the max configured
  * database. The database number is the 'id' field in the structure. */
@@ -169,15 +176,17 @@ typedef struct redisDb {
     long long avg_ttl;          /* Average TTL, just for stats */
     list *defrag_later;         /* List of key names to attempt to defrag one by one, gradually. */
 } redisDb;
-{% endhighlight %}
+```
+
 
 ### server.commands
 
-{% highlight cpp %}
+```cpp
  dict *commands;             /* Command table */
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 // src/dict.h
 // Hash Tables Implementation
 
@@ -197,28 +206,31 @@ typedef struct dict {
     long rehashidx; /* rehashing not in progress if rehashidx == -1 */
     unsigned long iterators; /* number of iterators currently running */
 } dict;
-{% endhighlight %}
+```
+
 
 ### server.clients
 
 记录客户端的连接。(a linked list of clients connected to the server)
 
-{% highlight cpp %}
+```cpp
 list *clients;              /* List of active clients */
-{% endhighlight %}
+```
+
 
 ### server.master
 
 a special client, the master, if the instance is a replica.
 
-{% highlight cpp %}
+```cpp
 client *master;     /* Client that is master for this slave */
-{% endhighlight %}
+```
+
 
 ### client
 
 
-{% highlight cpp %}
+```cpp
 // src/server.h
 
 /* With multiplexing we need to take per-client state.
@@ -234,7 +246,8 @@ struct client {
     char buf[PROTO_REPLY_CHUNK_BYTES];
     ... many other fields ...
 }
-{% endhighlight %}
+```
+
 
 * The `fd` field is the client socket file descriptor.
 * `argc` and `argv` are populated with the command the client is executing, so that functions implementing a given Redis command can read the arguments.
@@ -247,7 +260,7 @@ struct client {
 * 通过`type`字段，区分实际表示哪类对象
 * 并通过`refcount`字段实现引用计数，防止对象的多次创建
 
-{% highlight cpp %}
+```cpp
 #define LRU_BITS 24
 
 typedef struct redisObject {
@@ -259,7 +272,8 @@ typedef struct redisObject {
     int refcount;
     void *ptr;
 } robj;
-{% endhighlight %}
+```
+
 
 ## src/server.c
 
@@ -267,7 +281,7 @@ typedef struct redisObject {
 
 Redis server的入口`main()`函数在此文件定义，可以了解到Redis内部是如何启动的。
 
-{% highlight cpp %}
+```cpp
 int main(int argc, char **argv) {
 	// ...
 
@@ -280,7 +294,8 @@ int main(int argc, char **argv) {
 	// starts the event loop which listens for new connections
 	aeMain(server.el);
 }
-{% endhighlight %}
+```
+
 
 ### 周期性任务
 
@@ -289,7 +304,7 @@ int main(int argc, char **argv) {
 1. `serverCron()` is called periodically (according to `server.hz` frequency), and performs tasks that must be performed from time to time, like checking for timedout clients.
 2. `beforeSleep()` is called every time the event loop fired, Redis served a few requests, and is returning back into the event loop.
 
-{% highlight cpp %}
+```cpp
 /* This is our timer interrupt, called server.hz times per second.
  * Here is where we do a number of things that need to be done asynchronously.
  * For instance:
@@ -310,14 +325,16 @@ int main(int argc, char **argv) {
  */
 
 int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData)
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 /* This function gets called every time Redis is entering the
  * main loop of the event driven library, that is, before to sleep
  * for ready file descriptors. */
 void beforeSleep(struct aeEventLoop *eventLoop);
-{% endhighlight %}
+```
+
 
 ### 其他重要功能
 
@@ -327,7 +344,7 @@ void beforeSleep(struct aeEventLoop *eventLoop);
 * The global variable `redisCommandTable` defines all the Redis commands, specifying the name of the command, the function implementing the command, the number of arguments required, and other properties of each command.
 
 
-{% highlight cpp %}
+```cpp
 /* Call() is the core of Redis execution of a command.
  *
  * The following flags can be passed:
@@ -366,9 +383,10 @@ void beforeSleep(struct aeEventLoop *eventLoop);
  *
  */
 void call(client *c, int flags);
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 /* Try to expire a few timed out keys. The algorithm used is adaptive and
  * will use few CPU cycles if there are few expiring keys, otherwise
  * it will get more aggressive to avoid that too much memory is used by
@@ -392,9 +410,10 @@ void call(client *c, int flags);
  * as specified by the ACTIVE_EXPIRE_CYCLE_SLOW_TIME_PERC define. */
 
 void activeExpireCycle(int type);
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 /* This function is periodically called to see if there is memory to free
  * according to the current "maxmemory" settings. In case we are over the
  * memory limit, the function will try to free some memory to return back
@@ -405,7 +424,8 @@ void activeExpireCycle(int type);
  * Otehrwise if we are over the memory limit, but not enough memory
  * was freed to return back under the limit, the function returns C_ERR. */
 int freeMemoryIfNeeded(void);
-{% endhighlight %}
+```
+
 
 ## src/networking.c
 
@@ -505,7 +525,7 @@ Redis对key的**创建和删除**原则：
 3. Calling a read-only command such as LLEN (which returns the length of the list), or a write command removing elements, with an empty key, always produces the same result as if the key is holding an empty aggregate type of the type the command expects to find.
 此规则与第一条类似。
 
-{% highlight text %}
+```text
 > del mylist
 (integer) 1
 > lpush mylist 1 2 3
@@ -530,7 +550,8 @@ Redis对key的**创建和删除**原则：
 (integer) 0
 > lpop mylist
 (nil)
-{% endhighlight %}
+```
+
 
 ## Redis的值(value)
 
@@ -553,7 +574,7 @@ Redis最简单的一种值类型，可以用来存储一个网页，或者存储
 | SET $key $value nx | 如果key已经存在，不允许覆盖
 | SET $key $value xx | 如果key已经存在，允许覆盖
 
-{% highlight text %}
+```text
 ./redis-cli
 127.0.0.1:6379> set mykey
 (error) ERR wrong number of arguments for 'set' command
@@ -573,7 +594,8 @@ OK
 OK
 127.0.0.1:6379> get mykey
 "value3"
-{% endhighlight %}
+```
+
 
 #### 原子操作
 
@@ -586,7 +608,7 @@ OK
 | getset | 设置新值，并返回老值 | 比如，按周期统计
 
 
-{% highlight text %}
+```text
 127.0.0.1:6379> set cnt 100
 OK
 127.0.0.1:6379> incr cnt
@@ -608,7 +630,8 @@ OK
 "100"
 127.0.0.1:6379> get cnt
 "1"
-{% endhighlight %}
+```
+
 
 #### 批量操作
 
@@ -620,14 +643,15 @@ OK
 | mget | 批量获取多个值
 
 
-{% highlight text %}
+```text
 127.0.0.1:6379> mset a 10 b 20 c 30
 OK
 127.0.0.1:6379> mget a b c
 1) "10"
 2) "20"
 3) "30"
-{% endhighlight %}
+```
+
 
 #### 对key的操作
 
@@ -637,7 +661,7 @@ OK
 | del | 删除某个key
 | type | 返回某个key对应的value类型
 
-{% highlight text %}
+```text
 127.0.0.1:6379> set mykey hello
 OK
 127.0.0.1:6379> get mykey
@@ -661,7 +685,8 @@ string
 (integer) 1
 127.0.0.1:6379> type mykey
 none
-{% endhighlight %}
+```
+
 
 #### 过期操作(expires)
 
@@ -675,7 +700,7 @@ none
 | PEXPIRE | 同expire，精度为毫秒
 | PTTL | 同ttl，精度为毫秒
 
-{% highlight text %}
+```text
 > set key some-value
 OK
 > expire key 5
@@ -689,7 +714,8 @@ OK
 OK
 > ttl key
 (integer) 9
-{% endhighlight %}
+```
+
 
 ### LIST
 
@@ -710,7 +736,7 @@ LIST的一个使用场景：例如，当写博客的时候，每次创建新的�
 | RPOP | 从右弹出一个元素
 | LTRIM | 类似LRANGE，区别是只保留指定范围内的元素，其他全部删除(discarded)
 
-{% highlight text %}
+```text
 > rpush mylist A
 (integer) 1
 > rpush mylist B
@@ -751,7 +777,8 @@ OK
 1) "1"
 2) "2"
 3) "3"
-{% endhighlight %}
+```
+
 
 #### 生产者消费者模型 (基于LIST的阻塞操作)
 
@@ -786,7 +813,7 @@ Redis的散列可以将`多个键值对`存储到一个键里面，使得散列�
 | hexists | 检查给定键是否存在于散列中
 | hincrby | 可以对hash里，某个键执行incrby操作
 
-{% highlight text %}
+```text
 > hmset user:1000 username antirez birthyear 1977 verified 1
 OK
 > hget user:1000 username
@@ -810,7 +837,8 @@ OK
 (integer) 1987
 > hincrby user:1000 birthyear 10
 (integer) 1997
-{% endhighlight %}
+```
+
 
 ### SET
 
@@ -884,7 +912,7 @@ Implementation note: Sorted sets are implemented via a dual-ported data structur
 
 下面使用ZSET存储历史上的一些计算机名人，会按年龄自动排序。
 
-{% highlight text %}
+```text
 > zadd hackers 1940 "Alan Kay"
 (integer) 1
 > zadd hackers 1957 "Sophie Wilson"
@@ -925,7 +953,8 @@ Implementation note: Sorted sets are implemented via a dual-ported data structur
 7) "Claude Shannon"
 8) "Hedy Lamarr"
 9) "Alan Turing"
-{% endhighlight %}
+```
+
 
 ### Bitmap
 
@@ -943,7 +972,7 @@ Implementation note: Sorted sets are implemented via a dual-ported data structur
 
 Bitmaps are not an actual data type, but a set of bit-oriented operations defined on the `String` type. Since strings are binary safe blobs and their maximum length is `512 MB`, they are suitable to set up to `2^32`(= 2^9 * 2^20 * 2^3) different bits.
 
-{% highlight text %}
+```text
 > setbit key 10 1
 (integer) 1
 > getbit key 10
@@ -957,7 +986,8 @@ Bitmaps are not an actual data type, but a set of bit-oriented operations define
 (integer) 0
 > bitcount key
 (integer) 2
-{% endhighlight %}
+```
+
 
 ### HyperLogLog(HLL)
 
@@ -978,12 +1008,13 @@ Usually counting unique items requires using an amount of memory proportional to
 
 The magic of this algorithm is that you no longer need to use an amount of memory proportional to the number of items counted, and instead can use a constant amount of memory! 12k bytes in the worst case, or a lot less if your HyperLogLog (We'll just call them HLL from now) has seen very few elements.
 
-{% highlight text %}
+```text
 > pfadd hll a b c d
 (integer) 1
 > pfcount hll
 (integer) 4
-{% endhighlight %}
+```
+
 
 
 # 执行命令
@@ -992,18 +1023,20 @@ The magic of this algorithm is that you no longer need to use an amount of memor
 
 Redis的所有命令定义：
 
-{% highlight cpp %}
+```cpp
 void foobarCommand(client *c) {
     printf("%s",c->argv[1]->ptr); /* Do something with the argument. */
     addReply(c,shared.ok); /* Reply something to the client. */
 }
-{% endhighlight %}
+```
+
 
 在`server.c`中定义了command table：
 
-{% highlight cpp %}
+```cpp
 {"foobar",foobarCommand,2,"rtF",0,NULL,0,0,0,0,0},
-{% endhighlight %}
+```
+
 
 含义：
 * 2：表示此命令的参数个数
@@ -1050,23 +1083,25 @@ Redis的一种事务的处理方法(思想类似，`乐观锁`)：使用`WATCH`�
 
 
 
-{% highlight watch %}
+```watch
 multi
 
 # 操作1
 # 操作2
 
 exec
-{% endhighlight %}
+```
+
 
 除了通过命令的方式，从Redis 2.6开始也支持Lua脚本的方式支持事务，此方式也更加高效。详见：[Redis scripting and transactions](https://redis.io/commands/eval)
 
-{% highlight text %}
+```text
 Atomicity of scripts
 Redis uses the same Lua interpreter to run all the commands. Also Redis guarantees that a script is executed in an atomic way: no other script or Redis command will be executed while a script is being executed. This semantic is similar to the one of MULTI / EXEC. From the point of view of all the other clients the effects of a script are either still not visible or already completed.
 
 However this also means that executing slow scripts is not a good idea. It is not hard to create fast scripts, as the script overhead is very low, but if you are going to use slow scripts you should be aware that while the script is running no other client can execute commands.
-{% endhighlight %}
+```
+
 
 refer:
 
@@ -1104,18 +1139,20 @@ Redis提供了两种不同的持久化方法。
 
 共享选项，决定快照文件和AOF文件的保存位置。
 
-{% highlight text %}
+```text
 dir ./
-{% endhighlight %}
+```
+
 
 快照持久化配置选项：
 
-{% highlight text %}
+```text
 save 60 1000
 stop-writes-on-bgsave-error no
 rdbcompression yes
 dbfilename dump.rdb
-{% endhighlight %}
+```
+
 
 创建快照的几个方法：
 
@@ -1132,13 +1169,14 @@ dbfilename dump.rdb
 
 AOF持久化配置选项：
 
-{% highlight text %}
+```text
 appendonly no
 appendfsync everysec/always/no
 no-appendsync-on-rewrite no
 auto-aof-rewrite-percentage 100
 auto-aof-rewrite-min-size 64mb
-{% endhighlight %}
+```
+
 
 # Redis的复制
 
@@ -1154,11 +1192,12 @@ auto-aof-rewrite-min-size 64mb
 
 要对Redis的性能进行优化，首先需要知道各种命令的执行速度，可以通过附带的性能测试程序`redis-benchmark`测试，可以展示一些常用命令在1秒内可以执行的次数。
 
-{% highlight bash %}
+```bash
 # -c 1 一个客户端, 不指定则默认为50个客户端
 # -q 简化输出结果
 redis-benchmark -c 1 -1
-{% endhighlight %}
+```
+
 
 refer:
 

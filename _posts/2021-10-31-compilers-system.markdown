@@ -30,14 +30,15 @@ Example:
 
 For example, if you have the source files `foo.cpp` and `bar.cpp`, they can be placed in a **Single Compilation Unit** as follows:
 
-{% highlight cpp %}
+```cpp
 #include "foo.cpp"
 #include "bar.cpp"
-{% endhighlight %}
+```
+
 
 Suppose `foo.cpp` and `bar.cpp` are:
 
-{% highlight cpp %}
+```cpp
 //foo.cpp
 #include <iostream> // A large, standard header
 #include "bar.h"    // Declaration of function 'bar'
@@ -46,9 +47,10 @@ int main()          // Definition of function 'main'
 {
   bar();
 }
-{% endhighlight %}
+```
 
-{% highlight cpp %}
+
+```cpp
 //bar.cpp
 #include <iostream> // The same large, standard header
 
@@ -56,7 +58,8 @@ void bar()          // Definition of function 'bar'
 {
   ...
 }
-{% endhighlight %}
+```
+
 
 Now the standard header file (`iostream`) is compiled only once, and function `bar` may be inlined into function `main`, despite being from another module.
 
@@ -77,13 +80,14 @@ In computer programming, **conditional compilation** is a compilation technique 
 
 Many programming languages support conditional compilation. Typically [compiler directives](https://en.wikipedia.org/wiki/Compiler_directives) define or "undefine" certain variables; other directives test these variables and modify compilation accordingly. For example, not using an actual language, the compiler may be set to define "Macintosh" and undefine "PC", and the code may contain:
 
-{% highlight c %}
+```c
 (* System generic code *)
 if mac != Null then
     (* macOS specific code *)
 else if pc != Null
     (* Windows specific code *)
-{% endhighlight %}
+```
+
 
 In C and some languages with a similar syntax, this is done using an ['#ifdef' directive](https://en.wikipedia.org/wiki/C_preprocessor#Conditional_compilation).
 
@@ -144,7 +148,7 @@ JSON 编译数据库格式规范（JSON Compilation Database Format）是一种�
 
 参考 [this extractor extension](https://github.com/hedronvision/bazel-compile-commands-extractor) 工具的[解释](https://github.com/hedronvision/bazel-compile-commands-extractor/blob/1e08f8e0507b6b6b1f4416a9a22cf5c28beaba93/refresh_compile_commands.bzl#L34-L37)：
 
-{% highlight bash %}
+```bash
     # Using ccls or another tool that doesn't want or need headers in compile_commands.json?
         # exclude_headers = "all", # By default, we include entries for headers to support clangd, working around https://github.com/clangd/clangd/issues/123
         # ^ excluding headers will speed up compile_commands.json generation *considerably* because we won't need to preprocess your code to figure out which headers you use.
@@ -163,15 +167,17 @@ JSON 编译数据库格式规范（JSON Compilation Database Format）是一种�
         # exclude_headers = "external",
     # Still not fast enough?
         # Make sure you're specifying just the targets you care about by setting `targets`, above.
-{% endhighlight %}
+```
+
 
 再参考 [this extractor extension](https://github.com/hedronvision/bazel-compile-commands-extractor) 工具的[另一个解释](https://github.com/hedronvision/bazel-compile-commands-extractor/blob/1e08f8e0507b6b6b1f4416a9a22cf5c28beaba93/refresh.template.py#L665-L667)：由于 clangd 的 [Use parsed files to improve header compile commands #123](https://github.com/clangd/clangd/issues/123) 问题，**bazel-compile-commands-extractor 工具因此需要 apply commands to headers and sources**。
 
-{% highlight text %}
+```text
     # Note: We need to apply commands to headers and sources.
     # Why? clangd currently tries to infer commands for headers using files with similar paths. This often works really poorly for header-only libraries. The commands should instead have been inferred from the source files using those libraries... See https://github.com/clangd/clangd/issues/123 for more.
     # When that issue is resolved, we can stop looking for headers and just return the single source file.
-{% endhighlight %}
+```
+
 
 其他相关的issue:
 
@@ -183,10 +189,11 @@ JSON 编译数据库格式规范（JSON Compilation Database Format）是一种�
 
 如果不想对头文件生成编译命令，可以通过设置 `exclude_headers = "all"` 来实现：
 
-{% highlight text %}
+```text
 Using ccls or another tool that, unlike clangd, doesn't want or need headers in compile_commands.json?
 Similar to the above, we'll use refresh_compile_commands for configuration, but instead of setting targets, set exclude_headers = "all".
-{% endhighlight %}
+```
+
 
 
 
@@ -198,7 +205,7 @@ Each command object contains the translation unit’s main file, the working dir
 
 Example:
 
-{% highlight json %}
+```json
 [
   { "directory": "/home/user/llvm/build",
     "arguments": ["/usr/bin/clang++", "-Irelative", "-DSOMEDEF=With spaces, quotes and \\-es.", "-c", "-o", "file.o", "file.cc"],
@@ -210,7 +217,8 @@ Example:
 
   ...
 ]
-{% endhighlight %}
+```
+
 
 The contracts for each field in the command object are:
 
@@ -238,11 +246,12 @@ For simple projects, Clang tools also recognize a **compile_flags.txt** file. Th
 
 Example:
 
-{% highlight text %}
+```text
 -xc++
 -I
 libwidget/include/
-{% endhighlight %}
+```
+
 
 Here `-I libwidget/include` is two arguments, and so becomes two lines. Paths are relative to the directory containing **compile_flags.txt**.
 
@@ -285,7 +294,7 @@ refer:
 
 测试脚本：
 
-{% highlight text %}
+```text
 #!/bin/bash
 
 rm -rf build
@@ -329,11 +338,12 @@ fi
 ## readelf --string-dump .comment <output-file>
 
 echo "have done"
-{% endhighlight %}
+```
+
 
 ## ninja + gcc
 
-{% highlight text %}
+```text
 top - 21:08:49 up 181 days, 16 min,  4 users,  load average: 8.18, 8.43, 16.17
 Tasks: 193 total,  10 running, 183 sleeping,   0 stopped,   0 zombie
 %Cpu0  : 92.7 us,  7.3 sy,  0.0 ni,  0.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
@@ -356,22 +366,24 @@ KiB Swap:        0 total,        0 free,        0 used. 11429800 avail Mem
 19691 root      20   0  444044 394996   6404 R  97.0  2.4   0:03.17 cc1plus
 19695 root      20   0  304324 254396   6028 R  47.2  1.6   0:01.42 cc1plus
 19699 root      20   0  149372 102168   5920 R  20.3  0.6   0:00.61 cc1plus
-{% endhighlight %}
+```
+
 
 results:
 
-{% highlight text %}
+```text
 $time ninja -j8
 
 real    40m26.115s
 user    301m22.380s
 sys     14m17.540s
-{% endhighlight %}
+```
+
 
 增加`ninja`并发可以增加速度，但是需要有较大的内存。以下为256并发时内存空间已不足，编译时会报内部错误。
 
 
-{% highlight text %}
+```text
 [71/6710] Building CXX object lib/Support/CMakeFiles/LLVMSupport.dir/Debug.cpp.o
 FAILED: lib/Support/CMakeFiles/LLVMSupport.dir/Debug.cpp.o
 /opt/rh/devtoolset-7/root/usr/bin/c++  -DGTEST_HAS_RTTI=0 -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -Ilib/Support -I/root/compile/test/llvm-project-11.0.0/llvm/lib/Support -Iinclude -I/root/compile/test/llvm-project-11.0.0/llvm/include -fPIC -fvisibility-inlines-hidden -Werror=date-time -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wno-missing-field-initializers -pedantic -Wno-long-long -Wimplicit-fallthrough -Wno-maybe-uninitialized -Wno-noexcept-type -Wdelete-non-virtual-dtor -Wno-comment -fdiagnostics-color -ffunction-sections -fdata-sections -O3 -DNDEBUG   -std=c++14  -fno-exceptions -fno-rtti -MD -MT lib/Support/CMakeFiles/LLVMSupport.dir/Debug.cpp.o -MF lib/Support/CMakeFiles/LLVMSupport.dir/Debug.cpp.o.d -o lib/Support/CMakeFiles/LLVMSupport.dir/Debug.cpp.o -c /root/compile/test/llvm-project-11.0.0/llvm/lib/Support/Debug.cpp
@@ -379,9 +391,10 @@ c++: internal compiler error: Killed (program cc1plus)
 Please submit a full bug report,
 with preprocessed source if appropriate.
 See <http://bugzilla.redhat.com/bugzilla> for instructions.
-{% endhighlight %}
+```
 
-{% highlight text %}
+
+```text
 top - 23:38:58 up 181 days,  2:46,  4 users,  load average: 101.87, 24.81, 8.97
 Tasks: 693 total, 105 running, 587 sleeping,   0 stopped,   1 zombie
 %Cpu(s): 18.0 us, 17.8 sy,  0.0 ni,  0.2 id, 63.9 wa,  0.0 hi,  0.0 si,  0.0 st
@@ -399,7 +412,8 @@ KiB Swap:        0 total,        0 free,        0 used.   183040 avail Mem
 15158 root      20   0  166464 116372   1908 R   2.7  0.7   0:00.86 cc1plus
 15470 root      20   0   99312  49680    356 R   2.6  0.3   0:00.41 cc1plus
 15532 root      20   0   99356  49384    360 R   2.6  0.3   0:00.37 cc1plus
-{% endhighlight %}
+```
+
 
 ## makefile + gcc
 
@@ -429,14 +443,15 @@ refer: [ld(1) - Linux man page](https://linux.die.net/man/1/ld)
 
 The motivation for writing gold was to make a linker that is faster than the [GNU linker](https://en.wikipedia.org/wiki/GNU_linker), especially for large applications coded in C++.
 
-{% highlight text %}
+```text
 # use ld.gold instead of ld for performance
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
 
 # get link stage stats
 SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--stats")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--stats")
-{% endhighlight %}
+```
+
 
 * [gold (linker)](https://en.wikipedia.org/wiki/Gold_%28linker%29)
 * [Replacing ld with gold - any experience?](https://stackoverflow.com/questions/3476093/replacing-ld-with-gold-any-experience)
@@ -446,7 +461,7 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--stats")
 
 Replace `ld` to `lld`:
 
-{% highlight text %}
+```text
 # orig: /opt/rh/devtoolset-7/root/etc/alternatives/ld -> /opt/rh/devtoolset-7/root/usr/bin/ld.bfd
 # ln -s /opt/rh/devtoolset-7/root/usr/bin/ld.bfd /opt/rh/devtoolset-7/root/etc/alternatives/ld
 #
@@ -455,11 +470,12 @@ ln -s /root/compile/llvm_install/bin/ld.lld /opt/rh/devtoolset-7/root/etc/altern
 
 ls -l /opt/rh/devtoolset-7/root/etc/alternatives/ld
 lrwxrwxrwx 1 root root 37 Dec 13 16:47 /opt/rh/devtoolset-7/root/etc/alternatives/ld -> /root/compile/llvm_install/bin/ld.lld
-{% endhighlight %}
+```
+
 
 LLD leaves its name and version number to a `.comment` section in an output. If you are in doubt whether you are successfully using LLD or not, run `readelf --string-dump .comment <output-file>` and examine the output. If the string “Linker: LLD” is included in the output, you are using LLD.
 
-{% highlight text %}
+```text
 $readelf --string-dump .comment demo
 
 String dump of section '.comment':
@@ -467,7 +483,8 @@ String dump of section '.comment':
   [    5d]  clang version 12.0.0 (/root/compile/llvm-project/clang f76b7f22f085fbf9f2585923f7a3a0558d75964b)
   [    be]  GCC: (GNU) 4.8.5 20150623 (Red Hat 4.8.5-4)
   [    ea]  GCC: (GNU) 7.3.1 20180303 (Red Hat 7.3.1-5)
-{% endhighlight %}
+```
+
 
 refer:
 
@@ -488,13 +505,14 @@ To use the first method, just make sure that `ccache` is in your `PATH`.
 
 To use the symlinks method, do something like this:
 
-{% highlight text %}
+```text
 cp ccache /usr/local/bin/
 ln -s ccache /usr/local/bin/gcc
 ln -s ccache /usr/local/bin/g++
 ln -s ccache /usr/local/bin/cc
 ln -s ccache /usr/local/bin/c++
-{% endhighlight %}
+```
+
 
 And so forth. This will work as long as the directory with symlinks comes before the path to the compiler (which is usually in `/usr/bin`). After installing you may wish to run “which gcc” to make sure that the correct link is being used.
 
@@ -514,14 +532,15 @@ And so forth. This will work as long as the directory with symlinks comes before
 More: man ccache
 
 
-{% highlight text %}
+```text
 $which gcc
 /usr/lib64/ccache/gcc
 $ll -lh `which gcc`
 lrwxrwxrwx 1 root root 16 3月   5 2021 /usr/lib64/ccache/gcc -> ../../bin/ccache
 $ll -lh /usr/bin/ccache
 -rwxr-xr-x 1 root root 135K 2月  19 2020 /usr/bin/ccache
-{% endhighlight %}
+```
+
 
 ## 禁用 ccache
 
@@ -531,9 +550,10 @@ $ll -lh /usr/bin/ccache
 
 在构建命令之前，将 CCACHE_DISABLE 环境变量设置为 1：
 
-{% highlight bash %}
+```bash
 export CCACHE_DISABLE=1
-{% endhighlight %}
+```
+
 
 然后运行构建命令（例如：make）。这将在当前会话中禁用 ccache。
 
@@ -541,9 +561,10 @@ export CCACHE_DISABLE=1
 
 编辑 ~/.bashrc 或 ~/.bash_profile 文件，将以下行添加到文件末尾：
 
-{% highlight bash %}
+```bash
 export CCACHE_DISABLE=1
-{% endhighlight %}
+```
+
 
 保存文件并重新启动终端。这将在所有新的终端会话中禁用 ccache。
 
@@ -552,9 +573,10 @@ export CCACHE_DISABLE=1
 
 在构建命令中，直接指定原始编译器的路径，而不是使用 ccache 包装器。例如，如果您的原始 Clang 编译器位于 /usr/bin/clang，则可以在构建命令中使用此路径。
 
-{% highlight bash %}
+```bash
 make CC=/usr/bin/clang
-{% endhighlight %}
+```
+
 
 这将确保在构建过程中不使用 ccache。
 
@@ -581,7 +603,7 @@ make CC=/usr/bin/clang
 
 make.sh
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 ## https://stackoverflow.com/questions/7031126/switching-between-gcc-and-clang-llvm-using-cmake
@@ -621,11 +643,12 @@ fi
 ## readelf --string-dump .comment <output-file>
 
 echo "have done"
-{% endhighlight %}
+```
+
 
 ninja.sh
 
-{% highlight bash %}
+```bash
 #!/bin/bash
 
 ## https://stackoverflow.com/questions/7031126/switching-between-gcc-and-clang-llvm-using-cmake
@@ -665,7 +688,8 @@ fi
 ## readelf --string-dump .comment <output-file>
 
 echo "have done"
-{% endhighlight %}
+```
+
 
 
 测试结果：
