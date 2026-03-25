@@ -152,17 +152,7 @@ Kitty: We like each other. We're good friends. (吉蒂：我们喜欢彼此。�
 
 
 
-# 画图
-
-## [Nano Banana Prompt Gallery](https://nanobananaprompt.org/prompts/)
-
-*  Add a realistic {beard_style} to the face in this photo, blended naturally with the original facial features.
-
-![prompt1](/assets/images/202601/prompt1.png)
-
-
-
-## [Next AI Draw.io](https://github.com/DayuanJiang/next-ai-draw-io) 工具
+# 画图工具 [Next AI Draw.io](https://github.com/DayuanJiang/next-ai-draw-io)
 
 * Give me a **animated connector** diagram of transformer's architecture.
 
@@ -184,6 +174,16 @@ Kitty: We like each other. We're good friends. (吉蒂：我们喜欢彼此。�
 * Draw a cute cat for me.
 
 ![cat_demo](/assets/images/202512/cat_demo.svg)
+
+
+# 人物照片
+
+[Nano Banana Prompt Gallery](https://nanobananaprompt.org/prompts/)
+
+Add a realistic {beard_style} to the face in this photo, blended naturally with the original facial features.
+
+![prompt1](/assets/images/202601/prompt1.png)
+
 
 
 
