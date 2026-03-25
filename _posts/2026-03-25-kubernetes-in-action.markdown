@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Kubernetes in Action"
-date:   2018-11-14 20:22:00 +0800
+date:   2026-03-25 13:30:00 +0800
 categories: 云原生
 tags:
   - Kubernetes
@@ -11,14 +11,13 @@ tags:
 * Do not remove this line (it will not be displayed)
 {:toc}
 
-[k8s官网]的介绍：
+[Kubernetes 官网](https://kubernetes.io/)的介绍：
 
 > Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications. It groups containers that make up an application into logical units for easy management and discovery. Kubernetes builds upon [15 years of experience of running production workloads at Google], combined with best-of-breed ideas and practices from the community.
 
-![the_old_and_new_way](https://github.com/gerryyang/mac-utils/raw/master/tools/VPS/jekyll/my-jekyll-project/assets/images/201811/the_old_and_new_way.jpg)
+![k8s1](/assets/images/202603/k8s1.jpg)
 
-
-k8s的好处：
+Kubernetes 的好处：
 
 * Planet Scale
 	+ Designed on the same principles that allows Google to run billions of containers a week, Kubernetes can scale without increasing your ops team.
@@ -28,39 +27,30 @@ k8s的好处：
 	+ Kubernetes is open source giving you the freedom to take advantage of on-premises, hybrid, or public cloud infrastructure, letting you effortlessly move workloads to where it matters to you.
 
 
-# [k8s setup]
+# [Kubernetes Getting started](https://kubernetes.io/docs/setup/)
 
-[k8s setup]: https://kubernetes.io/docs/setup/
 
-方案1：minikube
+* 方案1：minikube
+  + https://kubernetes.io/docs/setup/minikube/
 
-https://kubernetes.io/docs/setup/minikube/
+* 方案2：microk8s
+  + https://microk8s.io/
 
-方案2：microk8s
+* 方案3：Kubernetes on Ubuntu
+  + https://kubernetes.io/docs/getting-started-guides/ubuntu/
 
-https://microk8s.io/
+* 方案4：kubeadm
+  + https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-1-11-cluster-using-kubeadm-on-ubuntu-18-04
 
-方案3：Kubernetes on Ubuntu
+* 方案5：Kubernetes + Virtualbox + Vagrant
+  + [kubernetes-vagrant-centos-cluster](https://github.com/rootsongjc/kubernetes-vagrant-centos-cluster)
+  + [How to Install Vagrant on Ubuntu 18.04](https://linuxize.com/post/how-to-install-vagrant-on-ubuntu-18-04/)
 
-https://kubernetes.io/docs/getting-started-guides/ubuntu/
-
-方案4：kubeadm
-
-https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-1-11-cluster-using-kubeadm-on-ubuntu-18-04
-
-方案5：Kubernetes + Virtualbox + Vagrant
-
-[kubernetes-vagrant-centos-cluster]
-[jimmysong-istio-handbook]
-
-[kubernetes-vagrant-centos-cluster]: https://github.com/rootsongjc/kubernetes-vagrant-centos-cluster
-
-[jimmysong-istio-handbook]: https://jimmysong.io/istio-handbook/setup/quick-start.html
 
 
 # 方案5安装记录
 
-Setting up a distributed Kubernetes cluster along with Istio service mesh locally with Vagrant and VirtualBox for PoC or Demo use cases, see [kubernetes-vagrant-centos-cluster].
+Setting up a distributed Kubernetes cluster along with Istio service mesh locally with Vagrant and VirtualBox for PoC or Demo use cases, see [kubernetes-vagrant-centos-cluster](https://github.com/rootsongjc/kubernetes-vagrant-centos-cluster).
 
 安装后：
 
@@ -97,12 +87,25 @@ monitoring-influxdb-grafana-v4-5bbb9b766d-8x8bz   2/2     Running   0          5
 traefik-ingress-controller-n2gt6                  1/1     Running   0          1h
 {% endhighlight %}
 
-[15 years of experience of running production workloads at Google]: https://queue.acm.org/detail.cfm?id=2898444
 
-[k8s官网]: https://kubernetes.io/
 
-[k8s官方下载地址]: https://kubernetes.io/docs/imported/release/notes/
 
-[How to install Vagrant on Ubuntu 18.04]: https://linuxize.com/post/how-to-install-vagrant-on-ubuntu-18-04/
+# 常用命令
 
-[kubernetes github]: https://github.com/kubernetes/kubernetes
+## 查看 Kubernetes 集群版本号
+
+```bash
+root:~$ kubectl version --short 2>/dev/null
+Client Version: v1.18.20
+Server Version: v1.18.4-tke.20
+```
+
+
+
+
+# Refer
+
+* https://github.com/kubernetes/kubernetes
+* [15 years of experience of running production workloads at Google](https://queue.acm.org/detail.cfm?id=2898444)
+* [jimmysong-istio-handbook](https://jimmysong.io/istio-handbook/setup/quick-start.html)
+
