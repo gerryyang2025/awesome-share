@@ -32,6 +32,15 @@ def strip_front_matter(text)
   m ? text.byteslice(m.end(0)..-1) : text
 end
 
+# Liquid 4 tokenizes with String#split and requires valid UTF-8; some posts mix encodings.
+def read_post_as_utf8(path, verbose: false)
+  bin = File.binread(path)
+  unless bin.dup.force_encoding("UTF-8").valid_encoding?
+    warn "#{path}: warning — not valid UTF-8; invalid bytes replaced for Liquid parse (fix file encoding to UTF-8)" if verbose
+  end
+  bin.encode("UTF-8", invalid: :replace, undef: :replace, replace: "\uFFFD")
+end
+
 def raw_tag_depth_warning(path, body)
   depth = 0
   body.scan(/\{%-?\s*(raw|endraw)\s*-?%\}/) do
@@ -65,7 +74,7 @@ end
 
 errors = 0
 paths.each do |path|
-  body = strip_front_matter(File.read(path, encoding: "UTF-8"))
+  body = strip_front_matter(read_post_as_utf8(path, verbose: verbose))
   raw_tag_depth_warning(path, body) if verbose
 
   Liquid::Template.parse(body)
@@ -73,6 +82,10 @@ paths.each do |path|
 rescue Liquid::SyntaxError => e
   errors += 1
   warn "#{path}: #{e.message}"
+rescue ArgumentError => e
+  errors += 1
+  warn "#{path}: #{e.message}"
+  warn "#{path}: hint — if this mentions UTF-8/bytes, save the post as UTF-8 (no BOM) or remove binary garbage"
 end
 
 if errors.positive?

@@ -79,6 +79,8 @@ ruby tools/convert_highlight_to_fenced.rb _posts/YYYY-MM-DD-文章名.markdown
 
 **不**等同于完整 `jekyll build`（不跑插件、不渲染 Markdown），但足以捕获多数正文里的 Liquid 语法错误。
 
+含非 UTF-8 字节的文章会导致 Liquid 报错；脚本会**按字节读入并替换非法 UTF-8 序列**后再解析（`--verbose` 时对非 UTF-8 文件会打 warning）。站点仍建议全部 post 保存为 **UTF-8（无 BOM）**。
+
 ### 运行方式
 
 在仓库根目录、已 `bundle install` 的前提下（Ruby 须为 3.1+，与 Jekyll 一致）：
