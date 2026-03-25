@@ -412,15 +412,17 @@ appVersion: "1.16.0"  # 对应应用的实际版本
 
 ### 2. 资源命名
 
+{% raw %}
 ```yaml
 # 使用模板函数生成唯一名称
 metadata:
   name: {{ include "mychart.fullname" . }}-{{ .Values.env }}
 
 # 避免硬编码
-# ❌ name: myapp-prod
-# ✅ name: {{ .Release.Name }}-{{ .Values.env }}
+# 错误 name: myapp-prod
+# 正确 name: {{ .Release.Name }}-{{ .Values.env }}
 ```
+{% endraw %}
 
 ### 3. 资源限制
 
