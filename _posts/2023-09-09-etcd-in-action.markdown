@@ -1770,9 +1770,7 @@ The installation will place executables in the `$GOPATH/bin`. If `$GOPATH` envir
 
 {% raw %}
 ```bash
-{% raw %}
 $ go list -f "{{.Target}}" ./tools/etcd-dump-logs
-{% endraw %}
 ```
 {% endraw %}
 
