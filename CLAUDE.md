@@ -18,6 +18,10 @@ bundle install
 
 # Stop the server
 ./optools stop
+
+# Ubuntu: Ruby/Bundler diagnostics and rbenv upgrade path
+# ./optools ruby-check
+# AUTO_FIX=1 ./optools ruby-upgrade
 ```
 
 ## Blog Structure

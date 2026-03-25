@@ -129,7 +129,7 @@ Per [Writing a New Post — Code Block](https://chirpy.cotes.page/posts/write-a-
 
 ### Common deployment issue (Ruby too old)
 
-If your server is using Ruby 2.x (e.g. Ruby 2.5), `bundle install` / `./optools start` will fail for Chirpy/Jekyll 4.x. The `optools` script can attempt an automatic fix (rbenv + Ruby 3.2) on Ubuntu; otherwise upgrade Ruby manually, then run `bundle install`.
+If your server is using Ruby 2.x (e.g. Ruby 2.5), `bundle install` / `./optools start` will fail for Chirpy/Jekyll 4.x. On **Ubuntu**, run **`AUTO_FIX=1 ./optools ruby-upgrade`** (or rely on **`./optools check`** / **`start`** with **`AUTO_FIX=1`**, the default) to install **rbenv**, Ruby **`RBENV_RUBY_VERSION`** (default **3.2.3**), **bundler**, and **bundle install**. Use **`./optools ruby-check`** if `bundle` reports **GemNotFoundException** for bundler. On other OSes, upgrade Ruby manually, then run **`bundle install`**.
 
 ## Optional enhancements
 
@@ -176,6 +176,8 @@ Use the **optools** script for environment checks, start/stop, and status:
 ./optools restart      # stop then start
 ./optools status       # show if running and last log lines
 ./optools check        # check Ruby/Bundler/gems only (no start)
+./optools ruby-check   # print Ruby/Bundler paths and versions (diagnostics)
+./optools ruby-upgrade # Ubuntu: rbenv + Ruby (RBENV_RUBY_VERSION), bundler, bundle install
 ./optools help         # show help
 ```
 

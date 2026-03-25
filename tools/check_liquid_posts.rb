@@ -4,12 +4,21 @@
 # Parse each post body with Liquid (Jekyll runs Liquid on post content before Markdown).
 # Catches unknown tags, stray {% endraw %}, invalid {{ }} expressions, etc.
 #
-# Usage (repository root, after bundle install):
-#   ruby tools/check_liquid_posts.rb
-#   ruby tools/check_liquid_posts.rb _posts/2023-09-09-etcd-in-action.markdown
-#   ruby tools/check_liquid_posts.rb --verbose
+# Usage (repository root):
+#   bundle exec ruby tools/check_liquid_posts.rb   # preferred (uses Gemfile lock)
+#   ruby tools/check_liquid_posts.rb                # if the `liquid` gem is already installed
+#
+# See tools/README.md if `bundle` fails with GemNotFoundException for bundler.
 
-require "liquid"
+begin
+  require "liquid"
+rescue LoadError
+  warn "check_liquid_posts.rb: cannot load the `liquid` gem."
+  warn "  Fix: run `bundle install` in the repo root, then:"
+  warn "    bundle exec ruby tools/check_liquid_posts.rb"
+  warn "  Or install Bundler for your Ruby: `gem install bundler`, then `bundle install`."
+  exit 2
+end
 
 def usage!
   warn "Usage: #{$PROGRAM_NAME} [--verbose] [_posts/foo.markdown ...]"

@@ -15,24 +15,29 @@ APP_NAME="${APP_NAME:-jekyll}"
 usage() {
   cat <<'EOF'
 Usage:
-  ./optools start       Start Jekyll in background
-  ./optools stop        Stop running Jekyll processes
-  ./optools restart     Stop then start
-  ./optools status      Show whether Jekyll is running
-  ./optools check       Check Ruby/Bundler/Gems readiness (no start)
-  ./optools help        Show this help
+  ./optools start         Start Jekyll in background
+  ./optools stop          Stop running Jekyll processes
+  ./optools restart       Stop then start
+  ./optools status        Show whether Jekyll is running
+  ./optools check         Check Ruby/Bundler/Gems readiness (no start)
+  ./optools ruby-check    Print Ruby/Bundler paths and versions only (diagnostics)
+  ./optools ruby-upgrade  Install/upgrade Ruby via rbenv on Ubuntu, then bundler + bundle install
+  ./optools help          Show this help
 
 Env:
   LOG_FILE=run.log              Output log file
   PID_FILE=.jekyll.pid          PID file for the background process
   MIN_RUBY_VERSION=3.1.0        Minimum Ruby version
-  AUTO_FIX=1                    Auto-fix Ruby via rbenv (Ubuntu) when too old
-  RBENV_RUBY_VERSION=3.2.3      Ruby version to install via rbenv
+  AUTO_FIX=1                    Auto-fix Ruby via rbenv (Ubuntu) when too old (start/check)
+  RBENV_RUBY_VERSION=3.2.3      Ruby version to install via rbenv / ruby-upgrade
   DEBUG=0                       Set to 1 to add jekyll --trace (for debugging Liquid/build errors)
 EOF
   echo ""
   echo "For Jekyll/Liquid errors, run with trace:  DEBUG=1 ./optools start"
   echo "Then check run.log or:  tail -f run.log"
+  echo ""
+  echo "If 'bundle' fails with GemNotFoundException for bundler:  ./optools ruby-upgrade"
+  echo "  (or: gem install bundler && bundle install)  using the same Ruby as: which ruby"
 }
 
 run_cmd() {
@@ -114,8 +119,130 @@ ensure_rbenv_loaded() {
   return 1
 }
 
+# Print diagnostic lines; does not modify the system.
+ruby_check_diagnostics() {
+  echo "[run] --- Ruby / Bundler diagnostics ---"
+  if command -v ruby >/dev/null 2>&1; then
+    echo "[run] which ruby:    $(command -v ruby)"
+    echo "[run] ruby -v:       $(ruby -v 2>&1)"
+    echo "[run] ruby version:  $(ruby -e 'print RUBY_VERSION' 2>&1)"
+  else
+    echo "[run] ruby:          (not found in PATH)"
+  fi
+
+  if command -v bundle >/dev/null 2>&1; then
+    echo "[run] which bundle:  $(command -v bundle)"
+    if out="$(bundle -v 2>&1)"; then
+      echo "[run] bundle -v:     ${out}"
+    else
+      echo "[run] bundle -v:     FAILED — ${out}"
+      echo "[run] hint: often 'can't find gem bundler' means this bundle stub belongs to another Ruby."
+      echo "[run]        Run:  gem install bundler   (same shell as: which ruby)"
+    fi
+  else
+    echo "[run] bundle:        (not found in PATH)"
+  fi
+
+  if command -v rbenv >/dev/null 2>&1; then
+    echo "[run] rbenv:         $(command -v rbenv)"
+    rbenv version 2>/dev/null || true
+  else
+    echo "[run] rbenv:         (not in PATH; optional)"
+  fi
+  echo "[run] required:      Ruby >= ${MIN_RUBY_VERSION} (Chirpy / Jekyll 4.3)"
+  echo "[run] ---"
+}
+
+ruby_version_ok() {
+  local ver
+  ver="$(ruby -e 'print RUBY_VERSION' 2>/dev/null)" || return 1
+  printf '%s\n%s\n' "$MIN_RUBY_VERSION" "$ver" | sort -V -C
+}
+
+# Ensure Bundler works for the current ruby; fixes broken `bundle` stubs.
+ensure_bundler() {
+  if ! command -v ruby >/dev/null 2>&1; then
+    return 1
+  fi
+
+  if ! command -v bundle >/dev/null 2>&1; then
+    echo "[run] bundler not in PATH; installing..."
+    gem install bundler --no-document
+    return 0
+  fi
+
+  if ! bundle -v >/dev/null 2>&1; then
+    echo "[run] 'bundle' exists but does not run; reinstalling bundler for current Ruby..."
+    gem install bundler --no-document
+  fi
+
+  return 0
+}
+
+# Exit 0 if Ruby and bundle -v OK; 1 otherwise. Optional: bundle check.
+cmd_ruby_check() {
+  ruby_check_diagnostics
+
+  if ! command -v ruby >/dev/null 2>&1; then
+    echo "[run] ERROR: ruby not found"
+    return 1
+  fi
+
+  if ! ruby_version_ok; then
+    echo "[run] ERROR: Ruby $(ruby -e 'print RUBY_VERSION') is older than required ${MIN_RUBY_VERSION}"
+    echo "[run] On Ubuntu:  AUTO_FIX=1 ./optools ruby-upgrade   or see: ./optools help"
+    return 1
+  fi
+
+  if ! command -v bundle >/dev/null 2>&1 || ! bundle -v >/dev/null 2>&1; then
+    echo "[run] ERROR: Bundler missing or broken for this Ruby"
+    echo "[run] Try:  gem install bundler && bundle -v"
+    return 1
+  fi
+
+  if bundle check >/dev/null 2>&1; then
+    echo "[run] bundle check:  OK"
+  else
+    echo "[run] bundle check:  gems missing — run:  bundle install"
+    return 1
+  fi
+
+  echo "[run] ruby-check: OK"
+  return 0
+}
+
+# Install Ruby via rbenv (Ubuntu) and bundler + project gems.
+cmd_ruby_upgrade() {
+  if [ "$AUTO_FIX" != "1" ]; then
+    echo "[run] ruby-upgrade requires AUTO_FIX=1 (default). To run upgrades, use:"
+    echo "  AUTO_FIX=1 ./optools ruby-upgrade"
+    echo "Or set AUTO_FIX=0 only when you want to block any install attempts."
+    return 1
+  fi
+
+  if ! command -v apt-get >/dev/null 2>&1; then
+    echo "[run] ERROR: ruby-upgrade only automates Ubuntu (apt-get). On macOS use Homebrew/rbenv; see README."
+    return 1
+  fi
+
+  echo "[run] ruby-upgrade: installing Ruby ${RBENV_RUBY_VERSION} via rbenv + bundler + gems..."
+  if ! auto_fix_ruby; then
+    echo "[run] ERROR: ruby-upgrade failed (rbenv / build deps). See messages above."
+    return 1
+  fi
+
+  ensure_bundler
+  echo "[run] installing gems (bundle install)..."
+  bundle install
+
+  ruby_check_diagnostics
+  echo "[run] ruby-upgrade: done"
+  return 0
+}
+
 check_env() {
   echo "[run] checking environment..."
+  ruby_check_diagnostics
 
   if ! command -v ruby >/dev/null 2>&1; then
     echo "[run] ERROR: ruby not found in PATH"
@@ -136,9 +263,12 @@ Auto-fix was skipped/failed. To try auto-fix, ensure this script can:
   - run apt-get (root or sudo)
   - access github.com (git clone)
 
+On Ubuntu, run explicitly:
+  AUTO_FIX=1 ./optools ruby-upgrade
+
 Manual fix (Ubuntu, using rbenv):
   sudo apt update
-  sudo apt install -y git build-essential libssl-dev libreadline-dev zlib1g-dev libyaml-dev libffi-dev
+  sudo apt install -y git build-essential autoconf bison libssl-dev libreadline-dev zlib1g-dev libyaml-dev libffi-dev libgdbm-dev libncurses-dev
   git clone https://github.com/rbenv/rbenv.git ~/.rbenv
   git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
   export PATH="$HOME/.rbenv/bin:$PATH"
@@ -149,17 +279,14 @@ Manual fix (Ubuntu, using rbenv):
   bundle install
 
 Then re-run:
-  ./optools
+  ./optools check
 EOF
       echo "[run] current ruby: ${RUBY_VERSION}"
       return 1
     fi
   fi
 
-  if ! command -v bundle >/dev/null 2>&1; then
-    echo "[run] bundler not found; installing..."
-    gem install bundler --no-document
-  fi
+  ensure_bundler
 
   echo "[run] ruby: ${RUBY_VERSION}"
   echo "[run] bundler: $(bundle -v)"
@@ -229,21 +356,26 @@ auto_fix_ruby() {
     return 1
   fi
 
-  if ! command -v git >/dev/null 2>&1; then
-    echo "[run] auto-fix skipped: git not found"
-    return 1
-  fi
-
   echo "[run] attempting auto-fix: install Ruby via rbenv (target ${RBENV_RUBY_VERSION})"
 
   maybe_sudo apt-get update
   maybe_sudo apt-get install -y \
     build-essential \
+    git \
+    autoconf \
+    bison \
     libssl-dev \
     libreadline-dev \
     zlib1g-dev \
     libyaml-dev \
-    libffi-dev
+    libffi-dev \
+    libgdbm-dev \
+    libncurses-dev
+
+  if ! command -v git >/dev/null 2>&1; then
+    echo "[run] auto-fix failed: git not available (apt install git?)"
+    return 1
+  fi
 
   export RBENV_ROOT="${RBENV_ROOT:-$HOME/.rbenv}"
   if [ ! -d "$RBENV_ROOT" ]; then
@@ -295,6 +427,12 @@ case "$COMMAND" in
     ;;
   check)
     check_env
+    ;;
+  ruby-check)
+    cmd_ruby_check
+    ;;
+  ruby-upgrade)
+    cmd_ruby_upgrade
     ;;
   -h|--help|help)
     usage

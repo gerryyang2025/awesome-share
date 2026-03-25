@@ -89,7 +89,26 @@ bundle exec ruby tools/check_liquid_posts.rb _posts/2023-09-09-etcd-in-action.ma
 bundle exec ruby tools/check_liquid_posts.rb --verbose
 ```
 
-退出码：全部通过为 `0`，任一文件解析失败为 `1`。
+退出码：全部通过为 `0`，任一文件解析失败为 `1`；缺少 `liquid`  gem 时为 `2`。
+
+### 常见错误
+
+**`can't find gem bundler … Gem::GemNotFoundException`**
+
+说明当前用来执行 `bundle` 的 Ruby 环境里**没有安装 bundler**（或 `PATH` 指向了别的 Ruby 的 `bundle` 可执行文件）。
+
+1. 使用与本站 **Jekyll 相同的 Ruby**（`Gemfile` / Chirpy 要求 **Ruby ≥ 3.1**，**不要用系统自带的 2.5** 跑 `bundle`）。
+2. 为该 Ruby 安装 Bundler 并安装依赖，例如：
+   ```bash
+   gem install bundler
+   bundle install
+   bundle exec ruby tools/check_liquid_posts.rb
+   ```
+3. 若已用 **rbenv / rvm / asdf**，先 `rbenv shell 3.x`（或等价命令）再执行上述命令，确保 `which ruby` 与 `which bundle` 一致。
+
+**`cannot load the `liquid` gem`（脚本以退出码 2 退出）**
+
+在未进入 Bundler 的环境下直接 `ruby tools/check_liquid_posts.rb` 时，若当前 Ruby 未安装 `liquid`，会提示此错误。请改用 **`bundle exec ruby …`**，或仅用于临时排查时执行 **`gem install liquid`**（版本宜与 Jekyll 4 依赖接近，如 4.x）。
 
 ### 写作提示（与 Liquid 相关）
 
