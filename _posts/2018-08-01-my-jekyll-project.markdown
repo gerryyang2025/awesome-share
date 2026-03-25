@@ -235,13 +235,11 @@ More:
 
 * [How to Ignore Liquid Syntax Errors](https://github.com/Shopify/liquid/issues/927)
 
-To prevent an error, you'll need to wrap the JSON in Liquid raw tags, like this:
+To prevent an error, wrap the **entire** fenced block in a **single** pair of Liquid **raw** / **endraw** tags. Do not close **raw** with **endraw** inside the block before the closing fence — the first **endraw** ends the raw region and a second closing tag becomes an unknown tag. Example:
 
 {% raw %}
 ```text
-{% raw %}
 { {3478, udp}, ejabberd_stun, [] },
-{% endraw %}
 ```
 {% endraw %}
 
