@@ -33,6 +33,10 @@ Env:
   DEBUG=0                       Set to 1 to add jekyll --trace (for debugging Liquid/build errors)
 EOF
   echo ""
+  echo "Note: check / ruby-check / start prepend rbenv (~/.rbenv) when it exists, so you get Ruby 3.x"
+  echo "even if your shell still has /usr/bin/ruby first. For bare terminals, add rbenv to ~/.bashrc"
+  echo "(see hint after ruby-upgrade)."
+  echo ""
   echo "For Jekyll/Liquid errors, run with trace:  DEBUG=1 ./optools start"
   echo "Then check run.log or:  tail -f run.log"
   echo ""
@@ -119,6 +123,29 @@ ensure_rbenv_loaded() {
   return 1
 }
 
+# Non-login shells (e.g. SSH then ./optools) often lack rbenv in PATH; system Ruby stays first.
+# Call this before any ruby/bundle use so ~/.rbenv wins when present.
+prefer_rbenv_if_present() {
+  export RBENV_ROOT="${RBENV_ROOT:-$HOME/.rbenv}"
+  if [ ! -x "${RBENV_ROOT}/bin/rbenv" ]; then
+    return 0
+  fi
+  export PATH="${RBENV_ROOT}/bin:${PATH}"
+  # shellcheck disable=SC1090
+  eval "$(rbenv init - bash)"
+  return 0
+}
+
+rbenv_login_shell_hint() {
+  cat <<'HINT'
+[run] Interactive shells still see system Ruby until rbenv is initialized. Add to ~/.bashrc (then: source ~/.bashrc or new SSH session):
+
+  export PATH="$HOME/.rbenv/bin:$PATH"
+  eval "$(rbenv init - bash)"
+
+HINT
+}
+
 # Print diagnostic lines; does not modify the system.
 ruby_check_diagnostics() {
   echo "[run] --- Ruby / Bundler diagnostics ---"
@@ -181,6 +208,7 @@ ensure_bundler() {
 
 # Exit 0 if Ruby and bundle -v OK; 1 otherwise. Optional: bundle check.
 cmd_ruby_check() {
+  prefer_rbenv_if_present
   ruby_check_diagnostics
 
   if ! command -v ruby >/dev/null 2>&1; then
@@ -220,6 +248,8 @@ cmd_ruby_upgrade() {
     return 1
   fi
 
+  prefer_rbenv_if_present
+
   if ! command -v apt-get >/dev/null 2>&1; then
     echo "[run] ERROR: ruby-upgrade only automates Ubuntu (apt-get). On macOS use Homebrew/rbenv; see README."
     return 1
@@ -237,11 +267,13 @@ cmd_ruby_upgrade() {
 
   ruby_check_diagnostics
   echo "[run] ruby-upgrade: done"
+  rbenv_login_shell_hint
   return 0
 }
 
 check_env() {
   echo "[run] checking environment..."
+  prefer_rbenv_if_present
   ruby_check_diagnostics
 
   if ! command -v ruby >/dev/null 2>&1; then
