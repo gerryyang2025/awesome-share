@@ -79,7 +79,11 @@ ruby tools/convert_highlight_to_fenced.rb _posts/YYYY-MM-DD-文章名.markdown
 
 **不**等同于完整 `jekyll build`（不跑插件、不渲染 Markdown），但足以捕获多数正文里的 Liquid 语法错误。
 
-含非 UTF-8 字节的文章会导致 Liquid 报错；脚本会**按字节读入并替换非法 UTF-8 序列**后再解析（`--verbose` 时对非 UTF-8 文件会打 warning）。站点仍建议全部 post 保存为 **UTF-8（无 BOM）**。
+脚本会**按字节读入并 scrub 非法 UTF-8** 再解析；**去掉 front matter 时使用字符切片**（避免误用 `byteslice` 截断多字节字符）。站点仍建议全部 post 保存为 **UTF-8（无 BOM）**。
+
+**进一步定位编码问题**：加 **`--encoding-report`**，对**未 scrub 的原始文件**报告首个非法 UTF-8 区域的**字节偏移**、**约略行号**、**周围 hex**（便于在十六进制编辑器或 `xxd` 里对照）。
+
+**Jekyll 专有标签**：正文里的 **`{% post_url … %}`** 在纯 Liquid 中不存在；检查脚本已注册**空实现的 stub**，与 `jekyll build` 行为对齐以便解析通过。若还有其它自定义标签报错，需在脚本中同样 stub 或改为完整 `jekyll build` 检查。
 
 ### 运行方式
 
@@ -89,6 +93,8 @@ ruby tools/convert_highlight_to_fenced.rb _posts/YYYY-MM-DD-文章名.markdown
 bundle exec ruby tools/check_liquid_posts.rb
 bundle exec ruby tools/check_liquid_posts.rb _posts/2023-09-09-etcd-in-action.markdown
 bundle exec ruby tools/check_liquid_posts.rb --verbose
+# 仅定位「磁盘上非 UTF-8」：字节偏移与约略行号、周围 hex
+bundle exec ruby tools/check_liquid_posts.rb --encoding-report
 ```
 
 若交互式 shell 仍指向系统自带 Ruby（如 Ubuntu 上 `/usr/bin/ruby`），而 `bundle` 来自旧路径，可先用本站 **`optools`** 带上 rbenv 再执行：
