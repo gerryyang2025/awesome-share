@@ -5,7 +5,11 @@ date:   2022-07-20 12:30:00 +0800
 categories: 云原生
 tags:
   - Helm
+  - Kubernetes
   - 云原生
+  - 包管理工具
+
+description: "深入解析 Kubernetes 包管理工具 Helm，从核心概念到高级用法，结合 Helm 4 新特性与最佳实践"
 
 ---
 
@@ -201,6 +205,119 @@ To learn more about the available Helm commands, use `helm help` or type a comma
 $ helm get -h
 {% endhighlight %}
 
+# Helm 4 新特性
+
+> [!TIP]
+> Helm 4 是继 Helm 3 之后的重大版本更新，引入了一系列新特性、架构改进和安全增强。
+
+## 主要更新摘要
+
+```mermaid
+mindmap
+  root((Helm 4))
+    新特性
+      Wasm 插件系统
+      Kstatus 状态监控
+      OCI 摘要支持
+      多文档 Values
+      服务端 Apply
+      自定义模板函数
+    架构变更
+      插件系统重构
+      包结构重组
+      CLI 标志重命名
+      版本化包支持
+    安全增强
+      OCI/Registry 增强
+      TLS 改进
+      Wasm 运行时隔离
+    现代化
+      slog 日志迁移
+      Go 1.24 支持
+      依赖清理
+```
+
+## Breaking Changes
+
+> [!WARNING]
+> Helm 4 存在以下 Breaking Changes，升级前请注意：
+>
+> - **Post-renderers 作为插件实现**：`--post-renderer` 不再支持直接传递可执行文件，需传递插件名称
+> - **Registry 登录格式变更**：`helm registry login` 不再接受完整 URL，仅需传入域名
+
+## CLI 标志重命名
+
+| 旧标志 | 新标志 | 说明 |
+|--------|--------|------|
+| `--atomic` | `--rollback-on-failure` | 失败时自动回滚 |
+| `--force` | `--force-replace` | 强制替换资源 |
+
+## 服务端 Apply
+
+Helm 4 默认使用**服务端 Apply**（Server-Side Apply），提供更好的冲突解决能力：
+
+```mermaid
+flowchart TD
+    A[helm install/upgrade] --> B{是否为新 Release?}
+    B -->|Yes| C[默认服务端 Apply]
+    B -->|No| D[继承上次 Apply 方式]
+    C --> E[Server-Side Apply]
+    D --> E
+    E --> F[多工具协调管理<br/>避免资源冲突]
+```
+
+## OCI 镜像支持
+
+Helm 4 增强了 OCI 支持，可以直接通过镜像摘要安装 Chart：
+
+```bash
+# 登录 OCI Registry
+helm registry login registry.example.com
+
+# 通过摘要安装（确保供应链安全）
+helm install myapp oci://registry.example.com/charts/app@sha256:abc123...
+
+# 推送 Chart 到 OCI Registry
+helm push mychart-1.0.0.tgz oci://registry.example.com/charts
+```
+
+> [!NOTE]
+> OCI 支持使得 Chart 的分发与 Docker 镜像一致，便于统一的镜像仓库管理和签名验证。
+
+## 多文档 Values
+
+将复杂的配置拆分到多个 YAML 文件：
+
+```bash
+# 使用多文档 values
+helm install myapp ./mychart -f base.yaml -f dev.yaml
+```
+
+## Kstatus 集成
+
+Helm 4 集成 `kstatus` 提供更详细的资源状态监控：
+
+```bash
+# 安装后查看详细状态
+helm status myapp -v
+
+# 查看资源就绪状态
+kubectl rollout status deployment/myapp
+```
+
+## 升级检查清单
+
+> [!WARNING]
+> Helm 4 升级前检查清单：
+>
+> - [ ] 测试现有 Charts 与 Helm 4 的兼容性
+> - [ ] 更新脚本中的 CLI 标志（`--atomic` → `--rollback-on-failure`）
+> - [ ] 测试 Post-renderer 工作流
+> - [ ] 验证 OCI Registry 认证
+> - [ ] 更新 CI/CD 管道配置
+
+---
+
 # [Glossary](https://helm.sh/docs/glossary/)
 
 ## Chart
@@ -267,6 +384,204 @@ These exposed variables are called values in Helm parlance.
 
 Values can be set during `helm install` and `helm upgrade` operations, either by passing them in directly, or by using a `values.yaml` file.
 
+---
+
+# 最佳实践
+
+## Chart 开发规范
+
+### 1. 版本命名
+
+```yaml
+# Chart 版本 (SemVer 2)
+version: 1.0.0        # 正式发布
+version: 1.0.0-alpha  # 预发布
+version: 1.0.0+build  # 构建元数据
+
+# 应用版本
+appVersion: "1.16.0"  # 对应应用的实际版本
+```
+
+### 2. 资源命名
+
+```yaml
+# 使用模板函数生成唯一名称
+metadata:
+  name: {{ include "mychart.fullname" . }}-{{ .Values.env }}
+
+# 避免硬编码
+# ❌ name: myapp-prod
+# ✅ name: {{ .Release.Name }}-{{ .Values.env }}
+```
+
+### 3. 资源限制
+
+> [!TIP]
+> 生产环境必须设置资源限制，避免单个应用耗尽集群资源。
+
+```yaml
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "50m"
+  limits:
+    memory: "128Mi"
+    cpu: "200m"
+```
+
+### 4. 健康检查
+
+```yaml
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
+```
+
+### 5. Pod 安全
+
+```yaml
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+```
+
+## 仓库管理
+
+### 使用私有仓库
+
+```bash
+# 添加认证信息
+helm registry login registry.example.com -u username
+
+# 使用 Secret 存储认证
+kubectl create secret docker-registry regcred \
+  --docker-server=registry.example.com \
+  --docker-username=user \
+  --docker-password=pass
+```
+
+### 依赖管理
+
+```yaml
+# Chart.yaml
+dependencies:
+  - name: postgresql
+    version: "12.x.x"
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+```
+
+```bash
+# 更新依赖
+helm dependency update ./mychart
+
+# 构建依赖
+helm dependency build ./mychart
+```
+
+## 安全建议
+
+> [!CAUTION]
+> 生产环境务必遵循以下安全实践：
+
+1. **使用命名空间隔离**：每个应用使用独立命名空间
+2. **限制 RBAC 权限**：使用最小权限原则配置 ServiceAccount
+3. **启用 Pod 安全策略**：使用 PodSecurityPolicy 或 Pod Security Standards
+4. **定期更新 Chart**：关注安全漏洞和依赖更新
+5. **验证 Chart 签名**：使用 `--verify` 验证 Chart 完整性
+
+---
+
+# 常见问题
+
+## 1. Release 名称冲突
+
+```bash
+# 错误：名称已被占用
+# Error: cannot re-use a name that is still in use
+
+# 解决方案：使用新名称或卸载旧 Release
+helm uninstall old-release
+helm install new-release ./mychart
+```
+
+## 2. 模板渲染失败
+
+```bash
+# 使用 --dry-run 调试
+helm install --dry-run --debug myapp ./mychart
+
+# 本地渲染模板
+helm template myapp ./mychart
+```
+
+## 3. 依赖下载失败
+
+```bash
+# 更新仓库索引
+helm repo update
+
+# 清理并重新添加
+helm repo remove bitnami
+helm repo add bitnami https://charts.bitnami.com/bitnami
+```
+
+## 4. 集群连接问题
+
+```bash
+# 验证 kubeconfig
+kubectl config current-context
+kubectl cluster-info
+
+# 指定 kubeconfig 文件
+helm install myapp ./mychart --kubeconfig=/path/to/config
+```
+
+## Helm 工作原理
+
+```mermaid
+flowchart LR
+    A[Chart 本地文件<br/>或远程仓库] --> B[Helm Client]
+    B --> C[Chart Repository<br/>OCI Registry]
+    C --> D[helm install/upgrade]
+    D --> E[Render Templates<br/>Go Template Engine]
+    E --> F[Kubernetes API Server]
+    F --> G[集群资源]
+```
+
+### Helm 与 Kubernetes 交互流程
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant HC as Helm Client
+    participant K8S as Kubernetes API
+    participant SR as Secret/ConfigMap<br/>存储 Release 信息
+
+    U->>HC: helm install myapp ./chart
+    HC->>HC: Render templates
+    HC->>K8S: Apply resources
+    K8S-->>HC: Resources created
+    HC->>SR: Store release info
+    SR-->>HC: Release recorded
+    HC-->>U: Release deployed
+```
+
 
 
 
@@ -281,10 +596,40 @@ Get started with the [Quick Start guide](https://helm.sh/docs/intro/quickstart/)
 
 # Refer
 
-* https://helm.sh/docs/glossary/
-* https://github.com/helm/helm
-* https://helm.sh/zh/docs/chart_template_guide/getting_started/
-* [是时候使用Helm了：Helm, Kubernetes的包管理工具](https://www.kubernetes.org.cn/3435.html)
+## 官方文档
+
+- [Helm 官方文档](https://helm.sh/docs/)
+- [Helm GitHub 仓库](https://github.com/helm/helm)
+- [Artifact Hub](https://artifacthub.io/) - Helm Charts 市场
+- [Helm 社区](https://github.com/helm/community)
+- [快速入门指南](https://helm.sh/docs/intro/quickstart/) - 快速上手 Helm
+- [Helm 版本支持策略](https://helm.sh/docs/topics/version_skew/) - Helm 与 Kubernetes 版本兼容性
+- [Helm Glossary](https://helm.sh/docs/glossary/)
+
+## 中文参考
+
+- [是时候使用 Helm 了：Helm, Kubernetes 的包管理工具](https://www.kubernetes.org.cn/3435.html) - Kubernetes.io 中文社区
+- [Jimmy Song's Blog - Helm 4 发布与插件重构](https://jimmysong.io/zh/blog/helm-4-delivery-and-plugin-rebuild/)
+
+## 进阶阅读
+
+- [Helm Chart 开发指南](https://helm.sh/zh/docs/chart_template_guide/)
+- [Helm 插件开发](https://helm.sh/docs/topics/plugins/)
+- [Kubernetes Ingress Nginx 管理](https://kubernetes.github.io/ingress-nginx/)
+- [Bitnami Charts 仓库](https://github.com/bitnami/charts)
+
+## 相关工具
+
+| 工具 | 用途 |
+|------|------|
+| [Helmfile](https://github.com/helmfile/helmfile) | 多环境 Helm 部署编排 |
+| [Flagger](https://docs.flagger.app/) | 渐进式交付与金丝雀发布 |
+| [Argo CD](https://argoproj.github.io/argo-cd/) | GitOps 持续交付 |
+| [Flux](https://fluxcd.io/) | 云原生持续交付 |
+
+---
+
+*最后更新：2026 年 3 月*
 
 
 
