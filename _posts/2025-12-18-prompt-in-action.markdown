@@ -13,6 +13,27 @@ tags:
 {:toc}
 
 
+# 文章撰写
+
+通过提供的参考文章内容，汇总一篇关于 Kubernetes ConfigMap 的专业技术文章，要求如下：
+
+1. 文章风格：专业、详尽、结构清晰，结合理论与实践。
+2. 内容包括：原理与核心概念，使用方法，使用示例，最佳实践，注意事项等内容。
+3. 建议通过交叉引用的方式，提炼总结相关的内容，使得内容详实准确。
+4. 为了便于理解，可以使用 Mermaid 生成一些图示说明。
+5. 借助 Jekyll Chirpy 主题的一些用法，增强文章组织形式，使得文章内容更清晰鲜明，并突出重点内容。
+6. 在文章末尾添加核心的参考资源，方便进一步深入学习。
+
+参考文章：
+
+* https://kubernetes.io/docs/concepts/configuration/configmap/
+* https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/
+* https://kubernetes.io/docs/tutorials/configuration/updating-configuration-via-a-configmap/
+* https://spacelift.io/blog/kubernetes-configmap
+* https://www.plural.sh/blog/kubernetes-configmap-guide/
+
+
+
 # 测试 LLM 模型能力的提示词
 
 ## 生成网页时钟的动画
