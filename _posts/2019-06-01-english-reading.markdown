@@ -59,6 +59,9 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* disruption /dɪsˈrʌpʃn/
+  + N-VAR When there is **disruption** of an event, system, or process, it is prevented from continuing or operating in a normal way. 妨碍; 扰乱
+
 * evolve /ɪˈvɒlv/
   + V-I When animals or plants **evolve**, they gradually change and develop into different forms. 进化
     - Birds are widely believed to have **evolved** from dinosaurs. 鸟类普遍被认为是从恐龙进化而来的。
