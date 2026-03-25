@@ -183,8 +183,9 @@ Use the **optools** script for environment checks, start/stop, and status:
 ./optools ruby-check   # print Ruby/Bundler paths and versions (diagnostics)
 ./optools ruby-upgrade # Ubuntu: rbenv + Ruby (RBENV_RUBY_VERSION), bundler, bundle install (+ ~/.bashrc rbenv block)
 ./optools shell-init   # append rbenv to ~/.bashrc if missing (then: source ~/.bashrc)
-./optools liquid-check # Liquid syntax check for all _posts (see tools/check_liquid_posts.rb)
-./optools run -- CMD   # run CMD with rbenv first (alternative to liquid-check / manual bundle exec)
+./optools liquid-check       # Liquid syntax check for all _posts (see tools/check_liquid_posts.rb)
+./optools bundle-content-css # regenerate _sass/_post-content-bundle.scss (see tools/bundle-post-content-css.sh)
+./optools run -- CMD         # run CMD with rbenv first (alternative to liquid-check / manual bundle exec)
 ./optools help         # show help
 ```
 

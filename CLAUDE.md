@@ -27,6 +27,7 @@ bundle install
 # ./optools liquid-check
 # ./optools liquid-check --verbose
 # ./optools liquid-check --encoding-report
+# ./optools bundle-content-css   # regenerate _sass/_post-content-bundle.scss
 ```
 
 ## Blog Structure

@@ -12,6 +12,7 @@ run from repo root:
 
 ```bash
 ./tools/bundle-post-content-css.sh
+# or: ./optools bundle-content-css
 ```
 
 ## add_tags_to_posts.rb

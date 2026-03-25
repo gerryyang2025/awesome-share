@@ -11,6 +11,7 @@ DEBUG="${DEBUG:-0}"
 
 COMMAND="${1:-}"
 APP_NAME="${APP_NAME:-jekyll}"
+REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
 
 usage() {
   cat <<'EOF'
@@ -24,8 +25,9 @@ Usage:
   ./optools ruby-upgrade  Install/upgrade Ruby via rbenv on Ubuntu, then bundler + bundle install
   ./optools shell-init    Append rbenv lines to ~/.bashrc (idempotent) so plain ruby/bundle use rbenv
   ./optools run -- CMD    Run CMD with rbenv on PATH (e.g. bundle exec …) without fixing ~/.bashrc
-  ./optools liquid-check  Liquid-parse all _posts (tools/check_liquid_posts.rb); optional args after command
-  ./optools help          Show this help
+  ./optools liquid-check      Liquid-parse all _posts (tools/check_liquid_posts.rb); optional args after command
+  ./optools bundle-content-css Regenerate _sass/_post-content-bundle.scss (tools/bundle-post-content-css.sh)
+  ./optools help              Show this help
 
 Env:
   LOG_FILE=run.log              Output log file
@@ -530,6 +532,9 @@ case "$COMMAND" in
     prefer_rbenv_if_present
     echo "[run] bundle exec ruby tools/check_liquid_posts.rb ${*:2}"
     bundle exec ruby tools/check_liquid_posts.rb "${@:2}"
+    ;;
+  bundle-content-css)
+    run_cmd bash "${REPO_ROOT}/tools/bundle-post-content-css.sh"
     ;;
   -h|--help|help)
     usage
