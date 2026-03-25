@@ -160,7 +160,6 @@ https://jimmysong.io/kubernetes-handbook/concepts/service.html
 > kubectl [command] [TYPE] [NAME] [flags]
 
 {% raw %}
-{% raw %}
 ```bash
 kubectl help
 
@@ -227,7 +226,6 @@ kubectl get pods --namespace autoworlds | grep Evicted | awk '{print $1}' | xarg
 ```
 {% endraw %}
 
-{% endraw %}
 
 # Kubernetes 工具
 

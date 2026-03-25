@@ -1105,7 +1105,6 @@ $ ./issues repo:golang/go is:open json decoder
 
 
 {% raw %}
-{% raw %}
 ```go
 // Issuesreport prints a report of issues matching the search terms.
 package main
@@ -1193,12 +1192,10 @@ Age:    695 days
 ```
 {% endraw %}
 
-{% endraw %}
 
 
 `html/template`包和`text/template`包里面使用一样的API和表达式语句。
 
-{% raw %}
 {% raw %}
 ```go
 // Issueshtml prints an HTML table of issues matching the search terms.
@@ -1249,7 +1246,6 @@ func main() {
 ```
 {% endraw %}
 
-{% endraw %}
 
 ./issueshtml repo:golang/go commenter:gopherbot json encoder > issues.html
 
@@ -1284,7 +1280,6 @@ func main() {
 注意：`html/template`包自动将 HTML 元字符转义，这样显示才能正常。
 
 {% raw %}
-{% raw %}
 ```go
 // Autoescape demonstrates automatic HTML escaping in html/template.
 package main
@@ -1312,7 +1307,6 @@ func main() {
 ```
 {% endraw %}
 
-{% endraw %}
 
 输出：
 

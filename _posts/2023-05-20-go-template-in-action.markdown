@@ -35,7 +35,6 @@ Here is a trivial example that prints "17 items are made of wool".
 
 
 {% raw %}
-{% raw %}
 ```go
 type Inventory struct {
 	Material string
@@ -49,11 +48,9 @@ if err != nil { panic(err) }
 ```
 {% endraw %}
 
-{% endraw %}
 
 另一个示例：
 
-{% raw %}
 {% raw %}
 ```go
 package main
@@ -87,7 +84,6 @@ func main() {
 ```
 {% endraw %}
 
-{% endraw %}
 
 
 ```text
