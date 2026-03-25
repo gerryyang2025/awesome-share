@@ -15,6 +15,8 @@ tags:
 
 # 文章撰写
 
+## 新文章
+
 通过提供的参考文章内容，汇总一篇关于 Kubernetes ConfigMap 的专业技术文章，要求如下：
 
 1. 文章风格：专业、详尽、结构清晰，结合理论与实践。
@@ -32,6 +34,26 @@ tags:
 * https://spacelift.io/blog/kubernetes-configmap
 * https://www.plural.sh/blog/kubernetes-configmap-guide/
 
+
+## 内容更新
+
+通过提供的参考文章内容，对指定的文章内容进行补充更新，要求如下：
+
+1. 对提供的参考文章内容进行分析，并结合已有的文章内容，进行补充完善。
+2. 如果出现了更新的内容，请补充替换为更新的内容，保持内容的时效性。
+3. 文章风格：专业、详尽、结构清晰，结合理论与实践。
+4. 内容包括：原理与核心概念，使用方法，使用示例，最佳实践，注意事项等内容。
+5. 建议通过交叉引用的方式，提炼总结相关的内容，使得内容详实准确。
+6. 为了便于理解，可以使用 Mermaid 生成一些图示说明。
+7. 借助 Jekyll Chirpy 主题的一些用法，增强文章组织形式，使得文章内容更清晰鲜明，并突出重点内容。
+8. 在文章末尾添加核心的参考资源，方便进一步深入学习。
+
+参考文章：
+
+* https://helm.sh/docs/overview/
+* https://helm.sh/zh/docs/chart_template_guide/getting_started
+* https://github.com/helm/helm
+* https://jimmysong.io/zh/blog/helm-4-delivery-and-plugin-rebuild/
 
 
 # 测试 LLM 模型能力的提示词
