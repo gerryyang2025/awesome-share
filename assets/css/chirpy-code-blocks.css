@@ -1,0 +1,23 @@
+/*
+ * Fallbacks when theme CSS variables are missing or load order hides Chirpy chrome.
+ * Mirrors jekyll-theme-chirpy _syntax.scss: div[class^='language-'], .highlight, %code-snippet-bg.
+ */
+.content div[class^="language-"] {
+  background-color: var(--highlight-bg-color, #f6f8fa);
+  box-shadow: var(--language-border-color, rgba(27, 31, 35, 0.12)) 0 0 0 1px;
+}
+
+.content div[class^="language-"] .highlight {
+  background-color: var(--highlight-bg-color, #f6f8fa);
+}
+
+[data-theme="dark"] .content div[class^="language-"],
+.theme-dark .content div[class^="language-"] {
+  background-color: var(--highlight-bg-color, #1b1b1e);
+  box-shadow: var(--language-border-color, rgba(255, 255, 255, 0.12)) 0 0 0 1px;
+}
+
+[data-theme="dark"] .content div[class^="language-"] .highlight,
+.theme-dark .content div[class^="language-"] .highlight {
+  background-color: var(--highlight-bg-color, #1b1b1e);
+}

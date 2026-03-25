@@ -645,44 +645,77 @@ article[data-toc="true"] .content #markdown-toc {
   }
 }
 
+/* ==== chirpy-code-blocks.css ==== */
+/*
+ * Fallbacks when theme CSS variables are missing or load order hides Chirpy chrome.
+ * Mirrors jekyll-theme-chirpy _syntax.scss: div[class^='language-'], .highlight, %code-snippet-bg.
+ */
+.content div[class^="language-"] {
+  background-color: var(--highlight-bg-color, #f6f8fa);
+  box-shadow: var(--language-border-color, rgba(27, 31, 35, 0.12)) 0 0 0 1px;
+}
+
+.content div[class^="language-"] .highlight {
+  background-color: var(--highlight-bg-color, #f6f8fa);
+}
+
+[data-theme="dark"] .content div[class^="language-"],
+.theme-dark .content div[class^="language-"] {
+  background-color: var(--highlight-bg-color, #1b1b1e);
+  box-shadow: var(--language-border-color, rgba(255, 255, 255, 0.12)) 0 0 0 1px;
+}
+
+[data-theme="dark"] .content div[class^="language-"] .highlight,
+.theme-dark .content div[class^="language-"] .highlight {
+  background-color: var(--highlight-bg-color, #1b1b1e);
+}
+
 /* ==== inline-code.css ==== */
 /*
- * Inline `code` in post body — Chirpy _syntax.scss (code.highlighter-rouge).
- * Use .content code so `p`/`li`/heading inline code is covered (Chirpy uses `article > .content > p > code`, not `.content > code`).
- * Reset pre/.highlight code so block Rouge output matches Chirpy theme chrome.
+ * Match Chirpy _sass/base/_syntax.scss:
+ * - All `code` get base color + font; only `code.highlighter-rouge` gets the inline pill.
+ * - Block Rouge lives under `.highlight > code`; do not apply pill or `color: inherit`
+ *   (inherit collapses token colors from Rouge spans).
  */
 .content code {
   -webkit-hyphens: none;
   -ms-hyphens: none;
   hyphens: none;
   margin: 0;
-  padding: 3px 5px;
-  font-size: 0.85rem;
-  line-height: 1.4rem;
-  white-space: break-spaces;
-  overflow-wrap: break-word;
-  word-break: break-word;
   color: var(--code-color, #3a3a3a);
-  background-color: var(--inline-code-bg, rgb(25 25 28 / 5%));
   border: 0;
-  border-radius: 6px;
   box-shadow: none;
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   font-weight: 400;
   vertical-align: baseline;
 }
 
-/* Block / Rouge — strip inline-code pill inside pre.highlight */
+.content code.highlighter-rouge {
+  padding: 3px 5px;
+  font-size: 0.85rem;
+  line-height: 1.4rem;
+  white-space: break-spaces;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  background-color: var(--inline-code-bg, rgb(25 25 28 / 5%));
+  border-radius: 6px;
+}
+
+/* Block / Rouge — strip inline pill only */
 .content pre code,
-.content .highlight code {
+.content .highlight > code {
   padding: 0;
   margin: 0;
-  color: inherit;
   background-color: transparent;
   border: 0;
   border-radius: 0;
   box-shadow: none;
   vertical-align: baseline;
+  font-size: 0.85rem;
+  line-height: 1.4rem;
+  white-space: pre;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 /* Chirpy: blockquote & { color: inherit; } — parent must not be pre */

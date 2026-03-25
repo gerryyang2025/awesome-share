@@ -1,40 +1,48 @@
 /*
- * Inline `code` in post body — Chirpy _syntax.scss (code.highlighter-rouge).
- * Use .content code so `p`/`li`/heading inline code is covered (Chirpy uses `article > .content > p > code`, not `.content > code`).
- * Reset pre/.highlight code so block Rouge output matches Chirpy theme chrome.
+ * Match Chirpy _sass/base/_syntax.scss:
+ * - All `code` get base color + font; only `code.highlighter-rouge` gets the inline pill.
+ * - Block Rouge lives under `.highlight > code`; do not apply pill or `color: inherit`
+ *   (inherit collapses token colors from Rouge spans).
  */
 .content code {
   -webkit-hyphens: none;
   -ms-hyphens: none;
   hyphens: none;
   margin: 0;
-  padding: 3px 5px;
-  font-size: 0.85rem;
-  line-height: 1.4rem;
-  white-space: break-spaces;
-  overflow-wrap: break-word;
-  word-break: break-word;
   color: var(--code-color, #3a3a3a);
-  background-color: var(--inline-code-bg, rgb(25 25 28 / 5%));
   border: 0;
-  border-radius: 6px;
   box-shadow: none;
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   font-weight: 400;
   vertical-align: baseline;
 }
 
-/* Block / Rouge — strip inline-code pill inside pre.highlight */
+.content code.highlighter-rouge {
+  padding: 3px 5px;
+  font-size: 0.85rem;
+  line-height: 1.4rem;
+  white-space: break-spaces;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  background-color: var(--inline-code-bg, rgb(25 25 28 / 5%));
+  border-radius: 6px;
+}
+
+/* Block / Rouge — strip inline pill only */
 .content pre code,
-.content .highlight code {
+.content .highlight > code {
   padding: 0;
   margin: 0;
-  color: inherit;
   background-color: transparent;
   border: 0;
   border-radius: 0;
   box-shadow: none;
   vertical-align: baseline;
+  font-size: 0.85rem;
+  line-height: 1.4rem;
+  white-space: pre;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 /* Chirpy: blockquote & { color: inherit; } — parent must not be pre */

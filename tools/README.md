@@ -4,7 +4,7 @@
 
 `metadata-hook` loads a **single** `assets/css/post-content-bundle.css` (fewer runtime requests). After editing any of:
 
-`markdown-extras.css`, `blockquote.css`, `table.css`, `inline-code.css`
+`markdown-extras.css`, `blockquote.css`, `table.css`, `chirpy-code-blocks.css`, `inline-code.css`
 
 run from repo root:
 
