@@ -2931,7 +2931,6 @@ struct extent;
 
 std::extent 是 C++ 标准库中的一个模板类，**用于获取数组的维度和大小**。它接受一个数组类型和一个可选的非负整数常量作为参数，**返回指定维度的数组大小**。如果 T 是数组类型，则提供成员常量 value，该成员常量等于数组第 N 维的元素数量（如果 N 位于 `[0, std::rank<T>::value)` 中）。对于任何其他类型，或者如果 T 是沿其第一维度未知边界的数组，并且 N 是 0，则 value 是 0。
 
-{% raw %}
 
 {% raw %}
 ```cpp
@@ -2971,7 +2970,6 @@ int main()
 {% endraw %}
 
 
-{% endraw %}
 
 https://en.cppreference.com/w/cpp/types/extent
 
@@ -5795,7 +5793,7 @@ The C++ standard, 7.5.2 dcl.link, says:
 > linkage-specification:
 >   extern string-literal { declaration-seqopt}
 >   extern string-literal declaration
-> 
+>
 ```
 
 >
