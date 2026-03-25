@@ -3312,7 +3312,6 @@ Then, add the following highlighted lines:
 
 {% raw %}
 ```text
-{% raw %}
 data-dir: /var/lib/etcd/{{ inventory_hostname }}.etcd
 name: {{ inventory_hostname }}
 initial-advertise-peer-urls: http://{{ hostvars[inventory_hostname]['ansible_facts']['eth1']['ipv4']['address'] }}:2380
@@ -3321,7 +3320,6 @@ advertise-client-urls: http://{{ hostvars[inventory_hostname]['ansible_facts']['
 listen-client-urls: http://{{ hostvars[inventory_hostname]['ansible_facts']['eth1']['ipv4']['address'] }}:2379,http://127.0.0.1:2379
 initial-cluster-state: new
 initial-cluster: {% for host in groups['etcd'] %}{{ hostvars[host]['ansible_facts']['hostname'] }}=http://{{ hostvars[host]['ansible_facts']['eth1']['ipv4']['address'] }}:2380{% if not loop.last %},{% endif %}{% endfor %}
-{% endraw %}
 ```
 {% endraw %}
 
