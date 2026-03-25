@@ -112,12 +112,9 @@ However, to aid in formatting template source code, if an action's left delimite
 
 For instance, when executing the template whose source is
 
-{% raw %}
 ```text
 "{{23 -}} < {{- 45}}"
 ```
-{% endraw %}
-
 
 the generated output would be
 
@@ -129,7 +126,6 @@ the generated output would be
 For this trimming, the definition of white space characters is the same as in Go: space, horizontal tab, carriage return, and newline.
 
 {% endraw %}
-
 
 ## Actions (动作)
 
@@ -151,13 +147,13 @@ Go 模板中的动作就是一些嵌入在模板里面的**命令**。动作大�
 
 {% raw %}
 
-{% raw %}
+
 ```text
 {{ if pipeline }} T1 {{ end }}
 {{ if pipeline }} T1 {{ else }} T2 {{ end }}
 {{ if pipeline1 }} T1 {{ else if pipeline2 }} T2 {{ else }} T3 {{ end }}
 ```
-{% endraw %}
+
 
 
 pipeline 表示管道，可以将它理解为一个值。 T1/T2 等形式表示语句块，里面可以嵌套其它类型的动作。最简单的语句块就是不包含任何动作的字符串。
@@ -167,12 +163,10 @@ pipeline 表示管道，可以将它理解为一个值。 T1/T2 等形式表示�
 
 例如：
 
-{% raw %}
+
 ```text
 {{ if .CmdService.Port -}} CMDSVR_PORT = {{ .CmdService.Port -}} {{ end }}
 ```
-{% endraw %}
-
 
 `-` 是 Go 语言提供的针对空白符的处理，方便规范文本输出格式。如果一个动作以 `{{- ` （注意有一个空格），那么该动作与它前面相邻的非空文本或动作间的空白符将会被全部删除。类似地，如果一个动作以 ` -}}` 结尾，那么该动作与它后面相邻的非空文本或动作间的空白符将会被全部删除。
 
@@ -182,24 +176,20 @@ pipeline 表示管道，可以将它理解为一个值。 T1/T2 等形式表示�
 
 {% raw %}
 
-{% raw %}
 ```text
 {{ range pipeline }} T1 {{ end }}
 {{ range pipeline }} T1 {{ else }} T2 {{ end }}
 ```
-{% endraw %}
 
 
 例如：
 
-{% raw %}
 ```text
 <ApsSvrCount> {{- len .Apollo.UrlList -}} </ApsSvrCount>
 {{- range .Apollo.UrlList }}
 <ApsSvrUrls>{{ . }}</ApsSvrUrls>
 {{- end }}
 ```
-{% endraw %}
 
 
 如果`.Apollo.UrlList`长度不为 0，遍历列表，输出列表值到`<ApsSvrUrls>{{ . }}</ApsSvrUrls>`。range 语句循环体内，`.` 被设置为当前遍历的元素，即 Url 的值。
@@ -210,12 +200,11 @@ pipeline 表示管道，可以将它理解为一个值。 T1/T2 等形式表示�
 
 {% raw %}
 
-{% raw %}
+
 ```text
 {{ with pipeline }} T1 {{ end }}
 {{ with pipeline }} T1 {{ else }} T2 {{ end }}
 ```
-{% endraw %}
 
 
 设置动作使用 `with` 关键字重定义 `.` 。在 `with` 语句内，`.` 会被定义为指定的值。一般用在结构嵌套很深时，能起到简化代码的作用。
@@ -224,11 +213,11 @@ pipeline 表示管道，可以将它理解为一个值。 T1/T2 等形式表示�
 
 模版为：
 
-{% raw %}
+
 ```text
 {{ with .gamesvr }} {{- .tconnd_lwip.vIP -}} {{ end }}
 ```
-{% endraw %}
+
 
 
 配置为：
@@ -250,7 +239,7 @@ Here is the list of actions. "Arguments" and "pipelines" are evaluations of data
 
 {% raw %}
 
-{% raw %}
+
 ```text
 {{/* a comment */}}
 {{- /* a comment with white space trimmed from preceding and following text */ -}}
@@ -328,7 +317,6 @@ Here is the list of actions. "Arguments" and "pipelines" are evaluations of data
 	and T1 is executed.
 
 ```
-{% endraw %}
 
 
 {% endraw %}
@@ -368,11 +356,11 @@ The output of a command will be either one value or two values, the second of wh
 
 例如：
 
-{% raw %}
+
 ```text
 {{ with .Required.GroupName | index $ }} {{- coalesce .tconnd_gcp.ApsAuthInfo.BusinessID $.Apollo.BusinessID -}} {{ end }}
 ```
-{% endraw %}
+
 
 
 因为作用域发生变化，要访问顶级作用域需要加上`$`，如`$.Apollo.BusinessID`。假设 `.Required.GroupName` 得到的结果是 gamesvr，这个 `index $ gamesvr` 就是取 `.gamesvr`
@@ -502,7 +490,7 @@ Here are some example one-line templates demonstrating pipelines and variables. 
 
 {% raw %}
 
-{% raw %}
+
 ```text
 {{"\"output\""}}
 	A string constant.
@@ -529,7 +517,6 @@ Here are some example one-line templates demonstrating pipelines and variables. 
 	The same, but pipelined.
 
 ```
-{% endraw %}
 
 
 {% endraw %}
@@ -609,7 +596,7 @@ go template 配置：
 
 {% raw %}
 
-{% raw %}
+
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <UpdateMgr>
@@ -618,7 +605,6 @@ go template 配置：
 {{- end }}
 </UpdateMgr>
 ```
-{% endraw %}
 
 
 {% endraw %}
