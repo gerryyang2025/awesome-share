@@ -1,12 +1,15 @@
 ---
 layout: post
 title:  "Chirpy 主题使用指南"
-date:   2026-03-21 12:00:00 +0800
+date:   2026-03-21 18:30:00 +0800
+last_modified_at: 2026-03-27 10:00:00 +0800
+description: "全面介绍 Jekyll Chirpy 主题的安装、写文章规范、Markdown 与 Kramdown 扩展语法，以及常用配置，是其他文章的参考模版。"
 categories: Tools
 tags:
   - Jekyll
   - Chirpy
   - 博客
+  - 教程
 
 ---
 
