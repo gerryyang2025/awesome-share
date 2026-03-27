@@ -315,18 +315,25 @@ flowchart TD
 
 ## OCI 镜像支持
 
-Helm 4 增强了 OCI 支持，可以直接通过镜像摘要安装 Chart：
+OCI（Open Container Initiative）是 Docker 提出的容器镜像分发标准，定义了镜像格式和分发 API。Helm 的 OCI 支持意味着 Chart 可以像 Docker 镜像一样存储到 OCI Registry（如 `ghcr.io`、`docker.io`、`Harbor` 等）中，通过镜像摘要（`sha256`）唯一标识版本。
 
 ```bash
-# 登录 OCI Registry
+# 登录 OCI Registry（复用镜像仓库凭证，无需单独配置）
 helm registry login registry.example.com
 
-# 通过摘要安装（确保供应链安全）
+# 通过摘要安装（确保供应链安全，每次获取的 Chart 内容完全一致）
 helm install myapp oci://registry.example.com/charts/app@sha256:abc123...
 
 # 推送 Chart 到 OCI Registry
 helm push mychart-1.0.0.tgz oci://registry.example.com/charts
 ```
+
+| 对比项 | 传统 Chart 仓库（HTTP） | OCI Registry |
+|--------|------------------------|--------------|
+| **认证** | 需单独为 Chart 仓库配置认证 | 复用已有的镜像仓库凭证 |
+| **版本标识** | 语义化版本（`1.0.0`） | SHA256 摘要（防篡改） |
+| **签名验证** | 需额外工具（如 GPG） | 可结合 Cosign 等工具统一签名 |
+| **工具链** | 专用 `helm repo` 命令 | 与镜像管理工具体系统一 |
 
 > OCI 支持使得 Chart 的分发与 Docker 镜像一致，便于统一的镜像仓库管理和签名验证。
 {: .prompt-info }
