@@ -327,9 +327,9 @@ A chart archive is a tarred and gzipped (and optionally signed) chart.
 
 ## Chart Dependency (Subcharts)
 
-* Soft dependency: A chart may simply not function without another chart being installed in a cluster. Helm does not provide tooling for this case. In this case, dependencies may be managed separately.
+* **Soft dependency**: A chart may simply not function without another chart being installed in a cluster. Helm does not provide tooling for this case. In this case, dependencies may be managed separately.
 
-* Hard dependency: A chart may contain (inside of its `charts/` directory) another chart upon which it depends. In this case, installing the chart will install all of its dependencies. In this case, a chart and its dependencies are managed as a collection.
+* **Hard dependency**: A chart may contain (inside of its `charts/` directory) another chart upon which it depends. In this case, installing the chart will install all of its dependencies. In this case, a chart and its dependencies are managed as a collection.
 
 When a chart is packaged (via `helm package`) all of its hard dependencies are bundled with it.
 
@@ -343,7 +343,7 @@ Information about a chart is stored in a special file called `Chart.yaml`. Every
 
 ## Helm (and helm)
 
-Helm is the package manager for Kubernetes. As an operating system package manager makes it easy to install tools on an OS, Helm makes it easy to install applications and resources into Kubernetes clusters.
+`Helm` is the package manager for Kubernetes. As an operating system package manager makes it easy to install tools on an OS, Helm makes it easy to install applications and resources into Kubernetes clusters.
 
 While `Helm` is the name of the project, the command line client is also named `helm`. By convention, when speaking of the project, `Helm` is capitalized. When speaking of the client, `helm` is in lowercase.
 
@@ -417,42 +417,42 @@ metadata:
 ```yaml
 resources:
   requests:
-    memory: "64Mi"
-    cpu: "50m"
+    memory: "64Mi"  # 调度时分配的最小内存
+    cpu: "50m"      # 调度时分配的最小 CPU（1核=1000m）
   limits:
-    memory: "128Mi"
-    cpu: "200m"
+    memory: "128Mi" # 容器可使用的最大内存，超过会被 OOM Kill
+    cpu: "200m"     # 容器可使用的最大 CPU，超过会被限流
 ```
 
 ### 4. 健康检查
 
 ```yaml
-livenessProbe:
+livenessProbe:       # 检测容器是否存活，失败会重启容器
   httpGet:
     path: /health
     port: 8080
-  initialDelaySeconds: 30
-  periodSeconds: 10
+  initialDelaySeconds: 30  # 启动后等待 30 秒再开始探测
+  periodSeconds: 10        # 每 10 秒探测一次
 
-readinessProbe:
+readinessProbe:       # 检测容器是否就绪，失败会从 Service 摘除流量
   httpGet:
     path: /ready
     port: 8080
-  initialDelaySeconds: 5
-  periodSeconds: 5
+  initialDelaySeconds: 5   # 启动后等待 5 秒再开始探测
+  periodSeconds: 5         # 每 5 秒探测一次
 ```
 
 ### 5. Pod 安全
 
 ```yaml
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 1000
-  fsGroup: 1000
+securityContext:       # 容器级别安全配置
+  runAsNonRoot: true   # 禁止以 root 用户运行容器
+  runAsUser: 1000      # 指定容器进程运行用户 UID
+  fsGroup: 1000        # 容器内文件属组，允许该组写入挂载卷
 
-podSecurityContext:
+podSecurityContext:   # Pod 级别安全配置
   seccompProfile:
-    type: RuntimeDefault
+    type: RuntimeDefault  # 使用容器运行时默认 seccomp 配置文件
 ```
 
 ## 仓库管理
@@ -476,9 +476,9 @@ kubectl create secret docker-registry regcred \
 # Chart.yaml
 dependencies:
   - name: postgresql
-    version: "12.x.x"
-    repository: https://charts.bitnami.com/bitnami
-    condition: postgresql.enabled
+    version: "12.x.x"       # 语义化版本，Helm 会解析范围
+    repository: https://charts.bitnami.com/bitnami  # Chart 仓库地址（必须加 @repo 添加）
+    condition: postgresql.enabled  # 条件开关，false 时跳过该依赖
 ```
 
 ```bash
