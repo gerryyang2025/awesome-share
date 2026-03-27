@@ -616,7 +616,7 @@ version: 1.0.0
 type: library
 ```
 
-其他 Chart 可通过 `{{ include "mylib.labels" . }}` 引用其 `_helpers.tpl` 中定义的模板函数，避免在多个 Chart 中重复编写相同的标签、选择器等配置。
+其他 Chart 可通过 `{% raw %}{{ include "mylib.labels" . }}{% endraw %}` 引用其 `_helpers.tpl` 中定义的模板函数，避免在多个 Chart 中重复编写相同的标签、选择器等配置。
 
 ## 仓库管理
 
