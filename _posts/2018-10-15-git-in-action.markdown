@@ -1413,6 +1413,62 @@ git commit -m "Remove submodule <submodule-path>"
 
 需要注意的是，删除子模块会删除子模块的所有历史记录，因此在删除子模块之前需要备份子模块的代码和历史记录。另外，删除子模块后，如果需要重新添加子模块，需要重新执行 `git submodule add` 命令来添加子模块。
 
+**如果遇到下面类似的错误，需要手动清理：**
+
+```bash
+$ git submodule deinit -f api/jmesh-protocol
+error: pathspec 'api/jmesh-protocol' did not match any file(s) known to git
+```
+
+api/jmesh-protocol 目录存在，但 git index 中没有记录对应的 gitlink（子模块引用）
+
+> 说明：重新添加 submodule（会创建新的 gitlink）
+
+正常的 submodule 状态应该是：
+
+* gitmodules 中有配置
+* git/modules/ 中有子模块的 git 仓库
+* git index 中有 gitlink 指向子模块的 commit
+
+如果 git index 中没有 gitlink (`git ls-files --stage api/jmesh-protocol/` 返回空)
+
+这说明 git index 记录与实际目录结构不一致，可能原因：
+
+1. 之前手动删除过 .git 文件但未清理 git 记录 - submodule 的 .git 文件被误删
+2. 克隆时使用了 --no-checkout - 导致了不完整的状态
+3. 之前运行过不完整的 submodule 操作
+
+`git submodule deinit` 要求 index 中有 gitlink 才能工作，所以报错 `pathspec 'api/jmesh-protocol' did not match any file(s) known to git`。
+
+解决方法（已执行）：
+
+1. 从 `.gitmodules` 删除配置
+2. 从 `.git/config` 删除 `submodule` 配置
+3. 删除工作目录 `api/jmesh-protocol/`
+4. 删除 `.git/modules/api/jmesh-protocol/` 缓存
+
+具体操作如下：
+
+```bash
+# 1. 从 .gitmodules 删除配置
+git config --remove-section submodule.<path>   # 或直接编辑 .gitmodules
+
+# 2. 从 .git/config 删除配置
+git config --remove-section submodule.<path>
+
+# 3. 删除工作目录中的 submodule 文件
+rm -rf <path>
+
+# 4. 删除 .git/modules 中的缓存
+rm -rf .git/modules/<path>
+
+# 5. 提交更改
+git add .gitmodules
+git commit -m "Remove corrupted submodule"
+```
+
+
+
 
 
 
