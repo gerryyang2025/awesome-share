@@ -352,6 +352,43 @@ helm status myapp -v
 kubectl rollout status deployment/myapp
 ```
 
+## Helm 2 / 3 / 4 版本演进
+
+了解 Helm 各版本之间的差异，有助于理解当前架构的设计背景。
+
+### Helm 2 → Helm 3：移除 Tiller
+
+Helm 3 最重要的架构变化是移除 Tiller（服务端组件），解决了 Helm 2 在多租户环境中的权限混乱问题：
+
+| 特性 | Helm 2 | Helm 3 |
+|------|--------|--------|
+| **Tiller** | 服务端组件，运行在集群内，负责 Release 管理 | 移除 Tiller，Client 直接与 API Server 通信 |
+| **Release 存储** | Tiller 的 ConfigMap（集群内） | Kubernetes Secret（集群内） |
+| **默认 Chart 仓库** | 内置 `stable` 仓库 | 无默认仓库，需手动添加 |
+| **Chart 依赖** | 独立的 `requirements.yaml` | 合并到 `Chart.yaml` 的 `dependencies` |
+| **OCI 支持** | 实验性 | 正式支持 |
+| **库类型 Chart** | 通过 `requirements.yaml` 引用 | 原生支持 `type: library` |
+| **Post-renderer** | 不支持 | Helm 3.1+ 支持，允许在渲染后自定义 manifest |
+
+### Helm 3 → Helm 4：插件重构与 Wasm
+
+Helm 4 是自 2019 年 Helm 3 以来的重大版本，官方称改动幅度小于 Helm 2 到 3 的迁移。v4.0.0 发布于 2025 年 11 月，主要变化包括（来源：[Helm v4.0.0 Release Notes](https://github.com/helm/helm/releases/tag/v4.0.0)）：
+
+| 特性 | Helm 3 | Helm 4 |
+|------|--------|--------|
+| **插件系统** | 可执行文件插件 | 重构为支持 WebAssembly (Wasm) 插件 |
+| **Post-renderer** | `--post-renderer` 传递可执行文件路径 | Post-renderer 须以插件形式传递（`--post-renderer` 改为传插件名） |
+| **服务端 Apply** | 默认服务端 Apply（Helm 4 起） | 默认服务端 Apply，继承 Helm 3.10+ 行为 |
+| **OCI 镜像支持** | 3.8+ 正式支持 | 继续支持，OCI Registry 登录格式变更（仅传域名） |
+| **资源等待** | 基于轮询 | 基于 kstatus 状态监控，更精确的就绪检测 |
+| **日志框架** | 标准库 log | 迁移至 slog，支持与现代日志系统集成 |
+| **SDK API** | 单一 Chart API 版本 | 更新 SDK，支持多 Chart API 版本（实验性 v3 即将推出） |
+| **构建可重现性** | 无内置支持 | Chart Archive 支持可重现构建（`helm package --sign`） |
+| **CLI 标志** | `--atomic` / `--force` | `--rollback-on-failure` / `--force-replace`（旧标志保留但标记废弃） |
+
+> Helm 4 与 Kubernetes 的版本兼容性：Helm 4 编译时基于 Kubernetes 1.35，支持 n-3 范围内版本（即 1.35 ~ 1.32）。v4.1.x 基于 Kubernetes 1.35，v4.0.x 基于 Kubernetes 1.34（来源：[Helm Version Support Policy](https://helm.sh/docs/topics/version_skew/)）。
+
+
 ## 升级检查清单
 
 > Helm 4 升级前检查清单：
@@ -509,6 +546,71 @@ podSecurityContext:   # Pod 级别安全配置
     type: RuntimeDefault  # 使用容器运行时默认 seccomp 配置文件
 ```
 
+## Helm Hooks
+
+Helm 提供生命周期钩子，在 Release 安装、升级、卸载、回滚的关键节点执行自定义操作。通过在 Kubernetes资源（如 Job）上添加注解实现：
+
+| 注解 | 执行时机 |
+|------|---------|
+| `pre-install` / `post-install` | 安装前 / 安装后 |
+| `pre-upgrade` / `post-upgrade` | 升级前 / 升级后 |
+| `pre-delete` / `post-delete` | 卸载前 / 卸载后 |
+| `pre-rollback` / `post-rollback` | 回滚前 / 回滚后 |
+| `test` | 执行 `helm test` 时 |
+
+```yaml
+# 迁移 Job 示例（pre-upgrade / pre-install 钩子）
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migration
+  annotations:
+    helm.sh/hook: pre-upgrade,pre-install
+    helm.sh/hook-weight: "-1"       # 数值越小越早执行
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded  # 执行成功后清理
+spec:
+  backoffLimit: 0                  # 失败不重试，直接中止操作
+```
+
+典型场景：
+- **数据库迁移**：升级前执行数据迁移脚本
+- **备份**：升级后自动备份数据
+- **配置验证**：安装后验证配置正确性
+
+## Helm Chart Tests
+
+Chart 测试是带有 `helm.sh/hook: test` 注解的 Kubernetes Job 资源，用于验证 Chart 安装的正确性：
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-connection
+  annotations:
+    helm.sh/hook: test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget', '-q', 'myapp:80/health']
+  restartPolicy: Never
+```
+
+执行测试：`helm test <release-name>`，测试 Job 会以 exit code 0 表示成功。
+
+## Library Charts
+
+Library Chart 是一种特殊 Chart，不包含 Kubernetes 资源定义，仅提供可复用的模板函数供其他 Chart 引用。通过 `Chart.yaml` 中的 `type: library` 声明：
+
+```yaml
+# Chart.yaml
+name: mylib
+version: 1.0.0
+type: library
+```
+
+其他 Chart 可通过 `{{ include "mylib.labels" . }}` 引用其 `_helpers.tpl` 中定义的模板函数，避免在多个 Chart 中重复编写相同的标签、选择器等配置。
+
 ## 仓库管理
 
 ### 使用私有仓库
@@ -524,7 +626,25 @@ kubectl create secret docker-registry regcred \
   --docker-password=pass
 ```
 
-### 依赖管理
+### Values 合并优先级
+
+Helm 在 `helm install`/`helm upgrade` 时按从低到高优先级合并多个 Values 来源：
+
+1. Chart 内置 `values.yaml`（最低）
+2. 通过 `-f` 指定的配置文件（按命令行顺序，左侧先合并）
+3. 通过 `--set` / `--set-file` / `--set-string` 指定的参数（最高）
+
+```bash
+# 示例：多层叠加配置
+helm install myapp ./mychart \
+  -f base.yaml \      # 基础配置（最先合并）
+  -f prod.yaml \      # 生产环境覆盖（其次合并）
+  --set image.tag=v2  # 命令行最高优先级（最后合并）
+```
+
+`--set` 指定的布尔值可通过 `--set-json`、`--set-string`、`--set-file` 分别以 JSON 字符串、纯字符串、文件内容形式传入。
+
+
 
 ```yaml
 # Chart.yaml
