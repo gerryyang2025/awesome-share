@@ -80,9 +80,63 @@ Use `Helm` to: (使用场景)
   + `_helpers.tpl`：放置模板助手的地方，可以在整个 chart 中重复使用
 
 
-# Quickstart Guide
+
+# Helm 工作原理
+
+Helm 架构包含三个核心概念：
+
+- **Chart**：包含部署 Kubernetes 应用所需全部资源定义的包（类似 RPM/DEB）
+- **Config**：可合并到 Chart 中创建 Release 的配置信息
+- **Release**：Chart 与特定 Config 组合形成的运行实例
+
+Helm 由两部分组件构成：
+
+- **Helm Client**（命令行工具）：负责与 Helm Library 交互，发起安装/升级/卸载请求
+- **Helm Library**（Go 库）：封装所有 Helm 操作逻辑，与 Kubernetes API Server 通信，完成 Chart 与 Config 的组合构建、资源的安装/升级/卸载
+
+Helm 使用 Kubernetes Secret 存储 Release 信息，无需独立数据库。
+
+资源安装顺序（由 [Using Helm - helm.sh](https://helm.sh/docs/intro/using_helm/) 定义）：
+
+Namespace → NetworkPolicy → ResourceQuota → LimitRange → PodSecurityPolicy → PodDisruptionBudget → ServiceAccount → Secret → ConfigMap → StorageClass → PersistentVolume → PersistentVolumeClaim → CustomResourceDefinition → ClusterRole → ClusterRoleBinding → Role → RoleBinding → Service → DaemonSet → Pod → ReplicationController → ReplicaSet → Deployment → StatefulSet → Job → CronJob → Ingress → APIService → MutatingWebhookConfiguration → ValidatingWebhookConfiguration
+
+```mermaid
+flowchart LR
+    A[Chart 本地文件<br/>或远程仓库] --> B[Helm Client]
+    B --> C[Chart Repository<br/>OCI Registry]
+    C --> D[helm install/upgrade]
+    D --> E[Render Templates<br/>Go Template Engine]
+    E --> F[Kubernetes API Server]
+    F --> G[集群资源]
+```
+
+# Helm 与 Kubernetes 交互流程
+
+Helm Client 接收用户命令后，先通过 Go Template Engine 渲染 Chart 模板，再与 Kubernetes API Server 交互完成资源创建，最后将 Release 信息持久化到集群内的 Secret/ConfigMap 中。
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant HC as Helm Client
+    participant K8S as Kubernetes API
+    participant SR as Secret/ConfigMap<br/>存储 Release 信息
+
+    U->>HC: helm install myapp ./chart
+    HC->>HC: Render templates
+    HC->>K8S: Apply resources
+    K8S-->>HC: Resources created
+    HC->>SR: Store release info
+    SR-->>HC: Release recorded
+    HC-->>U: Release deployed
+```
+
+
+
+
+# [Quickstart Guide](https://helm.sh/docs/intro/quickstart/)
 
 This guide covers how you can quickly get started using `Helm`.
+
 
 ## Prerequisites
 
@@ -494,13 +548,13 @@ helm dependency build ./mychart
 > 生产环境务必遵循以下安全实践：
 
 1. **使用命名空间隔离**：每个应用使用独立命名空间
-2. **限制 RBAC 权限**：使用最小权限原则配置 ServiceAccount
-3. **启用 Pod 安全策略**：使用 PodSecurityPolicy 或 Pod Security Standards
+2. **限制 RBAC 权限**：使用最小权限原则配置 `ServiceAccount`
+3. **启用 Pod 安全策略**：使用 `PodSecurityPolicy` 或 `Pod Security Standards`
 4. **定期更新 Chart**：关注安全漏洞和依赖更新
 5. **验证 Chart 签名**：使用 `--verify` 验证 Chart 完整性
 {: .prompt-warning }
 
----
+
 
 # 常见问题
 
@@ -547,47 +601,6 @@ kubectl cluster-info
 helm install myapp ./mychart --kubeconfig=/path/to/config
 ```
 
-## Helm 工作原理
-
-```mermaid
-flowchart LR
-    A[Chart 本地文件<br/>或远程仓库] --> B[Helm Client]
-    B --> C[Chart Repository<br/>OCI Registry]
-    C --> D[helm install/upgrade]
-    D --> E[Render Templates<br/>Go Template Engine]
-    E --> F[Kubernetes API Server]
-    F --> G[集群资源]
-```
-
-### Helm 与 Kubernetes 交互流程
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant HC as Helm Client
-    participant K8S as Kubernetes API
-    participant SR as Secret/ConfigMap<br/>存储 Release 信息
-
-    U->>HC: helm install myapp ./chart
-    HC->>HC: Render templates
-    HC->>K8S: Apply resources
-    K8S-->>HC: Resources created
-    HC->>SR: Store release info
-    SR-->>HC: Release recorded
-    HC-->>U: Release deployed
-```
-
-
-
-
-
-
-# Docs
-
-Get started with the [Quick Start guide](https://helm.sh/docs/intro/quickstart/) or plunge into the [complete documentation](https://helm.sh/docs)
-
-
-
 
 # Refer
 
@@ -595,6 +608,8 @@ Get started with the [Quick Start guide](https://helm.sh/docs/intro/quickstart/)
 
 - [Helm 官方文档](https://helm.sh/docs/)
 - [Helm GitHub 仓库](https://github.com/helm/helm)
+- [Helm Architecture](https://helm.sh/docs/topics/architecture) - 架构概览（Chart/Release/Config 三概念、Client/Library 组件、Secret 存储）
+- [Using Helm](https://helm.sh/docs/intro/using_helm/) - 核心用法（search/install/upgrade/rollback/uninstall/repo）及资源安装顺序
 - [Artifact Hub](https://artifacthub.io/) - Helm Charts 市场
 - [Helm 社区](https://github.com/helm/community)
 - [快速入门指南](https://helm.sh/docs/intro/quickstart/) - 快速上手 Helm
@@ -624,9 +639,7 @@ Get started with the [Quick Start guide](https://helm.sh/docs/intro/quickstart/)
 | [Argo CD](https://argoproj.github.io/argo-cd/) | GitOps 持续交付 |
 | [Flux](https://fluxcd.io/) | 云原生持续交付 |
 
----
 
-*最后更新：2026 年 3 月*
 
 
 
