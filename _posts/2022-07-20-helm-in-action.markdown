@@ -19,12 +19,20 @@ description: "深入解析 Kubernetes 包管理工具 Helm，从核心概念到�
 
 # Helm
 
-[Helm](https://github.com/helm/helm) is a tool for managing Charts. Charts are packages of pre-configured Kubernetes resources.
+[Helm](https://github.com/helm/helm) is a tool that streamlines installing and managing Kubernetes applications. Think of it like `apt`/`yum`/`homebrew` for Kubernetes. Helm is a tool for managing `Charts`. `Charts` are packages of pre-configured Kubernetes resources.
 
-Use Helm to:
+* `Helm` renders your templates and communicates with the Kubernetes API
+* `Helm` runs on your laptop, CI/CD, or wherever you want it to run.
+* `Charts` are `Helm` packages that contain at least two things:
+  + A description of the package (`Chart.yaml`)
+  + One or more templates, which contain Kubernetes manifest files
+* `Charts` can be stored on disk, or fetched from remote chart repositories (like Debian or RedHat packages)
+
+
+Use `Helm` to: (使用场景)
 
 * Find and use [popular software packaged as Helm Charts](https://artifacthub.io/packages/search?kind=0) to run in Kubernetes
-* Share your own applications as Helm Charts
+* Share your own applications as **Helm Charts**
 * Create reproducible builds of your Kubernetes applications
 * Intelligently manage your Kubernetes manifest files
 * Manage releases of Helm packages
@@ -37,41 +45,25 @@ Use Helm to:
 * 基于 `Chart` 的 `Kubernetes` 应用分发
 
 
-# Helm in a Handbasket
-
-Helm is a tool that streamlines installing and managing Kubernetes applications. Think of it like apt/yum/homebrew for Kubernetes.
-
-* Helm renders your templates and communicates with the Kubernetes API
-* Helm runs on your laptop, CI/CD, or wherever you want it to run.
-* Charts are Helm packages that contain at least two things:
-  + A description of the package (`Chart.yaml`)
-  + One or more templates, which contain Kubernetes manifest files
-* Charts can be stored on disk, or fetched from remote chart repositories (like Debian or RedHat packages)
-
-
 # Install
 
-Binary downloads of the Helm client can be found on [the Releases page](https://github.com/helm/helm/releases/latest).
-
-Unpack the `helm` binary and add it to your `PATH` and you are good to go!
-
-To rapidly get Helm up and running, start with the [Quick Start Guide](https://helm.sh/docs/intro/quickstart/).
+Binary downloads of the `Helm` client can be found on [the Releases page](https://github.com/helm/helm/releases/latest). Unpack the `helm` binary and add it to your `PATH` and you are good to go! To rapidly get `Helm` up and running, start with the [Quick Start Guide](https://helm.sh/docs/intro/quickstart/).
 
 See the [installation guide](https://helm.sh/docs/intro/install/) for more options, including installing pre-releases.
 
+
 # 基本概念
 
-* `Chart`: 是 Helm 管理的安装包，里面包含需要部署的安装包资源。可以把 `Chart` 比作 CentOS yum 使用的 `rpm` 文件。每个 Chart 包含下面两部分：
+* `Chart`: 是 **Helm 管理的安装包**，里面包含需要部署的安装包资源。可以把 `Chart` 比作 CentOS `yum` 使用的 `rpm` 文件。每个 `Chart` 包含下面两部分：
   * 包的基本描述文件` Chart.yaml`
-  * 放在 `templates` 目录中的一个或多个 Kubernetes manifest 文件模板
-* `Release`: 是 Chart 的部署实例，一个 Chart 在一个 Kubernetes 集群上可以有多个 Release，即这个 Chart 可以被安装多次
-* `Repository`: Chart 的仓库，用于发布和存储 Chart
-
+  * 放在 `templates` 目录中的一个或多个 `Kubernetes manifest` 文件模板
+* `Release`: 是 `Chart` 的**部署实例**，一个 `Chart` 在一个 Kubernetes 集群上可以有多个 `Release`，即这个 `Chart` 可以被安装多次
+* `Repository`: `Chart` 的仓库，用于发布和存储 `Chart`
 
 使用 `helm create mychart` 创建一个名为 `mychart` 的示例，再使用 `tree mychart` 命令看一下 chart 的目录结构。
 
 
-```mychart
+```bash
 ├── Chart.yaml
 ├── charts                      # 该目录保存其他依赖的 chart（子 chart）
 ├── templates                   # chart 配置模板，用于渲染最终的 Kubernetes YAML 文件
@@ -101,7 +93,7 @@ This guide covers how you can quickly get started using `Helm`.
 
 ## Prerequisites
 
-The following prerequisites are required for a successful and properly secured use of Helm.
+The following prerequisites are required for a successful and properly secured use of `Helm`.
 
 1. A Kubernetes cluster
 2. Deciding what security configurations to apply to your installation, if any
@@ -615,6 +607,8 @@ Get started with the [Quick Start guide](https://helm.sh/docs/intro/quickstart/)
 - [快速入门指南](https://helm.sh/docs/intro/quickstart/) - 快速上手 Helm
 - [Helm 版本支持策略](https://helm.sh/docs/topics/version_skew/) - Helm 与 Kubernetes 版本兼容性
 - [Helm Glossary](https://helm.sh/docs/glossary/)
+- [The Chart Best Practices Guide](https://helm.sh/docs/chart_best_practices/)
+
 
 ## 中文参考
 
