@@ -10,14 +10,14 @@ tags:
   - 包管理工具
 
 description: "深入解析 Kubernetes 包管理工具 Helm，从核心概念到高级用法，结合 Helm 4 新特性与最佳实践"
-
+mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
 {:toc}
 
 
-# Helm
+# Helm 是什么
 
 [Helm](https://github.com/helm/helm) is a tool that streamlines installing and managing Kubernetes applications. Think of it like `apt`/`yum`/`homebrew` for Kubernetes. Helm is a tool for managing `Charts`. `Charts` are packages of pre-configured Kubernetes resources.
 
@@ -43,13 +43,6 @@ Use `Helm` to: (使用场景)
 * 管理 `Kubernetes manifest files`
 * 管理 `Helm` 安装包 `Charts`
 * 基于 `Chart` 的 `Kubernetes` 应用分发
-
-
-# Install
-
-Binary downloads of the `Helm` client can be found on [the Releases page](https://github.com/helm/helm/releases/latest). Unpack the `helm` binary and add it to your `PATH` and you are good to go! To rapidly get `Helm` up and running, start with the [Quick Start Guide](https://helm.sh/docs/intro/quickstart/).
-
-See the [installation guide](https://helm.sh/docs/intro/install/) for more options, including installing pre-releases.
 
 
 # 基本概念
@@ -81,8 +74,8 @@ See the [installation guide](https://helm.sh/docs/intro/install/) for more optio
 
 * `Chart.yaml`：用于描述这个 Chart 的基本信息，包括名字、描述信息以及版本等
 * `values.yaml` ：用于存储 templates 目录中模板文件中用到变量的值。
-* `templates`： 目录里面存放所有 yaml 模板文件。
 * `charts`：目录里存放这个 chart 依赖的所有子 chart。
+* `templates`： 目录里面存放所有 yaml 模板文件。
   + `NOTES.txt`：用于介绍 Chart 帮助信息， `helm install` 部署后展示给用户。例如：如何使用这个 Chart、列出缺省的设置等。
   + `_helpers.tpl`：放置模板助手的地方，可以在整个 chart 中重复使用
 
