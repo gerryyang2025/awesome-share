@@ -61,7 +61,8 @@ Tencent 司内：
 
 * [LLM News](http://llmnews.gerryyang.com/)
 * [英语学习助手](http://english.gerryyang.com/)
-* [H5 小游戏](https://gerryyang2025.github.io/h5-snake-game/)
+* [H5 小游戏 - 贪吃蛇](https://gerryyang2025.github.io/h5-snake-game/)
+* [H5 小游戏 - 俄罗斯方块](https://github.com/gerryyang2025/h5-tetris-game/)
 * [Obsidian 在线笔记](https://gerryyang2025.github.io/my-obsidian/)
 
 
