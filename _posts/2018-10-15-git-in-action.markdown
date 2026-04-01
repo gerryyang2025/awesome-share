@@ -1881,6 +1881,50 @@ The refs will be listed in the format (HEAD, master) - you'll have to parse it a
 More: [Make Git show the correct tag on branches with git describe](https://stackoverflow.com/questions/57685432/make-git-show-the-correct-tag-on-branches-with-git-describe)
 
 
+## git subtree split
+
+`git subtree split` 是一个非常强大的工具，尤其在管理大型仓库或需要将部分代码独立开源时，它能帮你在不丢失任何历史记录的情况下，干净地完成拆分。
+
+> 注意：git subtree 不是一个内置的核心命令，它需要以独立组件的形式单独安装。CentOS 安装命令：`sudo dnf install git-subtree`
+
+`git subtree split` 命令的功能是从一个 Git 仓库中，提取出指定子目录的完整历史，并将其重塑为一个独立的、可以直接推送到新仓库的 Git 项目。它的核心用途是将一个大型仓库（如单体仓库，monorepo）中的某个子目录拆分出来，形成一个新的、独立的 Git 仓库，并且可以完整保留该目录下所有文件的历史提交记录。
+
+当对一个目录运行 `git subtree split` 时，Git 会遍历整个仓库的历史，筛选出所有影响到该子目录的提交，并为这些提交创建一个平行的、"合成"的新历史。在这个新历史中，原本的子目录会成为新仓库的根目录。
+
+假设主仓库 main 分支有以下历史，其中一些提交只修改了 `app/` 目录外的文件：
+
+```text
+A---B---C---D---E---F (main)
+# 其中 B, D, F 的修改仅涉及 app/ 目录
+```
+
+运行 `git subtree split --prefix=app` 后，会生成一个新的、仅包含相关提交的独立历史：
+
+```text
+B'---D'---F' (split-branch)
+# B', D', F' 是基于 B, D, F 创建的新提交，内容为 `app/` 目录的根目录快照
+```
+
+只有那些修改了 `app/` 目录的提交（B, D, F）会被保留下来，并生成对应的新提交（B', D', F'）。其他提交（A, C, E）则被完全忽略。
+
+**将一个子目录发布为一个全新仓库的完整步骤**：
+
+```bash
+# 1. 从主仓库中拆分出子目录的历史，并创建一个新分支
+git subtree split --prefix=lib -b split-lib
+
+# 2. 创建一个新的裸仓库（或直接在 GitHub/GitLab 上新建）
+git init --bare ~/new-lib-repo.git
+
+# 3. 将新分支推送到这个新仓库的 master 分支
+git push ~/new-lib-repo.git split-lib:master
+```
+
+
+
+
+
+
 
 # Git hooks
 
