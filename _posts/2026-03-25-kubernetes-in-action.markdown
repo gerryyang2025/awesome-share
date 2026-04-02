@@ -127,11 +127,11 @@ host/path 匹配
         |
         v
 Service
-namesvr-oms:9200
+jmesh-namesvr-oms:9200
         |
         v
 Pod
-9.165.174.104:8090
+9.165.174.104:8081
         |
         v
 oms-backend
@@ -144,8 +144,8 @@ oms-backend
  -> 域名
  -> CLB
  -> Ingress
- -> Service namesvr-oms:9200
- -> Endpoint 9.165.174.104:8090
+ -> Service jmesh-namesvr-oms:9200
+ -> Endpoint 9.165.174.104:8081
  -> oms-backend
 ```
 
@@ -160,10 +160,10 @@ oms-backend
 ingress 配置：
 
 ```yaml
-    - domain: jlib.woa.com
+    - domain: mesh.jlib.woa.com
       path: /
       services:
-      - serviceName: namesvr-oms
+      - serviceName: jmesh-namesvr-oms
         serviceNamespace: jmesh-namesvr
         servicePort: 9200
         isDirectConnect: true
@@ -171,7 +171,7 @@ ingress 配置：
 
 ## 综合排查思路
 
-当遇到服务 `namesvr-oms` 无法正常访问时，通常可以按以下顺序进行定位：
+当遇到服务 `jmesh-namesvr-oms` 无法正常访问时，通常可以按以下顺序进行定位：
 
 1. `get svc -o wide`：确认服务本身存在，查看其选择器和端口。
 2. `get endpoints`：检查后端 Pod 的 IP 列表是否为空，若为空则服务无可用后端。
@@ -184,24 +184,24 @@ ingress 配置：
 ### 1. 确认应用本身没问题
 
 ```text
-$ curl -sf http://localhost:8090/backend/api/v1/health
+$ curl -sf http://localhost:8081/backend/api/v1/health
 {"code":200,"message":"OMS Backend is running","storage":"etcd","timestamp":"2024-01-01T00:00:00Z"}
 
-$ netstat -lnt | grep 8090
-tcp6       0      0 :::8090                 :::*                    LISTEN
+$ netstat -lnt | grep 8081
+tcp6       0      0 :::8081                 :::*                    LISTEN
 ```
 
 ### 2. 确认 Service 层正常
 
 ```bash
-kubectl get svc -n jmesh-namesvr namesvr-oms -o wide
-kubectl get endpoints -n jmesh-namesvr namesvr-oms
-kubectl describe svc -n jmesh-namesvr namesvr-oms
+kubectl get svc -n jmesh-namesvr jmesh-namesvr-oms -o wide
+kubectl get endpoints -n jmesh-namesvr jmesh-namesvr-oms
+kubectl describe svc -n jmesh-namesvr jmesh-namesvr-oms
 
 # 可以直接验证 Service 和后端 Pod 是否正常
-# 把本机的 9200 端口，临时转发到 Kubernetes 集群里 namesvr-oms 这个 Service 的 9200 端口
+# 把本机的 9200 端口，临时转发到 Kubernetes 集群里 jmesh-namesvr-oms 这个 Service 的 9200 端口
 # 这个转发只在 kubectl port-forward 命令运行期间有效，Ctrl+C 就断开了
-kubectl -n jmesh-namesvr port-forward svc/namesvr-oms 9200:9200
+kubectl -n jmesh-namesvr port-forward svc/jmesh-namesvr-oms 9200:9200
 ```
 
 另开一个终端：
@@ -228,16 +228,16 @@ Connection: close
 具体 kubectl 执行步骤：
 
 
-> 1. kubectl get svc -n jmesh-namesvr namesvr-oms -o wide
+> 1. kubectl get svc -n jmesh-namesvr jmesh-namesvr-oms -o wide
 
-作用：获取指定命名空间 `jmesh-namesvr` 中名为 `namesvr-oms` 的服务（Service）的详细信息，并以宽格式（`-o wide`）输出，显示比默认输出更多的字段，例如服务的 Cluster IP、外部 IP（如果有）、端口映射、选择器（Selector） 等。
+作用：获取指定命名空间 `jmesh-namesvr` 中名为 `jmesh-namesvr-oms` 的服务（Service）的详细信息，并以宽格式（`-o wide`）输出，显示比默认输出更多的字段，例如服务的 Cluster IP、外部 IP（如果有）、端口映射、选择器（Selector） 等。
 
 输出示例：
 
 ```text
-root:~$ kubectl get svc -n jmesh-namesvr namesvr-oms -o wide
-NAME          TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE   SELECTOR
-namesvr-oms   NodePort   9.165.175.200   <none>        9200:32090/TCP   49m   app.kubernetes.io/instance=namesvr-oms,app.kubernetes.io/name=namesvr-oms
+root:~$ kubectl get svc -n jmesh-namesvr jmesh-namesvr-oms -o wide
+NAME                TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE   SELECTOR
+jmesh-namesvr-oms   NodePort   9.165.175.237   <none>        9200:31457/TCP   10m   app.kubernetes.io/instance=jmesh-namesvr-oms,app.kubernetes.io/name=jmesh-namesvr-oms
 ```
 
 使用场景：
@@ -247,16 +247,16 @@ namesvr-oms   NodePort   9.165.175.200   <none>        9200:32090/TCP   49m   ap
 * 结合 `-o wide` 可看到选择器，为后续排查 Pod 是否匹配提供依据。
 
 
-> 2. kubectl get endpoints -n jmesh-namesvr namesvr-oms
+> 2. kubectl get endpoints -n jmesh-namesvr jmesh-namesvr-oms
 
-作用：获取与服务 namesvr-oms 关联的 `Endpoints` 资源。`Endpoints` 记录了该服务当前实际转发流量的后端 `Pod` 的 `IP` 地址和端口列表。这些信息由 Kubernetes 根据服务选择器自动维护。
+作用：获取与服务 jmesh-namesvr-oms 关联的 `Endpoints` 资源。`Endpoints` 记录了该服务当前实际转发流量的后端 `Pod` 的 `IP` 地址和端口列表。这些信息由 Kubernetes 根据服务选择器自动维护。
 
 输出示例：
 
 ```text
-root:~$ kubectl get endpoints -n jmesh-namesvr namesvr-oms
-NAME          ENDPOINTS            AGE
-namesvr-oms   9.165.174.104:8090   50m
+root:~$ kubectl get endpoints -n jmesh-namesvr jmesh-namesvr-oms
+NAME                ENDPOINTS            AGE
+jmesh-namesvr-oms   9.165.169.113:8081   15m
 ```
 
 使用场景：
@@ -265,16 +265,16 @@ namesvr-oms   9.165.174.104:8090   50m
 * 确认 `Pod` 的 `IP` 和端口是否与预期一致，常用于调试服务不可达的问题。
 * 验证服务选择器是否正确匹配到了 `Pod`。
 
-> 3. kubectl get pods -n jmesh-namesvr -l app.kubernetes.io/name=namesvr-oms --show-labels
+> 3. kubectl get pods -n jmesh-namesvr -l app.kubernetes.io/name=jmesh-namesvr-oms --show-labels
 
-作用：列出命名空间 `jmesh-namesvr` 中所有带标签 `app.kubernetes.io/name=namesvr-oms` 的 Pod，并显示每个 Pod 的标签（`--show-labels`）。标签通常用于服务选择器关联 `Pod`。
+作用：列出命名空间 `jmesh-namesvr` 中所有带标签 `app.kubernetes.io/name=jmesh-namesvr-oms` 的 Pod，并显示每个 Pod 的标签（`--show-labels`）。标签通常用于服务选择器关联 `Pod`。
 
 输出示例：
 
 ```text
-root:~$ kubectl get pods -n jmesh-namesvr -l app.kubernetes.io/name=namesvr-oms --show-labels
-NAME                           READY   STATUS    RESTARTS   AGE   LABELS
-namesvr-oms-5678745c4d-xprcg   1/1     Running   0          50m   app.kubernetes.io/instance=namesvr-oms,app.kubernetes.io/name=namesvr-oms,io.tencent.bcs.clusterid=BCS-K8S-26067,io.tencent.bcs.controller.name=namesvr-oms,io.tencent.bcs.controller.type=Deployment,io.tencent.bcs.namespace=jmesh-namesvr,io.tencent.paas.projectid=4d7b969b89c94ebcbac2338e2f5ff845,io.tencent.paas.source_type=helm,pod-template-hash=5678745c4d
+root:~$ kubectl get pods -n jmesh-namesvr -l app.kubernetes.io/name=jmesh-namesvr-oms --show-labels
+NAME                                 READY   STATUS    RESTARTS   AGE   LABELS
+jmesh-namesvr-oms-8489564d64-bgzgk   1/1     Running   0          15m   app.kubernetes.io/instance=jmesh-namesvr-oms,app.kubernetes.io/name=jmesh-namesvr-oms,io.tencent.bcs.clusterid=BCS-K8S-26067,io.tencent.bcs.controller.name=jmesh-namesvr-oms,io.tencent.bcs.controller.type=Deployment,io.tencent.bcs.namespace=jmesh-namesvr,io.tencent.paas.projectid=4d7b969b89c94ebcbac2338e2f5ff845,io.tencent.paas.source_type=helm,pod-template-hash=8489564d64
 ```
 
 使用场景：
@@ -284,24 +284,28 @@ namesvr-oms-5678745c4d-xprcg   1/1     Running   0          50m   app.kubernetes
 * 如果服务 `Endpoints` 为空，可通过此命令查看是否存在符合条件的 `Pod`，以及它们的状态是否健康。
 
 
-> 4. kubectl describe svc -n jmesh-namesvr namesvr-oms
+> 4. kubectl describe svc -n jmesh-namesvr jmesh-namesvr-oms
 
-作用：以详细描述的方式展示服务 namesvr-oms 的完整信息，包括元数据、选择器、端口、Endpoints 列表、事件（Events）等。describe 命令提供比 get 更丰富的信息，尤其适合故障排查。
+作用：以详细描述的方式展示服务 jmesh-namesvr-oms 的完整信息，包括元数据、选择器、端口、Endpoints 列表、事件（Events）等。describe 命令提供比 get 更丰富的信息，尤其适合故障排查。
 
 输出示例：
 
 
 ```text
-root:~$ kubectl describe svc -n jmesh-namesvr namesvr-oms
-Name:                     namesvr-oms
+root:~$ kubectl get pods -n jmesh-namesvr -l app.kubernetes.io/name=jmesh-namesvr-oms --show-labels
+NAME                                 READY   STATUS    RESTARTS   AGE   LABELS
+jmesh-namesvr-oms-8489564d64-bgzgk   1/1     Running   0          15m   app.kubernetes.io/instance=jmesh-namesvr-oms,app.kubernetes.io/name=jmesh-namesvr-oms,io.tencent.bcs.clusterid=BCS-K8S-26067,io.tencent.bcs.controller.name=jmesh-namesvr-oms,io.tencent.bcs.controller.type=Deployment,io.tencent.bcs.namespace=jmesh-namesvr,io.tencent.paas.projectid=4d7b969b89c94ebcbac2338e2f5ff845,io.tencent.paas.source_type=helm,pod-template-hash=8489564d64
+root:~$
+root:~$ kubectl describe svc -n jmesh-namesvr jmesh-namesvr-oms
+Name:                     jmesh-namesvr-oms
 Namespace:                jmesh-namesvr
-Labels:                   app.kubernetes.io/instance=namesvr-oms
+Labels:                   app.kubernetes.io/instance=jmesh-namesvr-oms
                           app.kubernetes.io/managed-by=Helm
-                          app.kubernetes.io/name=namesvr-oms
+                          app.kubernetes.io/name=jmesh-namesvr-oms
                           app.kubernetes.io/version=1.0.0
-                          helm.sh/chart=namesvr-oms-1.0.0
+                          helm.sh/chart=jmesh-namesvr-oms-1.0.0
                           io.tencent.bcs.clusterid=BCS-K8S-26067
-                          io.tencent.bcs.controller.name=namesvr-oms
+                          io.tencent.bcs.controller.name=jmesh-namesvr-oms
                           io.tencent.bcs.controller.type=Service
                           io.tencent.bcs.namespace=jmesh-namesvr
                           io.tencent.paas.creator=gerryyang
@@ -312,21 +316,21 @@ Annotations:              io.tencent.bcs.clusterid: BCS-K8S-26067
                           io.tencent.paas.creator: gerryyang
                           io.tencent.paas.updator: gerryyang
                           io.tencent.paas.version: 1.0.0
-                          meta.helm.sh/release-name: namesvr-oms
+                          meta.helm.sh/release-name: jmesh-namesvr-oms
                           meta.helm.sh/release-namespace: jmesh-namesvr
-Selector:                 app.kubernetes.io/instance=namesvr-oms,app.kubernetes.io/name=namesvr-oms
+Selector:                 app.kubernetes.io/instance=jmesh-namesvr-oms,app.kubernetes.io/name=jmesh-namesvr-oms
 Type:                     NodePort
-IP:                       9.165.175.200
+IP:                       9.165.175.237
 Port:                     service  9200/TCP
-TargetPort:               8090/TCP
-NodePort:                 service  32090/TCP
-Endpoints:                9.165.174.104:8090
+TargetPort:               8081/TCP
+NodePort:                 service  31457/TCP
+Endpoints:                9.165.169.113:8081
 Session Affinity:         None
 External Traffic Policy:  Cluster
 Events:
   Type    Reason           Age   From                Message
   ----    ------           ----  ----                -------
-  Normal  EnsuringService  50m   service-controller  Deleted Loadbalancer
+  Normal  EnsuringService  16m   service-controller  Deleted Loadbalancer
 ```
 
 使用场景：
@@ -343,7 +347,7 @@ Events:
 
 * host 是否是你的域名
 * path 是否符合预期
-* backend service 是否是 namesvr-oms
+* backend service 是否是 jmesh-namesvr-oms
 * backend service port 是否是 9200
 * ingress class / annotations 是否和 BCS CLB 控制器匹配
 
