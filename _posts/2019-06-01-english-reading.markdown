@@ -2,6 +2,7 @@
 layout: post
 title:  "English Reading"
 date:   2019-06-01 11:12:00 +0800
+last_modified_at: 2026-04-03 14:20:02 +0800
 categories: 英语学习
 tags:
   - 英语学习
@@ -58,6 +59,10 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 
 # Words (柯林斯英汉双解大词典)
+
+* commodity /kəˈmɒdəti/
+  + N-COUNT A **commodity** is something that is sold for money. 商品
+    - Prices went up on several basic **commodities** like bread and meat. 面包、肉等几种基本商品的价格上涨了。
 
 * disruption /dɪsˈrʌpʃn/
   + N-VAR When there is **disruption** of an event, system, or process, it is prevented from continuing or operating in a normal way. 妨碍; 扰乱
