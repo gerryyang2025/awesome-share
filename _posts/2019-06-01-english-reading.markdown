@@ -60,6 +60,10 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* permutation /ˌpɜːmjʊˈteɪʃən/
+  + N-COUNT A **permutation** is one of the ways in which a number of things can be ordered or arranged. 排列
+    - Variation among humans is limited to the possible **permutations** of our genes. 人类的变化形式受限于我们基因可能的那些排列。
+
 * commodity /kəˈmɒdəti/
   + N-COUNT A **commodity** is something that is sold for money. 商品
     - Prices went up on several basic **commodities** like bread and meat. 面包、肉等几种基本商品的价格上涨了。
