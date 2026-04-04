@@ -1,0 +1,13 @@
+{% comment %}
+  Determine TOC state and return it through variable "enable_toc"
+  Chirpy default uses `site.toc and page.toc`; in Liquid, `nil` is falsy, so if
+  `page.toc` is missing (defaults not merged), the right panel never shows.
+  Use `page.toc != false` so unset/nil means "follow site default" when site.toc is true.
+{% endcomment %}
+
+{% assign enable_toc = false %}
+{% if site.toc and page.toc != false %}
+  {% if page.content contains '<h2' or page.content contains '<h3' or page.content contains '<h1' or page.content contains '<h4' %}
+    {% assign enable_toc = true %}
+  {% endif %}
+{% endif %}

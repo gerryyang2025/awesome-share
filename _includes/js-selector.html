@@ -41,8 +41,11 @@
   %}
 {% endif %}
 
-{% if page.content contains '<h2' or page.content contains '<h3' and site.toc and page.toc %}
-  {% assign urls = urls | append: ',' | append: site.data.origin[type].toc.js %}
+{% comment %} Match toc-status: `page.toc` nil must not disable TOC (Liquid treats nil as falsy). {% endcomment %}
+{% if site.toc and page.toc != false %}
+  {% if page.content contains '<h2' or page.content contains '<h3' or page.content contains '<h1' or page.content contains '<h4' %}
+    {% assign urls = urls | append: ',' | append: site.data.origin[type].toc.js %}
+  {% endif %}
 {% endif %}
 
 {% if page.mermaid %}
