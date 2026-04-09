@@ -77,11 +77,11 @@ CLI 支持的功能与 App 类似，具体包括（参考 [CLI 文档](https://d
 
 | 功能 | 说明 |
 | :--- | :--- |
-| 交互式 TUI | 运行 `codex` 启动交互式终端会话 |
+| 交互式 `TUI` (Text-based User Interface) | 运行 `codex` 启动交互式终端会话 |
 | 模型切换 | 使用 `/model` 在 GPT-5.4、GPT-5.3-Codex 等模型间切换 |
 | 图片输入 | 附加截图或设计稿，让 Codex 同时阅读 |
 | 本地代码审查 | 在 commit 或 push 前使用独立 Codex 代理审查代码 |
-| 子代理（Subagents） | 使用子代理并行化复杂任务 |
+| 子代理 (Subagents) | 使用子代理并行化复杂任务 |
 | 网页搜索 | 让 Codex 搜索网络获取最新信息 |
 | 云端任务 | 在终端内启动 Codex Cloud 任务并应用 diff |
 | 脚本化 | 使用 `exec` 命令自动化重复工作流 |
@@ -99,6 +99,11 @@ Codex 提供编辑器插件，支持以下 IDE：
 
 安装后 Codex 扩展出现在侧边栏，默认为 Agent 模式，可读取文件、运行命令、在项目目录中写入更改。
 
+在 Cursor 中使用 Codex 的示例：
+
+![codex_demo](/assets/images/202604/codex_demo.png)
+
+
 ## 网页版
 
 直接访问 [chatgpt.com/codex](https://chatgpt.com/codex) 使用，支持：
@@ -114,7 +119,7 @@ Codex 提供编辑器插件，支持以下 IDE：
 
 Skills 让 Codex 超越单纯写代码，直接参与将 PR 变成产品的工作，例如代码理解、原型构建、文档编写，并与团队标准保持一致。
 
-- 每个项目根目录可放置 `AGENTS.md` 文件（类似本博客的 `CLAUDE.md`），定义 Codex 在该项目中遵循的规范和上下文。
+- 每个项目根目录可放置 `AGENTS.md` 文件，定义 Codex 在该项目中遵循的规范和上下文。
 - 社区可在 [OpenAI 博客](https://developers.openai.com/blog/skills-agents-sdk) 查看用 Skills 加速开源维护的案例。
 
 > **与 Claude Code 的 `CLAUDE.md` 的区别**：Claude Code 仅支持 `CLAUDE.md`，Codex（和 Cursor、Builder.io）支持 `AGENTS.md` 标准。如果多工具团队使用同一个指令文件，`AGENTS.md` 可避免维护多份同步文件。详见 [Builder.io 的对比分析](https://www.builder.io/blog/codex-vs-claude-code)。
