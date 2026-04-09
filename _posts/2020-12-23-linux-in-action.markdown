@@ -14,6 +14,116 @@ tags:
 
 # Linux 操作系统
 
+## /etc/sudoers
+
+`/etc/sudoers` 是 Linux/Unix 系统中用于配置 `sudo` 命令权限的核心文件。它定义了哪些用户或组可以通过 `sudo` 执行哪些命令，以及是否需要密码等规则。
+
+核心功能：
+
+* **授权管理**：控制普通用户以其他用户（通常是 root）身份运行特定命令的能力。
+* **细粒度权限**：可以限制用户只能执行特定的命令、命令参数，甚至可以在某些主机上执行。
+* **免密执行**：允许配置某些命令执行时无需输入密码。
+* **日志与审计**：通过 `sudo` 执行的命令会被系统日志记录（通常记录在 `/var/log/auth.log` 或 `/var/log/secure`），便于追踪操作。
+
+文件位置与编辑方法：
+
+* 文件路径：`/etc/sudoers`
+* 绝对不要直接用文本编辑器（如 `vim`、`nano`）修改，因为语法错误可能导致 `sudo` 完全失效，无法修复。
+* 正确编辑方法：使用 `visudo` 命令。它会锁定文件、进行语法检查，避免配置错误。
+
+`/etc/sudoers` 的基本语法：
+
+规则的一般形式：
+
+```text
+用户/组  主机列表 = (运行身份列表) 标签列表 命令列表
+```
+
+字段解释：
+
+1. **用户/组**：普通用户名（如 `john`），或用 `%` 开头的组名（如 `%wheel`）。
+2. **主机列表**：通常为 `ALL` 表示所有主机，也可以指定主机名或 IP（在多主机环境下有用）。
+3. **运行身份列表**：允许用户切换到的目标用户，`(ALL)` 表示可以变成任何用户，常见写法 `(root)` 或 `(ALL:ALL)`（用户和组）。
+4. **标签列表**：可选，如 `NOPASSWD:`（免密）、`PASSWD:`（强制要密码）、`SETENV:`（保留环境变量）等。
+5. **命令列表**：允许执行的完整路径命令，可用 `,` 分隔多个命令，用 `!` 禁止特定命令。
+
+
+常见示例：
+
+* root 用户可以从任何主机、以任何身份、执行任何命令
+
+```bash
+root ALL=(ALL) ALL
+```
+
+* `wheel` 组的所有成员可以从任何主机、以任何身份、执行任何命令
+
+```bash
+%wheel ALL=(ALL) ALL
+```
+
+* alice 用户只能以任何身份执行 `systemctl restart nginx`
+
+```bash
+alice ALL=(ALL) /bin/systemctl restart nginx
+```
+
+* bob 可以免密以 `root` 身份执行 `kill` 命令
+
+```bash
+bob ALL=(root) NOPASSWD: /usr/bin/kill
+```
+
+* admin 组的成员在特定网段内可以执行 `apt` 命令
+
+```bash
+%admin 192.168.1.0/24=(ALL) /usr/bin/apt
+```
+
+* 将用户 `dev` 添加到 `wheel` 组并赋予完整 `sudo` 权限
+
+首先编辑 `/etc/sudoers` 确保存在：`%wheel ALL=(ALL) ALL`。然后通过 `usermod -aG wheel dev` 将用户加入组即可。
+
+> 注意：某些发行版使用 sudo 组（如 Debian/Ubuntu），但 Fedora 等默认使用 wheel。如果不确定，可查看 /etc/sudoers 中定义的组名。
+
+验证用户已添加成功：
+
+切换至 `dev` 用户（或让 `dev` 重新登录），然后测试 `sudo` 权限：
+
+```bash
+sudo -l
+```
+
+输入 `dev` 的密码后，应列出允许的命令（通常为 `(ALL) ALL`）。
+
+
+
+
+* 仅允许 `dev` 执行 `dnf install -y nodejs npm python3 python3-pip`
+
+推荐在 `/etc/sudoers.d/dev` 中创建文件（避免修改主文件）：
+
+```bash
+sudo visudo -f /etc/sudoers.d/dev
+```
+
+内容：
+
+```bash
+dev ALL=(ALL) NOPASSWD: /usr/bin/dnf install -y nodejs npm python3 python3-pip
+```
+
+注意：命令必须写完整路径（可用 `which dnf` 查询），参数必须完全匹配。若希望允许任意 `dnf install` 参数，可使用通配符（谨慎）：
+
+```bash
+dev ALL=(ALL) NOPASSWD: /usr/bin/dnf install *
+```
+
+但这样可能允许安装任意包，不够安全。
+
+
+
+
 ## 对 *nix 中 inode 的几点理解
 {: #linux-inode-notes }
 
