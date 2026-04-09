@@ -60,6 +60,13 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* hub /hʌb/
+  + N-COUNT You can describe a place as a **hub** of an activity when it is a very important centre for that activity. 活动中心
+  + N-COUNT The **hub** of a wheel is the part at the centre. 轮毂
+  + N-COUN TA **hub** or a hub airport is a large airport from which you can travel to many other airports. 枢纽机场
+  + N-COUNT A **hub** is a device for connecting computers in a network. 集线器
+
+
 * permutation /ˌpɜːmjʊˈteɪʃən/
   + N-COUNT A **permutation** is one of the ways in which a number of things can be ordered or arranged. 排列
     - Variation among humans is limited to the possible **permutations** of our genes. 人类的变化形式受限于我们基因可能的那些排列。
