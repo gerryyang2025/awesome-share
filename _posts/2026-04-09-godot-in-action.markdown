@@ -2,8 +2,8 @@
 layout: post
 title:  "Godot in Action"
 date:   2026-04-09 14:00:00 +0800
-last_modified_at: 2026-04-10 01:26:32 +0800
-description: "基于 Godot 官方文档归纳：引擎定位、架构分层、功能与系统要求、初学开发与目标平台建议（含 macOS 安装包命名与官方 2D 教程兼容性）、版本策略、从入门到完成首个 2D/3D 小游戏的步骤，以及独立仓库中的 2D 实践示例 Signal Sweep。"
+last_modified_at: 2026-04-10 01:54:14 +0800
+description: "基于 Godot 官方文档归纳：引擎定位、架构分层、功能与系统要求、初学开发与目标平台建议（含 macOS 安装包命名与官方 2D 教程兼容性）、版本策略、从入门到完成首个 2D/3D 小游戏的步骤，以及独立仓库中的 2D/3D 实践示例 Signal Sweep 与 Beacon Runner 3D。"
 categories: Game
 tags:
   - Godot
@@ -185,6 +185,16 @@ Godot 是**通用型** 2D 与 3D 游戏引擎，可在**统一界面**下制作�
 
 ---
 
+# 实践示例：Beacon Runner 3D（3D demo） {#godot-demo-beacon-runner-3d}
+
+同仓库 **[demo_3d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d)** 为 3D 小游戏 **Beacon Runner 3D**：在封闭训练场中控制胶囊探测员，收集绿色信标并躲避红色巡逻无人机；含 **CharacterBody3D** 移动、跳跃与坠落判定等，目标 Godot 版本为 **4.6.2**（见目录内 `README.md`）。克隆仓库后可用 `godot --path demo_3d` 运行，或在编辑器中打开 `demo_3d/project.godot`。
+
+![Beacon Runner 3D：3D demo 画面录屏](/assets/images/202604/godot_demo_3d.gif)
+
+*录屏示意：占位 3D 几何、灯光与相机、计时与 UI 等均可在此工程中查看；细节以仓库内 `README.md`、`DESIGN.md` 为准。*
+
+---
+
 # 开发一个小游戏的推荐步骤（归纳）
 
 下面将官方入门路径压缩为可执行的**步骤清单**，适用于自制 2D 或 3D 小游戏（可随项目规模增减）：
@@ -200,7 +210,7 @@ Godot 是**通用型** 2D 与 3D 游戏引擎，可在**统一界面**下制作�
 
 4. **选定维度与教程**
    - **2D**：按 [First 2D game](https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html) 顺序做——工程设置 → 玩家场景 → 玩家逻辑 → 敌人 → 主场景 → HUD → 收尾；可下载官方资源包与同仓库 [Demo](https://github.com/godotengine/godot-demo-projects/tree/master/2d/dodge_the_creeps)。亦可参考 [实践示例：Signal Sweep](#godot-demo-signal-sweep) 中的 [demo_2d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_2d) 工程。
-   - **3D**：按 [First 3D game](https://docs.godotengine.org/en/stable/getting_started/first_3d_game/index.html)——场景与输入 → 移动 → 怪物与生成 → 跳跃与碾压 → 结束与重开 → 动画与扩展；资源见教程页 [Starter 压缩包](https://github.com/godotengine/godot-docs-project-starters/releases/download/latest-4.x/3d_squash_the_creeps_starter.zip) 与 [Demo](https://github.com/godotengine/godot-demo-projects/tree/master/3d/squash_the_creeps)。
+   - **3D**：按 [First 3D game](https://docs.godotengine.org/en/stable/getting_started/first_3d_game/index.html)——场景与输入 → 移动 → 怪物与生成 → 跳跃与碾压 → 结束与重开 → 动画与扩展；资源见教程页 [Starter 压缩包](https://github.com/godotengine/godot-docs-project-starters/releases/download/latest-4.x/3d_squash_the_creeps_starter.zip) 与 [Demo](https://github.com/godotengine/godot-demo-projects/tree/master/3d/squash_the_creeps)。亦可参考 [实践示例：Beacon Runner 3D](#godot-demo-beacon-runner-3d) 中的 [demo_3d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d) 工程。
 
 5. **迭代玩法与内容**
    在教程骨架上替换美术、调整数值、加关卡或菜单；保持场景拆分与脚本职责清晰（玩家、敌人、关卡、UI 分场景实例化）。
@@ -234,3 +244,4 @@ Godot 是**通用型** 2D 与 3D 游戏引擎，可在**统一界面**下制作�
 - 引擎架构索引：[Engine architecture](https://docs.godotengine.org/en/stable/engine_details/architecture/index.html)
 - 架构图说明：[Godot architecture diagram](https://docs.godotengine.org/en/stable/engine_details/architecture/godot_architecture_diagram.html)
 - 实践仓库 2D demo（Signal Sweep）：[https://github.com/gerryyang2025/godot-in-action/tree/master/demo_2d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_2d)
+- 实践仓库 3D demo（Beacon Runner 3D）：[https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d)
