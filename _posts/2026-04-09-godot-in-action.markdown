@@ -2,8 +2,8 @@
 layout: post
 title:  "Godot in Action"
 date:   2026-04-09 14:00:00 +0800
-last_modified_at: 2026-04-10 01:54:14 +0800
-description: "基于 Godot 官方文档归纳：引擎定位、架构分层、功能与系统要求、初学开发与目标平台建议（含 macOS 安装包命名与官方 2D 教程兼容性）、版本策略、从入门到完成首个 2D/3D 小游戏的步骤，以及独立仓库中的 2D/3D 实践示例 Signal Sweep 与 Beacon Runner 3D。"
+last_modified_at: 2026-04-10 08:38:40 +0800
+description: "基于 Godot 官方文档归纳：引擎定位、架构分层、功能与系统要求、初学开发与目标平台建议（含 macOS 安装包命名与官方 2D 教程兼容性）、版本策略、从入门到完成首个 2D/3D 小游戏的步骤，以及独立仓库中的实践示例 Signal Sweep / Signal Sweep Art、Beacon Runner 3D / Beacon Runner 3D Art（美术优化）。"
 categories: Game
 tags:
   - Godot
@@ -175,7 +175,7 @@ Godot 是**通用型** 2D 与 3D 游戏引擎，可在**统一界面**下制作�
 
 # 实践示例：Signal Sweep（2D demo） {#godot-demo-signal-sweep}
 
-除官方 [Your first 2D game](https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html) 与 [godot-demo-projects](https://github.com/godotengine/godot-demo-projects) 外，下面给出一个**独立 Godot 4.x 工程**，便于对照「节点 + 脚本 + 简单玩法循环」的落地方式。
+除官方 [Your first 2D game](https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html) 与 [godot-demo-projects](https://github.com/godotengine/godot-demo-projects) 外，下面给出若干**独立 Godot 4.x 工程**（含同玩法的占位版与美术优化版），便于对照「节点 + 脚本 + 简单玩法循环」及后续视觉迭代。
 
 仓库 **[gerryyang2025/godot-in-action](https://github.com/gerryyang2025/godot-in-action)** 中的 **[demo_2d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_2d)** 为 2D 小游戏 **Signal Sweep**：驾驶飞船在固定竞技场里回收信标、躲避巡逻无人机；目标 Godot 版本为 **4.6.2**（见目录内 `README.md`）。克隆仓库后可用 `godot --path demo_2d` 运行，或在编辑器中打开 `demo_2d/project.godot`。
 
@@ -185,13 +185,33 @@ Godot 是**通用型** 2D 与 3D 游戏引擎，可在**统一界面**下制作�
 
 ---
 
+# 实践示例：Signal Sweep Art（2D 美术优化 demo） {#godot-demo-signal-sweep-art}
+
+同仓库 **[demo_2d_art](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_2d_art)** 为 **Signal Sweep Art**：在保留与 [demo_2d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_2d) 相同的玩法基线前提下，将训练场做成**霓虹雷达风格**的可玩示例（HUD、扫描叠层着色器、推进器与护盾等视觉反馈）；仍**不依赖外部图片/字体/音频**，目标 Godot 版本为 **4.6.2**（见 `README.md`、`ART_DIRECTION.md`）。运行：`godot --path demo_2d_art`，或打开 `demo_2d_art/project.godot`。
+
+![Signal Sweep Art：2D 美术优化 demo 画面录屏](/assets/images/202604/godot_demo_2d_art.gif)
+
+*录屏示意：全屏扫描线叠层（`shaders/scan_overlay.gdshader`）等与 UI 表现可在工程中对照；细节以仓库内文档为准。*
+
+---
+
 # 实践示例：Beacon Runner 3D（3D demo） {#godot-demo-beacon-runner-3d}
 
-同仓库 **[demo_3d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d)** 为 3D 小游戏 **Beacon Runner 3D**：在封闭训练场中控制胶囊探测员，收集绿色信标并躲避红色巡逻无人机；含 **CharacterBody3D** 移动、跳跃与坠落判定等，目标 Godot 版本为 **4.6.2**（见目录内 `README.md`）。克隆仓库后可用 `godot --path demo_3d` 运行，或在编辑器中打开 `demo_3d/project.godot`。
+同仓库 **[demo_3d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d)** 为 3D 小游戏 **Beacon Runner 3D**（玩法基线）：在封闭训练场中控制胶囊探测员，收集绿色信标并躲避红色巡逻无人机；含 **CharacterBody3D** 移动、跳跃与坠落判定等，目标 Godot 版本为 **4.6.2**（见目录内 `README.md`）。克隆仓库后可用 `godot --path demo_3d` 运行，或在编辑器中打开 `demo_3d/project.godot`。同玩法的**美术优化版**见下文 [Beacon Runner 3D Art](#godot-demo-beacon-runner-3d-art)。
 
 ![Beacon Runner 3D：3D demo 画面录屏](/assets/images/202604/godot_demo_3d.gif)
 
 *录屏示意：占位 3D 几何、灯光与相机、计时与 UI 等均可在此工程中查看；细节以仓库内 `README.md`、`DESIGN.md` 为准。*
+
+---
+
+# 实践示例：Beacon Runner 3D Art（3D 美术优化 demo） {#godot-demo-beacon-runner-3d-art}
+
+同仓库 **[demo_3d_art](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d_art)** 为 **Beacon Runner 3D Art**：在**不改动** [demo_3d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d) 玩法基线的前提下，强化材质、轮廓光、环境氛围与 HUD 质感（`materials/`、`WorldEnvironment`、命名材质等）；仍主要使用 **Godot 内置 primitive、灯光与 Label**，不依赖外部模型贴图，目标版本 **4.6.2**（见 `README.md`、`ART_DIRECTION.md`）。运行：`godot --path demo_3d_art`，或打开 `demo_3d_art/project.godot`。建议保留 `demo_3d/` 与本作**对照**阅读。
+
+![Beacon Runner 3D Art：3D 美术优化 demo 画面录屏](/assets/images/202604/godot_demo_3d_art.gif)
+
+*录屏示意：首轮视觉升级（雾、导视光边、HUD 气质等）可在工程中对照；音频与粒子等可按 `README` 中「下一轮 polish」推进。*
 
 ---
 
@@ -209,11 +229,11 @@ Godot 是**通用型** 2D 与 3D 游戏引擎，可在**统一界面**下制作�
    跟完 [Step by step](https://docs.godotengine.org/en/stable/getting_started/step_by_step/index.html)：会搭场景树、会实例化子场景、会写脚本、会用 **信号** 解耦 UI 与游戏逻辑。
 
 4. **选定维度与教程**
-   - **2D**：按 [First 2D game](https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html) 顺序做——工程设置 → 玩家场景 → 玩家逻辑 → 敌人 → 主场景 → HUD → 收尾；可下载官方资源包与同仓库 [Demo](https://github.com/godotengine/godot-demo-projects/tree/master/2d/dodge_the_creeps)。亦可参考 [实践示例：Signal Sweep](#godot-demo-signal-sweep) 中的 [demo_2d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_2d) 工程。
-   - **3D**：按 [First 3D game](https://docs.godotengine.org/en/stable/getting_started/first_3d_game/index.html)——场景与输入 → 移动 → 怪物与生成 → 跳跃与碾压 → 结束与重开 → 动画与扩展；资源见教程页 [Starter 压缩包](https://github.com/godotengine/godot-docs-project-starters/releases/download/latest-4.x/3d_squash_the_creeps_starter.zip) 与 [Demo](https://github.com/godotengine/godot-demo-projects/tree/master/3d/squash_the_creeps)。亦可参考 [实践示例：Beacon Runner 3D](#godot-demo-beacon-runner-3d) 中的 [demo_3d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d) 工程。
+   - **2D**：按 [First 2D game](https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html) 顺序做——工程设置 → 玩家场景 → 玩家逻辑 → 敌人 → 主场景 → HUD → 收尾；可下载官方资源包与同仓库 [Demo](https://github.com/godotengine/godot-demo-projects/tree/master/2d/dodge_the_creeps)。亦可参考 [实践示例：Signal Sweep](#godot-demo-signal-sweep) 中的 [demo_2d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_2d)，以及同玩法下的美术优化示例 [Signal Sweep Art](#godot-demo-signal-sweep-art)（[demo_2d_art](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_2d_art)）。
+   - **3D**：按 [First 3D game](https://docs.godotengine.org/en/stable/getting_started/first_3d_game/index.html)——场景与输入 → 移动 → 怪物与生成 → 跳跃与碾压 → 结束与重开 → 动画与扩展；资源见教程页 [Starter 压缩包](https://github.com/godotengine/godot-docs-project-starters/releases/download/latest-4.x/3d_squash_the_creeps_starter.zip) 与 [Demo](https://github.com/godotengine/godot-demo-projects/tree/master/3d/squash_the_creeps)。亦可参考 [实践示例：Beacon Runner 3D](#godot-demo-beacon-runner-3d) 中的 [demo_3d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d)，以及同玩法下的美术优化示例 [Beacon Runner 3D Art](#godot-demo-beacon-runner-3d-art)（[demo_3d_art](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d_art)）。
 
 5. **迭代玩法与内容**
-   在教程骨架上替换美术、调整数值、加关卡或菜单；保持场景拆分与脚本职责清晰（玩家、敌人、关卡、UI 分场景实例化）。
+   在教程骨架上替换美术、调整数值、加关卡或菜单；保持场景拆分与脚本职责清晰（玩家、敌人、关卡、UI 分场景实例化）。若需参考「占位几何 + 着色器/UI 强化」的 2D 迭代，可见 [Signal Sweep Art](#godot-demo-signal-sweep-art)；3D 材质与灯光向的迭代可见 [Beacon Runner 3D Art](#godot-demo-beacon-runner-3d-art)。
 
 6. **测试与导出**
    在目标分辨率与低端环境测试；配置 [导出模板](https://docs.godotengine.org/en/stable/tutorials/export/index.html)，按平台打包；必要时加入画质/分辨率选项（可参考官方 [graphics_settings](https://github.com/godotengine/godot-demo-projects/tree/master/3d/graphics_settings) 示例思路）。
@@ -244,4 +264,6 @@ Godot 是**通用型** 2D 与 3D 游戏引擎，可在**统一界面**下制作�
 - 引擎架构索引：[Engine architecture](https://docs.godotengine.org/en/stable/engine_details/architecture/index.html)
 - 架构图说明：[Godot architecture diagram](https://docs.godotengine.org/en/stable/engine_details/architecture/godot_architecture_diagram.html)
 - 实践仓库 2D demo（Signal Sweep）：[https://github.com/gerryyang2025/godot-in-action/tree/master/demo_2d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_2d)
+- 实践仓库 2D 美术优化 demo（Signal Sweep Art）：[https://github.com/gerryyang2025/godot-in-action/tree/master/demo_2d_art](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_2d_art)
 - 实践仓库 3D demo（Beacon Runner 3D）：[https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d)
+- 实践仓库 3D 美术优化 demo（Beacon Runner 3D Art）：[https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d_art](https://github.com/gerryyang2025/godot-in-action/tree/master/demo_3d_art)
