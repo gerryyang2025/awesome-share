@@ -17,19 +17,28 @@ tags:
 * Do not remove this line (it will not be displayed)
 {:toc}
 
-> [Cocos Creator](https://www.cocos.com/creator) 是 Cocos 旗下的集成式游戏开发工具，面向 2D、3D、UI 与跨平台发布；脚本以 **TypeScript** 为主，编辑器提供场景搭建、资源管理、动画与预览等完整工作流。官方中文手册（以 3.8 为例）：[新手入门](https://docs.cocos.com/creator/3.8/manual/zh/getting-started/)。本文按「在 macOS 上从安装到做出第一个小游戏」的路径整理，便于对照文档逐步实践。
-
-**文档与官网（官方索引）**
-
-- **Cocos Creator User Manual**：[https://docs.cocos.com](https://docs.cocos.com) — 用户手册总入口（各版本在路径中切换，例如 Creator 3.8 中文：`/creator/3.8/manual/zh/`）。
-- **Cocos Engine Official Website**：[https://www.cocos.com](https://www.cocos.com) — Cocos 引擎与产品站。
-- **手册源码仓库**：[cocos/cocos-docs](https://github.com/cocos/cocos-docs) — 《Cocos Creator User Manual》的 Markdown 内容与构建脚本（本地可 `npm install` 后按仓库 README 用 VitePress 开发/构建）；与线上 [docs.cocos.com](https://docs.cocos.com) 对应，适合对照勘误、提 issue 或贡献文档。
+> [Cocos Creator](https://www.cocos.com/creator) 是 Cocos 旗下的集成式游戏开发工具，面向 2D、3D、UI 与跨平台发布；脚本以 **TypeScript** 为主，编辑器提供场景搭建、资源管理、动画与预览等完整工作流。官方中文手册（以 3.8 为例）：[新手入门](https://docs.cocos.com/creator/3.8/manual/zh/getting-started/)。本文按「在 macOS 上从安装到做出第一个小游戏」的路径整理，便于对照文档逐步实践；手册与仓库等集中索引见文末 **Refer**。
 
 # Cocos Creator 是什么
 
 **Cocos Creator** 将引擎能力与可视化编辑器结合在一起：用**场景与节点**组织内容，用**组件（脚本）**驱动逻辑，再经**构建发布**导出到 Web、原生移动与桌面等目标。与纯代码引擎相比，它更强调**编辑器内闭环**（资源导入、Prefab、动画、预览与构建）。
 
 从 **v2.3.2** 起，官方通过 **Cocos Dashboard** 统一管理多版本编辑器下载、升级与项目入口，减少「装错版本、项目打不开」一类问题。详见 [安装和启动](https://docs.cocos.com/creator/3.8/manual/zh/getting-started/install/)。
+
+## 引擎仓库 cocos-engine
+
+可以把二者理解成 **「工具（Creator）」与「运行时（Engine）」** 的组合，而不是两个无关产品：
+
+- **Cocos Creator**：通过 Dashboard 分发的 **编辑器与配套工具**（场景/资源/动画/构建发布等）。你在工程里编辑的 **场景、Prefab、TypeScript 组件**，都由 Creator 管理，并在编辑器里用内置引擎做 **场景预览**。
+- **cocos-engine**：**游戏真正跑起来时的引擎内核** —— 渲染、节点与组件系统、资源与脚本加载、物理/音频等跨平台能力均来自此处。执行 **构建发布** 后，目标平台包（如 Web、微信小游戏、Android/iOS 等）里会带上 **与 Creator 版本匹配的引擎运行时**，再与你的脚本、资源一起构成可运行游戏。
+
+因此：**Creator 负责「做内容 + 打包」；cocos-engine 负责「在设备上执行这些内容」**。日常开发几乎只在 Creator 与项目仓库中活动；**cocos-engine** 仓库对应的是上述「执行层」的源码 —— 排查渲染/底层 bug、做 **引擎定制**、查 API 在 native/小游戏上的行为差异，或 **向官方贡献引擎补丁** 时才会频繁对照 [cocos/cocos-engine](https://github.com/cocos/cocos-engine)。
+
+与 [cocos-docs](https://github.com/cocos/cocos-docs) 相比：**docs** 是手册文本；**Creator** 是编辑器安装包；**cocos-engine** 是运行时 —— 三者版本号通常按 **Creator 大版本**对齐（例如 Creator 3.8 使用同代的引擎分支），具体以发行说明为准。
+
+仓库顶栏英文说明与 [GitHub 页](https://github.com/cocos/cocos-engine) 一致，摘录如下：
+
+> Cocos simplifies game creation and distribution with Cocos Creator, a free, open-source, cross-platform game engine. Empowering millions of developers to create high-performance, engaging 2D/3D games and instant web entertainment.
 
 ---
 
@@ -107,6 +116,10 @@ tags:
 7. **构建发布**：菜单 **项目 → 构建发布**，生成对应平台的 `build` 产物。
 
 更细的步骤以 [Hello World](https://docs.cocos.com/creator/3.8/manual/zh/getting-started/helloworld/) 与下方「快速上手」两节为准。
+
+## 发布到微信小游戏
+
+若目标平台为 **微信小游戏**，运行环境在小程序基础上封装 **WebGL**，与桌面浏览器预览并不完全等同。官方流程要点包括：安装 [微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)，在 **Cocos Creator / File → 偏好设置 → 外部程序** 中配置该工具路径；在 **构建发布** 中选择 **微信小游戏**，填写 **AppID**（面板内测试用默认值仅作调试，正式发布需使用微信公众平台申请的 AppID）；**构建** 后在 `build` 下生成小游戏工程（如 `wechatgame`），再通过构建任务的 **运行** 调起微信开发者工具（若从未单独启动过开发者工具，可能出现需先手动打开一次的提示）。**主包体积**、远程资源与缓存、分包、引擎插件与 **Wasm** 物理等选项与限制，以手册为准：[发布到微信小游戏](https://docs.cocos.com/creator/3.8/manual/zh/editor/publish/publish-wechatgame.html)。
 
 ---
 
@@ -187,3 +200,14 @@ tags:
 # 小结
 
 在 **macOS** 上：**安装 Dashboard → 安装对应版本 Creator → 登录并新建项目**，即可在 **Cocos Creator** 中用 **场景 + TypeScript 组件** 完成从 **Hello World** 到 **2D/3D 官方小游戏** 的学习路径；需要可对照运行的 **2D 跳跃** 工程时，可使用上文 **[demo_2d](https://github.com/gerryyang2025/cocos-in-action/tree/master/demo_2d)** 示例。工程上牢记 **`assets` / `settings` / `package.json` 与 `.meta` 的版本控制习惯**，遇到问题时优先查 **3.8 手册** 与 **论坛 / 技术支持 / Store**。若你接下来会固定某一 Creator 小版本开发，建议把该版本号写进团队 README，并与构建机保持一致，以减少「本地能跑、同事打不开」的差异。
+
+---
+
+# Refer
+
+**文档与官网（参考索引）**
+
+- **Cocos Creator User Manual**：[https://docs.cocos.com](https://docs.cocos.com) — 用户手册总入口（各版本在路径中切换，例如 Creator 3.8 中文：`/creator/3.8/manual/zh/`）。
+- **Cocos Engine Official Website**：[https://www.cocos.com](https://www.cocos.com) — Cocos 引擎与产品站。
+- **手册源码仓库**：[cocos/cocos-docs](https://github.com/cocos/cocos-docs) — 《Cocos Creator User Manual》的 Markdown 内容与构建脚本（本地可 `npm install` 后按仓库 README 用 VitePress 开发/构建）；与线上 [docs.cocos.com](https://docs.cocos.com) 对应，适合对照勘误、提 issue 或贡献文档。
+- **引擎运行时源码**：[cocos/cocos-engine](https://github.com/cocos/cocos-engine) — Cocos **运行时引擎**本体；与 Creator、文档仓的分工与关系见上文「引擎仓库 cocos-engine」一节。
