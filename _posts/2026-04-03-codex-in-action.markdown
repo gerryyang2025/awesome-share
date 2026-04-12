@@ -2,7 +2,7 @@
 layout: post
 title:  "Codex in Action"
 date:   2026-04-03 14:00:00 +0800
-last_modified_at: 2026-04-03 14:00:00 +0800
+last_modified_at: 2026-04-12 14:00:00 +0800
 description: "全面介绍 OpenAI Codex 的核心能力、多种接入方式（桌面应用、CLI、IDE 插件、网页版）、定价计划及其与 Claude Code 的对比，是使用 Codex 的参考指南。"
 categories: AI
 tags:
@@ -264,7 +264,7 @@ Builder.io 对比了用户情绪评分：
 这是 Builder.io 选择 Codex 的最主要原因。两者在 GitHub 上的表现差异显著：
 
 | 方面 | Codex | Claude Code |
-|| :--- | :--- |
+| :--- | :--- | :--- |
 | PR 审查质量 | 能发现团队会错过的真正有难度的 Bug | 评论冗长但找不到明显的 Bug |
 | 交互方式 | 行内评论，可要求修复，在后台运行，可直接合并 | 无法以有效方式要求修复 |
 | Issue 处理 | 可 @Codex 在任何 Issue 或 PR 中直接接手 | 不支持 Issue 中的 @ 处理 |
@@ -303,6 +303,17 @@ Codex Pro 性价比更高——更低的价位获得更多用量，同时捆绑 
 **三个工具可以一起用吗？**
 
 可以。Builder.io 的做法是：在视觉层之上使用这些智能体，设计师和产品经理不需要在终端操作，通过类 Figma 编辑器与 Codex 或 Claude Code 交互，所有人最终在同一个代码库上工作，PR 从另一端出来。
+
+## 与 Claude Code 的协同工作流（r/ClaudeCode 社区讨论）
+
+[r/ClaudeCode 上的讨论「Best way to combine Claude Code with Codex in real workflows?」](https://www.reddit.com/r/ClaudeCode/comments/1rf645m/best_way_to_combine_claude_code_with_codex_in/) 补充了「两者如何放进同一条日常工作流」的实践与坑点，可与上文 Builder.io 的对比对照阅读。
+
+- **常见分工**：不少实践者认为 Claude Code 更擅长**深度推理、大范围重构与复杂代码库理解**；Codex 在**快速落地实现、与 ChatGPT / OpenAI 工具链衔接**上更顺手。二者可按任务切换，也可串联成一条流水线。
+- **编排器模式**：在 Claude Code 里用 **Skill** 或 `CLAUDE.md` 把 Claude 当作**编排者**——由 Claude 拆解任务，需要实现时再**显式调用 Codex CLI**，并把约束与上下文写进交接提示。若 Codex 在交互中频繁等待确认，需配合合适的审批 / 自动化策略，避免卡在权限循环。讨论中有人用类似「子代理编排」的思路类比（例如参考 [copilot-orchestra](https://github.com/ShepAlderson/copilot-orchestra) 这类编排实验）。
+- **「一写一审」**：更轻量的做法是 **一个主写、另一个专审**（例如 Claude 主笔、Codex 做独立审查，或反之）；也有人再并行挂第三方的只读 CLI 做补充审查。社区经验是：审查侧宜**只读、针对 diff**，避免多工具同时改写同一工作树。
+- **交接处的上下文流失**：帖子里较一致的观察是——**瓶颈常常不在「哪个模型更强」，而在「交接后上下文变窄」**：Claude 产出的详细推理与取舍，经摘要交给 Codex 后，后者容易丢失「为何否决某条路径」等细节。缓解方式包括：交接提示里**显式写出约束、风险区、已拒绝方案**；或把实现与审查固定在**同一仓库 / worktree 的步骤**里，减少口头搬运。
+- **官方插件**：OpenAI 维护的 [codex-plugin-cc](https://github.com/openai/codex-plugin-cc) 可在 Claude Code 会话内通过 `/codex:review`、`/codex:rescue` 等命令把 Codex 作为「第二意见」做审查或委托，与 CLI 共用本机安装与登录状态。概述可参考社区文章 [Claude Code + Codex Plugin（DEV Community）](https://dev.to/harrison_guo_e01b4c8793a0/claude-code-codex-plugin-two-ai-brains-one-terminal-k31)。
+- **其他社区提到的方向**（需自行评估维护状况与适用场景）：在同一目录分别开 Claude Code 与 Codex、**会话末同步 `CLAUDE.md` 与 `AGENTS.md`**；多后端编排类工具（如讨论中提到的 [kodo](https://github.com/ikamensh/kodo)、[claude-octopus](https://github.com/nyldn/claude-octopus)）；通过 MCP 把协作命令挂进 Claude Code（如讨论中提到的 [claude-co-commands](https://github.com/SnakeO/claude-co-commands)）；以及 [ensemble](https://github.com/michelhelsdingen/ensemble) 等多智能体在 tmux 中协作的实验项目。另有多模型审查的 [相关帖子](https://www.reddit.com/r/ClaudeCode/comments/1r9a4x2/using_gemini_codex_as_code_reviewers_inside/) 讨论在 `CLAUDE.md` 中用并行 CLI 做只读审查，可与本帖思路对照。
 
 # 快速上手
 
@@ -354,6 +365,8 @@ git checkout main && git branch -D feature/codex-task-1
 | 官方 | Codex SDK | [developers.openai.com/codex/sdk](https://developers.openai.com/codex/sdk) |
 | 官方 | 使用条款（Plus/Pro） | [help.openai.com — your data](https://help.openai.com/en/articles/5722486-how-your-data-is-used-to-improve-model-performance) |
 | 社区 | Reddit r/codex | [reddit.com/r/codex](https://www.reddit.com/r/codex/) |
+| 社区 | Reddit r/ClaudeCode — 与 Claude Code 协同工作流讨论 | [reddit.com/r/ClaudeCode/comments/1rf645m/best_way_to_combine_claude_code_with_codex_in](https://www.reddit.com/r/ClaudeCode/comments/1rf645m/best_way_to_combine_claude_code_with_codex_in/) |
+| 开源 | OpenAI — codex-plugin-cc（Claude Code 内调用 Codex） | [github.com/openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) |
 | 第三方 | Builder.io — Codex vs Claude Code 对比 | [builder.io/blog/codex-vs-claude-code](https://www.builder.io/blog/codex-vs-claude-code) |
 | 博客 | Builder.io — Writing a good AGENTS.md | [builder.io/blog/agents-md](https://www.builder.io/blog/agents-md) |
 | 博客 | Builder.io — Cursor Tips | [builder.io/blog/cursor-tips](https://www.builder.io/blog/cursor-tips) |
