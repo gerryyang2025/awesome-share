@@ -60,6 +60,12 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* tactical /ˈtæktɪkl/
+  + ADJ You use **tactical** to describe an action or plan which is intended to help someone achieve what they want in a particular situation. 战术上的
+    - It's not yet clear whether his resignation offer is a serious one, or whether it's simply a **tactical** move. 还不清楚他的辞职请求是认真的，还是只是个策略上的举动。
+
+
+
 * revamp /ˈriːvæmp/
   + V-T If someone **revamps** something, they make changes to it in order to try and improve it. 修改; 改进
     - All the country's political parties have accepted that it is time to revamp the system. 这个国家的所有政党都认可现在是改革这一体制的时候了。
