@@ -2,7 +2,7 @@
 layout: post
 title:  "Cocos in Action"
 date:   2026-04-12 14:00:00 +0800
-description: "基于 Cocos Creator 3.8 官方手册归纳：在 macOS 上通过 Cocos Dashboard 安装与启动、工程目录与版本控制要点、编辑器面板与典型开发流程、Hello World（场景与 TypeScript 组件）、首个 2D/3D 小游戏学习路径，以及示例仓库、社区与 Cocos Store 等获取帮助的渠道。"
+description: "Cocos Creator 3.8 入门笔记（macOS）：Dashboard 安装、工程结构与编辑器流程、Hello World 与 2D/3D 快速上手，附自建 demo_2d 与官方示例、社区与 Store 资源。"
 categories: Game
 tags:
   - Cocos
@@ -139,6 +139,18 @@ tags:
 
 ---
 
+# 实践示例：2D 跳跃 Demo
+
+除官方示例外，也可对照个人仓库 **[gerryyang2025/cocos-in-action](https://github.com/gerryyang2025/cocos-in-action)** 中的 **`demo_2d`** 目录：该工程基于 **Cocos Creator 3.8**，实现一版 **2D 平台跳跃** 玩法（与上文「第一个 2D 游戏」教程同属一类体裁，便于把文档步骤落到可运行工程上）。克隆后请用 **Creator 3.8** 打开 `demo_2d` 子目录中的项目，在编辑器内 **预览** 或按项目说明构建。
+
+以下为浏览器预览的 **画面录屏**（GIF），便于在未装引擎时快速感受效果：
+
+![Cocos Creator 3.8：demo_2d 2D 跳跃预览录屏](/assets/images/202604/cocos_demo_2d.gif)
+
+*仓库入口（直接打开 `demo_2d` 路径）：[github.com/gerryyang2025/cocos-in-action/tree/master/demo_2d](https://github.com/gerryyang2025/cocos-in-action/tree/master/demo_2d)*
+
+---
+
 # 快速上手：第一个 3D 游戏（一步两步）
 
 官方教程：[快速上手：制作第一个 3D 游戏](https://docs.cocos.com/creator/3.8/manual/zh/getting-started/first-game/) 带领完成小游戏 **「一步两步」**（反应类跳跃：根据路面选择跳一步或两步）。要点包括：
@@ -174,4 +186,4 @@ tags:
 
 # 小结
 
-在 **macOS** 上：**安装 Dashboard → 安装对应版本 Creator → 登录并新建项目**，即可在 **Cocos Creator** 中用 **场景 + TypeScript 组件** 完成从 **Hello World** 到 **2D/3D 官方小游戏** 的学习路径；工程上牢记 **`assets` / `settings` / `package.json` 与 `.meta` 的版本控制习惯**，遇到问题时优先查 **3.8 手册** 与 **论坛 / 技术支持 / Store**。若你接下来会固定某一 Creator 小版本开发，建议把该版本号写进团队 README，并与构建机保持一致，以减少「本地能跑、同事打不开」的差异。
+在 **macOS** 上：**安装 Dashboard → 安装对应版本 Creator → 登录并新建项目**，即可在 **Cocos Creator** 中用 **场景 + TypeScript 组件** 完成从 **Hello World** 到 **2D/3D 官方小游戏** 的学习路径；需要可对照运行的 **2D 跳跃** 工程时，可使用上文 **[demo_2d](https://github.com/gerryyang2025/cocos-in-action/tree/master/demo_2d)** 示例。工程上牢记 **`assets` / `settings` / `package.json` 与 `.meta` 的版本控制习惯**，遇到问题时优先查 **3.8 手册** 与 **论坛 / 技术支持 / Store**。若你接下来会固定某一 Creator 小版本开发，建议把该版本号写进团队 README，并与构建机保持一致，以减少「本地能跑、同事打不开」的差异。
