@@ -48,6 +48,12 @@ tags:
 
 从 [Cocos Creator 产品页](https://www.cocos.com/creator) 获取 **Dashboard** 安装包（macOS 为 **dmg**）。安装完成后，将 **CocosDashboard.app** 拖入「应用程序」或任意目录，双击启动。
 
+各版本 **Creator / Dashboard** 的下载与说明也可从官网聚合页进入：[Cocos Creator 下载](https://www.cocos.com/creator-download)。
+
+**关于 Creator 3.x 代际（官网对 3.0 的表述）**：自 **3.0** 起，官方将这一代定位为 **下一代引擎底层架构** 与一批重大更新，并作为 **2.x 之后的主力演进线**；在延续 Cocos 在 **2D** 品类上轻量、高效优势的同时，为 **3D** 重度项目提供更完整的开发体验。以下摘自 [creator-download](https://www.cocos.com/creator-download) 相关介绍，便于理解本文以 **3.8** 文档与工程为主线时所处的 **3.x** 产品代际：
+
+> Cocos Creator 3.0 迎来了面向未来的下一代引擎底层架构及诸多重大更新，标志着 Cocos 迈向了一个全新的征程。做为 Creator 之后的主力版本，v3.0 延续了 Cocos 在 2D 品类上轻量高效的优势，并且为 3D 重度游戏提供了完整高效的开发体验。
+
 **常见 macOS 提示处理**（与官方说明一致）：
 
 - 若提示 dmg/app **已损坏**、**身份不明开发者**或**恶意软件**：在访达中 **右键 → 打开**，在对话框中再次确认打开；必要时在 **系统设置 → 隐私与安全性** 中选择 **仍要打开**。
@@ -208,6 +214,7 @@ tags:
 **文档与官网（参考索引）**
 
 - **Cocos Creator User Manual**：[https://docs.cocos.com](https://docs.cocos.com) — 用户手册总入口（各版本在路径中切换，例如 Creator 3.8 中文：`/creator/3.8/manual/zh/`）。
+- **Cocos Creator 下载页**：[https://www.cocos.com/creator-download](https://www.cocos.com/creator-download) — 各版本 Creator / Dashboard 下载与说明入口；关于 **3.0** 代际与 2D/3D 定位的官网文案见上文「下载 Cocos Dashboard」小节。
 - **Cocos Engine Official Website**：[https://www.cocos.com](https://www.cocos.com) — Cocos 引擎与产品站。
 - **手册源码仓库**：[cocos/cocos-docs](https://github.com/cocos/cocos-docs) — 《Cocos Creator User Manual》的 Markdown 内容与构建脚本（本地可 `npm install` 后按仓库 README 用 VitePress 开发/构建）；与线上 [docs.cocos.com](https://docs.cocos.com) 对应，适合对照勘误、提 issue 或贡献文档。
 - **引擎运行时源码**：[cocos/cocos-engine](https://github.com/cocos/cocos-engine) — Cocos **运行时引擎**本体；与 Creator、文档仓的分工与关系见上文「引擎仓库 cocos-engine」一节。
