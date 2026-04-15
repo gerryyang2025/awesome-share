@@ -634,9 +634,10 @@ ConfigMap 是 Kubernetes 中管理配置的核心资源，具有以下关键特�
 
 ## 参考链接 {#references}
 
+- [总览：Kubernetes in Action（ConfigMap/Secret 小节）]({% post_url 2022-07-31-k8s-in-action %}#configmap-and-secret)
+- [相关：Helm in Action（Values / Chart 模板）]({% post_url 2022-07-20-helm-in-action %}#values-values-files-valuesyaml)
 - [Kubernetes ConfigMap 官方文档](https://kubernetes.io/docs/concepts/configuration/configmap/)
 - [Configure a Pod to Use a ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/)
 - [Updating Configuration via a ConfigMap](https://kubernetes.io/docs/tutorials/configuration/updating-configuration-via-a-configmap/)
 - [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)
 - [上篇：一文了解K8S的ConfigMap](https://developer.aliyun.com/article/1211871)
-

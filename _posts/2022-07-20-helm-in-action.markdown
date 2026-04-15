@@ -475,6 +475,8 @@ These exposed variables are called values in Helm parlance.
 
 Values can be set during `helm install` and `helm upgrade` operations, either by passing them in directly, or by using a `values.yaml` file.
 
+在实际 Chart 开发里，`values.yaml` 里的配置经常会被渲染进 `ConfigMap`、`Secret`、`Deployment` 等资源。如果你想把 `ConfigMap` 的结构、使用方式、更新机制和最佳实践单独展开学习，可以进一步阅读 [Kubernetes ConfigMap 完全指南]({% post_url 2026-03-25-kubernetes-configmap %})。
+
 ---
 
 # 最佳实践
@@ -752,6 +754,7 @@ helm install myapp ./mychart --kubeconfig=/path/to/config
 
 ## 进阶阅读
 
+- [Kubernetes ConfigMap 完全指南]({% post_url 2026-03-25-kubernetes-configmap %}) - 结合 Helm values / 模板理解配置注入会更顺手
 - [Helm Chart 开发指南](https://helm.sh/zh/docs/chart_template_guide/)
 - [Helm 插件开发](https://helm.sh/docs/topics/plugins/)
 - [Kubernetes Ingress Nginx 管理](https://kubernetes.github.io/ingress-nginx/)
@@ -765,7 +768,6 @@ helm install myapp ./mychart --kubeconfig=/path/to/config
 | [Flagger](https://docs.flagger.app/) | 渐进式交付与金丝雀发布 |
 | [Argo CD](https://argoproj.github.io/argo-cd/) | GitOps 持续交付 |
 | [Flux](https://fluxcd.io/) | 云原生持续交付 |
-
 
 
 

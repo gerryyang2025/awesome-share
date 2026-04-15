@@ -2,7 +2,7 @@
 layout: post
 title:  "Kubernetes in Action"
 date:   2022-07-31 16:30:00 +0800
-last_modified_at: 2026-04-15 14:19:30 +0800
+last_modified_at: 2026-04-15 14:27:37 +0800
 categories: 云原生
 tags:
   - Kubernetes
@@ -1457,7 +1457,7 @@ PID（进程号）限制允许 kubelet 约束单个 Pod 最多可消耗多少个
 
 前面几节已经覆盖了 Service、持久化存储、Deployment / StatefulSet、调度和资源管理。为了更完整地掌握 Kubernetes 的核心功能，这里再补上 5 组日常高频能力：**配置管理、运行时信息注入、健康检查、批处理任务、自动伸缩**。
 
-## ConfigMap 与 Secret
+## ConfigMap 与 Secret {#configmap-and-secret}
 
 英文原文：
 
@@ -1521,6 +1521,8 @@ spec:
 * **敏感信息放 Secret**，不要混在 ConfigMap 里。
 * `ConfigMap` 不适合放超大文件，官方文档提到其数据大小**不能超过 1 MiB**。
 * 如果配置更新后应用需要重读，是否自动生效取决于你的注入方式和应用自身实现；很多场景下仍然需要**滚动重启 Pod**。
+
+如果你想把这一部分单独展开学习，可进一步阅读 [Kubernetes ConfigMap 完全指南]({% post_url 2026-03-25-kubernetes-configmap %})。
 
 ## Downward API：把 Pod 自身信息注入容器
 
