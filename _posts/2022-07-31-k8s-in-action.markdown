@@ -2,7 +2,7 @@
 layout: post
 title:  "Kubernetes in Action"
 date:   2022-07-31 16:30:00 +0800
-last_modified_at: 2026-04-15 15:25:59 +0800
+last_modified_at: 2026-04-15 15:30:29 +0800
 categories: 云原生
 tags:
   - Kubernetes
@@ -135,46 +135,21 @@ Node 里的 3 个组件，分别是 kubelet、kube-proxy、container-runtime
 
 很多人第一次看到这里时，都会自然产生一个问题：**为什么 `kubelet` 和 `kube-proxy` 要拆成两个独立组件，而不是做成一个统一模块？**
 
-核心原因是：它们解决的是**两类完全不同的问题**，拆开后更清晰、更稳，也更容易替换。
+如果从架构设计的角度来看，这其实不是“把功能拆碎了”，而是刻意把 Node 上两条完全不同的控制链路分开了。
 
-可以先把它们理解成：
+一条是**工作负载执行链路**，也就是“怎样把 Pod 真正跑起来”。这条链路由 `kubelet` 主导，它要和 apiserver 同步期望状态，再去协调容器运行时、镜像拉取、Volume 挂载、探针执行、Pod 生命周期和状态回报。换句话说，`kubelet` 关注的是“进程和 Pod 能不能正确运行”。
 
-* `kubelet`：节点上的“**Pod 管家**”，负责把 Pod 真正跑起来。
-* `kube-proxy`：节点上的“**Service 转发器**”，负责让流量能够找到 Pod。
+另一条是**服务转发链路**，也就是“流量怎样稳定地找到 Pod”。这条链路由 `kube-proxy` 主导，它关注的是 Service、Endpoints / EndpointSlice，以及 iptables / IPVS / nftables 这些四层转发规则。它并不负责把 Pod 创建出来，而是负责在 Pod 已经存在的前提下，让网络访问能够正确落到后端实例上。
 
-它们的职责差异非常大：
+把这两条链路拆开，首先是为了维持清晰的**职责边界**。如果把 `kubelet` 和 `kube-proxy` 合成一个模块，那么同一个进程就要同时处理容器、存储、探针、状态同步和网络转发，既耦合了生命周期管理，也耦合了网络编排，复杂度会明显上升。Kubernetes 的设计一直强调控制器按职责拆分，节点侧也延续了这个思路。
 
-* `kubelet` 更关心：容器运行时、镜像拉取、Volume 挂载、探针执行、Pod 生命周期、状态回报。
-* `kube-proxy` 更关心：Service、Endpoints / EndpointSlice、iptables / IPVS / nftables 规则、四层流量转发。
+其次，拆分能够带来更好的**故障隔离**。`kube-proxy` 出问题，通常先影响的是 Service 转发；`kubelet` 出问题，影响的是 Pod 创建、探针执行和状态回报。两者独立后，故障域会更清楚，排障路径也更直接。实践里常见的判断方式就是：Pod 起不来先看 `kubelet`，Service 不通先看 `kube-proxy`。如果把它们揉成一个大模块，日志、指标和故障影响面都会混在一起。
 
-之所以不合成一个模块，主要有下面几个原因：
+再往前看一步，这种拆分也让 Kubernetes 保持了更好的**演进能力**。`kubelet` 基本是每个节点都必须存在的执行代理，但 `kube-proxy` 并不是唯一答案。很多集群已经开始用 eBPF 方案替代它，例如 Cilium 的 kube-proxy replacement。也就是说，`kubelet` 更像是节点执行面的核心基座，而 `kube-proxy` 更像是 Service 数据面的一个可替换实现。仅从这一点看，它们也不适合被焊死成一个不可分割的统一服务。
 
-1. **职责边界完全不同**  
-   一个偏“工作负载生命周期管理”，一个偏“网络转发编排”。如果合在一起，一个进程就要同时处理容器、存储、探针、网络规则，工程复杂度会明显上升。
+另外，两者的**权限模型和实现依赖**也不一样。`kubelet` 需要接触容器运行时、文件系统、卷、镜像，强依赖 CRI、CSI、CNI 等节点执行链路；`kube-proxy` 更依赖 Linux 网络栈以及 iptables / IPVS / nftables 等机制，核心能力在于修改和维护网络规则。虽然两者都属于高权限组件，但它们的风险边界并不相同，拆开后更容易做审计、收敛影响范围，也更符合模块化设计。
 
-2. **失败隔离更好**  
-   `kube-proxy` 出问题，通常先影响的是 Service 转发；`kubelet` 出问题，影响的是 Pod 创建、探针、状态同步。拆开后故障域更清楚，也更容易定位和止损。  
-   例如 `kube-proxy` 挂了，节点上已有的 iptables / IPVS 规则可能还能继续工作一段时间；如果和 `kubelet` 绑死，一个组件故障就可能同时拖垮两类能力。
-
-3. **升级和替换节奏不同**  
-   `kubelet` 基本是每个节点都必须有的执行代理；但 `kube-proxy` 并不是绝对必须，很多集群会用 eBPF 方案替代它，例如 Cilium 的 kube-proxy replacement。  
-   这也说明它们天然不是一个不可分割的统一服务。
-
-4. **权限模型不同**  
-   `kubelet` 要接触容器运行时、文件系统、卷、镜像；`kube-proxy` 要改内核网络规则。两者都需要较高权限，但风险边界并不一样，拆开后更容易控制和审计。
-
-5. **实现依赖不同**  
-   `kubelet` 强依赖 CRI、CSI、CNI 等节点执行链路；`kube-proxy` 更依赖 Linux 网络栈以及 iptables / IPVS / nftables。模块化拆分更符合工程设计。
-
-6. **可观测性和调试更清楚**  
-   Pod 起不来，优先看 `kubelet`；Service 不通，优先看 `kube-proxy`。如果把两者揉成一个大模块，日志、指标和故障域都会混在一起，排查成本会更高。
-
-一句话总结：
-
-* `kubelet` 管“**进程和 Pod**”
-* `kube-proxy` 管“**流量和 Service**”
-
-它们天然就是两个子系统，拆开比揉成一个大模块更合理。
+所以，从设计思路上可以把它们概括成一句话：`kubelet` 管的是“**进程和 Pod**”，`kube-proxy` 管的是“**流量和 Service**”。它们天然就是两个子系统，分开实现比做成一个“大而全”的节点代理更合理。
 
 这 3 个组件中只有 kube-proxy 被容器化了，而 kubelet 因为必须要管理整个节点，容器化会限制它的能力，所以它必须在 container-runtime 之外运行。minikube ssh 登录到节点，可以用 `docker ps | grep kube-proxy` 看到 kube-proxy，而 kubelet 用 docker ps 是找不到的，需要用操作系统的 ps 命令查看。
 
