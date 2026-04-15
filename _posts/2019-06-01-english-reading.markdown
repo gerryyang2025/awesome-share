@@ -60,10 +60,15 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* evict /ɪˈvɪkt/
+  + V-T If someone is **evicted** from the place where they are living, they are forced to leave it, usually because they have broken a law or contract. 驱逐
+    - They were evicted from their apartment after their mother became addicted to drugs. 他们的母亲染上毒瘾后，他们就被逐出了他们的公寓。
+    - In the first week, the city police evicted ten families. 在第1周里，该市警方驱逐了10户家庭。
+
+
 * tactical /ˈtæktɪkl/
   + ADJ You use **tactical** to describe an action or plan which is intended to help someone achieve what they want in a particular situation. 战术上的
     - It's not yet clear whether his resignation offer is a serious one, or whether it's simply a **tactical** move. 还不清楚他的辞职请求是认真的，还是只是个策略上的举动。
-
 
 
 * revamp /ˈriːvæmp/
