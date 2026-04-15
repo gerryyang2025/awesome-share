@@ -60,6 +60,12 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* opaque /əʊˈpeɪk/
+  + ADJ If an object or substance is **opaque**, you cannot see through it. 不透明的
+    - You can always use **opaque** glass if you need to block a street view. 如果你需要挡住外面的街景，你随时可以使用不透明玻璃。
+  + ADJ If you say that something is **opaque**, you mean that it is difficult to understand. 难理解的
+    - the **opaque** language of the inspector's reports. 检查员报告中晦涩难懂的语言。
+
 * evict /ɪˈvɪkt/
   + V-T If someone is **evicted** from the place where they are living, they are forced to leave it, usually because they have broken a law or contract. 驱逐
     - They were evicted from their apartment after their mother became addicted to drugs. 他们的母亲染上毒瘾后，他们就被逐出了他们的公寓。
