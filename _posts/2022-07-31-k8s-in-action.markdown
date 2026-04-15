@@ -2,7 +2,7 @@
 layout: post
 title:  "Kubernetes in Action"
 date:   2022-07-31 16:30:00 +0800
-last_modified_at: 2026-04-15 22:40:00 +0800
+last_modified_at: 2026-04-15 13:18:49 +0800
 categories: 云原生
 tags:
   - Kubernetes
@@ -17,6 +17,15 @@ tags:
 
 关键字：容器编排，Kubernetes，云原生
 
+这篇文章按照「基础概念 -> 核心对象 -> 存储与资源 -> 安装与工具 -> 实战排障 -> 附录」的顺序重新整理，既可以顺着读，也方便按主题查阅。
+
+如果你是第一次系统学习 Kubernetes，可以按下面这个顺序阅读：
+
+1. 先看「背景介绍」和「基本架构」，建立控制面、节点、Pod 调度的整体认知。
+2. 再看「核心对象与网络访问」「存储与持久化」「工作负载、调度与资源管理」，这是日常使用最核心的主体。
+3. 接着看「应用配置、健康检查与弹性」以及「身份、权限、网络隔离与可用性」，把“能跑”补成“跑得稳、管得住”。
+4. 最后把「安装与工具」「实战排障」「附录」当作速查和经验补充。
+
 # 背景介绍
 
 ## 容器编排
@@ -30,6 +39,19 @@ tags:
 作为世界上最大的搜索引擎，Google 拥有数量庞大的服务器集群，为例提高资源利用率和部署运维效率，专门开发了一个集群管理系统 `Borg`。在 2014 年，因为之前在发表 MapReduce，BigTable，GFS 时吃过亏，被 Yahoo 开发的 Hadoop 占领了市场，所以 Google 决定借着 Docker 的“东风”，在发表论文的同时，把 C++ 开发的 Borg 系统用 Go 语言重写并开源，于是 `Kubernetes` 就这样诞生了。然后，在 2015 年，Google 又联合 Linux 基金会成立了 CNCF (Cloud Native Computing Foundation，云原生基金会)，并把 Kubernetes 捐献出来作为种子项目。有了 Google 和 Linux 这两大家族的保驾护航，再加上宽容开放的社区，Kubernetes 仅用了两年的时间就打败了同期的竞争对手 `Apache Mesos` 和 `Docker Swarm`，成为了这个领域的唯一霸主。
 
 简单来说，Kubernetes 就是一个生产级别的容器编排平台和集群管理系统，不仅能够创建，调度容器，还能够监控，管理服务器，从而可以具备运维海量计算节点，即云计算的能力。
+
+结合 [Kubernetes 官网](https://kubernetes.io/) 的定义来看，它是一个用于自动化部署、扩缩容和管理容器化应用的开源系统，会把构成应用的一组容器组织成更易于管理和服务发现的逻辑单元，并吸收 Google 大规模生产实践以及社区中的成熟经验。
+
+![k8s1](/assets/images/202603/k8s1.jpg)
+
+从官网强调的能力来看，Kubernetes 的优势主要体现在以下几个方面：
+
+* Planet Scale
+  + 继承超大规模容器调度经验，集群规模扩大时不需要线性增加运维团队规模。
+* Never Outgrow
+  + 无论是本地测试还是企业级生产环境，都可以用一致的方式去部署和管理应用。
+* Run Anywhere
+  + 作为开源平台，它既能运行在本地机房，也能运行在混合云、公有云环境里，方便按需迁移工作负载。
 
 > Borg 系统的名字来自于《星际迷航》（Star Trek）里的外星人种族，Kubernetes 在开发之初为了延续与 Borg 的关系，使用了一个代号 Seven of Nine ，即 Borg 与地球文明之间联络人的名字，隐喻从内部系统到开源项目，所以 Kubernetes 的标志有七条轮辐。Kubernetes 这个词来自希腊语，意思是“舵手”，“领航员”，可以理解成是操控着满载集装箱（容器）大船的指挥官。Kubernetes 有时候会缩写成 “k8s”，这个是因为 k 和 s 之间有 8 个字符，类似的还有 i18n (internationalization)
 
@@ -121,9 +143,11 @@ Node 里的 3 个组件，分别是 kubelet、kube-proxy、container-runtime
 
 
 
-# Service
+# 核心对象与网络访问
 
-Service 是 k8s 的一种抽象：一个 Pod 的逻辑分组，一种可以访问它们的策略，通常称为微服务。这一组 Pod 能够被 Service 访问到，通常是通过 Label Selector 实现。
+这一节先看 Service。它是 Kubernetes 里最基础也最常用的网络抽象之一，后面的 Ingress 排障和工作负载发布都会频繁用到它。
+
+Service 是 Kubernetes 的一种抽象：一个 Pod 的逻辑分组，一种可以访问它们的策略，通常称为微服务。这一组 Pod 能够被 Service 访问到，通常是通过 Label Selector 实现。
 
 ## Service 类型
 
@@ -138,11 +162,946 @@ Service 是 k8s 的一种抽象：一个 Pod 的逻辑分组，一种可以访�
 
 
 
-https://jimmysong.io/kubernetes-handbook/concepts/service.html
+关于 Service 的更详细说明，还可以参考 [Kubernetes Handbook 中的 Service 章节](https://jimmysong.io/kubernetes-handbook/concepts/service.html)。
+
+## Namespace、Label、Annotation 与 Selector
+
+英文原文：
+
+* [Namespaces | Kubernetes](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
+* [Labels and Selectors | Kubernetes](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
+* [Annotations | Kubernetes](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/)
+
+这几个概念看起来零散，但它们其实是 Kubernetes 日常使用中最底层的一套“组织方法”：
+
+* **Namespace**：做资源隔离与命名空间划分。
+* **Label**：给对象打“可筛选”的标签。
+* **Annotation**：给对象附加“不参与筛选”的元数据。
+* **Selector**：按照 Label 去选出一组对象。
+
+### Namespace 是什么
+
+Namespace 可以理解成“**同一个物理集群里的多个虚拟隔间**”。
+
+官方文档强调了几件事：
+
+* 大多数常见资源（例如 Pod、Service、Deployment）都是 **namespaced** 的。
+* 资源名称只需要在**同一个 namespace 内唯一**，不同 namespace 可以重名。
+* 并不是所有资源都属于某个 namespace，例如 `Node`、`PersistentVolume`、`StorageClass` 这类通常是**集群级资源**。
+* Namespace 更适合用于**团队 / 项目 / 环境隔离**，而不是仅仅为了区分同一应用的不同版本；后者通常更适合用 **Label**。
+
+在现代 Kubernetes 集群里，常见的初始 namespace 通常有：
+
+* `default`
+* `kube-system`
+* `kube-public`
+* `kube-node-lease`
+
+实践上，生产环境一般不建议长期把所有业务都直接放在 `default` namespace 里。
+
+### Label、Annotation 和 Selector 的关系
+
+官方文档对 Label 的定义很经典：**Label 是附着在对象上的 key/value 对，用于表达对用户有意义的标识属性，但不会直接改变 Kubernetes 核心语义。**
+
+可以这样理解：
+
+* **Label**
+  + 用于“归类”和“筛选”。
+  + 适合表达 `app=web`、`env=prod`、`tier=backend` 这类属性。
+* **Annotation**
+  + 用于记录附加信息，但**不用于筛选对象**。
+  + 适合表达构建版本、发布链接、负责人、运维说明、工具写入的额外信息等。
+* **Selector**
+  + 用于根据 Label 匹配对象。
+  + `Service`、`Deployment`、`DaemonSet`、`Job` 等对象都大量依赖 selector 来圈定自己要作用的一组 Pod。
+
+官方文档还专门提醒：**非标识性信息应该优先放在 annotations，而不是 labels。**
+
+一个简单例子：
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-0
+  namespace: prod
+  labels:
+    app: web
+    tier: frontend
+    env: prod
+  annotations:
+    owner: "team-platform"
+    release.kubernetes.io/version: "2026.04.15"
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.27
+```
+
+### Selector 最常见的两种写法
+
+官方文档说明，label selector 主要有两种：
+
+* **等值匹配**
+  + 例如：`app=web,tier=frontend`
+* **集合匹配**
+  + 例如：`env in (prod,staging)`
+  + 例如：`tier notin (batch)`
+  + 例如：`partition`
+
+要点：
+
+* 多个条件之间默认是 **AND** 关系。
+* 没有直接的 **OR** 操作符。
+* `matchLabels` 本质上可以看成是 `matchExpressions` 的简写形式。
+
+例如：
+
+```yaml
+selector:
+  matchLabels:
+    app: web
+  matchExpressions:
+  - key: env
+    operator: In
+    values: ["prod", "staging"]
+```
+
+### 日常实践建议
+
+为了让资源更容易被理解、查询和工具识别，官方还给了一组推荐标签，常见前缀是 `app.kubernetes.io/*`，例如：
+
+* `app.kubernetes.io/name`
+* `app.kubernetes.io/instance`
+* `app.kubernetes.io/component`
+* `app.kubernetes.io/part-of`
+* `app.kubernetes.io/version`
+
+经验上可以记住这几条：
+
+* **Namespace 负责“隔间”**，Label 负责“贴标签”，两者不要混用。
+* **凡是要被 Service / Controller 选中的对象，Label 设计要稳定、清晰。**
+* **不要让不同控制器的 selector 在同一 namespace 内意外重叠**，否则容易产生管理冲突。
+* **Label 放可检索属性，Annotation 放说明性元数据。**
+
+## Ingress 与集群外 HTTP/HTTPS 流量入口
+
+英文原文：[Ingress | Kubernetes](https://kubernetes.io/docs/concepts/services-networking/ingress/)
+
+如果说 `Service` 主要解决的是**集群内部访问 Pod**，那么 `Ingress` 更常用来解决**集群外部如何通过域名 / 路径访问集群里的 HTTP/HTTPS 服务**。
+
+官方文档对 Ingress 的概括是：
+
+* 它是一个 **API 对象**，用于管理对集群内 Service 的外部访问，通常是 HTTP。
+* 它可以提供**负载均衡**、**SSL/TLS 终止**、**基于域名的虚拟主机**、**基于路径的路由**等能力。
+* 只有创建 `Ingress` 资源还不够，**必须有 Ingress Controller** 来真正实现流量接入。
+
+可以把它和 `Service` 简单对比一下：
+
+* `Service`：解决“流量如何到达一组 Pod”。
+* `Ingress`：解决“外部用户访问哪个域名 / 路径时，应该进入哪个 Service”。
+* 非 HTTP/HTTPS 协议的暴露，通常还是依赖 `NodePort` 或 `LoadBalancer` 类型的 `Service`。
+
+一个最小化例子如下：
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: demo.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web
+            port:
+              number: 80
+```
+
+这个例子的意思是：
+
+* 访问 `demo.example.com/`
+* 由对应的 Ingress Controller 接管
+* 再转发到集群中的 `web:80` 这个 Service
+
+补充两点实践经验：
+
+* `Ingress` API 目前是 **stable**，但官方已经说明它进入了 **frozen** 状态，后续新能力主要会进入 **Gateway API**。
+* 对大多数日常业务来说，理解 `Service + Ingress Controller + Ingress 规则` 这三者之间的关系，就已经足够覆盖绝大多数入口流量场景。
 
 
 
-# 关键概念
+# 存储与持久化
+
+英文原文：[Persistent Volumes | Kubernetes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
+
+这一节聚焦 Kubernetes 里的持久化存储模型，也就是 PV / PVC / StorageClass 这一套机制。
+
+Kubernetes 里的卷（Volume）默认大多跟着 Pod 生命周期走，Pod 删除后，卷里的数据往往也不再可用。**PersistentVolume（PV）** 和 **PersistentVolumeClaim（PVC）** 这套机制，就是为了把“**存储资源**”和“**业务 Pod**”解耦，让 Pod 可以重建、迁移、滚动更新，而数据依然保留下来。
+
+可以先用一句话理解它们的角色：
+
+* **PV**：集群里的“存储资源对象”，由管理员预先准备，或者由系统动态创建。
+* **PVC**：用户对存储资源发起的“申请单”，声明自己要多大容量、什么访问模式、什么存储类。
+* **StorageClass**：一类存储的“规格说明书”，描述这类卷由哪个 provisioner 创建、用什么参数创建、是否允许扩容等。
+
+## PV / PVC 的生命周期
+
+官方文档把 PV / PVC 的交互过程概括成一个简单生命周期：**Provisioning -> Binding -> Using -> Reclaiming**。
+
+### 1. Provisioning（供给）
+
+PV 的供给有两种方式：
+
+* **静态供给（Static provisioning）**
+  + 集群管理员预先创建一批 PV，等用户来申请。
+* **动态供给（Dynamic provisioning）**
+  + 当现有静态 PV 都不匹配某个 PVC 时，如果该 PVC 指定了可用的 `StorageClass`，集群就可以按需自动创建一个新的 PV。
+
+现代 Kubernetes 集群里，更常见的通常是**动态供给**：
+
+* 用户主要写 PVC。
+* 管理员主要配置 StorageClass。
+* 真正的底层存储卷由 provisioner 按需创建。
+
+补充两个细节：
+
+* 如果 PVC 的 `storageClassName` 显式写成 `""`，等价于**禁用动态供给**，只允许去匹配已有 PV。
+* 如果集群里存在默认 `StorageClass`，而 PVC 没写 `storageClassName`，Admission Controller 可能会自动把默认类填上。
+
+### 2. Binding（绑定）
+
+当用户创建 PVC 后，控制面会尝试为它找到一个匹配的 PV，并把两者绑定起来。匹配时主要看：
+
+* 请求容量
+* 访问模式（access modes）
+* 存储类（`storageClassName`）
+* 卷模式（`volumeMode`）
+
+要点：
+
+* 绑定关系是**一对一**、**排他**的。
+* 用户拿到的 PV 可以比请求的更大，但不会比请求的小。
+* 如果暂时没有匹配的 PV，PVC 会一直 Pending，直到有合适卷出现，或者动态供给创建成功。
+
+### 3. Using（使用）
+
+Pod 本身不直接“找 PV”，而是通过 **PVC** 来使用存储。Pod 在 `volumes` 里引用一个 claim，集群再根据这个 claim 找到背后的 PV 并挂载进 Pod。
+
+官方文档还特别提醒了一点：
+
+* Pod 和它引用的 PVC 必须在**同一个 namespace**。
+
+最常见的 Pod 挂载写法：
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+  - name: myfrontend
+    image: nginx
+    volumeMounts:
+    - mountPath: /var/www/html
+      name: mypd
+  volumes:
+  - name: mypd
+    persistentVolumeClaim:
+      claimName: myclaim
+```
+
+### 4. Reclaiming（回收）
+
+当 PVC 被删除后，PV 后续怎么处理，取决于 **`persistentVolumeReclaimPolicy`**。
+
+当前常见策略有：
+
+* `Retain`
+  + 保留卷和数据，等待人工处理。
+  + 适合重要数据、数据库、手工迁移数据等场景。
+* `Delete`
+  + 删除 Kubernetes 中的 PV 对象，同时删除底层存储资源（前提是对应插件支持）。
+  + 动态供给出来的卷通常会继承其 `StorageClass` 的回收策略，而 `StorageClass` 默认往往是 `Delete`。
+* `Recycle`
+  + 做一次基础清理后重新放回可用池。
+  + 官方已明确标注为**废弃（deprecated）**；现在更推荐动态供给。
+
+这也是为什么生产里常常需要特别留意 `StorageClass` 的默认回收策略，否则删一个 PVC 可能就把真实磁盘一起删了。
+
+## PV、PVC、StorageClass 之间怎么配合
+
+可以这样理解三者关系：
+
+* **PVC** 代表“我想要什么”
+* **PV** 代表“集群里现在有什么”
+* **StorageClass** 代表“如果现在没有，应该按什么规格新建一个”
+
+一个典型动态供给场景里：
+
+1. 管理员先创建好 `StorageClass`
+2. 开发 / 运维创建 PVC
+3. provisioner 根据 `storageClassName` 动态创建 PV
+4. PVC 与新 PV 自动绑定
+5. Pod 通过 PVC 使用这个卷
+
+## 最小示例
+
+### 示例 1：静态 PV + PVC
+
+下面这个例子适合讲清楚机制本身。这里用的是 `hostPath`，只适合**单机 / 本地实验**，不适合多节点生产环境。
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-hostpath-demo
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+  - ReadWriteOnce
+  volumeMode: Filesystem
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: /data/pv-demo
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-hostpath-demo
+spec:
+  accessModes:
+  - ReadWriteOnce
+  volumeMode: Filesystem
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 2Gi
+```
+
+这个例子里：
+
+* PV 预先存在，容量是 `5Gi`
+* PVC 请求 `2Gi`
+* 双方都显式写了 `storageClassName: ""`，表示只走静态绑定，不触发动态供给
+* 绑定成功后，PVC 独占这个 PV
+
+### 示例 2：动态供给 PVC
+
+如果集群里已经配置好了 `StorageClass`，用户通常只需要写 PVC：
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim1
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: fast
+  resources:
+    requests:
+      storage: 30Gi
+```
+
+这里的意思是：
+
+* 我要一个 `30Gi` 的卷
+* 访问模式是 `ReadWriteOnce`
+* 存储规格使用 `fast` 这个 `StorageClass`
+
+如果当前没有静态 PV 匹配，系统就会尝试按 `fast` 对应的 provisioner 动态创建一个新 PV。
+
+## Access Modes（访问模式）
+
+访问模式用于描述一个 PV / PVC 想要或支持怎样被挂载。官方文档当前列出了 4 种主流模式：
+
+* `ReadWriteOnce`（RWO）
+  + 以读写方式挂载到**单个节点**。
+  + 注意它并不等于“全局只有一个 Pod 能写”；同一节点上的多个 Pod 仍可能一起访问同一个卷。
+* `ReadOnlyMany`（ROX）
+  + 以只读方式挂载到多个节点。
+* `ReadWriteMany`（RWX）
+  + 以读写方式挂载到多个节点。
+* `ReadWriteOncePod`（RWOP）
+  + 以读写方式挂载到**整个集群中的单个 Pod**。
+  + 官方文档显示其在 Kubernetes **1.29** 起为 **Stable**。
+  + 目前仅支持 **CSI volumes**。
+
+这里有两个很容易误解的点：
+
+* Kubernetes 主要用访问模式来做 **PV / PVC 匹配**。
+* 除了 `ReadWriteOncePod` 这种更强约束外，`RWO / ROX / RWX` 并不天然等价于底层一定会强制只读或单写，最终还要看具体存储实现。
+
+## Volume Modes（卷模式）
+
+PV / PVC 还可以声明卷是如何被消费的：
+
+* `Filesystem`
+  + 最常见。卷会以文件系统形式挂载到容器里。
+* `Block`
+  + 原始块设备。不会自动套一层文件系统，适合对块设备有特殊需求的应用。
+
+绝大多数常规应用使用 `Filesystem` 就够了；只有数据库、中间件或特殊存储软件明确需要原始块设备时，才会考虑 `Block`。
+
+## Reclaim Policy、Phase 与日常排查
+
+### Reclaim Policy
+
+上面讲了回收策略，本质上回答的是“PVC 没了之后，这个 PV 和底层盘怎么办”。
+
+经验上可以这样记：
+
+* **重要数据优先 `Retain`**
+* **临时性业务 / 自动化环境常见 `Delete`**
+* **`Recycle` 基本不用**
+
+### Phase
+
+官方文档里，PV 常见 phase 有：
+
+* `Available`
+  + 空闲，还没绑定给任何 PVC
+* `Bound`
+  + 已绑定
+* `Released`
+  + PVC 已删除，但卷还没真正回收
+* `Failed`
+  + 自动回收失败
+
+排查时最常看的就是：
+
+```bash
+kubectl get pv
+kubectl get pvc -A
+kubectl describe pv <pv-name>
+kubectl describe pvc <pvc-name>
+```
+
+## 扩容 PVC
+
+官方文档里，**PVC 扩容**现在已经是很常用的能力，但前提是对应 `StorageClass` 开启了：
+
+* `allowVolumeExpansion: true`
+
+一个最小 `StorageClass` 片段示意：
+
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: example-vol-default
+provisioner: vendor-name.example/magicstorage
+allowVolumeExpansion: true
+```
+
+扩容时的关键原则：
+
+* **改 PVC，不改 PV**
+* 如果底层驱动支持，Kubernetes 会去扩现有卷，而不是新建一个卷来替代它
+* 对文件系统卷，文件系统本身也要支持扩容，例如 XFS、Ext3、Ext4
+
+一个常见误区是：直接手工把 PV 的 size 改大。官方文档明确提醒，这样可能会阻止 PVC 自动扩容流程。
+
+## 预绑定（Pre-binding）与卷复用
+
+这是偏进阶但很实用的一点。
+
+如果你希望某个 PVC **绑定到指定 PV**，可以在 PVC 中写：
+
+* `spec.volumeName`
+
+反过来，如果你想先把某个 PV **预留给指定 PVC**，则可以在 PV 上设置：
+
+* `spec.claimRef`
+
+这种做法在下面两类场景里特别常见：
+
+* 复用 `Retain` 策略保留下来的旧卷
+* 做数据迁移、恢复、手工接管存量存储
+
+## 和 StatefulSet 的关系
+
+你前面看到 `StatefulSet` 常配 `volumeClaimTemplates`，其本质就是：
+
+* StatefulSet 不直接给每个副本写死 PV
+* 而是为每个副本自动创建**独立 PVC**
+* 每个 PVC 再绑定到自己的 PV
+
+这样 `web-0`、`web-1`、`web-2` 这些 Pod 才能拥有各自稳定、独立、可重建后的持久化存储。
+
+## Persistent Volumes 小结
+
+如果只记 5 句话，可以记这几个：
+
+1. **PVC 是申请，PV 是资源，StorageClass 是动态供给模板。**
+2. **Pod 通过 PVC 用卷，而不是直接用 PV。**
+3. **动态供给是现代 Kubernetes 最常见的用法。**
+4. **重要数据一定先看清楚 reclaim policy，尤其别误删 `Delete` 类型的卷。**
+5. **StatefulSet 的持久化能力，底层就是 PVC / PV 这套机制。**
+
+
+# 工作负载、调度与资源管理
+
+理解完架构、网络访问和持久化存储之后，接下来再看 Kubernetes 里最常见的工作负载控制器，以及与之紧密相关的调度、驱逐和资源管理。
+
+## Deployment、StatefulSet 与更新策略
+
+英文原文：
+
+* [Deployments | Kubernetes](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+* [StatefulSets | Kubernetes](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/)
+
+这两个对象都属于 Kubernetes 的 **Workload Controller**：都会根据模板去维护一组 Pod，但它们解决的问题不一样。
+
+### Deployment 是什么，适合什么场景
+
+官方文档对 Deployment 的定义是：它为 Pod 和 ReplicaSet 提供**声明式更新**（declarative updates）。可以把它理解成 Kubernetes 中最常见的“无状态应用发布器”。
+
+Deployment 典型适用于：
+
+* Web 服务、API 服务、网关、Worker 这类**副本之间可互换**的无状态应用。
+* 需要**扩缩容**、**滚动升级**、**回滚**、**暂停/恢复发布**的场景。
+* 应用升级时，不要求每个 Pod 具有固定名字、固定网络身份、固定持久卷。
+
+常见关键字段：
+
+* `spec.replicas`：期望副本数。
+* `spec.selector`：选择哪些 Pod 归这个 Deployment 管。
+* `spec.template`：Pod 模板；真正触发“发版”的核心通常就是改这里，比如镜像版本、环境变量、标签、资源限制等。
+* `spec.strategy`：Deployment 的更新策略。
+* `spec.minReadySeconds`：Pod Ready 多久后才算 Available。
+* `spec.progressDeadlineSeconds`：滚动发布多久没进展就判定发布失败。
+* `spec.revisionHistoryLimit`：保留多少个旧 ReplicaSet 以供回滚。
+
+### Deployment 的更新策略：`spec.strategy`
+
+Deployment 使用 `spec.strategy` 控制 Pod 如何从旧版本替换成新版本，其中 `spec.strategy.type` 只有两个内建值：
+
+* `RollingUpdate`
+  + 默认值。Kubernetes 会一边缩旧 ReplicaSet，一边扩新 ReplicaSet，逐步完成升级。
+* `Recreate`
+  + 先删除所有旧 Pod，再创建新 Pod。实现简单，但通常会带来明显中断。
+
+#### 1. `Recreate`
+
+当 `spec.strategy.type == Recreate` 时，现有 Pod 会先被全部终止，然后才创建新版本 Pod。
+
+适合场景：
+
+* 新旧版本**绝对不能同时存在**。
+* 应用升级过程中有**强互斥**约束，例如协议不兼容、共享文件/锁冲突、单实例模式等。
+
+要注意：
+
+* 它更容易带来**短暂不可用**。
+* 对普通无状态 Web 服务，通常更常用的是 `RollingUpdate`。
+
+#### 2. `RollingUpdate`
+
+当 `spec.strategy.type == RollingUpdate` 时，Deployment 会逐步替换 Pod。这是生产中最常见的 Deployment 更新方式。
+
+滚动更新过程主要由两个参数控制：
+
+* `spec.strategy.rollingUpdate.maxUnavailable`
+  + 更新过程中，**最多允许多少个 Pod 不可用**。
+  + 可以写绝对值，也可以写百分比，例如 `1`、`25%`。
+  + 百分比换算为绝对值时，Deployment 按**向下取整**计算。
+  + 默认值是 `25%`。
+  + 如果 `maxSurge` 为 `0`，这个值不能也为 `0`。
+* `spec.strategy.rollingUpdate.maxSurge`
+  + 更新过程中，**最多允许比期望副本数多出来多少个 Pod**。
+  + 也可以写绝对值或百分比。
+  + 百分比换算为绝对值时，Deployment 按**向上取整**计算。
+  + 默认值也是 `25%`。
+  + 如果 `maxUnavailable` 为 `0`，这个值不能也为 `0`。
+
+这两个参数可以这样理解：
+
+* `maxUnavailable` 控制“升级时你最多愿意损失多少可用实例”。
+* `maxSurge` 控制“升级时你最多愿意临时多花多少资源”。
+
+举个最常见的例子：
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: web
+        image: nginx:1.27
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+```
+
+上面的意思是：
+
+* 期望副本数是 `4`。
+* 升级过程中，最多允许 `1` 个旧 Pod 先下线。
+* 同时最多允许临时多跑 `1` 个新 Pod。
+* 所以升级时总体 Pod 数通常在 `3` 到 `5` 之间波动。
+
+#### 3. `minReadySeconds`、`progressDeadlineSeconds`、`revisionHistoryLimit`
+
+除了 `maxUnavailable` 和 `maxSurge`，Deployment 发布时还经常会配下面几个字段：
+
+* `spec.minReadySeconds`
+  + 新 Pod 在 Ready 之后，还要持续稳定这么久，才会被算作 Available。
+  + 对启动后还需要预热、建缓存、预建连接池的应用比较有用。
+* `spec.progressDeadlineSeconds`
+  + 如果发布超过这个时间还没有推进成功，Deployment 会把状态标成 `ProgressDeadlineExceeded`。
+  + 官方要求它大于 `minReadySeconds`。
+* `spec.revisionHistoryLimit`
+  + 决定保留多少个历史 ReplicaSet，方便 `kubectl rollout undo` 回滚。
+  + 默认一般是 `10`。
+
+示例：
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 3
+  minReadySeconds: 10
+  progressDeadlineSeconds: 600
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: api
+        image: myrepo/api:v2
+```
+
+#### 4. 关于 Canary / Blue-Green 的一句话
+
+原生 Deployment 内建的 `strategy.type` 只有 `Recreate` 和 `RollingUpdate`。如果你想做更典型的 **Canary** 或 **Blue-Green**，通常不是改一个字段就完成，而是通过：
+
+* 多个 Deployment 并存，
+* 再配合 Service / Ingress / Gateway 做流量切换，
+* 或者使用 Argo Rollouts、Flagger 这类渐进发布工具。
+
+Kubernetes 官方文档也提到，若想做 canary，可以为不同版本分别创建多个 Deployment。
+
+### StatefulSet 是什么，适合什么场景
+
+官方文档指出，StatefulSet 用来管理**有状态应用**。和 Deployment 一样，它也是维护一组 Pod；但与 Deployment 不同，StatefulSet 会给每个 Pod 保留**粘性身份（sticky identity）**，Pod 不是彼此可互换的。
+
+StatefulSet 中每个 Pod 通常具有：
+
+* **稳定的 ordinal 序号**，例如 `web-0`、`web-1`、`web-2`。
+* **稳定的网络身份**，通常依赖 Headless Service。
+* **稳定的存储**，通常通过 `volumeClaimTemplates` 关联到各自的 PVC / PV。
+
+官方文档明确提到，StatefulSet 适合下面这些需求：
+
+* Stable, unique network identifiers
+* Stable, persistent storage
+* Ordered, graceful deployment and scaling
+* Ordered, automated rolling updates
+
+如果你的应用不需要稳定身份、稳定存储、顺序部署/删除/扩缩容，那么 Deployment 往往更合适。
+
+StatefulSet 还有两个很重要的特点：
+
+* 它通常需要你**自己创建一个 Headless Service** 来负责 Pod 的网络身份。
+* 删除或缩容 StatefulSet 时，**关联卷默认不会自动删除**，因为数据安全通常比“自动清理”更重要。
+
+在实践里，`spec.serviceName: mysql` 指向的通常就是一个 Headless Service，例如：
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  clusterIP: None
+  selector:
+    app: mysql
+  ports:
+  - port: 3306
+    targetPort: 3306
+```
+
+一个最小化例子：
+
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  serviceName: mysql
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.4
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
+```
+
+### StatefulSet 的部署和扩缩容顺序
+
+StatefulSet 默认强调“顺序性”：
+
+* 创建 Pod 时，按 `0 -> 1 -> 2 -> ...` 顺序启动。
+* 删除 Pod 时，按 `N-1 -> ... -> 1 -> 0` 逆序删除。
+* 前一个 Pod 没 Ready，后一个 Pod 通常不会继续推进。
+
+这非常适合 MySQL、Kafka、ZooKeeper、Etcd、Redis Sentinel/Cluster 这类**成员身份固定**、**对启动顺序和网络身份敏感**的系统。
+
+### StatefulSet 的更新策略：`spec.updateStrategy`
+
+StatefulSet 与 Deployment 不同，它用的是 `spec.updateStrategy` 字段，而不是 `spec.strategy`。
+
+`spec.updateStrategy.type` 有两个值：
+
+* `RollingUpdate`
+  + 默认值。自动进行滚动更新。
+* `OnDelete`
+  + 不自动更新。你改了 `spec.template` 以后，必须手动删除旧 Pod，StatefulSet 控制器才会按新模板把 Pod 重建出来。
+
+#### 1. `OnDelete`
+
+`OnDelete` 适合这些场景：
+
+* 你希望把更新节奏完全交给人工控制。
+* 每个副本要在特定窗口单独升级，例如先切主、再升级从库。
+* 应用升级前后要配合额外运维动作，而不希望控制器自动连续推进。
+
+示例：
+
+```yaml
+spec:
+  updateStrategy:
+    type: OnDelete
+```
+
+这时即使你改了镜像版本，现有 Pod 也不会自动更新；需要你手工执行类似：
+
+```bash
+kubectl delete pod mysql-2
+kubectl delete pod mysql-1
+kubectl delete pod mysql-0
+```
+
+控制器才会按新模板重建这些 Pod。
+
+#### 2. `RollingUpdate`
+
+`RollingUpdate` 是 StatefulSet 默认更新策略。与 Deployment 最大的不同在于，它更强调**顺序**和**身份稳定**：
+
+* 控制器会按 **ordinal 从大到小** 更新 Pod，也就是通常先更新 `web-2`，再 `web-1`，最后 `web-0`。
+* 每更新完一个 Pod，都会等待它 Running、Ready；如果配置了 `minReadySeconds`，还会继续等到满足该时间，再继续更新前一个 Pod。
+
+示例：
+
+```yaml
+spec:
+  updateStrategy:
+    type: RollingUpdate
+```
+
+#### 3. `partition`：分段滚动更新
+
+StatefulSet 的一个很有用的字段是：
+
+* `spec.updateStrategy.rollingUpdate.partition`
+
+它的意思是：**只更新 ordinal 大于等于 partition 的那些 Pod**。
+
+例如：
+
+```yaml
+spec:
+  replicas: 3
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 2
+```
+
+对于 `web-0`、`web-1`、`web-2` 这 3 个 Pod：
+
+* `web-2` 会更新；
+* `web-0`、`web-1` 不会更新；
+* 即使你把 `web-0`、`web-1` 删除掉，它们也会按**旧版本模板**被重建。
+
+这个特性很适合：
+
+* 先升级高序号副本做灰度验证。
+* 分批次发布。
+* 用于有状态服务的小范围 canary。
+
+#### 4. `maxUnavailable`：限制更新期间的不可用副本数
+
+从官方文档当前版本来看，StatefulSet 也支持：
+
+* `spec.updateStrategy.rollingUpdate.maxUnavailable`
+
+它用于控制 StatefulSet 更新期间，最多允许多少个 Pod 不可用：
+
+* 可以写绝对值或百分比。
+* 百分比换算时按**向上取整**计算。
+* 这个值不能为 `0`。
+* 默认值是 `1`。
+* 在官方文档当前版本中，它处于 **Beta**，且默认开启。
+
+示例：
+
+```yaml
+spec:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+```
+
+对强调严格顺序和强一致性的系统，通常还是建议保守一点，不要把这个值设得太大。
+
+### `podManagementPolicy` 与更新行为的关系
+
+StatefulSet 还有一个容易和更新策略混在一起看的字段：
+
+* `spec.podManagementPolicy`
+
+它不是“更新策略”本身，但会影响 StatefulSet 在创建、删除、扩缩容时的顺序性：
+
+* `OrderedReady`
+  + 默认值。严格按顺序推进。
+* `Parallel`
+  + 放宽顺序要求，允许并行创建/删除 Pod。
+
+官方文档提到：当 `podManagementPolicy=Parallel` 且 `rollingUpdate.maxUnavailable > 1` 时，StatefulSet 在滚动更新中可以一次终止并创建多个 Pod，这会更快，但不一定适合要求严格顺序的应用。
+
+### Deployment 和 StatefulSet 应该怎么选
+
+可以先用一句话区分：
+
+* **Deployment**：副本可互换，面向无状态服务。
+* **StatefulSet**：副本不可互换，面向有状态服务。
+
+经验上可以这样选：
+
+* 业务 Pod 只是“多起几个一样的实例”：
+  + 优先 Deployment。
+* Pod 需要固定名字、固定 DNS、固定卷：
+  + 优先 StatefulSet。
+* 升级时希望尽量无损、流量平滑切换：
+  + 通常选 Deployment + `RollingUpdate`。
+* 升级时必须按成员顺序一个一个来：
+  + 通常选 StatefulSet + `RollingUpdate`。
+* 升级节奏必须人工确认：
+  + 通常选 StatefulSet + `OnDelete`，或者 Deployment 结合暂停/恢复发布。
+
+## DaemonSet：为每个节点运行一份 Pod
+
+英文原文：[DaemonSet | Kubernetes](https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/)
+
+`DaemonSet` 也是 Kubernetes 的核心工作负载控制器之一，只是它解决的问题和 `Deployment`、`StatefulSet` 完全不同。
+
+官方文档对它的定义很明确：**DaemonSet 会确保全部（或一部分）节点上都运行一个 Pod 副本。**
+
+典型场景包括：
+
+* 节点日志采集，例如 Fluent Bit、Vector
+* 节点监控，例如 node-exporter
+* 集群网络组件
+* 节点存储代理
+
+可以把它和前面的控制器简单对比：
+
+* **Deployment**：按“副本数”维持一组 Pod。
+* **StatefulSet**：按“有状态副本集合”维持一组 Pod。
+* **DaemonSet**：按“节点集合”维持 Pod，目标通常是**每个符合条件的节点一个**。
+
+一个最小化例子：
+
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-exporter
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter
+  template:
+    metadata:
+      labels:
+        app: node-exporter
+    spec:
+      containers:
+      - name: node-exporter
+        image: prom/node-exporter:v1.8.1
+        ports:
+        - containerPort: 9100
+```
+
+DaemonSet 的几个关键行为：
+
+* 新增符合条件的节点时，DaemonSet 会自动在新节点上创建 Pod。
+* 节点被移除时，对应 Pod 也会被回收。
+* 可以结合 `nodeSelector`、`nodeAffinity`、`tolerations` 控制“哪些节点需要运行这份 Pod”。
+
+这在实际集群里非常常见，例如：
+
+* 只让 GPU 插件跑在 GPU 节点上。
+* 让某个节点代理同时容忍 control-plane 节点的 taint。
+
+更新方面，DaemonSet 也支持 `spec.updateStrategy`，最常见的是：
+
+* `RollingUpdate`
+* `OnDelete`
+
+经验上可以这样记：
+
+* **凡是“每台节点都要装一个代理”的东西，优先想到 DaemonSet。**
+* **DaemonSet 关注的是节点覆盖，而不是业务副本扩缩容。**
 
 ## [调度、抢占和驱逐](https://kubernetes.io/zh-cn/docs/concepts/scheduling-eviction/)
 
@@ -183,6 +1142,83 @@ CPU、内存各是一种**资源类型**；大页是 Linux 特性，例如 `huge
 
 自 Kubernetes **1.34** 起为 **Beta**（特性门控 `PodLevelResources`，默认开启）：除容器级外，可在 **`spec.resources`** 上为 Pod 声明整体的 CPU/内存/hugepages 的 request 与 limit，便于多容器场景下做**整体预算**，并让容器在 Pod 边界内共享空闲资源。字段形如 `spec.resources.requests.cpu` 等（与容器级字段对照官方示例）。
 
+### 容器级与 Pod 级 YAML 示例
+
+#### 容器级资源示例
+
+官方文档里的典型例子是：一个 Pod 中有两个容器，每个容器都单独声明自己的 request 和 limit；从 Pod 视角看，总 request / limit 就是这两个容器的求和。
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend
+spec:
+  containers:
+  - name: app
+    image: images.my-company.example/app:v4
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+  - name: log-aggregator
+    image: images.my-company.example/log-aggregator:v6
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+```
+
+这个例子里：
+
+* 整个 Pod 的 CPU request 可理解为 `250m + 250m = 500m`
+* 整个 Pod 的 CPU limit 可理解为 `500m + 500m = 1`
+* 整个 Pod 的 memory request 可理解为 `64Mi + 64Mi = 128Mi`
+* 整个 Pod 的 memory limit 可理解为 `128Mi + 128Mi = 256Mi`
+
+#### Pod 级资源示例
+
+如果启用了 `PodLevelResources`，可以先给 Pod 设一个整体预算，再按需给部分容器单独声明资源。没有单独声明的容器，则在 Pod 总体资源边界内共享剩余资源。
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-resources-demo
+  namespace: pod-resources-example
+spec:
+  resources:
+    limits:
+      cpu: "1"
+      memory: "200Mi"
+    requests:
+      cpu: "1"
+      memory: "100Mi"
+  containers:
+  - name: pod-resources-demo-ctr-1
+    image: nginx
+    resources:
+      limits:
+        cpu: "0.5"
+        memory: "100Mi"
+      requests:
+        cpu: "0.5"
+        memory: "50Mi"
+  - name: pod-resources-demo-ctr-2
+    image: fedora
+    command:
+    - sleep
+    - inf
+```
+
+这个模型适合多容器 Pod，尤其是在你很难精确拆分每个容器资源、但又想先给整个 Pod 一个总预算时。
+
 ### 单位与常见笔误
 
 * **CPU**：`1` 表示 1 核（物理或虚拟）；可用小数或毫核，如 `500m` = `0.5` 核。精度不能细于 **`1m`**（`0.001` 核）。
@@ -195,12 +1231,125 @@ CPU、内存各是一种**资源类型**；大页是 Linux 特性，例如 `huge
 
 **原地调整资源**：自 **1.35** 起 **In-place resize** 为 **Stable**，可在不重建 Pod 的情况下调整容器的 CPU/内存 request/limit（通过 Pod 的 `/resize` 子资源；容器上可配 `resizePolicy`）。更通用的做法是改 Deployment/StatefulSet 的模板让控制器**滚动替换** Pod。
 
-### memory-backed `emptyDir`、本地临时存储与扩展资源
+### 资源监控
+
+官方文档提到，kubelet 会把 Pod 的资源使用情况上报为 Pod 状态的一部分；如果集群里安装了可选监控组件，那么你还可以通过 **Metrics API** 或监控系统来读取资源使用量。
+
+常见实践是：
+
+* 用 `kubectl top pod` / `kubectl top node` 做快速检查。
+* 用 metrics-server、Prometheus、Grafana 做持续监控和告警。
+* 排查内存问题时，区分 `usage`、`working set`、`rss` 等指标口径。
+
+关于 `container_memory_working_set_bytes` 与 `kubectl top` 的关系，本文后面的“补充说明”小节里有更细的说明。
+
+### memory-backed `emptyDir`
 
 * 未为 **`emptyDir` 设置 `sizeLimit`** 时，其可能消耗到 Pod 的 **memory limit**；若未设 memory limit，风险是占满节点内存，且调度只看 **request**，易造成节点 OOM。生产上建议为相关 Pod 设合理 limit、或用 **ResourceQuota**、**LimitRange**、**ValidationAdmissionPolicy** 等约束。
 * **kubelet 将 memory-backed 的 tmpfs `emptyDir` 计入容器内存**，而非仅算本地临时存储额度。
-* **扩展资源**（Extended resources）：非 `kubernetes.io` 域下的自定义资源名，需运维在 Node 的 `status.capacity` 等中**宣告**，调度按可分配量记账；扩展资源**不可超卖**，若同时有 request 和 limit 则二者须一致；申请写在 `resources.requests` / `limits` 中，**量为整数**。
-* **PID 限制**：由 kubelet 配置限制 Pod 可占用进程数，见官方 [PID Limiting](https://kubernetes.io/docs/concepts/policy/pid-limiting/) 文档。
+* 使用它时还要额外注意：卷里的文件几乎完全由应用自己管理，Kubernetes 和操作系统不会像处理进程工作内存那样自动帮你回收这些文件占用的空间；因此它虽然快，但容量小、成本高，使用过量会影响整个 Pod，甚至整个节点。
+
+### 本地临时存储（Local ephemeral storage）
+
+官方文档已把这部分单独拆出来讲，但它仍然和 Pod 资源管理紧密相关。kubelet 在启用本地临时存储容量隔离时，会统计 Pod 使用的临时存储，包括：
+
+* 容器可写层（rootfs）与相关镜像层写入
+* 本地磁盘上的 `emptyDir`
+* Pod 自身日志
+* 诸如 `/etc/hosts` 这类由 Kubernetes 注入到 Pod 的系统文件
+
+在资源模型里，可以通过下面两个字段管理容器的本地临时存储：
+
+* `spec.containers[].resources.requests.ephemeral-storage`
+* `spec.containers[].resources.limits.ephemeral-storage`
+
+简单理解：
+
+* `ephemeral-storage request` 参与调度，决定节点是否“装得下”这个 Pod。
+* `ephemeral-storage limit` 参与运行期约束；当 Pod 或容器的本地临时存储使用量超出允许范围时，kubelet 可能触发驱逐。
+
+一个最小示例：
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend
+spec:
+  containers:
+  - name: app
+    image: images.my-company.example/app:v4
+    resources:
+      requests:
+        ephemeral-storage: "2Gi"
+      limits:
+        ephemeral-storage: "4Gi"
+    volumeMounts:
+    - name: ephemeral
+      mountPath: /tmp
+  volumes:
+  - name: ephemeral
+    emptyDir:
+      sizeLimit: 500Mi
+```
+
+要注意两点：
+
+* `tmpfs` 类型的 `emptyDir` 仍然按**内存**计，不按本地临时存储计。
+* 如果 kubelet 没正确测量本地临时存储，超出 limit 时也可能不会按预期触发驱逐；但节点整体磁盘空间紧张时，仍然可能因为本地存储压力触发 Pod 驱逐。
+
+### 扩展资源（Extended resources）
+
+扩展资源是 **`kubernetes.io` 域名空间之外**的完整资源名，用来表达 Kubernetes 内建 CPU / memory / hugepages 之外的资源，例如 FPGA、特殊网卡、许可证额度、外部设备等。
+
+官方文档把它拆成两步：先**宣告**，再**消费**。
+
+#### 1. 管理 / 宣告扩展资源
+
+对节点级扩展资源，运维可以在 Node 的 `status.capacity` 上宣告新资源；kubelet 会异步更新到 `status.allocatable`，调度器实际以 `allocatable` 为准。
+
+例如，给某个节点宣告 5 个 `example.com/foo`：
+
+```bash
+curl --header "Content-Type: application/json-patch+json" \
+  --request PATCH \
+  --data '[{"op": "add", "path": "/status/capacity/example.com~1foo", "value": "5"}]' \
+  http://k8s-master:8080/api/v1/nodes/k8s-node-1/status
+```
+
+如果是设备类资源，更常见的方式是通过 **Device Plugin** 暴露；如果是集群级扩展资源，也可以借助 scheduler extender / DRA 等机制处理。
+
+#### 2. 消费扩展资源
+
+用户侧的写法和 CPU / memory 很像，但有几个重要限制：
+
+* 扩展资源**不能超卖**。
+* 资源名通常写在 `spec.containers[].resources.limits` 中；若同时写 request 和 limit，则两者必须一致。
+* API server 只接受**整数意义**的数量，不能写成 `0.5` 这类小数。
+* Pod 只有在 CPU、memory 以及扩展资源 request **全部满足**时，才会被调度成功；否则会一直处于 `Pending`。
+
+例如：
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: my-container
+    image: myimage
+    resources:
+      requests:
+        cpu: 2
+        example.com/foo: 1
+      limits:
+        example.com/foo: 1
+```
+
+### PID 限制
+
+PID（进程号）限制允许 kubelet 约束单个 Pod 最多可消耗多少个进程。它不是 CPU / memory 那样的 Pod spec 资源字段，而是 kubelet 层面的保护措施，主要用来防止某个 Pod 因 fork 风暴或异常进程膨胀把整台节点的 PID 耗尽。更多细节见官方 [PID Limiting](https://kubernetes.io/docs/concepts/policy/pid-limiting/) 文档。
 
 ### 排查提示
 
@@ -304,81 +1453,514 @@ CPU、内存各是一种**资源类型**；大页是 Linux 特性，例如 `huge
 
 
 
-# kubectl 常用命令
+# 应用配置、健康检查与弹性
 
-> kubectl [command] [TYPE] [NAME] [flags]
+前面几节已经覆盖了 Service、持久化存储、Deployment / StatefulSet、调度和资源管理。为了更完整地掌握 Kubernetes 的核心功能，这里再补上 4 组日常高频能力：**配置管理、健康检查、批处理任务、自动伸缩**。
 
-{% raw %}
-```bash
-kubectl help
+## ConfigMap 与 Secret
 
-kubectl version
-kubectl cluster-info
+英文原文：
 
-kubectl get nodes
-kubectl get namespaces
+* [ConfigMaps | Kubernetes](https://kubernetes.io/docs/concepts/configuration/configmap/)
+* [Secrets | Kubernetes](https://kubernetes.io/docs/concepts/configuration/secret/)
 
-# 获取 namespace 下 nodes 信息
-kubectl get nodes --namespace dev-test-gerry -o wide
+这两个对象都用于把“**配置数据**”从镜像和 Pod 模板里拆出来，但用途不同：
 
-# 获取 namespace 下 pods 信息
-kubectl get pods --namespace dev-test-gerry -o wide
+* **ConfigMap**：保存**非敏感配置**，例如环境变量、开关、业务参数、配置文件内容等。
+* **Secret**：保存**敏感数据**，例如密码、Token、证书、私钥、镜像拉取凭据等。
 
-# 获取 namespace 下 某个 pod 的 container 信息
-kubectl get pods deploy-redis1-7ffdbff548-2k4sf --namespace dev-test-gerry -o jsonpath='{.spec.containers[*].name}'
+官方文档特别强调了两点：
 
-kubectl describe nodes --namespace dev-test-gerry
-kubectl describe pods --namespace dev-test-gerry
-kubectl describe pods deploy-redis1-7ffdbff548-2k4sf --namespace dev-test-gerry
+* `ConfigMap` 适合存放**非机密信息**，可通过环境变量、命令行参数或 Volume 的形式给 Pod 使用。
+* `Secret` 专门用于保存敏感数据，但它**默认并不是天然加密安全**的，生产环境还应结合 **RBAC**、**etcd encryption at rest**、最小权限控制等措施一起使用。
 
-kubectl logs deploy-redis1-7ffdbff548-2k4sf --namespace dev-test-gerry
+最常见的使用方式有两类：
 
-kubectl get services --namespace dev-test-gerry
+* **环境变量注入**
+* **挂载成文件**
 
-kubectl get deployments --namespace dev-test-gerry
+一个最小化示例如下：
 
-# 查询 namespace 下 pods 的容器镜像
-kubectl get pods --namespace dev-test-gerry -o jsonpath="{.items[*].spec.containers[*].image}"
-kubectl get pods --namespace dev-test-gerry -o go-template --template="{{range .items}}{{range .spec.containers}}{{.image}} {{end}}{{end}}"
-
-# 查询所有 namespace 下 pods 的容器镜像
-kubectl get pods --all-namespaces -o jsonpath='{range .items[*]}{"\n"}{.metadata.name}{":\t"}{range .spec.containers[*]}{.image}{", "}{end}{end}' |\ sort
-
-# 登录 Pod
-kubectl exec -it <pod-name> -n <namespace> -- /bin/bash
-
-# 查看 Pod 中的容器列表
-kubectl get pod <pod-name> -n <namespace> -o jsonpath='{.spec.containers[*].name}'
-
-# 登录到指定容器
-kubectl exec -it <pod-name> -n <namespace> -c <container-name> -- /bin/bash
-kubectl exec -it deploy-redis1-7ffdbff548-2k4sf -c container-redis-default --namespace dev-test-gerry bash
-
-
-# 删除异常 Pod
-kubectl delete pods $pod-name -n dev --grace-period=0 --force
-
-# 根据 Pod IP 查询 Pod
-## 全集群搜索
-kubectl get pods --all-namespaces -o wide | grep "$PodIP"
-## JSON 格式查询
-kubectl get pods --all-namespaces -o json | jq -r '.items[] | select(.status.podIP=="$PodIP") | .metadata.namespace + "/" + .metadata.name'
-## 字段选择器
-kubectl get pods --all-namespaces --field-selector status.podIP="$PodIP"
-
-
-
-# 清理 Evicted 状态的 Pod
-kubectl get pods --namespace autoworlds | grep Evicted | awk '{print $1}' | xargs kubectl delete pod --namespace autoworlds
-kubectl get pods --namespace autoworlds | grep Evicted | awk '{print $1}' | xargs -I {} kubectl delete pod --namespace autoworlds {} --force --grace-period=0 # 强制删除
-
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  APP_ENV: "prod"
+  LOG_LEVEL: "info"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+type: Opaque
+stringData:
+  DB_PASSWORD: "change-me"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: config-demo
+spec:
+  containers:
+  - name: app
+    image: nginx:1.27
+    envFrom:
+    - configMapRef:
+        name: app-config
+    - secretRef:
+        name: app-secret
 ```
-{% endraw %}
+
+如果想把配置文件形式注入到容器里，也可以通过 `volumeMounts + configMap/secret volume` 的方式挂载。
+
+实践上可以记住下面几点：
+
+* **业务配置优先放 ConfigMap**，不要把配置写死在镜像里。
+* **敏感信息放 Secret**，不要混在 ConfigMap 里。
+* `ConfigMap` 不适合放超大文件，官方文档提到其数据大小**不能超过 1 MiB**。
+* 如果配置更新后应用需要重读，是否自动生效取决于你的注入方式和应用自身实现；很多场景下仍然需要**滚动重启 Pod**。
+
+## Pod 健康检查：liveness、readiness、startup probes
+
+英文原文：[Liveness, Readiness, and Startup Probes | Kubernetes](https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/)
+
+Probe 是 Kubernetes 实现“**自愈**”和“**流量保护**”的关键机制之一。
+
+三种探针的职责一定要分清：
+
+* **liveness probe**：判断容器是不是“卡死了 / 活着但不再工作了”。连续失败时，kubelet 会**重启容器**。
+* **readiness probe**：判断容器是不是已经**可以接收流量**。失败时，Pod 会从匹配的 Service 后端里**临时摘掉**。
+* **startup probe**：判断应用是不是已经**真正启动完成**。它常用于启动很慢的应用，在 startup probe 成功前，liveness / readiness 不会生效。
+
+最常见的探测方式有：
+
+* `httpGet`
+* `tcpSocket`
+* `exec`
+
+一个常见示例如下：
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: probe-demo
+spec:
+  containers:
+  - name: app
+    image: nginx:1.27
+    ports:
+    - containerPort: 80
+    startupProbe:
+      httpGet:
+        path: /
+        port: 80
+      failureThreshold: 30
+      periodSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 80
+      initialDelaySeconds: 3
+      periodSeconds: 5
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 80
+      initialDelaySeconds: 10
+      periodSeconds: 10
+```
+
+这几个参数最常用：
+
+* `initialDelaySeconds`：容器启动后，延迟多久开始探测。
+* `periodSeconds`：探测间隔。
+* `timeoutSeconds`：单次探测超时时间。
+* `failureThreshold`：连续失败多少次判定失败。
+* `successThreshold`：连续成功多少次判定恢复（常见于 readiness）。
+
+实践建议：
+
+* **readiness probe 更偏向“能不能接流量”**，不要简单等同于进程是否存活。
+* **liveness probe 更偏向“是否需要重启”**，不要把临时性依赖抖动直接当成 liveness 失败条件。
+* 启动慢的 Java、模型加载类、缓存预热类应用，优先考虑**加 startup probe**，避免还没起来就被 liveness 杀掉。
+
+## Job 与 CronJob
+
+英文原文：
+
+* [Jobs | Kubernetes](https://kubernetes.io/docs/concepts/workloads/controllers/job/)
+* [CronJob | Kubernetes](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/)
+
+前面讲的 `Deployment`、`StatefulSet` 更偏向“**常驻运行**”的服务型工作负载；而 `Job`、`CronJob` 则用于“**运行完就结束**”的任务型工作负载。
+
+可以这样理解：
+
+* **Job**：一次性任务，运行完成后结束，例如数据修复、离线处理、批量导入。
+* **CronJob**：按计划周期性触发 Job，例如每天备份、定时对账、每小时报表汇总。
+
+官方文档对 Job 的定义很直接：它代表**运行到完成为止的一次性任务**。Job 会创建一个或多个 Pod，并在失败时按策略重试，直到满足完成条件。
+
+一个最小 Job 示例：
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello-job
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: hello
+        image: busybox:1.36
+        command: ["sh", "-c", "echo hello kubernetes"]
+```
+
+几个很常用的字段：
+
+* `backoffLimit`：失败后最多重试多少次。
+* `parallelism`：并行运行多少个 Pod。
+* `completions`：总共需要成功完成多少次。
+* `ttlSecondsAfterFinished`：完成后保留多久再自动清理。
+
+一个最小 CronJob 示例：
+
+```yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello-cronjob
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: hello
+            image: busybox:1.36
+            command: ["sh", "-c", "date; echo periodic task"]
+```
+
+其中最值得记住的几个点是：
+
+* `schedule`：Cron 表达式。
+* `concurrencyPolicy`：是否允许并发运行，常见值有 `Allow`、`Forbid`、`Replace`。
+* `suspend`：是否暂停调度。
+* `successfulJobsHistoryLimit` / `failedJobsHistoryLimit`：保留多少历史任务。
+
+## Horizontal Pod Autoscaler（HPA）
+
+英文原文：[Horizontal Pod Autoscaling | Kubernetes](https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/)
+
+HPA 用来根据负载**自动调整副本数**，常见目标对象是 `Deployment` 和 `StatefulSet`。
+
+官方文档的核心定义是：
+
+* HPA 会根据观察到的指标，自动更新目标工作负载的副本数。
+* 横向伸缩的意思是“**增加或减少 Pod 数量**”，而不是给单个 Pod 增大 CPU / 内存。
+
+它最常见的工作方式是：
+
+* 从 `metrics.k8s.io`、`custom.metrics.k8s.io` 或 `external.metrics.k8s.io` 读取指标。
+* 根据“当前指标值 / 目标指标值”的比例，计算新的期望副本数。
+
+官方文档给出的基本公式可以概括成：
+
+```text
+desiredReplicas = ceil(currentReplicas * currentMetricValue / desiredMetricValue)
+```
+
+一个基于 CPU 使用率的最小示例如下：
+
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: web-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+```
+
+这里有几个非常容易忽略的关键点：
+
+* 想用 HPA 的 CPU 利用率模式，**Pod 里的容器必须设置 CPU request**；否则利用率没法计算，HPA 不会对这个指标生效。
+* HPA 常依赖 `metrics-server` 提供资源指标，集群里如果没有对应指标源，HPA 也没法正常工作。
+* HPA 和滚动发布会同时影响副本数，生产环境里建议明确 `minReplicas`、`maxReplicas` 和 `behavior`，避免抖动。
+* 官方文档建议：如果某个 `Deployment` / `StatefulSet` 交给 HPA 管理，最好不要在持续 `apply` 的 manifest 里把 `spec.replicas` 固定死，否则手工应用配置时可能把当前副本数又改回去。
+
+把它和前面的资源管理联系起来看，会更容易理解：
+
+* **request / limit** 决定单个 Pod 的资源边界与调度基础。
+* **HPA** 决定当负载变化时，需要多少个 Pod。
+* 两者配合，才是 Kubernetes 最常见的“弹性伸缩”基本盘。
 
 
-# Kubernetes 工具
+# 身份、权限、网络隔离与可用性
 
-https://kubernetes.io/zh-cn/docs/tasks/tools/
+如果把前面的内容看成“怎么把应用跑起来”，那么这一节更关注“**谁能访问什么**、**流量能不能互通**、**集群维护时业务能不能稳住**”。
+
+## ServiceAccount 与 RBAC
+
+英文原文：
+
+* [Service Accounts | Kubernetes](https://kubernetes.io/docs/concepts/security/service-accounts/)
+* [Using RBAC Authorization | Kubernetes](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)
+
+### ServiceAccount 是什么
+
+可以把 `ServiceAccount` 理解成 **Pod 在 Kubernetes API 里的身份**。
+
+官方文档指出：
+
+* `ServiceAccount` 为 Pod 中运行的进程提供身份标识。
+* 它是 **namespaced** 的对象。
+* 每个 namespace 通常都会自动有一个叫 `default` 的 ServiceAccount。
+
+也就是说：
+
+* **人**访问集群，通常对应用户身份、OIDC、证书等。
+* **Pod** 访问集群，通常对应 ServiceAccount。
+
+一个 Pod 如果需要调用 Kubernetes API，例如读取 ConfigMap、查询同 namespace 下的 Pod、更新某些状态，就通常会通过 ServiceAccount 来完成身份认证。
+
+如果某个 Pod **完全不需要访问 Kubernetes API**，实践里也常见下面这种做法，关闭自动挂载令牌：
+
+```yaml
+spec:
+  automountServiceAccountToken: false
+```
+
+### RBAC 是什么
+
+RBAC（Role-Based Access Control，基于角色的访问控制）是 Kubernetes 最常用的授权模型。
+
+官方文档提到，RBAC API 里最核心的 4 类对象是：
+
+* `Role`
+* `ClusterRole`
+* `RoleBinding`
+* `ClusterRoleBinding`
+
+可以这样区分：
+
+* **Role**
+  + namespace 范围内的权限规则。
+* **ClusterRole**
+  + 集群范围的权限规则，也可被 namespace 内的绑定复用。
+* **RoleBinding**
+  + 把某个 Role / ClusterRole 绑定给某个主体，在 namespace 内生效。
+* **ClusterRoleBinding**
+  + 在集群范围内绑定权限。
+
+常见主体（subject）包括：
+
+* `ServiceAccount`
+* `User`
+* `Group`
+
+一个最小例子：让某个 Pod 只读当前 namespace 下的 Pod 和 ConfigMap。
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app-reader
+  namespace: demo
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: app-reader-role
+  namespace: demo
+rules:
+- apiGroups: [""]
+  resources: ["pods", "configmaps"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: app-reader-binding
+  namespace: demo
+subjects:
+- kind: ServiceAccount
+  name: app-reader
+  namespace: demo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: app-reader-role
+```
+
+然后在 Pod 或 Deployment 里显式指定：
+
+```yaml
+spec:
+  serviceAccountName: app-reader
+```
+
+实践建议：
+
+* **不要默认让所有业务都用 `default` ServiceAccount。**
+* **尽量按最小权限原则授权**，只给它真正需要的 `verbs/resources`。
+* **权限对象和业务对象一样，也应该纳入 GitOps / IaC 管理。**
+
+## NetworkPolicy：控制 Pod 之间能否互相通信
+
+英文原文：[Network Policies | Kubernetes](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
+
+`NetworkPolicy` 是 Kubernetes 里做**网络隔离**的核心对象，主要工作在 **L3/L4** 层，也就是 IP / 端口层面。
+
+可以先把它理解成一句话：
+
+* **Service** 决定“怎么访问到 Pod”
+* **NetworkPolicy** 决定“哪些流量允许访问 Pod”
+
+官方文档里有几个特别关键的点：
+
+* NetworkPolicy 是否真正生效，取决于你的 **网络插件（CNI）是否支持**。
+* 默认情况下，Pod 对 ingress / egress 通常是**非隔离**的。
+* 一旦某个 Pod 被至少一条 NetworkPolicy 针对某个方向（ingress 或 egress）选中，它在该方向上就会变成“**只允许策略中显式放行的流量**”。
+* 多条策略是**叠加求并集**关系，而不是互相覆盖。
+
+一个最常见的起手式，是“默认拒绝某个 namespace 里的所有入站流量”：
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: demo
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+```
+
+再进一步，可以只允许同 namespace 中带特定标签的 Pod 访问：
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-web-to-api
+  namespace: demo
+spec:
+  podSelector:
+    matchLabels:
+      app: api
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: web
+    ports:
+    - protocol: TCP
+      port: 8080
+```
+
+实践里可以记住下面几点：
+
+* **没上 NetworkPolicy 的集群，很多 Pod 默认是“彼此可达”的。**
+* **先做 default deny，再一点点按业务关系放行**，通常比一开始全开放更稳。
+* 如果你创建了策略却完全没效果，第一反应先查 **CNI 是否支持 NetworkPolicy**。
+
+## PodDisruptionBudget（PDB）
+
+英文原文：[Disruptions | Kubernetes](https://kubernetes.io/docs/concepts/workloads/pods/disruptions/)
+
+`PodDisruptionBudget` 的目标不是处理“程序自己挂了”这种故障，而是约束**自愿中断（voluntary disruptions）**时，系统一次最多能影响多少个 Pod。
+
+常见的自愿中断包括：
+
+* `kubectl drain` 做节点维护
+* 集群升级
+* 节点池缩容
+* 人工驱逐 Pod
+
+PDB 最常用的两个写法是：
+
+* `minAvailable`
+* `maxUnavailable`
+
+例如下面这个例子表示：匹配到的应用在自愿中断过程中，最多允许 1 个 Pod 不可用。
+
+```yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web-pdb
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: web
+```
+
+也可以写成“至少保证 2 个可用”：
+
+```yaml
+spec:
+  minAvailable: 2
+```
+
+理解 PDB 时，最容易混淆的几点是：
+
+* **PDB 约束的是自愿中断，不是节点宕机这类非自愿中断。**
+* 它主要通过 **Eviction API** 发挥作用，因此像 `kubectl drain` 这类操作通常会尊重 PDB。
+* PDB 不是用来替代 `readinessProbe`、副本数设计、跨节点打散的；它只是“维护窗口里别一下子赶掉太多 Pod”的最后一道保护。
+
+实践建议：
+
+* 对关键在线服务，通常应结合 **多副本 + PDB + readinessProbe + 反亲和/拓扑打散** 一起用。
+* 副本数本来就只有 `1` 的服务，PDB 的保护能力天然有限，此时更应该从架构层面考虑高可用。
+
+
+# 安装与工具
+
+官方工具安装入口可参考：[Install Tools | Kubernetes](https://kubernetes.io/zh-cn/docs/tasks/tools/)
+
+这一节保留了几种常见的本地实验方式，以及一份历史环境的安装记录。涉及具体版本号的输出主要用于说明思路，实际使用时请以当前版本为准。
+
+## 常见入门方式
+
+官方文档里常见的入门方式主要有下面几种：
+
+* 方案 1：minikube
+  + https://kubernetes.io/docs/setup/minikube/
+* 方案 2：microk8s
+  + https://microk8s.io/
+* 方案 3：Kubernetes on Ubuntu
+  + https://kubernetes.io/docs/getting-started-guides/ubuntu/
+* 方案 4：kubeadm
+  + https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-1-11-cluster-using-kubeadm-on-ubuntu-18-04
+* 方案 5：Kubernetes + VirtualBox + Vagrant
+  + [kubernetes-vagrant-centos-cluster](https://github.com/rootsongjc/kubernetes-vagrant-centos-cluster)
+  + [How to Install Vagrant on Ubuntu 18.04](https://linuxize.com/post/how-to-install-vagrant-on-ubuntu-18-04/)
 
 ## kubectl
 
@@ -558,11 +2140,407 @@ No resources found in default namespace.
 
 > 注意：通过 kubectl get node 查看 Kubernetes 的节点状态，可以看到当前的 minikube 集群里只有一个 Master，那 Node 怎么不见了？这是因为 Master 和 Node 的划分不是绝对的。当集群的规模较小，工作负载较少的时候，Master 也可以承担 Node 的工作，搭建的 minikube 环境，它就只有一个节点，这个节点既是 Master 又是 Node。
 
+## 使用 Vagrant + VirtualBox 搭建多节点环境
+
+除了 minikube 这种单节点本地环境，也可以使用 [kubernetes-vagrant-centos-cluster](https://github.com/rootsongjc/kubernetes-vagrant-centos-cluster) 在本地快速拉起一个多节点 Kubernetes 集群，适合做 PoC、Demo，或者顺带体验 Istio 这类 service mesh。
+
+> 说明：下面这组输出是较早期的实验记录，版本号偏老，主要保留多节点环境的搭建思路。
+
+安装完成后，可以先用下面这些命令确认集群状态：
+
+```text
+root@ubuntu-s-8vcpu-32gb-sfo2-01:~# kubectl get nodes
+NAME    STATUS   ROLES    AGE   VERSION
+node1   Ready    <none>   1h    v1.11.0
+node2   Ready    <none>   1h    v1.11.0
+node3   Ready    <none>   1h    v1.11.0
+
+root@ubuntu-s-8vcpu-32gb-sfo2-01:~# kubectl get namespaces
+NAME          STATUS   AGE
+default       Active   1h
+kube-public   Active   1h
+kube-system   Active   1h
+
+root@ubuntu-s-8vcpu-32gb-sfo2-01:~# kubectl cluster-info
+Kubernetes master is running at https://172.17.8.101:6443
+Heapster is running at https://172.17.8.101:6443/api/v1/namespaces/kube-system/services/heapster/proxy
+CoreDNS is running at https://172.17.8.101:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+Grafana is running at https://172.17.8.101:6443/api/v1/namespaces/kube-system/services/monitoring-grafana/proxy
+InfluxDB is running at https://172.17.8.101:6443/api/v1/namespaces/kube-system/services/monitoring-influxdb:http/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 
 
-# Tips
+root@ubuntu-s-8vcpu-32gb-sfo2-01:~# kubectl get pods -n kube-system
+NAME                                              READY   STATUS    RESTARTS   AGE
+coredns-549f985987-kw5rx                          1/1     Running   0          1h
+coredns-549f985987-vqgks                          1/1     Running   0          1h
+heapster-v1.5.0-76c9b966c-4dh9p                   4/4     Running   0          50m
+kubernetes-dashboard-574589d477-vbs6s             1/1     Running   0          1h
+monitoring-influxdb-grafana-v4-5bbb9b766d-8x8bz   2/2     Running   0          52m
+traefik-ingress-controller-n2gt6                  1/1     Running   0          1h
+```
 
-## kubectl completion (补全功能)
+
+## kubectl 常用命令
+
+下面这些命令更适合作为速查表，和前面的安装内容放在一起会更方便复用。
+
+> kubectl [command] [TYPE] [NAME] [flags]
+
+{% raw %}
+```bash
+kubectl help
+
+kubectl version
+kubectl version --short
+kubectl cluster-info
+
+kubectl get nodes
+kubectl get namespaces
+
+# 获取 namespace 下 nodes 信息
+kubectl get nodes --namespace dev-test-gerry -o wide
+
+# 获取 namespace 下 pods 信息
+kubectl get pods --namespace dev-test-gerry -o wide
+
+# 获取 namespace 下 某个 pod 的 container 信息
+kubectl get pods deploy-redis1-7ffdbff548-2k4sf --namespace dev-test-gerry -o jsonpath='{.spec.containers[*].name}'
+
+kubectl describe nodes --namespace dev-test-gerry
+kubectl describe pods --namespace dev-test-gerry
+kubectl describe pods deploy-redis1-7ffdbff548-2k4sf --namespace dev-test-gerry
+
+kubectl logs deploy-redis1-7ffdbff548-2k4sf --namespace dev-test-gerry
+
+kubectl get services --namespace dev-test-gerry
+
+kubectl get deployments --namespace dev-test-gerry
+
+# 查询 namespace 下 pods 的容器镜像
+kubectl get pods --namespace dev-test-gerry -o jsonpath="{.items[*].spec.containers[*].image}"
+kubectl get pods --namespace dev-test-gerry -o go-template --template="{{range .items}}{{range .spec.containers}}{{.image}} {{end}}{{end}}"
+
+# 查询所有 namespace 下 pods 的容器镜像
+kubectl get pods --all-namespaces -o jsonpath='{range .items[*]}{"\n"}{.metadata.name}{":\t"}{range .spec.containers[*]}{.image}{", "}{end}{end}' |\ sort
+
+# 登录 Pod
+kubectl exec -it <pod-name> -n <namespace> -- /bin/bash
+
+# 查看 Pod 中的容器列表
+kubectl get pod <pod-name> -n <namespace> -o jsonpath='{.spec.containers[*].name}'
+
+# 登录到指定容器
+kubectl exec -it <pod-name> -n <namespace> -c <container-name> -- /bin/bash
+kubectl exec -it deploy-redis1-7ffdbff548-2k4sf -c container-redis-default --namespace dev-test-gerry bash
+
+
+# 删除异常 Pod
+kubectl delete pods $pod-name -n dev --grace-period=0 --force
+
+# 根据 Pod IP 查询 Pod
+## 全集群搜索
+kubectl get pods --all-namespaces -o wide | grep "$PodIP"
+## JSON 格式查询
+kubectl get pods --all-namespaces -o json | jq -r '.items[] | select(.status.podIP=="$PodIP") | .metadata.namespace + "/" + .metadata.name'
+## 字段选择器
+kubectl get pods --all-namespaces --field-selector status.podIP="$PodIP"
+
+
+
+# 清理 Evicted 状态的 Pod
+kubectl get pods --namespace autoworlds | grep Evicted | awk '{print $1}' | xargs kubectl delete pod --namespace autoworlds
+kubectl get pods --namespace autoworlds | grep Evicted | awk '{print $1}' | xargs -I {} kubectl delete pod --namespace autoworlds {} --force --grace-period=0 # 强制删除
+
+```
+{% endraw %}
+
+
+
+# 实战排障
+
+前面的概念和工具准备好之后，这里给一段更贴近真实场景的网络排障记录。
+
+## 问题场景
+
+将一个 OMS 后端服务部署在 Kubernetes 集群上，如何配置网络通信，实现用户通过云下浏览器访问云上的 OMS 服务。
+
+网络拓扑如下：
+
+```text
+外部用户浏览器 / curl
+        |
+        v
+DNS
+<你的域名>
+        |
+        v
+CLB VIP
+80 / 443
+        |
+        v
+Ingress 规则
+host/path 匹配
+        |
+        v
+Service
+jmesh-namesvr-oms:9200
+        |
+        v
+Pod
+9.165.174.104:8081
+        |
+        v
+oms-backend
+```
+
+简化后的交互链路可以理解为：
+
+```text
+用户
+ -> 域名
+ -> CLB
+ -> Ingress
+ -> Service jmesh-namesvr-oms:9200
+ -> Endpoint 9.165.174.104:8081
+ -> oms-backend
+```
+
+> 注意：OMS 原始首页访问路径是 `/`，因此 Ingress 中的访问路径也要配置为 `/`，保证请求命中应用实际使用的根路径。
+
+```text
+/                      -> 前端页面
+/assets/*              -> 前端静态资源
+/backend/api/v1/health -> 后端健康检查
+```
+
+示例 ingress 配置：
+
+```yaml
+    - domain: mesh.jlib.woa.com
+      path: /
+      services:
+      - serviceName: jmesh-namesvr-oms
+        serviceNamespace: jmesh-namesvr
+        servicePort: 9200
+        isDirectConnect: true
+```
+
+## 综合排查思路
+
+当服务 `jmesh-namesvr-oms` 无法正常访问时，通常可以按下面这个顺序定位：
+
+1. `kubectl get svc -o wide`：确认服务是否存在，以及端口和选择器是否符合预期。
+2. `kubectl get endpoints`：检查后端 Pod 的 IP 列表是否为空，若为空则说明服务当前没有可用后端。
+3. `kubectl get pods -l <selector> --show-labels`：验证被选择器匹配到的 Pod 是否正常运行，标签是否一致。
+4. `kubectl describe svc`：查看服务详情和相关事件，进一步缩小问题范围。
+
+这些命令基本构成了 Kubernetes Service 排障时最常见的一条检查链路。
+
+### 1. 确认应用本身没问题
+
+```text
+$ curl -sf http://localhost:8081/backend/api/v1/health
+{"code":200,"message":"OMS Backend is running","storage":"etcd","timestamp":"2024-01-01T00:00:00Z"}
+
+$ netstat -lnt | grep 8081
+tcp6       0      0 :::8081                 :::*                    LISTEN
+```
+
+### 2. 确认 Service 层正常
+
+```bash
+kubectl get svc -n jmesh-namesvr jmesh-namesvr-oms -o wide
+kubectl get endpoints -n jmesh-namesvr jmesh-namesvr-oms
+kubectl describe svc -n jmesh-namesvr jmesh-namesvr-oms
+
+# 可以直接验证 Service 和后端 Pod 是否正常
+# 把本机的 9200 端口，临时转发到 Kubernetes 集群里 jmesh-namesvr-oms 这个 Service 的 9200 端口
+# 这个转发只在 kubectl port-forward 命令运行期间有效，Ctrl+C 就断开了
+kubectl -n jmesh-namesvr port-forward svc/jmesh-namesvr-oms 9200:9200
+```
+
+另开一个终端：
+
+```bash
+# 通过上面 port-forward 判断问题是在 应用 / Service，还是在 Ingress / NodePort / 外部网络
+curl -sv http://127.0.0.1:9200/backend/api/v1/health
+curl -sv http://127.0.0.1:9200/
+# or
+root:~$ nc -vz 127.0.0.1 9200
+127.0.0.1 (127.0.0.1:9200) open
+
+root:~$ printf 'GET /backend/api/v1/health HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n' | nc 127.0.0.1 9200
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Date: Wed, 01 Apr 2026 02:54:58 GMT
+Content-Length: 99
+Connection: close
+
+{"code":200,"message":"OMS Backend is running","storage":"etcd","timestamp":"2024-01-01T00:00:00Z"}
+```
+
+更细一点的 `kubectl` 检查步骤如下。
+
+> 1. kubectl get svc -n jmesh-namesvr jmesh-namesvr-oms -o wide
+
+作用：获取命名空间 `jmesh-namesvr` 中名为 `jmesh-namesvr-oms` 的 Service 详细信息，并通过 `-o wide` 额外展示 Cluster IP、外部 IP、端口映射、选择器等字段。
+
+输出示例：
+
+```text
+root:~$ kubectl get svc -n jmesh-namesvr jmesh-namesvr-oms -o wide
+NAME                TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE   SELECTOR
+jmesh-namesvr-oms   NodePort   9.165.175.237   <none>        9200:31457/TCP   10m   app.kubernetes.io/instance=jmesh-namesvr-oms,app.kubernetes.io/name=jmesh-namesvr-oms
+```
+
+使用场景：
+
+* 快速查看服务的 IP、端口和选择器，确认 Service 是否已正确创建。
+* 验证 Service 类型（ClusterIP、NodePort、LoadBalancer 等）和外部访问方式。
+* 通过选择器为后续排查 Pod 是否匹配提供依据。
+
+> 2. kubectl get endpoints -n jmesh-namesvr jmesh-namesvr-oms
+
+作用：获取与服务 `jmesh-namesvr-oms` 关联的 `Endpoints` 资源。它记录了当前真实承接流量的后端 Pod IP 和端口列表，由 Kubernetes 根据 Service 的选择器自动维护。
+
+输出示例：
+
+```text
+root:~$ kubectl get endpoints -n jmesh-namesvr jmesh-namesvr-oms
+NAME                ENDPOINTS            AGE
+jmesh-namesvr-oms   9.165.169.113:8081   15m
+```
+
+使用场景：
+
+* 检查服务后端是否存在健康 Pod；若 `ENDPOINTS` 为空，流量无法被正常转发。
+* 确认 Pod IP 和端口是否与预期一致，定位服务不可达问题。
+* 验证 Service 的选择器是否正确匹配到了 Pod。
+
+> 3. kubectl get pods -n jmesh-namesvr -l app.kubernetes.io/name=jmesh-namesvr-oms --show-labels
+
+作用：列出命名空间 `jmesh-namesvr` 下所有带有 `app.kubernetes.io/name=jmesh-namesvr-oms` 标签的 Pod，并通过 `--show-labels` 展示完整标签，便于与 Service selector 做比对。
+
+输出示例：
+
+```text
+root:~$ kubectl get pods -n jmesh-namesvr -l app.kubernetes.io/name=jmesh-namesvr-oms --show-labels
+NAME                                 READY   STATUS    RESTARTS   AGE   LABELS
+jmesh-namesvr-oms-8489564d64-bgzgk   1/1     Running   0          15m   app.kubernetes.io/instance=jmesh-namesvr-oms,app.kubernetes.io/name=jmesh-namesvr-oms,io.tencent.bcs.clusterid=BCS-K8S-26067,io.tencent.bcs.controller.name=jmesh-namesvr-oms,io.tencent.bcs.controller.type=Deployment,io.tencent.bcs.namespace=jmesh-namesvr,io.tencent.paas.projectid=4d7b969b89c94ebcbac2338e2f5ff845,io.tencent.paas.source_type=helm,pod-template-hash=8489564d64
+```
+
+使用场景：
+
+* 确认被 Service 选择器命中的 Pod 是否处于 `Running` 状态，`READY` 是否正常。
+* 查看 Pod 的详细标签并与 Service selector 做逐项比对。
+* 当 `Endpoints` 为空时，快速确认到底是没 Pod、标签不匹配，还是 Pod 本身异常。
+
+> 4. kubectl describe svc -n jmesh-namesvr jmesh-namesvr-oms
+
+作用：以详细描述的方式展示服务 `jmesh-namesvr-oms` 的完整信息，包括元数据、选择器、端口、Endpoints 和事件（Events）等，是定位异常行为时最常用的命令之一。
+
+输出示例：
+
+```text
+root:~$ kubectl get pods -n jmesh-namesvr -l app.kubernetes.io/name=jmesh-namesvr-oms --show-labels
+NAME                                 READY   STATUS    RESTARTS   AGE   LABELS
+jmesh-namesvr-oms-8489564d64-bgzgk   1/1     Running   0          15m   app.kubernetes.io/instance=jmesh-namesvr-oms,app.kubernetes.io/name=jmesh-namesvr-oms,io.tencent.bcs.clusterid=BCS-K8S-26067,io.tencent.bcs.controller.name=jmesh-namesvr-oms,io.tencent.bcs.controller.type=Deployment,io.tencent.bcs.namespace=jmesh-namesvr,io.tencent.paas.projectid=4d7b969b89c94ebcbac2338e2f5ff845,io.tencent.paas.source_type=helm,pod-template-hash=8489564d64
+root:~$
+root:~$ kubectl describe svc -n jmesh-namesvr jmesh-namesvr-oms
+Name:                     jmesh-namesvr-oms
+Namespace:                jmesh-namesvr
+Labels:                   app.kubernetes.io/instance=jmesh-namesvr-oms
+                          app.kubernetes.io/managed-by=Helm
+                          app.kubernetes.io/name=jmesh-namesvr-oms
+                          app.kubernetes.io/version=1.0.0
+                          helm.sh/chart=jmesh-namesvr-oms-1.0.0
+                          io.tencent.bcs.clusterid=BCS-K8S-26067
+                          io.tencent.bcs.controller.name=jmesh-namesvr-oms
+                          io.tencent.bcs.controller.type=Service
+                          io.tencent.bcs.namespace=jmesh-namesvr
+                          io.tencent.paas.creator=gerryyang
+                          io.tencent.paas.projectid=4d7b969b89c94ebcbac2338e2f5ff845
+                          io.tencent.paas.source_type=helm
+                          io.tencent.paas.updator=gerryyang
+Annotations:              io.tencent.bcs.clusterid: BCS-K8S-26067
+                          io.tencent.paas.creator: gerryyang
+                          io.tencent.paas.updator: gerryyang
+                          io.tencent.paas.version: 1.0.0
+                          meta.helm.sh/release-name: jmesh-namesvr-oms
+                          meta.helm.sh/release-namespace: jmesh-namesvr
+Selector:                 app.kubernetes.io/instance=jmesh-namesvr-oms,app.kubernetes.io/name=jmesh-namesvr-oms
+Type:                     NodePort
+IP:                       9.165.175.237
+Port:                     service  9200/TCP
+TargetPort:               8081/TCP
+NodePort:                 service  31457/TCP
+Endpoints:                9.165.169.113:8081
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:
+  Type    Reason           Age   From                Message
+  ----    ------           ----  ----                -------
+  Normal  EnsuringService  16m   service-controller  Deleted Loadbalancer
+```
+
+使用场景：
+
+* 查看服务配置细节，包括选择器、端口映射、会话亲和性等信息。
+* 查看与 Service 相关的事件，例如负载均衡器变更、异常告警等。
+* 当服务行为异常时，作为 `get` 命令之后的深入检查入口。
+
+### 3. 检查 Ingress 资源是否正确指向 OMS Service
+
+重点看下面几个字段：
+
+* host 是否为你的目标域名
+* path 是否符合预期
+* backend service 是否是 `jmesh-namesvr-oms`
+* backend service port 是否是 `9200`
+* ingress class / annotations 是否与 BCS CLB 控制器匹配
+
+如果使用的是标准 Kubernetes Ingress（`networking.k8s.io/v1`），可以这样查：
+
+```bash
+kubectl get ingress -n jmesh-namesvr
+kubectl describe ingress -n jmesh-namesvr <ingress-name>
+kubectl get ingress -n jmesh-namesvr <ingress-name> -o yaml
+```
+
+如果使用的是 BCS 自定义 Ingress CRD（`networkextension.bkbcs.tencent.com/v1`），可以这样查：
+
+```bash
+# 用带 group 的资源名查
+root:~$ kubectl get ingresses.networkextension.bkbcs.tencent.com -n dev
+NAME      AGE
+jlibwoa   515d
+```
+
+```bash
+# 查单个对象
+kubectl get ingresses.networkextension.bkbcs.tencent.com -n dev jlibwoa -o yaml
+```
+
+```bash
+# 查看这个 group 下有哪些资源
+root:~$ kubectl api-resources --api-group=networkextension.bkbcs.tencent.com
+NAME           SHORTNAMES   APIGROUP                             NAMESPACED   KIND
+ingresses      bcsingress   networkextension.bkbcs.tencent.com   true         Ingress
+listeners                   networkextension.bkbcs.tencent.com   true         Listener
+portbindings                networkextension.bkbcs.tencent.com   true         PortBinding
+portpools                   networkextension.bkbcs.tencent.com   true         PortPool
+```
+
+
+# 附录
+
+这一节放一些适合查阅的补充材料，包括零散技巧、问题摘录和参考链接。
+
+## 补充说明
+
+### kubectl completion (补全功能)
 
 参考`kubectl completion -h`
 
@@ -572,7 +2550,7 @@ source <(kubectl completion bash)
 
 
 
-## container_memory_working_set_bytes 当前工作集使用量 (limit 限制时 OOM 判断依据)
+### container_memory_working_set_bytes 当前工作集使用量 (limit 限制时 OOM 判断依据)
 
 > [Linux中进程内存及cgroup内存统计差异](https://goframe.org/pages/viewpage.action?pageId=157646868)
 
@@ -642,304 +2620,152 @@ echo "Container memory working set: ${container_memory_working_set_MB} MB"
 ```
 
 
-> 问题： [Memory usage discrepancy: cgroup memory.usage_in_bytes vs. RSS inside docker container](https://stackoverflow.com/questions/50865763/memory-usage-discrepancy-cgroup-memory-usage-in-bytes-vs-rss-inside-docker-con)
-
-
-"Kubernetes" (v1.10.2) says that my pod (which contains one container) is using about 5GB memory. Inside the container, RSS is saying more like 681MiB. Can anypony explain how to get from 681MiB to 5GB with the following data (or describe how to make up the difference with another command I've omitted, either from the container or from the docker host that is running this container in kubernetes)?
-
-kubectl top pods says 5GB:
-
-```bash
-% kubectl top pods -l app=myapp
-NAME                             CPU(cores)   MEMORY(bytes)
-myapp-56b947bf6d-2lcr7           39m          5039Mi
-```
-
-
-Cadvisor reports a similar number (might have been from a slightly different time, so please ignore small differences):
-
-```bash
-container_memory_usage_bytes{pod_name=~".*myapp.*"}      5309456384
-
-5309456384 / 1024.0 / 1024 ~= 5063 ~= 5039
-```
-
-
-Inside the container, this file appears to be where cadvisor is getting its data:
-
-```bash
-% kubectl exec -it myapp-56b947bf6d-2lcr7 bash
-meme@myapp-56b947bf6d-2lcr7:/app# cat /sys/fs/cgroup/memory/memory.usage_in_bytes
-5309456384
-```
-
-
-The resident set size (RSS) inside the container does NOT match up (less than 1GB):
-
-```bash
-kb=$(ps aux | grep -v grep | grep -v 'ps aux' | grep -v bash | grep -v awk | grep -v RSS | awk '{print $6}' | awk '{s+=$1} END {printf "%.0f", s}'); mb=$(expr $kb / 1024); printf "Kb: $kb\nMb: $mb\n"
-
-Kb: 698076
-Mb: 681
-```
-
-
-Full ps aux in case that is helpful:
-
-```bash
-meme@myapp-56b947bf6d-2lcr7:/app# ps aux | grep -v grep | grep -v 'ps aux' | grep -v bash | grep -v awk
-USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-meme         1  0.0  0.0 151840 10984 ?        Ss   Jun04   0:29 /usr/sbin/apache2 -D FOREGROUND
-www-data    10  0.0  0.0 147340  4652 ?        S    Jun04   0:00 /usr/sbin/apache2 -D FOREGROUND
-www-data    11  0.0  0.0 148556  4392 ?        S    Jun04   0:16 /usr/sbin/apache2 -D FOREGROUND
-www-data    12  0.2  0.0 2080632 11348 ?       Sl   Jun04  31:58 /usr/sbin/apache2 -D FOREGROUND
-www-data    13  0.1  0.0 2080384 10980 ?       Sl   Jun04  18:12 /usr/sbin/apache2 -D FOREGROUND
-www-data    68  0.3  0.0 349048 94272 ?        Sl   Jun04  47:09 hotapp
-www-data   176  0.2  0.0 349624 92888 ?        Sl   Jun04  43:11 hotapp
-www-data   179  0.2  0.0 349196 94456 ?        Sl   Jun04  42:20 hotapp
-www-data   180  0.3  0.0 349828 95112 ?        Sl   Jun04  44:14 hotapp
-www-data   185  0.3  0.0 346644 91948 ?        Sl   Jun04  43:49 hotapp
-www-data   186  0.3  0.0 346208 91568 ?        Sl   Jun04  44:27 hotapp
-www-data   189  0.2  0.0 350208 95476 ?        Sl   Jun04  41:47 hotapp
-```
-
-
-Memory section from docker's container stats API:
-
-```bash
-curl --unix-socket /var/run/docker.sock 'http:/v1.24/containers/a45fc651e7b12f527b677e6a46e2902786bee6620484922016a135e317a42b4e/stats?stream=false' | jq . # yields:
-
-"memory_stats": {
-  "usage": 5327712256,
-  "max_usage": 5368344576,
-  "stats": {
-    "active_anon": 609095680,
-    "active_file": 74457088,
-    "cache": 109944832,
-    "dirty": 28672,
-    "hierarchical_memory_limit": 5368709120,
-    "inactive_anon": 1687552,
-    "inactive_file": 29974528,
-    "mapped_file": 1675264,
-    "pgfault": 295316278,
-    "pgmajfault": 77,
-    "pgpgin": 85138921,
-    "pgpgout": 84964308,
-    "rss": 605270016,
-    "rss_huge": 0,
-    "shmem": 5513216,
-    "total_active_anon": 609095680,
-    "total_active_file": 74457088,
-    "total_cache": 109944832,
-    "total_dirty": 28672,
-    "total_inactive_anon": 1687552,
-    "total_inactive_file": 29974528,
-    "total_mapped_file": 1675264,
-    "total_pgfault": 295316278,
-    "total_pgmajfault": 77,
-    "total_pgpgin": 85138921,
-    "total_pgpgout": 84964308,
-    "total_rss": 605270016,
-    "total_rss_huge": 0,
-    "total_shmem": 5513216,
-    "total_unevictable": 0,
-    "total_writeback": 0,
-    "unevictable": 0,
-    "writeback": 0
-  },
-  "limit": 5368709120
-},
-```
-
-
-A comment on https://github.com/google/cadvisor/issues/638 asserts:
-
-> Total (memory.usage_in_bytes) = rss + cache
-
-https://www.kernel.org/doc/Documentation/cgroup-v1/memory.txt says:
-
-> usage_in_bytes: For efficiency, as other kernel components, memory cgroup uses some optimization to avoid unnecessary cacheline false sharing. usage_in_bytes is affected by the method and doesn't show 'exact' value of memory (and swap) usage, it's a fuzz value for efficient access. (Of course, when necessary, it's synchronized.) If you want to know more exact memory usage, you should use RSS+CACHE(+SWAP) value in memory.stat(see 5.2).
-
-https://docs.docker.com/engine/reference/commandline/stats/#parent-command says:
-
-> Note: On Linux, the Docker CLI reports memory usage by subtracting page cache usage from the total memory usage. The API does not perform such a calculation but rather provides the total memory usage and the amount from the page cache so that clients can use the data as needed.
-
-And indeed, most of the stuff in `/sys/fs/cgroup/memory/memory.stat` in the container shows up in the above docker stats api response (slight differences are from taking the samples at a different time, sorry):
-
-```bash
-meme@myapp-56b947bf6d-2lcr7:/app# cat /sys/fs/cgroup/memory/memory.stat
-cache 119492608
-rss 607436800
-rss_huge 0
-shmem 5525504
-mapped_file 1675264
-dirty 69632
-writeback 0
-pgpgin 85573974
-pgpgout 85396501
-pgfault 296366011
-pgmajfault 80
-inactive_anon 1687552
-active_anon 611213312
-inactive_file 32800768
-active_file 81166336
-unevictable 0
-hierarchical_memory_limit 5368709120
-total_cache 119492608
-total_rss 607436800
-total_rss_huge 0
-total_shmem 5525504
-total_mapped_file 1675264
-total_dirty 69632
-total_writeback 0
-total_pgpgin 85573974
-total_pgpgout 85396501
-total_pgfault 296366011
-total_pgmajfault 80
-total_inactive_anon 1687552
-total_active_anon 611213312
-total_inactive_file 32800768
-total_active_file 81166336
-total_unevictable 0
-```
-
-
-Memory info from `kubectl describe pod <pod>`:
-
-```bash
-Limits:
-  memory:  5Gi
-Requests:
-  memory:  4Gi
-```
-
-
-Here's what pmap says inside the container. In this one-liner, I get all process ids, run pmap -x on them, and pull the Kbytes column from the pmap results. The total result is 256 Megabytes (much less than ps's RSS, partially, I think, because many of the processes return no output from pmap -x):
-
-```bash
-ps aux | awk '{print $2}' | grep -v PID | xargs sudo pmap -x | grep total | grep -v grep | awk '{print $3}' | awk '{s+=$1} END {printf "%.0f", s}'; echo
-256820
-```
-
-
-[ps_mem.py](https://raw.githubusercontent.com/pixelb/ps_mem/master/ps_mem.py) is mentioned at https://stackoverflow.com/a/133444/6090676. It inspects `/proc/$pid/statm` and `/proc/$pid/smaps`. No illumination here (again, it seems to be ignoring some processes):
-
-```bash
-# python ps_mem.py
-Private  +   Shared  =  RAM used    Program
-
-  1.7 MiB +   1.0 MiB =   2.7 MiB   apache2
-  2.0 MiB +   1.0 MiB =   3.0 MiB   bash (3)
----------------------------------
-                          5.7 MiB
-=================================
-```
-
-
-There is another question similar to this (but with less information) at [Incorrect reporting of container memory usage by cadvisor](https://stackoverflow.com/q/46677536/6090676). Thanks!
-
-> 回答 1:
-
-One thing I didn't see you check here is kernel memory. This is also accounted for in the `memory.usage_in_bytes` figure, but doesn't appear in `memory.stat`. You can find that by looking at `/sys/fs/cgroup/memory/memory.kmem.usage_in_bytes`.
-
-
-> 回答 2:
-
-cAdvisor extract many memory-related metrics. We will focus on:
-
-1. **container_memory_usage_bytes** = value in `/sys/fs/cgroup/memory/memory.usage_in_bytes` file. (Usage of the memory)
-2. `container_memory_working_set_bytes` = **container_memory_usage_bytes** - total_inactive_file (from `/sys/fs/cgroup/memory/memory.stat`), this is calculated in cAdvisor and is <= **container_memory_usage_bytes**
-3. container_memory_rss = total_rss value from `/sys/fs/cgroup/memory/memory.stat`
-
-Now you know how those metrics are gathered, you need to know that when you use the `kubectl top pods` command, you get the value of `container_memory_working_set_bytes` not **container_memory_usage_bytes** metric.
-
-so from your values: 5039Mi "working set fro kubectl command" ~= 5064 "from memory.usage file" - 28 "total_inactive_file from Memory section from docker's container stats API"
-
-It is also worth to mention that when the value of **container_memory_usage_bytes** reaches to the limits, your pod will NOT get oom-killed. BUT if `container_memory_working_set_bytes` or container_memory_rss reached to the limits, the pod will be killed.
-
-
-
-
-# Q&A
-
-## [How does kubernetes guarantee reliability of kube proxy and kubelet?](https://stackoverflow.com/questions/57177943/how-does-kubernetes-guarantee-reliability-of-kube-proxy-and-kubelet)
-
-If `Kube proxy` is down, the pods on a kubernetes node will not be able to communicate with the external world. Anything that Kubernetes does specially to guarantee the reliability of kube-proxy?
-
-Similarly, how does Kubernetes guarantee reliability of `kubelet`?
-
-Answers:
-
-It guarantees their reliability by:
-
-* **Having multiple nodes**: If one `kubelet` crashes, one node goes down. Similarly, every node runs a `kube-proxy` instance, which means losing one node means losing the `kube-proxy` instance on that node. Kubernetes is designed to handle node failures. And if you designed your app that is running on Kubernetes to be scalable, you will not be running it as single instance but rather as multiple instances - and `kube-scheduler` will distribute your workload across multiple nodes - which means your application will still be accessible.
-
-* **Supporting a Highly-Available Setup**: If you set up your Kubernetes cluster in [High-Availability mode](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/) properly, there won't be one master node, but multiple. This means, you can even tolerate losing some master nodes. The managed Kubernetes offerings of the cloud providers are always highly-available.
-
-These are the first 2 things that come to my mind. However, this is a broad question, so I can go into details if you elaborate what you mean by "reliability" a bit.
-
-
-## [How to stop/pause a pod in kubernetes](https://stackoverflow.com/questions/54821044/how-to-stop-pause-a-pod-in-kubernetes)
-
-I have a MySQL pod running in my cluster.
-
-I need to temporarily pause the pod from working without deleting it, something similar to docker where the docker stop container-id cmd will stop the container not delete the container. Are there any commands available in kubernetes to pause/stop a pod?
-
-Answers:
-
-So, like others have pointed out, Kubernetes doesn't support stop/pause of current state of pod and resume when needed. However, you can still achieve it by having no working deployments which is setting number of replicas to 0.
+> 案例：为什么 `kubectl top` 显示 5Gi，而进程 RSS 只有几百 MiB？
+>
+> 参考原问题：[Memory usage discrepancy: cgroup memory.usage_in_bytes vs. RSS inside docker container](https://stackoverflow.com/questions/50865763/memory-usage-discrepancy-cgroup-memory-usage-in-bytes-vs-rss-inside-docker-con)
+
+这个现象非常常见，核心原因通常不是“监控错了”，而是**你比较的根本不是同一种口径**。
+
+可以先把几个指标拆开看：
+
+* `kubectl top pod`
+  + 更接近 `container_memory_working_set_bytes`
+  + 也就是 **总使用量 - 不活跃文件缓存**
+* `memory.usage_in_bytes`
+  + 更接近 cgroup 看到的**总内存使用量**
+  + 在 cgroup v1 里还可能包含 page cache、部分 kernel memory 等
+* `RSS`
+  + 更接近进程常驻内存
+  + 它并**不等于**容器在 cgroup 视角下的全部内存占用
+
+所以出现下面这种情况并不矛盾：
 
 ```text
-kubectl scale --replicas=0 deployment/<your-deployment>
+kubectl top           ≈ 5039Mi
+memory.usage_in_bytes ≈ 5064Mi
+进程 RSS              ≈ 681MiB
 ```
 
+一个更容易记住的理解方式是：
 
-see the help
+* `RSS` 只看进程自己“驻留在内存里的那部分”
+* `memory.usage_in_bytes` 看的是 cgroup 这整个容器控制组“占了多少”
+* `working_set` 则是“占了多少里，当前更难被回收的那部分”
+
+因此：
+
+* **`kubectl top` 和 `memory.usage_in_bytes` 接近**，通常说明不活跃文件缓存不大。
+* **`kubectl top` 明显高于进程 RSS**，通常说明差值里还有 page cache、shared memory，或者在某些环境里还有 kernel memory 等被 cgroup 计入的部分。
+
+排查这类问题时，最值得同时看的字段是：
+
+* `/sys/fs/cgroup/memory/memory.usage_in_bytes`
+* `/sys/fs/cgroup/memory/memory.stat` 里的：
+  + `total_rss`
+  + `total_cache`
+  + `total_shmem`
+  + `total_inactive_file`
+* Prometheus / cAdvisor 里的：
+  + `container_memory_usage_bytes`
+  + `container_memory_working_set_bytes`
+  + `container_memory_rss`
+
+如果是 cgroup v1 环境，还可以额外检查：
+
+* `/sys/fs/cgroup/memory/memory.kmem.usage_in_bytes`
+
+用一个简化公式来记：
+
+```text
+container_memory_working_set_bytes
+≈ memory.usage_in_bytes - total_inactive_file
+```
+
+这也是为什么很多场景里，`kubectl top` 会更接近“真实内存压力”，而不是单纯的进程 RSS。
+
+### 实战结论
+
+1. 不要拿 `kubectl top` 和 `ps aux` 的 RSS 直接做一一对比，它们本来就不是同一口径。
+2. 排查 OOM 风险时，通常比起单看 RSS，更应该同时看 `working_set`、`rss`、`limit` 和 `OOMKilled` 事件。
+3. 不要把 Prometheus / cAdvisor 指标理解成“kubelet 直接按这个值杀进程”；真正的 OOM 仍然是内核 / cgroup 在内存压力下触发的。
+4. 如果 `working_set` 长期逼近 limit，而应用又频繁 `OOMKilled`，这通常比“RSS 看起来不高”更值得优先处理。
+
+
+## 常见问题（FAQ）
+
+### `kube-proxy` 和 `kubelet` 的可靠性是如何保证的？
+
+参考原问题：[How does kubernetes guarantee reliability of kube proxy and kubelet?](https://stackoverflow.com/questions/57177943/how-does-kubernetes-guarantee-reliability-of-kube-proxy-and-kubelet)
+
+可以从下面几个角度理解：
+
+* **节点维度**：`kubelet` 和 `kube-proxy` 本身并不是“永不故障”的单点组件，而是跟随每个节点存在。某一台机器上的 `kubelet` 或 `kube-proxy` 异常，通常先影响的是这一个节点。
+* **集群维度**：Kubernetes 的容错思路是让应用以**多副本**运行，并由调度器把副本分散到不同节点上。这样即使某个节点失效，其他节点上的副本仍然可以继续提供服务。
+* **控制面维度**：生产环境通常会把控制面做成 **High Availability**，也就是多台 Master / Control Plane 节点协同工作，从而降低控制面的单点风险。
+* **托管服务维度**：公有云上的托管 Kubernetes 服务，通常默认就会为控制面提供高可用能力。
+
+一句话总结：Kubernetes 保障可靠性的重点，不是确保某个 `kubelet` / `kube-proxy` 永远不出问题，而是通过**多节点、多副本、高可用控制面**来吸收局部故障。
+
+
+### Kubernetes 能像 Docker 一样直接 stop / pause 一个 Pod 吗？
+
+参考原问题：[How to stop/pause a pod in kubernetes](https://stackoverflow.com/questions/54821044/how-to-stop-pause-a-pod-in-kubernetes)
+
+通常**不能**。Kubernetes 没有一个通用命令，可以像 Docker 那样把一个 Pod “暂停后保留当前运行状态，稍后再恢复”。
+
+更常见的做法是：
+
+* 如果这个 Pod 背后是 `Deployment`、`StatefulSet`、`ReplicaSet` 之类的控制器，通常把副本数缩到 `0`，等需要时再扩回去。
+* 这本质上是“让工作负载暂时不再运行”，而不是“冻结当前 Pod 的进程状态”。
+
+常见命令示例：
 
 ```bash
-# Set a new size for a Deployment, ReplicaSet, Replication Controller, or StatefulSet.
+kubectl scale --replicas=0 deployment/<your-deployment>
+kubectl scale --replicas=0 statefulset/<your-statefulset>
+
+# 恢复时再扩回目标副本数
+kubectl scale --replicas=3 deployment/<your-deployment>
+kubectl scale --replicas=3 statefulset/<your-statefulset>
+```
+
+如果想查看更多用法，可以直接查看：
+
+```bash
 kubectl scale --help
 ```
 
-
-Scale also allows users to specify one or more preconditions for the scale action.
-
-If --current-replicas or --resource-version is specified, it is validated before the scale is attempted, and it is guaranteed that the precondition holds true when the scale is sent to the server.
-
-Examples:
+如果是一个没有控制器托管的裸 Pod，那么 Kubernetes 也没有“暂停再恢复”的标准操作。你可以删除它，然后依靠原始 manifest 重新创建，但这同样不是 pause / resume：
 
 ```bash
-# Scale a replicaset named 'foo' to 3.
-kubectl scale --replicas=3 rs/foo
-
-# Scale a resource identified by type and name specified in "foo.yaml" to 3.
-kubectl scale --replicas=3 -f foo.yaml
-
-# If the deployment named mysql's current size is 2, scale mysql to 3.
-kubectl scale --current-replicas=2 --replicas=3 deployment/mysql
-
-# Scale multiple replication controllers.
-kubectl scale --replicas=5 rc/foo rc/bar rc/baz
-
-# Scale statefulset named 'web' to 3.
-kubectl scale --replicas=3 statefulset/web
-```
-
-
-如果也可以使用删除操作：
-
-With Kubernets, it's not possible to stop/pause a Pod. However, you can delete a Pod, given the fact you have the manifest to bring that back again.
-
-If you want to delete a Pod, you can run the following kubectl command:
-
-```text
 kubectl delete -n default pod <your-pod-name>
 ```
 
 
-# Refer
+## 参考资料
 
 * [Kubernetes 官网](https://kubernetes.io/zh-cn/)
 * https://kubernetes.io/zh-cn/docs/concepts/
+* https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+* https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+* https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+* https://kubernetes.io/docs/concepts/services-networking/ingress/
+* https://kubernetes.io/docs/concepts/services-networking/network-policies/
+* https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+* https://kubernetes.io/docs/concepts/configuration/configmap/
+* https://kubernetes.io/docs/concepts/configuration/secret/
+* https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/
+* https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+* https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
+* https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/
+* https://kubernetes.io/docs/concepts/workloads/controllers/job/
+* https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+* https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/
+* https://kubernetes.io/docs/concepts/security/service-accounts/
+* https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+* https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+* https://github.com/kubernetes/kubernetes
+* [15 years of experience of running production workloads at Google](https://queue.acm.org/detail.cfm?id=2898444)
 * [Kubernetes 和 Mesos 有啥区别，我该使用哪个好?](https://www.zhihu.com/question/53751176)
 * [Setting the right requests and limits in Kubernetes](https://learnk8s.io/setting-cpu-memory-limits-requests)
+* [jimmysong-istio-handbook](https://jimmysong.io/istio-handbook/setup/quick-start.html)
