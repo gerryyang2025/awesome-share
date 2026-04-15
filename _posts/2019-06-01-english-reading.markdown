@@ -60,6 +60,16 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* reconcile /ˈrɛkənˌsaɪl/
+  + V-T If you **reconcile** two beliefs, facts, or demands that seem to be opposed or completely different, you find a way in which they can both be true or both be successful. 使和谐一致; 调和
+    - It's difficult to **reconcile** the demands of my job and the desire to be a good father. 协调我工作的要求与我当个好父亲的愿望很难。
+  + V-RECIP-PASSIVE If you **are reconciled with** someone, you become friendly with them again after a quarrel or disagreement. 与…和好
+    - He never believed he and Susan would be reconciled. 他不认为他和苏珊会和好。
+  + V-T If you **reconcile** two people, you make them become friends again after a quarrel or disagreement. 使和解
+  + V-T If you **reconcile** yourself to an unpleasant situation, you accept it, although it does not make you happy to do so. 妥协; 将就
+    - She had **reconciled** herself to never seeing him again. 她不情愿地接受了再也不和他见面的事实。
+
+
 * opaque /əʊˈpeɪk/
   + ADJ If an object or substance is **opaque**, you cannot see through it. 不透明的
     - You can always use **opaque** glass if you need to block a street view. 如果你需要挡住外面的街景，你随时可以使用不透明玻璃。
