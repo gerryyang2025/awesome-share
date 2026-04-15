@@ -2,7 +2,8 @@
 layout: post
 title:  "Kubernetes in Action"
 date:   2022-07-31 16:30:00 +0800
-last_modified_at: 2026-04-15 15:30:29 +0800
+last_modified_at: 2026-04-15 16:16:00 +0800
+mermaid: true
 categories: 云原生
 tags:
   - Kubernetes
@@ -124,6 +125,241 @@ storage-provisioner                1/1     Running            1 (23h ago)       
 
 
 > 注意：命令行里要用 -n kube-system 参数，表示检查 kube-system 名字空间里的 Pod
+
+### apiserver 如何安全地操作 etcd
+
+前面说过，Kubernetes 里几乎所有组件都要通过 `apiserver` 才能访问 `etcd`。这么设计当然有统一认证、授权、准入控制等原因，但还有一个很关键的架构动机：**并发控制不能靠某个进程自己“管住自己”，而必须收敛到整个集群共享的一套写入规则上**。
+
+这一点在生产环境里尤其明显，因为控制面通常会部署多个 `apiserver` 实例。如果并发安全只靠某一个 `apiserver` 进程内的锁，那么它最多只能约束自己，拦不住另一个 `apiserver` 同时去改同一个对象。也正因为如此，Kubernetes 采用的是一套分层设计：
+
+* 在 **API 语义层**，由 `apiserver` 对外提供 `metadata.resourceVersion` 这套乐观并发控制语义。
+* 在 **存储层**，由 `etcd` 的 MVCC 和事务 Compare-And-Swap 能力做最终裁决。
+
+可以把它概括成一句话：**`apiserver` 负责定义规则，`etcd` 负责原子裁决。**
+
+官方 [API Concepts](https://kubernetes.io/docs/reference/using-api/api-concepts/) 文档明确说明：客户端如果使用 `PUT` 覆盖更新对象，应该带上自己读取到的 `resourceVersion`。如果这段时间对象已经被其他人改过，客户端带来的 `resourceVersion` 就过期了，`apiserver` 会返回 **`409 Conflict`**，用来避免“我基于旧数据把别人新改动覆盖掉”的 lost update 问题。
+
+不过，`resourceVersion` 对客户端来说只是一个**不透明的版本标记**。真正到了存储层，`apiserver` 会把它转换成底层存储可以理解的版本语义。[`k8s.io/apiserver/pkg/storage`](https://pkg.go.dev/k8s.io/apiserver/pkg/storage) 的 `Versioner` 文档就提到，`ParseResourceVersion()` 会把 API 层的 `resourceVersion` 转成后端存储使用的版本值；而在默认的 etcd 存储实现里，这背后依赖的就是 etcd 的版本 / revision 机制。
+
+这里有一个很容易混淆、但非常重要的细节：**从实现上看，`kube-apiserver` 默认使用 etcd 时，`resourceVersion` 往往就是对底层 etcd revision 语义的一层封装；但从 API 契约上看，客户端并不应该把两者当作“公开保证完全相同的同一个字段”。** 换句话说，`resourceVersion` 是 Kubernetes API 层的并发与一致性令牌，而 `mod_revision` 是 etcd 存储层的键元数据；两者故意不做成同一个公开概念，就是为了把 API 契约和底层存储实现解耦。Kubernetes 官方文档强调，客户端应该把 `resourceVersion` 原样传回服务器，而不要依赖它的内部编码方式。也正因为如此：
+
+* 对内置资源和 CRD 来说，`resourceVersion` 通常可以近似理解成底层存储版本，默认实现里它和 etcd revision 关系非常紧密。
+* 但在 API 语义上，客户端应当把它看成 Kubernetes 暴露出来的版本标识，而不是直接把它当成 etcd revision 使用。
+* 官方只保证**同一个 API group、同一种 resource type** 里的 `resourceVersion` 有可比性；不要拿 `Pod` 的 `resourceVersion` 去和 `Deployment` 的直接比较。
+* 如果资源来自 extension API server / aggregation layer，那么 `resourceVersion` 甚至不一定是十进制数字，因此更不能假设它必然等同于 etcd revision。
+* 另外，单个对象上的 `metadata.resourceVersion` 更像“这个对象当前的存储版本”；而列表结果里的 `List.metadata.resourceVersion` 则表示“这次集合读取所对应的版本点”，语义也不完全一样。
+
+etcd 的 [事务 API](https://etcd.io/docs/v3.6/learning/api/) 支持对 key 的版本、`mod_revision`、值等做原子比较：比较成功才执行写入，比较失败就整笔事务失败。因此，当两个写请求并发修改同一个对象时，真正提供“硬保证”的不是 `apiserver` 的本地锁，而是 etcd 的 **MVCC + 原子事务**。这也是为什么 Kubernetes 可以在多 `apiserver` 副本同时工作的情况下，仍然保证对象不会被无序覆盖。
+
+与此同时，`apiserver` 的 storage layer 也不只是“做一次 CAS 就结束”。[`storage.Interface`](https://pkg.go.dev/k8s.io/apiserver/pkg/storage) 里的 `GuaranteedUpdate` 文档说明：在更新函数重试时，输入对象会在每轮重试前被重置成数据库里的当前内容，然后再重新执行更新逻辑。这意味着 storage layer 自己也会吸收一部分底层竞态。但要注意，这种**内部重试**主要是为了解决存储层面的短暂冲突，并不会破坏 Kubernetes 对外暴露的 API 语义。如果客户端明确拿着一个已经过期的 `resourceVersion` 来更新对象，那么语义上就应该收到 `409 Conflict`，而不是被悄悄改写成“帮你自动覆盖成功”。
+
+下面这张图可以把这条链路看得更直观一些：
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant C as 客户端
+  participant A as apiserver
+  participant S as storage layer + etcd txn
+  participant O as 其他写入方
+
+  C->>A: GET 对象
+  A-->>C: 返回 rv=120
+
+  O->>A: 先提交写入(rv=120)
+  A->>S: Compare(rv=120) + Write
+  S-->>A: success -> rv=121
+  A-->>O: 200 OK
+
+  C->>A: 再提交 PUT(rv=120)
+  A->>S: Compare(rv=120) + Write
+  S-->>A: compare failed
+  A-->>C: 409 Conflict
+```
+
+从这个流程可以看出，Kubernetes 的并发控制并不是“先保证每次读出来的一定是最新，再保证绝不会冲突”，而是更偏向一种**乐观并发**思路：允许你先读，允许你基于当前认知去改，但在真正提交的最后一步，一定要用底层原子事务确认“这个对象从你读完到现在有没有被别人改过”。如果改过，就拒绝这次写入，让上层重新读取最新状态再决定下一步。
+
+### Controller / Operator 遇到冲突时是怎么收敛的
+
+理解了上面的写入语义之后，再来看 `controller` / `operator` 的行为就会顺很多。Kubernetes 控制器本质上不是“事件来了就直接改一下对象”的脚本，而是一个**不断对齐期望状态和实际状态的收敛循环**。
+
+[controller-runtime](https://pkg.go.dev/sigs.k8s.io/controller-runtime) 的文档里特别强调了两点：
+
+* Controller 不是直接处理事件，而是把事件转换成 `reconcile request` 放进工作队列里。
+* 默认的 split client 通常是**从本地 cache 读、直接向 apiserver 写**，并且**不保证**写入之后立刻就能从 cache 里读到新值。
+
+这意味着 controller / operator 天然就要接受一个现实：**自己看到的对象，很可能已经不是“此时此刻集群里绝对最新”的版本了。** 但这并不会破坏一致性，因为最后那一跳写入仍然会经过前面说的 `resourceVersion` / etcd txn 保护。
+
+实际发生并发冲突时，常见流程往往是这样的：
+
+1. Controller 从本地 cache 里读到对象，版本是 `rv=121`。
+2. 它根据当前观察到的状态计算“下一步想怎么改”。
+3. 就在它准备写回去之前，另一个 controller、用户或 webhook 已经把这个对象更新到了 `rv=122`。
+4. 当前 controller 再拿着 `rv=121` 去 `Update` / `Patch`，就会收到 `409 Conflict`。
+5. 随后它会重新获取最新对象，重新计算自己真正想保留的改动，再发起下一轮写入。
+
+在 Go 客户端里，这种写法通常会直接使用 [`client-go/util/retry`](https://pkg.go.dev/k8s.io/client-go/util/retry) 里的 `RetryOnConflict()`：每次冲突后重新 `Get` 最新对象、重新修改、重新提交。如果不是在一个很紧凑的本地重试循环里处理，controller 也可以直接返回错误或 `requeue`，让工作队列稍后再跑一轮 `reconcile`。无论是哪一种方式，核心思想都是一样的：**冲突后不要拿着旧对象硬写，而是基于最新状态重新计算。**
+
+这也是为什么好的 controller / operator 逻辑通常要满足两个特点：
+
+* **幂等（idempotent）**：同样的 `reconcile` 多执行几次，结果应该一致。
+* **level-based**：根据“当前最新状态”推导目标状态，而不是依赖某个旧事件里的增量信息反复回放。
+
+下面这张图更贴近 controller / operator 的真实工作方式：
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant Q as Cache / Queue
+  participant R as Controller
+  participant A as apiserver
+  participant S as storage layer + etcd txn
+  participant X as 用户 / 其他控制器
+
+  Q-->>R: reconcile(object rv=121)
+  Note over R: 计算期望状态
+
+  X->>A: 先更新同一对象
+  A->>S: Compare(rv=121) + Write
+  S-->>A: success -> rv=122
+  A-->>X: 200 OK
+
+  R->>A: Update/Patch(rv=121)
+  A->>S: Compare(rv=121) + Write
+  S-->>A: compare failed
+  A-->>R: 409 Conflict
+
+  R->>R: RetryOnConflict / requeue
+  Q-->>R: 最新对象 rv=122
+  Note over R: 重新计算
+  R->>A: 再次写入(rv=122)
+  A->>S: Compare(rv=122) + Write
+  S-->>A: success -> rv=123
+  A-->>R: 200 OK
+```
+
+从控制器设计的角度看，这套机制非常重要，因为它把“冲突处理”从“谁先写谁赢”的混乱状态，变成了“谁冲突谁重算，再按最新状态收敛”的稳定过程。多次事件可以被工作队列折叠，cache 可以有短暂延迟，controller 甚至可以被中断后重跑，但只要每一轮 `reconcile` 都是基于最新对象重新计算，最终仍然会收敛到期望状态。
+
+实践里，为了进一步降低冲突概率，controller / operator 通常还会尽量缩小自己的写入范围：
+
+* 只修改自己真正负责的字段，而不是整对象覆盖。
+* 能写 `status` 子资源就不要顺手改 `spec`。
+* 对声明式控制器，尽量使用更细粒度的 `Patch` 或 `Server-Side Apply`，避免把不属于自己的字段也一起带回去。
+
+所以，如果你从架构上回头再看这件事，就会发现 Kubernetes 并发安全的关键并不是“绝不允许读到旧数据”，而是：**允许上层在一个动态变化的系统里乐观地工作，但把最终一致性的闸门收在 `apiserver -> storage layer -> etcd txn` 这条提交路径上；一旦冲突，就通过 409、重读、重算、重试，把系统重新拉回可收敛的轨道。**
+
+### 延伸：PUT / PATCH / Server-Side Apply 的冲突差异
+
+如果把并发冲突再往 API 使用层面看，`PUT`、普通 `PATCH` 和 `Server-Side Apply` 的“冲突长相”其实并不一样。官方在 [API Concepts](https://kubernetes.io/docs/reference/using-api/api-concepts/) 和 [Server-Side Apply](https://kubernetes.io/docs/reference/using-api/server-side-apply/) 里给出的建议，大致可以整理成下面三类：
+
+* **`PUT`（整体替换）**：最典型的 read-modify-write。客户端通常先 `GET`，再带着对象当前的 `resourceVersion` 回写；如果对象在中途被别人改过，Kubernetes 会稳定地返回 `409 Conflict`。它的优点是语义直接，缺点是最容易和无关字段变动发生冲突，也更容易因为本地对象不完整而意外丢字段。
+* **普通 `PATCH`（这里主要指 JSON Patch / Merge Patch）**：它只提交差异，而不是整对象回写，所以当别人的改动发生在**不相关字段**时，你往往不需要像 `PUT` 那样频繁重试。官方文档也明确提到，如果你需要有效避免 lost update，仍然应该把请求做成**依赖现有 `resourceVersion` 的条件更新**；其中 JSON Patch 还可以用 `test` 操作表达更细粒度的前置条件。换句话说，普通 `PATCH` 的冲突控制更“按需开启”。
+* **`Server-Side Apply`（SSA）**：它的重点不是“对象版本是否变了”，而是“你想改的字段现在归谁管理”。如果你试图修改一个被其他 field manager 持有、且值不同的字段，SSA 会直接报冲突；如果你明确知道这个字段应该由自己接管，则可以选择 force 覆盖。官方文档还特别指出：对 controller 来说，SSA 往往不需要先读对象，也不要求显式指定 `resourceVersion`，但它不适合那种“必须先读取当前值，再基于当前值做计算”的更新场景。
+
+如果只想记一个实践结论，可以这样理解：
+
+* **`PUT`** 主要防的是“整对象覆盖时的版本冲突”。
+* **普通 `PATCH`** 主要适合“只改局部字段，尽量减少与无关变动相撞”。
+* **`Server-Side Apply`** 主要解决“多方协作时字段所有权和声明式意图冲突”。
+
+### 如果要实现一个业务自定义 Controller
+
+理解了上面的控制循环之后，如果你真的要为某个业务场景写一个自定义 controller，最推荐的实现路径通常是：**基于 `controller-runtime` 编写控制逻辑，必要时配合 CRD，把业务期望状态显式建模成 Kubernetes API。** Kubernetes 官方把这种“CRD + 自定义控制器”的扩展方式称为 [Operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)；而在工程实践里，最常用的脚手架则是官方维护的 [Kubebuilder](https://kubebuilder.io/quick-start)。
+
+在开始写代码之前，先做一个最重要的判断：
+
+* 如果你的自动化只是围绕现有资源工作，例如“监听 Deployment / Secret / Ingress，然后补一些默认配置、做一些联动修正”，那么**不一定非要定义 CRD**，直接写一个只 watch 内置资源的 controller 也完全可以。
+* 如果你希望把业务能力包装成一个明确的、可声明式管理的 API，例如“创建一个 `MyApp` 就自动生成 Deployment / Service / Ingress / HPA / Secret”，那么更推荐 **CRD + Controller**。这也是最典型的 operator 形态。
+
+如果走推荐的 `Kubebuilder + controller-runtime` 路线，实践上可以按下面这些步骤落地：
+
+1. **先定义清楚控制目标**
+想清楚你的 controller 到底负责把什么“期望状态”收敛成什么“实际状态”。一个好的 controller 通常只负责一类清晰的业务边界，例如“数据库实例生命周期”“业务应用发布对象”“证书续期”“定时任务编排”，而不是同时包办太多职责。
+
+2. **决定根对象是不是要做成 CRD**
+如果用户需要通过一个统一对象来表达意图，就把这个对象做成 CRD；如果只是给现有资源补自动化，则可以直接以 Deployment、Secret、ConfigMap 等现有资源作为观察对象。
+
+3. **用 Kubebuilder 初始化项目并生成脚手架**
+官方 Quick Start 给出的最小流程非常直接：
+
+```bash
+mkdir -p ~/projects/my-controller
+cd ~/projects/my-controller
+kubebuilder init --domain example.com --repo example.com/my-controller
+kubebuilder create api --group apps --version v1alpha1 --kind MyApp
+```
+
+执行完之后，常见的几个关键文件会自动生成：
+
+* `api/v1alpha1/myapp_types.go`：定义 `Spec` / `Status`，也是你设计业务 API 的核心入口。
+* `internal/controller/myapp_controller.go`：实现 `Reconcile()`，也就是控制循环的主体。
+* `config/samples/`：放示例 CR，便于本地调试。
+* `config/rbac/`：controller 所需权限。
+* `config/manager/`：controller 运行方式与镜像部署配置。
+
+4. **先把 API 设计好，再写控制逻辑**
+如果你定义了 CRD，`Spec` 应该只放“用户希望系统达到什么状态”，`Status` 则表达“系统当前观察到什么状态”。通常建议至少把下面几类信息设计进去：
+
+* `spec`：用户输入，例如镜像、版本、副本数、端口、外部依赖引用等。
+* `status.conditions`：是否 Ready、是否正在 Reconciling、失败原因是什么。
+* `status.observedGeneration`：标记 controller 已经处理到了哪个声明版本。
+* 必要时开启 `status` 子资源，这样 controller 可以单独更新状态而不误改 `spec`。
+
+改完 API 之后，按 Kubebuilder 的约定执行 `make manifests`，生成 CRD 与 RBAC 等清单。
+
+5. **按“读取 -> 对比 -> 调整 -> 回写状态”的方式实现 `Reconcile()`**
+Kubebuilder 在 [CronJob controller 教程](https://book.kubebuilder.io/cronjob-tutorial/controller-implementation) 里展示的思路非常值得直接借鉴。一个业务 controller 的 `Reconcile()` 通常可以遵循这样的结构：
+
+* 读取根对象；如果对象不存在，直接返回。
+* 如果对象正在删除，先处理 `finalizer`，做外部清理，再移除 finalizer。
+* 读取当前依赖资源，例如 Deployment、Service、Secret、Job、Ingress 等。
+* 根据 `spec` 计算“理想状态”。
+* 比较理想状态和实际状态，必要时创建、更新或删除子资源。
+* 回写 `status` 和 `conditions`。
+* 如果还有异步过程未完成，返回 `requeueAfter` 或等待下一次事件触发。
+
+这一段最核心的原则不是“把所有逻辑一次写完”，而是**保证每次 `Reconcile()` 都可以重复执行，并且始终基于最新状态重新收敛**。
+
+6. **把 watch、owner reference、index 和 RBAC 配好**
+这是很多 controller 第一次写时最容易漏的地方：
+
+* 对自己创建的子资源，尽量设置 `ownerReferences`，这样垃圾回收和事件回流会更自然。
+* 用 `Owns()` / `Watches()` 明确声明你关心哪些资源变化会触发重试。
+* 如果 `Reconcile()` 里经常按字段反查对象，考虑加 field index，避免每次全表扫描。
+* RBAC 只授予 controller 真正需要的最小权限，尤其要区分 `spec` 更新、`status` 更新和最终删除权限。
+
+7. **本地先跑通，再上集群**
+Kubebuilder 官方的本地调试路径也很清楚：
+
+```bash
+make install
+make run
+kubectl apply -k config/samples/
+```
+
+这套流程的好处是 controller 进程直接跑在本机前台，日志和断点调试都更方便。等逻辑稳定之后，再构建镜像并部署到集群：
+
+```bash
+make docker-build docker-push IMG=<registry>/my-controller:tag
+make deploy IMG=<registry>/my-controller:tag
+```
+
+8. **上线前重点检查这几个工程细节**
+
+* `Reconcile()` 是否幂等，重复跑会不会产生副作用。
+* 是否正确处理了 `finalizer`、删除路径和外部资源回收。
+* 是否只在对象真实变化时才写回，避免无意义 update 引发自激增风暴。
+* `status.conditions` 是否足够清晰，方便排障。
+* 是否处理了并发冲突、重复事件、cache 延迟和 controller 重启后的恢复。
+
+如果只想要一个最实用的入门顺序，我会建议按这个路线学习：
+
+1. 先读 Kubernetes 官方的 [Operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)，理解为什么要把业务自动化做成控制循环。
+2. 再跟着 Kubebuilder 的 [Quick Start](https://kubebuilder.io/quick-start) 跑通一个最小项目。
+3. 然后重点读 Kubebuilder 的 [CronJob controller 实现教程](https://book.kubebuilder.io/cronjob-tutorial/controller-implementation)，把 `Reconcile()` 的结构和思路吃透。
+4. 真正做业务项目时，先从一个很小的 CRD 和一个简单的子资源开始，不要一上来就把 Deployment、Service、Ingress、HPA、Secret、证书、备份、灰度发布全塞进一个 controller 里。
+
+一句话总结：**自定义 controller 的本质，不是“监听事件后写几段回调”，而是把业务规则建模成一个可重复执行、可恢复、可收敛的控制循环；如果希望把这套能力做成平台能力，最稳妥的工程路径通常就是 Kubebuilder + controller-runtime。**
 
 ### Node 的组件
 
