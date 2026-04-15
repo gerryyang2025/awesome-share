@@ -2,7 +2,7 @@
 layout: post
 title:  "Kubernetes in Action"
 date:   2022-07-31 16:30:00 +0800
-last_modified_at: 2026-04-15 13:18:49 +0800
+last_modified_at: 2026-04-15 14:19:30 +0800
 categories: 云原生
 tags:
   - Kubernetes
@@ -1455,7 +1455,7 @@ PID（进程号）限制允许 kubelet 约束单个 Pod 最多可消耗多少个
 
 # 应用配置、健康检查与弹性
 
-前面几节已经覆盖了 Service、持久化存储、Deployment / StatefulSet、调度和资源管理。为了更完整地掌握 Kubernetes 的核心功能，这里再补上 4 组日常高频能力：**配置管理、健康检查、批处理任务、自动伸缩**。
+前面几节已经覆盖了 Service、持久化存储、Deployment / StatefulSet、调度和资源管理。为了更完整地掌握 Kubernetes 的核心功能，这里再补上 5 组日常高频能力：**配置管理、运行时信息注入、健康检查、批处理任务、自动伸缩**。
 
 ## ConfigMap 与 Secret
 
@@ -1521,6 +1521,148 @@ spec:
 * **敏感信息放 Secret**，不要混在 ConfigMap 里。
 * `ConfigMap` 不适合放超大文件，官方文档提到其数据大小**不能超过 1 MiB**。
 * 如果配置更新后应用需要重读，是否自动生效取决于你的注入方式和应用自身实现；很多场景下仍然需要**滚动重启 Pod**。
+
+## Downward API：把 Pod 自身信息注入容器
+
+英文原文：[Downward API | Kubernetes](https://kubernetes.io/zh/docs/concepts/workloads/pods/downward-api/)
+
+`Downward API` 的作用，是把 Kubernetes 里“**当前 Pod / 容器自己的运行时信息**”直接注入到容器里，让应用**不用主动调用 Kubernetes API** 就能拿到这些值。
+
+这个能力很适合下面这些场景：
+
+* 应用启动时需要知道自己的 `Pod name`、`namespace`、`Pod IP`
+* 程序要把自身标签、注解写进日志或监控维度
+* 应用需要根据容器的 `request / limit` 做一些初始化配置
+* 你想让应用尽量少依赖 Kubernetes Client 或 API Server
+
+官方文档指出，Downward API 主要有两种使用方式：
+
+* **作为环境变量注入**
+* **作为 `downwardAPI` 卷中的文件挂载**
+
+它背后常见的两个引用方式是：
+
+* `fieldRef`
+  + 读取 **Pod 级字段**
+* `resourceFieldRef`
+  + 读取 **容器资源字段**，例如 request / limit
+
+### 常见可注入字段
+
+最常用的字段可以分成 3 类来记：
+
+* **Pod 元信息**
+  + `metadata.name`
+  + `metadata.namespace`
+  + `metadata.uid`
+  + `metadata.labels['<KEY>']`
+  + `metadata.annotations['<KEY>']`
+* **运行节点 / 网络信息**
+  + `spec.serviceAccountName`
+  + `spec.nodeName`
+  + `status.podIP`
+  + `status.hostIP`
+* **容器资源信息**
+  + `requests.cpu`
+  + `requests.memory`
+  + `limits.cpu`
+  + `limits.memory`
+
+补充两点很实用的区别：
+
+* `spec.nodeName`、`status.podIP`、`status.hostIP` 这类字段，常用于**环境变量注入**。
+* `metadata.labels`、`metadata.annotations` 的“全部内容”，更适合通过 **`downwardAPI` 卷文件**的方式挂载出来。
+
+### 最小示例
+
+下面这个例子同时演示了：
+
+* 用 `fieldRef` 注入 Pod 名、命名空间、Pod IP、节点名
+* 用 `resourceFieldRef` 注入容器的 CPU / 内存 request
+* 用 `downwardAPI` 卷把全部 labels / annotations 挂载成文件
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: downward-api-demo
+  labels:
+    app: demo
+    env: prod
+  annotations:
+    owner: team-platform
+spec:
+  containers:
+  - name: app
+    image: nginx:1.27
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "256Mi"
+    env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    - name: NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    - name: CPU_REQUEST
+      valueFrom:
+        resourceFieldRef:
+          resource: requests.cpu
+    - name: MEMORY_LIMIT
+      valueFrom:
+        resourceFieldRef:
+          resource: limits.memory
+    volumeMounts:
+    - name: podinfo
+      mountPath: /etc/podinfo
+      readOnly: true
+  volumes:
+  - name: podinfo
+    downwardAPI:
+      items:
+      - path: "labels"
+        fieldRef:
+          fieldPath: metadata.labels
+      - path: "annotations"
+        fieldRef:
+          fieldPath: metadata.annotations
+```
+
+这样在容器内就可以直接拿到：
+
+* 环境变量：`POD_NAME`、`POD_NAMESPACE`、`POD_IP`、`NODE_NAME`
+* 文件：
+  + `/etc/podinfo/labels`
+  + `/etc/podinfo/annotations`
+
+### 使用建议
+
+可以把 `Downward API` 理解成“**读取自己，不读取别人**”：
+
+* 它不是一个通用 Kubernetes 查询接口。
+* 只能拿到官方开放的那部分字段。
+* 如果你要列出别的 Pod、读取别的对象、做跨 namespace 查询，还是要回到 Kubernetes API + ServiceAccount / RBAC。
+
+实践上建议记住这几条：
+
+* **应用只需要知道自身身份信息时，优先考虑 Downward API，而不是直接接 Kubernetes SDK。**
+* **想拿单个字段时，用环境变量最直接；想拿整组 labels / annotations 时，用 `downwardAPI` 卷更自然。**
+* **想让程序感知 request / limit，可以用 `resourceFieldRef`，这对 JVM、Go 服务或自定义内存配置脚本都很实用。**
 
 ## Pod 健康检查：liveness、readiness、startup probes
 
@@ -2754,6 +2896,7 @@ kubectl delete -n default pod <your-pod-name>
 * https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 * https://kubernetes.io/docs/concepts/configuration/configmap/
 * https://kubernetes.io/docs/concepts/configuration/secret/
+* https://kubernetes.io/zh/docs/concepts/workloads/pods/downward-api/
 * https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/
 * https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
 * https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
