@@ -287,6 +287,7 @@ Add a realistic {beard_style} to the face in this photo, blended naturally with 
     *   `duration`：视频时长，目前通常为6秒。
     *   `resolution`：分辨率，如 `"1080P"`。
 *   **代码示例**：
+
 ```python
 import os, time, requests
 api_key = os.environ["MINIMAX_API_KEY"]
@@ -317,6 +318,7 @@ task_id = response.json()["task_id"]
     *   `first_frame_image`：起始图片的**可公开访问的URL**。
     *   `prompt`：描述基于首帧图像发生的**运动或变化**，可使用**图生视频Prompt公式**（见下文）。
 *   **代码示例** (关键Payload):
+
 ```python
 payload = {
     "prompt": "Contemporary dance, the people in the picture are performing contemporary dance.",
@@ -337,6 +339,7 @@ payload = {
     *   `last_frame_image`：结束图片URL。
     *   `prompt`：描述从首帧到尾帧的演变过程，如“A little girl grow up.”。
 *   **代码示例** (关键Payload):
+
 ```python
 payload = {
     "prompt": "A little girl grow up.",
@@ -358,6 +361,7 @@ payload = {
     *   `prompt`：详细的场景、动作、镜头描述。
     *   `model`：如 `"S2V-01"`。
 *   **代码示例** (关键Payload):
+
 ```python
 payload = {
     "prompt": "On an overcast day, in an ancient cobbled alleyway, the model is dressed in a brown corduroy jacket...", # 详细描述
@@ -385,6 +389,7 @@ payload = {
     *   `media_inputs`：填充模板的图片或视频素材URL列表。
     *   `text_inputs`：填充模板的文本列表。
 *   **代码示例** (关键Payload):
+
 ```python
 url = "https://api.minimaxi.com/v1/video_template_generation"
 payload = {
@@ -693,6 +698,9 @@ Gemini 生成的脚本如下：
 ## 2. 视频生成
 
 方法：建议使用即梦 SeedDance2.0 生成视频。
+
+![seeddance](/assets/images/202604/seeddance.gif)
+
 
 
 ## 3. 生成旁白文字
