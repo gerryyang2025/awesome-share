@@ -2,7 +2,7 @@
 layout: post
 title:  "Kubernetes in Action"
 date:   2022-07-31 16:30:00 +0800
-last_modified_at: 2026-04-15 15:12:15 +0800
+last_modified_at: 2026-04-15 15:25:59 +0800
 categories: 云原生
 tags:
   - Kubernetes
@@ -132,6 +132,49 @@ Node 里的 3 个组件，分别是 kubelet、kube-proxy、container-runtime
 * kubelet 是 Node 的代理，负责管理 Node 相关的绝大部分操作，Node 上只有它能够与 apiserver 通信，实现状态报告、命令下发、启停容器等功能，相当于是 Node 上的一个“小管家”。
 * kube-proxy 的作用有点特别，它是 Node 的网络代理，只负责管理容器的网络通信，简单来说就是为 Pod 转发 TCP/UDP 数据包，相当于是专职的“小邮差”。
 * container-runtime 是容器和镜像的实际使用者，在 kubelet 的指挥下创建容器，管理 Pod 的生命周期，是真正干活的“苦力”。
+
+很多人第一次看到这里时，都会自然产生一个问题：**为什么 `kubelet` 和 `kube-proxy` 要拆成两个独立组件，而不是做成一个统一模块？**
+
+核心原因是：它们解决的是**两类完全不同的问题**，拆开后更清晰、更稳，也更容易替换。
+
+可以先把它们理解成：
+
+* `kubelet`：节点上的“**Pod 管家**”，负责把 Pod 真正跑起来。
+* `kube-proxy`：节点上的“**Service 转发器**”，负责让流量能够找到 Pod。
+
+它们的职责差异非常大：
+
+* `kubelet` 更关心：容器运行时、镜像拉取、Volume 挂载、探针执行、Pod 生命周期、状态回报。
+* `kube-proxy` 更关心：Service、Endpoints / EndpointSlice、iptables / IPVS / nftables 规则、四层流量转发。
+
+之所以不合成一个模块，主要有下面几个原因：
+
+1. **职责边界完全不同**  
+   一个偏“工作负载生命周期管理”，一个偏“网络转发编排”。如果合在一起，一个进程就要同时处理容器、存储、探针、网络规则，工程复杂度会明显上升。
+
+2. **失败隔离更好**  
+   `kube-proxy` 出问题，通常先影响的是 Service 转发；`kubelet` 出问题，影响的是 Pod 创建、探针、状态同步。拆开后故障域更清楚，也更容易定位和止损。  
+   例如 `kube-proxy` 挂了，节点上已有的 iptables / IPVS 规则可能还能继续工作一段时间；如果和 `kubelet` 绑死，一个组件故障就可能同时拖垮两类能力。
+
+3. **升级和替换节奏不同**  
+   `kubelet` 基本是每个节点都必须有的执行代理；但 `kube-proxy` 并不是绝对必须，很多集群会用 eBPF 方案替代它，例如 Cilium 的 kube-proxy replacement。  
+   这也说明它们天然不是一个不可分割的统一服务。
+
+4. **权限模型不同**  
+   `kubelet` 要接触容器运行时、文件系统、卷、镜像；`kube-proxy` 要改内核网络规则。两者都需要较高权限，但风险边界并不一样，拆开后更容易控制和审计。
+
+5. **实现依赖不同**  
+   `kubelet` 强依赖 CRI、CSI、CNI 等节点执行链路；`kube-proxy` 更依赖 Linux 网络栈以及 iptables / IPVS / nftables。模块化拆分更符合工程设计。
+
+6. **可观测性和调试更清楚**  
+   Pod 起不来，优先看 `kubelet`；Service 不通，优先看 `kube-proxy`。如果把两者揉成一个大模块，日志、指标和故障域都会混在一起，排查成本会更高。
+
+一句话总结：
+
+* `kubelet` 管“**进程和 Pod**”
+* `kube-proxy` 管“**流量和 Service**”
+
+它们天然就是两个子系统，拆开比揉成一个大模块更合理。
 
 这 3 个组件中只有 kube-proxy 被容器化了，而 kubelet 因为必须要管理整个节点，容器化会限制它的能力，所以它必须在 container-runtime 之外运行。minikube ssh 登录到节点，可以用 `docker ps | grep kube-proxy` 看到 kube-proxy，而 kubelet 用 docker ps 是找不到的，需要用操作系统的 ps 命令查看。
 
