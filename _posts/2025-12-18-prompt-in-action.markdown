@@ -591,6 +591,9 @@ payload = {
 
 # 文生视频
 
+[山音超级编剧大师 - 全格式影视编剧 Skill](https://github.com/Shanyin-ai/shanyin-screenwriting-master)，设计的自然语言驱动编剧 Agent Skill 覆盖 1-3 分钟概念超短片→90 分钟电影长片→多集剧集的全流程剧本创作，一站式搞定人物、大纲、场景、剧本全链路。
+
+
 ## 1. 脚本生成
 
 方法：建议使用 Gemini 生成脚本。
