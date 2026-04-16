@@ -152,7 +152,7 @@ Node 里的 3 个组件，分别是 kubelet、kube-proxy、container-runtime
 
 所以，从设计思路上可以把它们概括成一句话：`kubelet` 管的是“**进程和 Pod**”，`kube-proxy` 管的是“**流量和 Service**”。它们天然就是两个子系统，分开实现比做成一个“大而全”的节点代理更合理。
 
-这 3 个组件中只有 kube-proxy 被容器化了，而 kubelet 因为必须要管理整个节点，容器化会限制它的能力，所以它必须在 container-runtime 之外运行。minikube ssh 登录到节点，可以用 `docker ps | grep kube-proxy` 看到 kube-proxy，而 kubelet 用 docker ps 是找不到的，需要用操作系统的 ps 命令查看。
+**这 3 个组件中只有 kube-proxy 被容器化了，而 kubelet 因为必须要管理整个节点，容器化会限制它的能力，所以它必须在 container-runtime 之外运行。minikube ssh 登录到节点，可以用 `docker ps | grep kube-proxy` 看到 kube-proxy，而 kubelet 用 `docker ps` 是找不到的，需要用操作系统的 `ps` 命令查看**。
 
 > 注意：因为 Kubernetes 的定位是容器编排平台，所以它没有限定 container-runtime 必须是 Docker，完全可以替换成任何符合标准的其他容器运行时，例如 containerd、CRI-O 等
 
@@ -163,11 +163,11 @@ Node 里的 3 个组件，分别是 kubelet、kube-proxy、container-runtime
 
 只要服务器节点上运行了 apiserver、scheduler、kubelet、kube-proxy、container-runtime 等组件，就可以说是一个功能齐全的 Kubernetes 集群了。不过就像 Linux 一样，操作系统提供的基础功能虽然“可用”，但想达到“好用”的程度，还是要再安装一些附加功能，这在 Kubernetes 里就是插件（Addon）。
 
-由于 Kubernetes 本身的设计非常灵活，所以就有大量的插件用来扩展、增强它对应用和集群的管理能力。minikube 也支持很多的插件，使用命令 minikube addons list 就可以查看插件列表：
+由于 Kubernetes 本身的设计非常灵活，所以就有大量的插件用来扩展、增强它对应用和集群的管理能力。minikube 也支持很多的插件，使用命令 `minikube addons list` 就可以查看插件列表：
 
 ![k8s-addons](/assets/images/202208/k8s-addons.png)
 
-通常必备的插件有 DNS 和 Dashboard。只要在 minikube 环境里执行一条简单的命令 minikube dashboard，就可以自动用浏览器打开 Dashboard 页面，而且还支持中文。
+通常必备的插件有 DNS 和 Dashboard。只要在 minikube 环境里执行一条简单的命令 `minikube dashboard`，就可以自动用浏览器打开 Dashboard 页面，而且还支持中文。
 
 
 
@@ -3009,19 +3009,19 @@ sequenceDiagram
 
 实践里，下面这些情况通常很适合考虑业务自定义 controller：
 
-* **你需要把一组底层资源封装成一个业务对象**  
+* **你需要把一组底层资源封装成一个业务对象**
   例如用户只想声明一个 `MiniGameApp`、`Tenant`、`DataSyncJob`，而不想手工维护背后的 Deployment、Service、Ingress、Secret、HPA 等一串资源。
 
-* **你需要一个长期存在的控制循环，而不是一次性动作**  
+* **你需要一个长期存在的控制循环，而不是一次性动作**
   例如数据库主从切换、备份策略执行、证书续期、租户配额校正、跨集群同步，这些事情不是“跑一次就结束”，而是系统状态变化后还要继续跟进。
 
-* **你需要把外部系统纳入 Kubernetes 的声明式管理**  
+* **你需要把外部系统纳入 Kubernetes 的声明式管理**
   例如用户在集群里声明一个 `BackupPolicy`，controller 去调用对象存储、数据库、云厂商 API；或者声明一个 `Tenant`，controller 自动创建 namespace、quota、RBAC、网络策略等资源。
 
-* **你希望业务状态能通过 Kubernetes API 统一暴露**  
+* **你希望业务状态能通过 Kubernetes API 统一暴露**
   例如用户想直接 `kubectl get myapps` 就看到 Ready / Failed / Reconciling 这些状态，而不是去翻外部系统日志。controller 可以把观测结果写回 `status`，把“当前系统做到哪一步了”也纳入 API。
 
-* **你需要在并发变化和异常恢复下仍然稳定收敛**  
+* **你需要在并发变化和异常恢复下仍然稳定收敛**
   如果你的业务过程会遇到重试、部分成功、对象删除、外部依赖暂时失败、controller 重启恢复等情况，那么 controller 这种幂等、可重复执行的控制循环模型会比脚本式自动化更稳。
 
 反过来说，下面这些场景通常**不必急着上自定义 controller**：
