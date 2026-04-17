@@ -48,7 +48,7 @@ alias ll='ls -rtlh'
 ```
 
 
-## Bash 自动补全功能
+# Bash 自动补全功能
 
 `complete` 是 Bash shell 的内置命令，**用于自定义命令或自定义脚本的自动补全行为**。当用户按下 `Tab` 键时，**Bash 会调用相应的补全函数来生成补全建议**。
 
@@ -2238,39 +2238,31 @@ https://unix.stackexchange.com/questions/23111/what-is-the-eval-command-in-bash
 
 ## set
 
-Bash 执行脚本的时候，例如，` bash script.sh` 会创建一个新的 Shell，script.sh 是在一个新的 Shell 里面执行。这个 Shell 就是脚本的执行环境，Bash 默认给定了这个环境的各种参数。set 命令用来修改 Shell 环境的运行参数，也就是可以定制环境。一共有十几个参数可以定制，[官方手册](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html)有完整清单。如果命令行下不带任何参数，直接运行set，会显示所有的环境变量和 Shell 函数。
+Bash 执行脚本的时候，例如，`bash script.sh` 会创建一个新的 Shell，`script.sh` 是在一个新的 Shell 里面执行。这个 Shell 就是脚本的执行环境，Bash 默认给定了这个环境的各种参数。`set` 命令用来修改 Shell 环境的运行参数，也就是可以定制环境。一共有十几个参数可以定制，[官方手册](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html)有完整清单。如果命令行下不带任何参数，直接运行 `set`，会显示所有的环境变量和 Shell 函数。
+
+常见用法可以按功能分成几类（当作速查表用）：
+
+1) 开关 shell 选项（最常用）
+
+- `set -e`：遇到命令返回非 0 就退出（脚本“出错即停”）
+- `set -u`：引用未定义变量就报错退出（防止拼错变量名）
+- `set -o pipefail`：管道中任一命令失败就让整条管道失败（否则默认只看最后一个命令）
+
+组合（常见模板）：
 
 ```bash
-# 遇到不存在的变量不会忽略，而是报错并不再执行后续语句
-set -u
-
-# 用来在运行结果之前，先输出执行的那一行命令，这对于调试复杂的脚本是很有用的
-set -x
-
-# 错误处理，脚本只要发生错误，就终止执行
-# set -e根据返回值来判断，一个命令是否运行失败
-# set +e表示关闭-e选项，set -e表示重新打开-e选项
-set -e
-
-# set -e有一个例外情况，就是不适用于管道命令
-# 所谓管道命令，就是多个子命令通过管道运算符（|）组合成为一个大的命令。Bash 会把最后一个子命令的返回值，作为整个命令的返回值。也就是说，只要最后一个子命令不失败，管道命令总是会执行成功，因此它后面命令依然会执行，set -e就失效了
-# set -o pipefail用来解决这种情况，只要一个子命令失败，整个管道命令就失败，脚本就会终止执行
-set -o pipefail
+set -euo pipefail
 ```
 
-
-通常的错误处理方法：对比 `set -e`
+对比：不用 `set -e` 时，常见的错误处理写法：
 
 ```bash
-# 只要command有非零返回值，脚本就会停止执行
+# 只要 command 有非零返回值，脚本就会停止执行
 command || exit 1
 
 # 如果两个命令有继承关系，只有第一个命令成功了，才能继续执行第二个命令
 command1 && command2
-```
 
-
-```bash
 # 写法一
 command || { echo "command failed"; exit 1; }
 
@@ -2288,20 +2280,61 @@ if [ "$?" -ne 0 ]; then
 fi
 ```
 
+2) `-x/+x` 调试打印
 
-总结：set命令的上面这四个参数，一般都放在一起使用。
+- `set -x`：打印将要执行的命令（trace）
+- `set +x`：关闭 trace
 
 ```bash
-# 这两种写法建议放在所有 Bash 脚本的头部
-# 另一种办法是在执行 Bash 脚本的时候，从命令行传入这些参数: bash -euxo pipefail script.sh
-
-# 写法一
-set -euxo pipefail
-
-# 写法二
-set -eux
-set -o pipefail
+set -x
+some_command arg1
+set +x
 ```
+
+3) `-a/+a` 自动 `export`（常用于加载 `.env`）
+
+- `set -a`：之后定义/赋值的变量都会自动 `export`
+- `set +a`：关闭
+
+```bash
+set -a && source .env && set +a
+```
+
+4) `-f` 禁用通配符展开（glob）
+
+- `set -f`：关闭 glob（`*` `?` `[]` 不再展开）
+- `set +f`：恢复
+
+```bash
+set -f
+set +f
+```
+
+5) `--` 处理位置参数（包括以 `-` 开头的参数）
+
+- `set -- ...`：重设脚本/函数的 `$1` `$2` ...
+- `set --`：清空位置参数
+- `set -- "$@"`：常用于重新整理参数（例如先过滤/改写再继续解析）
+
+```bash
+set -- a "b c"
+echo "$1" "$2"   # a  b c
+```
+
+6) `-o/+o` 以长名设置选项
+
+- `set -o option` / `set +o option`：开启/关闭某个 `-o` 选项（如 `pipefail`, `noclobber` 等）
+- `set -o`：列出当前所有 `-o` 选项的状态
+
+```bash
+set -o pipefail
+set +o pipefail
+set -o
+```
+
+7) `set` 不带参数：列出变量/函数（较少用）
+
+- `set`：会输出当前 shell 中的变量、函数等（内容很长，一般不写进脚本）
 
 
 * http://www.ruanyifeng.com/blog/2017/11/bash-set.html
