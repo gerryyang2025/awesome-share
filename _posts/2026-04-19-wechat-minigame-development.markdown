@@ -1,8 +1,8 @@
 ---
 layout: post
 title:  "WeChat Minigame Development：微信小游戏个人开发者笔记"
-date:   2025-03-16 01:38:00 +0800
-last_modified_at: 2026-04-19 12:00:00 +0800
+date:   2026-04-19 12:00:00 +0800
+last_modified_at: 2026-04-19 14:24:12 +0800
 description: "个人向微信小游戏笔记：平台定位、个人主体与类目、Cocos 构建与包体、上架备案与设计要点；引用编号对应文末 Reference，不替代官方说明。"
 categories: [Game]
 tags:
