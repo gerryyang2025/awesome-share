@@ -3,7 +3,7 @@ layout: post
 title:  "WeChat Minigame Development：微信小游戏个人开发者笔记"
 date:   2026-04-19 12:00:00 +0800
 last_modified_at: 2026-04-19 14:24:12 +0800
-description: "个人向微信小游戏笔记：平台定位、个人主体与类目、Cocos 构建与包体、上架备案与设计要点；引用编号对应文末 Reference，不替代官方说明。"
+description: "个人向微信小游戏笔记：平台定位、个人主体与类目、Cocos 构建与包体、上架备案与设计要点；资料链接见文末 Reference，不替代官方说明。"
 categories: [Game]
 tags:
   - 微信小游戏
@@ -17,7 +17,7 @@ mermaid: true
 * Do not remove this line (it will not be displayed)
 {:toc}
 
-> 本文是**个人学习笔记**，归纳微信小游戏的产品形态、个人开发者能力边界、引擎构建与上架合规要点；**不能替代**微信公众平台与开放文档的现行规则。正文用 `[[n]](#ref-n)` 引用资料，**完整 URL 仅在文末 [Reference 参考](#reference) 列出**。  
+> 本文是**个人学习笔记**，归纳微信小游戏的产品形态、个人开发者能力边界、引擎构建与上架合规要点；**不能替代**微信公众平台与开放文档的现行规则。**资料链接集中在文末 [Reference 参考](#reference)**。  
 > 文中 **提示块**（Tip / Info / Warning / Danger）、表格与 **Mermaid** 图均为 Chirpy 主题支持的写法，可与站内 [Chirpy 主题使用指南]({% post_url 2026-03-21-chirpy-theme-in-action %}) 对照。
 
 # 前言 {#intro}
@@ -949,81 +949,58 @@ flowchart LR
 
 # Reference 参考 {#reference}
 
-正文中的 `[[n]](#ref-n)` 对应下列条目；**URL 仅在本节列出**，便于校对与更新。未在正文出现的编号（如 API、广告、虚拟支付等）仍保留作延伸阅读。
+正文中的编号与下列条目一一对应；**URL 仅在本节列出**，便于校对与更新。未在正文出现的编号（如 API、广告、虚拟支付等）仍保留作延伸阅读。
 
 ## 微信开放文档与平台
 
-1. <span id="ref-1"></span>**微信小游戏设计指南**  
-   <https://developers.weixin.qq.com/minigame/design/>
-2. <span id="ref-2"></span>**微信小游戏开发指南**  
-   <https://developers.weixin.qq.com/minigame/dev/guide/>
-3. <span id="ref-3"></span>**微信小游戏 API 参考**  
-   <https://developers.weixin.qq.com/minigame/dev/api/>
-4. <span id="ref-4"></span>**小游戏接入指南**  
-   <https://developers.weixin.qq.com/minigame/introduction/guide/>
-5. <span id="ref-5"></span>**小游戏接入指南 · IAA 发布指引**  
-   <https://developers.weixin.qq.com/minigame/introduction/guide/iaa>
-6. <span id="ref-6"></span>**微信小游戏 · 广告能力**  
-   <https://developers.weixin.qq.com/minigame/dev/guide/open-ability/ad/ad.html>
-7. <span id="ref-7"></span>**微信小游戏 · 虚拟支付进件**  
-   <https://developers.weixin.qq.com/minigame/dev/guide/open-ability/virtual-payment/virtual-payment2.html>
-8. <span id="ref-8"></span>**微信小游戏安全指南**  
-   <https://developers.weixin.qq.com/minigame/dev/guide/security/security.html>
-9. <span id="ref-9"></span>**微信小游戏 · 高性能模式**  
-   <https://developers.weixin.qq.com/minigame/dev/guide/performance/perf-high-performance.html>
-10. <span id="ref-10"></span>**微信开发者工具下载**  
-   <https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html>
-11. <span id="ref-11"></span>**微信开放社区 · 小游戏专区**  
-   <https://developers.weixin.qq.com/community/minigame>
-12. <span id="ref-12"></span>**小游戏资质提交审核指引（社区文档）**  
-   <https://developers.weixin.qq.com/community/minigame/doc/0008282466cfb096eb679e9b551408>
-13. <span id="ref-13"></span>**微信公众平台**  
-   <https://mp.weixin.qq.com/>
+<ol>
+  <li id="ref-1"><strong>微信小游戏设计指南</strong><br /><a href="https://developers.weixin.qq.com/minigame/design/">https://developers.weixin.qq.com/minigame/design/</a></li>
+  <li id="ref-2"><strong>微信小游戏开发指南</strong><br /><a href="https://developers.weixin.qq.com/minigame/dev/guide/">https://developers.weixin.qq.com/minigame/dev/guide/</a></li>
+  <li id="ref-3"><strong>微信小游戏 API 参考</strong><br /><a href="https://developers.weixin.qq.com/minigame/dev/api/">https://developers.weixin.qq.com/minigame/dev/api/</a></li>
+  <li id="ref-4"><strong>小游戏接入指南</strong><br /><a href="https://developers.weixin.qq.com/minigame/introduction/guide/">https://developers.weixin.qq.com/minigame/introduction/guide/</a></li>
+  <li id="ref-5"><strong>小游戏接入指南 · IAA 发布指引</strong><br /><a href="https://developers.weixin.qq.com/minigame/introduction/guide/iaa">https://developers.weixin.qq.com/minigame/introduction/guide/iaa</a></li>
+  <li id="ref-6"><strong>微信小游戏 · 广告能力</strong><br /><a href="https://developers.weixin.qq.com/minigame/dev/guide/open-ability/ad/ad.html">https://developers.weixin.qq.com/minigame/dev/guide/open-ability/ad/ad.html</a></li>
+  <li id="ref-7"><strong>微信小游戏 · 虚拟支付进件</strong><br /><a href="https://developers.weixin.qq.com/minigame/dev/guide/open-ability/virtual-payment/virtual-payment2.html">https://developers.weixin.qq.com/minigame/dev/guide/open-ability/virtual-payment/virtual-payment2.html</a></li>
+  <li id="ref-8"><strong>微信小游戏安全指南</strong><br /><a href="https://developers.weixin.qq.com/minigame/dev/guide/security/security.html">https://developers.weixin.qq.com/minigame/dev/guide/security/security.html</a></li>
+  <li id="ref-9"><strong>微信小游戏 · 高性能模式</strong><br /><a href="https://developers.weixin.qq.com/minigame/dev/guide/performance/perf-high-performance.html">https://developers.weixin.qq.com/minigame/dev/guide/performance/perf-high-performance.html</a></li>
+  <li id="ref-10"><strong>微信开发者工具下载</strong><br /><a href="https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html">https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html</a></li>
+  <li id="ref-11"><strong>微信开放社区 · 小游戏专区</strong><br /><a href="https://developers.weixin.qq.com/community/minigame">https://developers.weixin.qq.com/community/minigame</a></li>
+  <li id="ref-12"><strong>小游戏资质提交审核指引（社区文档）</strong><br /><a href="https://developers.weixin.qq.com/community/minigame/doc/0008282466cfb096eb679e9b551408">https://developers.weixin.qq.com/community/minigame/doc/0008282466cfb096eb679e9b551408</a></li>
+  <li id="ref-13"><strong>微信公众平台</strong><br /><a href="https://mp.weixin.qq.com/">https://mp.weixin.qq.com/</a></li>
+</ol>
 
 ## 第三方榜单与工具站
 
-14. <span id="ref-14"></span>**中国版权保护中心**  
-   <https://www.ccopyright.com.cn/>
-15. <span id="ref-15"></span>**应用宝 · 微信小游戏排行榜**  
-   <https://sj.qq.com/wechat-game>
-16. <span id="ref-16"></span>**Microsoft Store · 游戏**  
-   <https://apps.microsoft.com/games?hl=zh-CN&gl=CN>
+<ol start="14">
+  <li id="ref-14"><strong>中国版权保护中心</strong><br /><a href="https://www.ccopyright.com.cn/">https://www.ccopyright.com.cn/</a></li>
+  <li id="ref-15"><strong>应用宝 · 微信小游戏排行榜</strong><br /><a href="https://sj.qq.com/wechat-game">https://sj.qq.com/wechat-game</a></li>
+  <li id="ref-16"><strong>Microsoft Store · 游戏</strong><br /><a href="https://apps.microsoft.com/games?hl=zh-CN&amp;gl=CN">https://apps.microsoft.com/games?hl=zh-CN&amp;gl=CN</a></li>
+</ol>
 
 ## Cocos Creator 与 Unity 文档
 
-17. <span id="ref-17"></span>**Cocos Creator 3.8 · 发布到微信小游戏**  
-   <https://docs.cocos.com/creator/3.8/manual/zh/editor/publish/publish-wechatgame.html>
-18. <span id="ref-18"></span>**Cocos Creator · 通用构建选项**  
-   <https://docs.cocos.com/creator/3.8/manual/zh/editor/publish/build-options.html>
-19. <span id="ref-19"></span>**Cocos Creator · 微信小游戏引擎插件**  
-   <https://docs.cocos.com/creator/3.8/manual/zh/editor/publish/wechatgame-plugin.html>
-20. <span id="ref-20"></span>**Cocos Creator · 缓存管理器**  
-   <https://docs.cocos.com/creator/3.8/manual/zh/asset/cache-manager.html>
-21. <span id="ref-21"></span>**Unity User Manual**  
-   <https://docs.unity3d.com/Manual/index.html>
-22. <span id="ref-22"></span>**Cocos Store**  
-   <https://store.cocos.com/>
+<ol start="17">
+  <li id="ref-17"><strong>Cocos Creator 3.8 · 发布到微信小游戏</strong><br /><a href="https://docs.cocos.com/creator/3.8/manual/zh/editor/publish/publish-wechatgame.html">https://docs.cocos.com/creator/3.8/manual/zh/editor/publish/publish-wechatgame.html</a></li>
+  <li id="ref-18"><strong>Cocos Creator · 通用构建选项</strong><br /><a href="https://docs.cocos.com/creator/3.8/manual/zh/editor/publish/build-options.html">https://docs.cocos.com/creator/3.8/manual/zh/editor/publish/build-options.html</a></li>
+  <li id="ref-19"><strong>Cocos Creator · 微信小游戏引擎插件</strong><br /><a href="https://docs.cocos.com/creator/3.8/manual/zh/editor/publish/wechatgame-plugin.html">https://docs.cocos.com/creator/3.8/manual/zh/editor/publish/wechatgame-plugin.html</a></li>
+  <li id="ref-20"><strong>Cocos Creator · 缓存管理器</strong><br /><a href="https://docs.cocos.com/creator/3.8/manual/zh/asset/cache-manager.html">https://docs.cocos.com/creator/3.8/manual/zh/asset/cache-manager.html</a></li>
+  <li id="ref-21"><strong>Unity User Manual</strong><br /><a href="https://docs.unity3d.com/Manual/index.html">https://docs.unity3d.com/Manual/index.html</a></li>
+  <li id="ref-22"><strong>Cocos Store</strong><br /><a href="https://store.cocos.com/">https://store.cocos.com/</a></li>
+</ol>
 
 ## 开源仓库（示例与学习）
 
-23. <span id="ref-23"></span>**GitHub: wechat-miniprogram/minigame-demo**  
-   <https://github.com/wechat-miniprogram/minigame-demo>
-24. <span id="ref-24"></span>**GitHub: wechat-miniprogram/minigame-canvas-engine**  
-   <https://github.com/wechat-miniprogram/minigame-canvas-engine>
-25. <span id="ref-25"></span>**GitHub: cocos/cocos-example-projects**  
-   <https://github.com/cocos/cocos-example-projects>
-26. <span id="ref-26"></span>**GitHub: cocos-creator-demo**  
-   <https://github.com/cocos-creator-demo>
-27. <span id="ref-27"></span>**GitHub: cocos-happymatch**  
-   <https://github.com/cocos-creator-demo/cocos-happymatch>
-28. <span id="ref-28"></span>**GitHub: cocos_2048**  
-   <https://github.com/cocos-creator-demo/cocos_2048>
-29. <span id="ref-29"></span>**GitHub: cocos-flappy-bird**  
-   <https://github.com/cocos-creator-demo/cocos-flappy-bird>
-30. <span id="ref-30"></span>**GitHub: potato47/so-many-games**  
-   <https://github.com/potato47/so-many-games>
-31. <span id="ref-31"></span>**GitHub: cocos-tutorial-duang-sheep**  
-   <https://github.com/cocos-creator/cocos-tutorial-duang-sheep>
+<ol start="23">
+  <li id="ref-23"><strong>GitHub: wechat-miniprogram/minigame-demo</strong><br /><a href="https://github.com/wechat-miniprogram/minigame-demo">https://github.com/wechat-miniprogram/minigame-demo</a></li>
+  <li id="ref-24"><strong>GitHub: wechat-miniprogram/minigame-canvas-engine</strong><br /><a href="https://github.com/wechat-miniprogram/minigame-canvas-engine">https://github.com/wechat-miniprogram/minigame-canvas-engine</a></li>
+  <li id="ref-25"><strong>GitHub: cocos/cocos-example-projects</strong><br /><a href="https://github.com/cocos/cocos-example-projects">https://github.com/cocos/cocos-example-projects</a></li>
+  <li id="ref-26"><strong>GitHub: cocos-creator-demo</strong><br /><a href="https://github.com/cocos-creator-demo">https://github.com/cocos-creator-demo</a></li>
+  <li id="ref-27"><strong>GitHub: cocos-happymatch</strong><br /><a href="https://github.com/cocos-creator-demo/cocos-happymatch">https://github.com/cocos-creator-demo/cocos-happymatch</a></li>
+  <li id="ref-28"><strong>GitHub: cocos_2048</strong><br /><a href="https://github.com/cocos-creator-demo/cocos_2048">https://github.com/cocos-creator-demo/cocos_2048</a></li>
+  <li id="ref-29"><strong>GitHub: cocos-flappy-bird</strong><br /><a href="https://github.com/cocos-creator-demo/cocos-flappy-bird">https://github.com/cocos-creator-demo/cocos-flappy-bird</a></li>
+  <li id="ref-30"><strong>GitHub: potato47/so-many-games</strong><br /><a href="https://github.com/potato47/so-many-games">https://github.com/potato47/so-many-games</a></li>
+  <li id="ref-31"><strong>GitHub: cocos-tutorial-duang-sheep</strong><br /><a href="https://github.com/cocos-creator/cocos-tutorial-duang-sheep">https://github.com/cocos-creator/cocos-tutorial-duang-sheep</a></li>
+</ol>
 
 # 小结 {#summary}
 
@@ -1031,7 +1008,7 @@ flowchart LR
 - **工程**：**优先引擎**而非裸写 API；选型见 [第二阶段](#phase-dev)，性能清单见 [#perf-checklist](#perf-checklist)；构建产物 → `wechatgame/`{: .filepath} → 微信开发者工具 [[17]](#ref-17)。  
 - **增长与变现**：社交裂变与设计见 [#design-tips](#design-tips)，商业化与运营补充见 [#practice-supplement](#practice-supplement)。  
 - **发布**：认证、备案与 IAA/IAP 节奏以 [[4]](#ref-4) 为准；素材与展示项见 [第三阶段](#phase-release) 中的审核清单。  
-- **资料**：正文 `[[n]](#ref-n)` 与文末 [Reference](#reference) 同步更新即可；排版扩展（提示块、Mermaid）见 [Chirpy 主题使用指南]({% post_url 2026-03-21-chirpy-theme-in-action %})。
+- **资料**：编号与文末 [Reference](#reference) 同步更新即可；排版扩展（提示块、Mermaid）见 [Chirpy 主题使用指南]({% post_url 2026-03-21-chirpy-theme-in-action %})。
 
 # 结尾
 
