@@ -2,8 +2,8 @@
 layout: post
 title:  "Actor Model in Action"
 date:   2026-04-20 10:00:00 +0800
-last_modified_at: 2026-04-20 14:22:36 +0800
-description: "系统介绍 Actor 模型：定义与公理、Shared-nothing、理论优势、语言生态；对比 trpc-go、bingo stateful、tsf4g-go 与 Actor 风格实践；游戏应用与对象路由辨析；文末六条外部参考。"
+last_modified_at: 2026-04-20 14:25:17 +0800
+description: "系统介绍 Actor 模型：定义与公理、Shared-nothing、理论优势、语言生态；对比 trpc-go、bingo stateful、tsf4g-go 与 Actor 风格实践（含横向对比）；游戏应用与对象路由辨析；文末六条外部参考。"
 categories: Programming
 tags:
   - Actor
@@ -162,7 +162,7 @@ Actor 系统里，全局可观察顺序常由**消息时序与仲裁**塑造—�
 | **Hollywood** | 面向**低延迟**（如游戏服、交易引擎）的轻量 Actor 引擎；公开材料中曾有**极高吞吐**的宣称（如**秒级千万级消息**量级），须以**官方仓库、版本与自测环境**为准，不宜直接当作普适 SLA。 |
 | **go-actor 等** | 社区存在多个同名/近名轻量库，用 `chan` + `goroutine` 封装统一接口，减少样板代码并**显式避免业务锁**；选型前核对模块路径与维护状态。 |
 
-Go 的优势是**调度与工具链**成熟；风险是 **channel 泄漏、无界缓冲、select 死锁** 与 **弱类型消息** 的可维护性，往往需要 **protobuf / 代码生成 / 清晰协议** 兜底。**腾讯 trpc-go**（RPC 底座 + keep-order）、**bingo/stateful**（一等 Actor 运行时）、**tsf4g-go**（实体路由 + 会话 + 消息类型级保序）与 Actor 的关系，分别见专节 **「trpc-go…」「bingo…」「tsf4g-go…」**。
+Go 的优势是**调度与工具链**成熟；风险是 **channel 泄漏、无界缓冲、select 死锁** 与 **弱类型消息** 的可维护性，往往需要 **protobuf / 代码生成 / 清晰协议** 兜底。**腾讯 trpc-go**（RPC 底座 + keep-order）、**bingo/stateful**（一等 Actor 运行时）、**tsf4g-go**（实体路由 + 会话 + 消息类型级保序）与 Actor 的关系，分别见专节 **「trpc-go…」「bingo…」「tsf4g-go…」**；三者并列选型见 **「trpc-go、bingo、tsf4g-go 实现 Actor 模型方案的横向对比」**。
 
 
 ## C++：库实现与领域分叉
@@ -496,19 +496,227 @@ _, err := proxy.Notify(ctx, req, client.WithSendOnly())
 
 **边界**：实体路由偏**路由注册与查询**，**不是**完整 Actor registry + runtime；保序粒度在**处理器**，**不是**实体邮箱。
 
-## 与 trpc-go、bingo 的粗略对照
-
-| 框架 | 定位（粗） |
-| :--- | :--- |
-| **bingo/stateful** | 接近**业务 Actor 运行时**（mailbox、主循环、生命周期、迁移等一体化程度高） |
-| **tsf4g-go** | **强实体路由 + 会话 + 可选保序**；**Actor-like 底座**，**须业务补** per-entity 执行模型 |
-| **trpc-go** | **通用 RPC + 治理 + keep-order**；**拼装** Keyed Actor 语义，**较轻** |
-
-**tsf4g-go** 比「纯 RPC」**更接近** Actor 思想（实体寻址与路由治理强），但**未**把「**每实体即运行时对象**」框架化；**若目标是 per-entity mailbox + run loop + 生命周期**体验，仍须在**业务层**再包一层 Actor 语义。
+**tsf4g-go** 比「纯 RPC」**更接近** Actor 思想（实体寻址与路由治理强），但**未**把「**每实体即运行时对象**」框架化；**若目标是 per-entity mailbox + run loop + 生命周期**体验，仍须在**业务层**再包一层 Actor 语义。与 **trpc-go**、**bingo** 的并列选型，见下文 **「trpc-go、bingo、tsf4g-go 实现 Actor 模型方案的横向对比」**。
 
 **延伸阅读**：**tsf4g-go** 若为你所用仓库中的内部或受限发行框架，请以**随版本提供的 README、示例与官方文档**为准，勿在公开文中罗列具体包文件路径或内部标志位名称。
 
-上文 **trpc-go / bingo / tsf4g-go** 三节已从「底座与运行时」做过对照；**下面**不绑定具体框架，只从**游戏领域**抽象地谈 Actor 的典型建模——与后文「对象路由」一节同样保持**实现无关**。
+
+# trpc-go、bingo、tsf4g-go 实现 Actor 模型方案的横向对比
+
+## 一句话结论
+
+这三个框架都能承载 Actor 思想，但方式完全不同：
+
+- **`bingo/stateful`**：最接近真正的 **Actor runtime**
+- **`trpc-go`**：最适合做 **Keyed Actor / Sharded Actor** 的通用底座
+- **`tsf4g-go`**：最适合做 **实体路由 + 会话驱动** 的 Actor 风格微服务
+
+如果只看「开箱即用的 Actor 完整度」，结论很明确：
+
+**`bingo/stateful` > `trpc-go` / `tsf4g-go`**
+
+但如果细分能力，会更准确：
+
+- 比 **Actor 运行时完整度**：**bingo** 最强
+- 比 **按实体 key 串行执行**：**trpc-go** 更自然
+- 比 **实体寻址、位置透明和路由治理**：**tsf4g-go** 更强
+
+所以它们不是简单的「谁替代谁」的关系，而是**三种不同层级的 Actor 实现路径**。
+
+## 总体定位
+
+| 框架 | 更准确的定位 | Actor 化方式 |
+| :--- | :--- | :--- |
+| **`trpc-go`** | RPC、服务治理与调度底座 | 通过一致性哈希、keep-order、stream、本地调用等能力「拼装」Actor |
+| **`bingo/stateful`** | 面向业务对象的 Actor runtime | 直接把 Actor 身份、邮箱、单线程执行、生命周期、存盘、迁移做进运行时 |
+| **`tsf4g-go`** | 带会话能力和实体路由的微服务框架 | 通过**实体路由子系统**、会话管理、消息保序和服务治理承载 Actor 风格系统 |
+
+最核心的区别是：
+
+- **`bingo`** 是「框架直接替你运行 Actor」
+- **`trpc-go`** 是「框架给你足够多的底座，让你自己拼 Actor」
+- **`tsf4g-go`** 是「框架替你解决实体寻址和服务治理，但实体执行模型还要你自己补」
+
+## 核心能力对比
+
+| 维度 | `trpc-go` | `bingo/stateful` | `tsf4g-go` |
+| :--- | :--- | :--- | :--- |
+| **Actor 身份** | 业务自定义 `actorID` | 协议层内建目标 Actor 标识 | `entityID` / 自定义名 + ID 等路由语义 |
+| **Actor 寻址** | 服务名 + `WithKey` + 一致性哈希 | 协议头直接寻址 | 实体路由：注册、查询、发送 |
+| **邮箱** | 无公开邮箱；keep-order 提供 per-key 串行路径 | 每 Actor 独立私有邮箱 | 无 per-entity mailbox |
+| **串行执行粒度** | 同 key 串行、不同 key 并行 | 同 Actor 串行、不同 Actor 并行 | 同消息处理器串行，**不是**同实体 mailbox 级串行 |
+| **生命周期** | 无 Actor 生命周期 API | 自动/手动创建、Tick、空闲退出、优雅退出 | 服务实例生命周期、路由冻结/解冻 |
+| **状态模型** | 业务自己维护 `map[actorID]*State` | Actor 对象即状态对象 | 会话由框架缓存，实体状态仍靠业务维护 |
+| **持久化** | 无内建 | 存盘、变化同步等内建策略 | 无 Actor 状态持久化模型 |
+| **迁移** | 无内建 Actor 迁移 | 内建 Actor 迁移与恢复 | 有路由迁移治理，无 Actor runtime 级一体化迁移 |
+| **容错治理** | 熔断、过载、健康检查、优雅重启 | 优雅退出、死循环检测、迁移失败恢复等 | 优雅退出、任务超时重试、路由治理 |
+| **最适合的模型** | Keyed Actor、Sharded Actor、Session Actor | 玩家/房间/订单等强状态业务 Actor | 实体路由型逻辑服、接入态强的游戏微服务 |
+
+## 三个最重要的差异
+
+### 1. 谁负责 Actor 身份与寻址
+
+**`bingo`** 的 Actor 身份最「第一性」。
+
+- Actor 标识在**协议层**就是一等字段
+- 分发与运行时围绕该标识工作
+- 代码生成、消息头、运行时是联动的
+
+**`trpc-go`** 的 Actor 身份最「业务约定化」。
+
+- 框架不内建统一 ActorID 类型
+- 需要业务把某个字段定义为 `actorID`
+- 再用 `WithKey(actorID)` 和 keep-order 把它变成 Actor 风格执行单元
+
+**`tsf4g-go`** 的身份体系最像「实体目录」。
+
+- `entityID`、自定义名 + ID 等已是框架显式概念
+- **实体路由子系统**负责把实体定位到实例
+- 很像 **ActorRef** 背后的目录服务
+
+**结论**：
+
+- 想要「身份就是协议的一部分」，选 **`bingo`**
+- 想要「业务自己定义 key，再映射成 Actor」，选 **`trpc-go`**
+- 想要「先解决实体地址和路由，再做实体执行模型」，选 **`tsf4g-go`**
+
+### 2. 谁负责串行执行
+
+这其实是三者差异最大的地方。
+
+**`bingo`** 的串行执行是标准 Actor 语义：
+
+- 每个 Actor 一个邮箱
+- 每个 Actor 一个 goroutine / 主循环
+- 同一 Actor 永远串行
+- 不同 Actor 天然并行
+
+**`trpc-go`** 的串行执行是「按 key 保序」：
+
+- 通过 keep-order extractor 提取 key
+- 同一个 key 串行
+- 不同 key 并行
+- 这已经非常接近 **Keyed Actor**
+
+**`tsf4g-go`** 的串行执行是「按消息处理器保序」：
+
+- 某类消息进入**保序处理器**
+- 该处理器内部单 goroutine 串行
+- **不是**按 `entityID` 拆 mailbox
+
+这意味着：
+
+- **`bingo`** 解决的是「Actor 如何执行」
+- **`trpc-go`** 解决的是「如何把实体 key 映射成串行执行单元」
+- **`tsf4g-go`** 更多解决的是「某类消息是否需要顺序消费」
+
+**结论**：
+
+- 若最关心「**同一个实体天然串行**」，**`bingo`** 和 **`trpc-go`** 都更合适
+- 若只关心「**这类消息要保序**」，**`tsf4g-go`** 足够
+- **不应**把 **`tsf4g-go`** 的保序配置直接等同于 per-entity Actor mailbox
+
+### 3. 谁负责状态、生命周期和迁移
+
+**`bingo`** 在这方面最完整。它直接提供：自动/手动创建、生命周期钩子、Tick、空闲退出、自动存盘、变化同步、Actor 迁移与恢复等——不只是「消息怎么排队」，而是「对象怎么生、怎么活、怎么迁、怎么存」。
+
+**`trpc-go`** 在这方面最轻：主要提供通信、调度、路由与工程治理；状态对象、生命周期、回收、持久化、迁移多须业务自建。
+
+**`tsf4g-go`** 则处于中间层：提供实体路由治理、冻结/解冻、会话缓存、服务实例优雅退出等；**不提供** Actor 级生命周期、Actor 级持久化、Actor 级执行循环。
+
+**结论**：
+
+- 想直接写「有生命的业务对象」，选 **`bingo`**
+- 想完全自定义 Actor runtime，只借力 RPC 和治理，选 **`trpc-go`**
+- 想做「有实体路由和迁移窗口的微服务」，选 **`tsf4g-go`**
+
+## 三个框架各自最像 Actor 的那部分
+
+### `trpc-go`
+
+最像 Actor 的部分是：
+
+- **`consistent_hash` + `WithKey(actorID)`**
+- **`WithKeepOrderPreDecodeExtractor` / `WithKeepOrderPreUnmarshalExtractor`**
+- keep-order 背后的「同 key 串行、异 key 并行」语义（实现见 **[官方仓库](https://github.com/trpc-group/trpc-go)**）
+
+它像的是：**Keyed Actor**、**Sharded Actor**、同 key 串行。
+
+### `bingo/stateful`
+
+最像 Actor 的部分是：
+
+- 运行时对象、**每 Actor 邮箱**、**主循环**、**Actor 管理器**
+- **Tick**、**存盘**、**迁移数据编码** 等一体化路径
+
+它像的是：运行时原生 Actor、「对象即状态」、「邮箱即执行边界」。
+
+### `tsf4g-go`
+
+最像 Actor 的部分是：
+
+- **实体路由子系统**（注册、查询、按 ID/信息发送）
+- **entityID** / 自定义路由键、**冻结/解冻**、路由发送与广播/多播
+
+它像的是：**Actor 目录**、**实体寻址**、**位置透明路由**。
+
+## 选型建议
+
+### 1. 如果你要「直接写 Actor 业务对象」
+
+优先选 **`bingo/stateful`**。核心能力（身份、邮箱、串行、生命周期、状态持有、迁移）多已内建。典型场景：玩家 / 房间 / 公会 / 订单或工作流实例 Actor。
+
+### 2. 如果你要「在通用微服务体系里实现 Actor」
+
+优先选 **`trpc-go`**。适合一致性哈希分片、按 `actorID` 路由与串行、本地/远端透明调用。典型形态：客户端 **`consistent_hash` + `WithKey(actorID)`**，服务端 keep-order extractor，业务层维护状态 map 或自建 mailbox。
+
+### 3. 如果你要「做以实体路由为中心的游戏微服务」
+
+优先选 **`tsf4g-go`**。在实体到实例定位、路由注册与查询、路由冻结与迁移窗口、会话缓存与客户端链路上较省力。但要记住：**它解决的是「实体在哪里」**，不等于已解决「实体在本地如何作为 Actor 执行」。
+
+### 4. 如果你要的是「最完整的 Actor 体验」
+
+优先级建议：
+
+1. **`bingo/stateful`**
+2. **`trpc-go` + 业务自建 mailbox/runtime**
+3. **`tsf4g-go` + 实体路由 + 业务自建实体执行层**
+
+这里不是说 **`tsf4g-go`** 比 **`trpc-go`** 弱，而是说：
+
+- 若从「**Actor 执行模型**」出发，**`trpc-go`** 的 per-key 串行更容易直接落成 Actor
+- 若从「**实体路由与在线迁移治理**」出发，**`tsf4g-go`** 更强
+
+## 最终判断
+
+如果用一句话概括三者差异，可以这样说：
+
+- **`bingo`**：直接给你一套 Actor runtime
+- **`trpc-go`**：给你实现 Actor runtime 的通用基础设施
+- **`tsf4g-go`**：给你实现实体路由型 Actor 系统的微服务框架
+
+因此：
+
+- 想少拼装、直接写 Actor，选 **`bingo`**
+- 想最大化通用性和可控性，选 **`trpc-go`**
+- 想优先解决实体路由、接入链路和服务治理，选 **`tsf4g-go`**
+
+真正落地时，一个很实用的理解方式是：
+
+- **`bingo`** 解决的是 **Actor 自身**
+- **`trpc-go`** 解决的是 **Actor 的通信与调度**
+- **`tsf4g-go`** 解决的是 **Actor 风格实体系统的路由与治理**
+
+## 主要参考文档
+
+- 本文前述 **`# trpc-go 中实现 Actor 模型的方法分析`**、**`# bingo 中实现 Actor 模型的方法分析`**、**`# tsf4g-go 中实现 Actor 模型的方法分析`** 三节专节（与本节表格、结论一致时以专节细节为准）。
+
+## 主要参考源码
+
+- **`trpc-go`**：开源，见 **[trpc-group/trpc-go](https://github.com/trpc-group/trpc-go)**，重点浏览 keep-order、一致性哈希、server/client options、流式与示例目录。
+- **`bingo` / `tsf4g-go`**：以你所用仓库版本为准，参见随仓 **README、示例与官方文档**；不单列内部相对路径。
+
+上文 **trpc-go / bingo / tsf4g-go** 三节专节与**本节横向对比**已把「底座与选型」说清；**下面**不绑定具体框架，只从**游戏领域**抽象地谈 Actor 的典型建模——与后文「对象路由」一节同样保持**实现无关**。
 
 # 游戏领域的具体应用
 
@@ -603,7 +811,7 @@ Actor 与 **会话隔离、并行战斗、分区世界** 需求高度契合。**
 
 **隔离状态 + 异步消息** 提供高于「共享内存 + 锁」的一层抽象；是否采用仍看领域与团队。
 
-技术选型与延伸阅读：语言与框架见上文各节；**trpc-go / bingo / tsf4g-go** 三框架与 Actor 的对照见专节；**对象路由** ≠ Actor；文献以 **[1]** 为主，**[2][5][4]** 与 **[3][6]** 按主题选读。落地前自问：**状态能否按消息边界切分**、**能否把异步协议与观测做规范**。
+技术选型与延伸阅读：语言与框架见上文各节；**trpc-go / bingo / tsf4g-go** 三框架与 Actor 的对照见专节，**并列选型与能力表**见 **「横向对比」**一节；**对象路由** ≠ Actor；文献以 **[1]** 为主，**[2][5][4]** 与 **[3][6]** 按主题选读。落地前自问：**状态能否按消息边界切分**、**能否把异步协议与观测做规范**。
 
 
 # 参考链接
