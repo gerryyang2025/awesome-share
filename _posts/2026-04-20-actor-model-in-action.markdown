@@ -2,8 +2,8 @@
 layout: post
 title:  "Actor Model in Action"
 date:   2026-04-20 10:00:00 +0800
-last_modified_at: 2026-04-21 16:00:00 +0800
-description: "系统介绍 Actor 模型：定义与公理、Shared-nothing、理论优势、语言生态与游戏应用；辨析 Actor 模型与游戏服务端「对象路由」的差异与常见组合方式；文末六条外部参考。"
+last_modified_at: 2026-04-20 11:49:03 +0800
+description: "系统介绍 Actor 模型：定义与公理、Shared-nothing、理论优势、语言生态；含 trpc-go 与 Actor 风格的映射与 keep-order 实践；游戏应用与对象路由辨析；文末六条外部参考。"
 categories: Programming
 tags:
   - Actor
@@ -159,7 +159,7 @@ Actor 系统里，全局可观察顺序常由**消息时序与仲裁**塑造—�
 | **Hollywood** | 面向**低延迟**（如游戏服、交易引擎）的轻量 Actor 引擎；公开材料中曾有**极高吞吐**的宣称（如**秒级千万级消息**量级），须以**官方仓库、版本与自测环境**为准，不宜直接当作普适 SLA。 |
 | **go-actor 等** | 社区存在多个同名/近名轻量库，用 `chan` + `goroutine` 封装统一接口，减少样板代码并**显式避免业务锁**；选型前核对模块路径与维护状态。 |
 
-Go 的优势是**调度与工具链**成熟；风险是 **channel 泄漏、无界缓冲、select 死锁** 与 **弱类型消息** 的可维护性，往往需要 **protobuf / 代码生成 / 清晰协议** 兜底。
+Go 的优势是**调度与工具链**成熟；风险是 **channel 泄漏、无界缓冲、select 死锁** 与 **弱类型消息** 的可维护性，往往需要 **protobuf / 代码生成 / 清晰协议** 兜底。**腾讯 trpc-go** 在 RPC 层提供 **keep-order、一致性哈希、`SendOnly`、Stream** 等与 **Keyed / Sharded Actor** 同向的能力，见全文 **「trpc-go 中实现 Actor 模型的方法分析」** 一章。
 
 
 ## C++：库实现与领域分叉
@@ -188,6 +188,129 @@ Erlang 常被视为 Actor 模型的**先驱与最典型代表**之一：思想�
 **OTP** 把 Actor 模型推到可用性峰值：**监督树**、**gen_server** 等行为模式、「任其崩溃」哲学下的**重启策略**，使电信运营商级耐久度成为可复制的**架构模式**，而非仅靠程序员自觉。
 
 代价是：**跨进程大数据依赖复制**、函数式与 OTP **学习曲线**。
+
+
+# trpc-go 中实现 Actor 模型的方法分析
+
+本节讨论 **腾讯 [trpc-go](https://github.com/trpc-group/trpc-go)**（Go RPC 框架）与 **Actor 风格** 的契合度：它是**通信与治理底座**，不是 Erlang/Akka 式的「自带完整 Actor Runtime」。API 与包路径以你所用版本及仓库为准，下述为常见能力归纳。
+
+## 一句话结论
+
+`trpc-go`**不是**「自带完整 Actor Runtime」的框架，但已提供实现 **Actor 风格**分布式系统所需的大部分**底座**：异步 RPC、**按 key 串行**（keep-order）、本地直连、流式会话、一致性哈希路由、服务发现、过载与熔断、健康检查与优雅重启等。
+
+更准确的说法是：
+
+**`trpc-go` = Actor 风格分布式系统的通信与调度底座**，而不是 **Actor 运行时本体**。
+
+业务侧通常仍需自行补齐：**Actor 生命周期**、**状态持久化**、**监督树与崩溃恢复语义**、**全局注册表/目录**、**跨节点迁移与再平衡**等。
+
+## Actor 语义与 trpc-go 能力映射
+
+| Actor 语义 | trpc-go 常见能力 | 结论 |
+| :--- | :--- | :--- |
+| **身份与寻址** | 服务名/方法名、`client.WithServiceName`、发现、负载均衡 | 可表达「消息发往哪类 Actor 服务」 |
+| **异步消息** | Unary RPC、`client.WithSendOnly()`、Stream RPC | 命令、通知、会话流 |
+| **单 Actor 串行** | `server.WithKeepOrderPreDecodeExtractor` / `WithKeepOrderPreUnmarshalExtractor`，内部 `orderedGroups.Add(key, fn)` | 同 key **顺序**、不同 key **并行** |
+| **本地调用** | `scope: local` / `all`、进程内 `internal/local/inprocess` 等 | 同进程「位置透明」下的零链路等价路径 |
+| **分片与远程** | `client.WithBalancerName("consistent_hash")` + `client.WithKey(actorID)` | 同一 **Actor ID** 稳定落到同一节点 |
+| **会话型 Actor** | 各类 Stream RPC | 长连接、双向会话 |
+| **治理** | timeout/cancel、熔断、过载、健康检查、优雅重启 | **工程治理**，**不是** OTP 式监督树 |
+| **邮箱持久化、监督树** | 无公开 Runtime | **业务自建** |
+
+## 关键实现：keep-order 与内部 Actor-like 调度
+
+服务端 **keep-order** 会在传输链路上把请求按提取出的 **key** 投递到有序组；默认实现常位于 `trpc-go/internal/keeporder/actor`，本质是**每 key 一套串行消费路径**（常表现为 goroutine + 队列 + 回收策略），与「邮箱按 key 消费」同向，但**尚未**上升为公开、通用的 Actor Runtime API。
+
+## 五种常见落地方式
+
+### 1. 按 key 串行的 Keyed Actor
+
+将 **`actorID`** 作为 keep-order 的 key：同 ID 串行、不同 ID 并行；状态留在业务 `map[actorID]*State`（或封装类型）。
+
+适用：房间、会话、玩家、订单、工作流实例等「**同实体串行、异实体并行**」。
+
+```go
+s := trpc.NewServer(
+    server.WithKeepOrderPreUnmarshalExtractor(
+        func(ctx context.Context, req interface{}) (string, bool) {
+            r, ok := req.(*MyRequest)
+            if !ok {
+                return "", false
+            }
+            return r.ActorId, true
+        },
+    ),
+)
+```
+
+- Key 若更适合从原始包头/metadata 提取，可用 **`WithKeepOrderPreDecodeExtractor`**。  
+- 若内置 per-key 调度不满足需求，可通过 **`server.WithOrderedGroups(...)`** 注入自定义有序组，与自有 mailbox 拼接（减少对 `internal/keeporder/actor` 的直接依赖）。
+
+### 2. 分布式分片 Actor
+
+目标：**同一 `actorID` 总是落到同一节点**。常见组合：发现 + **一致性哈希** + `client.WithKey(actorID)`；节点内再配合 **keep-order** 串行处理。
+
+```go
+proxy := pb.NewMyActorClientProxy(
+    client.WithDiscoveryName("my_discovery"),
+    client.WithServiceName("trpc.myapp.actor.ActorService"),
+    client.WithBalancerName("consistent_hash"),
+)
+_, err := proxy.Handle(ctx, req, client.WithKey(req.ActorId))
+```
+
+语义分工：**`consistent_hash + WithKey`** 解决「去哪台机器」；**keep-order** 解决「到机后如何串行」。**不自带**自动迁移、状态复制、全局目录。
+
+### 3. 本地 Actor：进程内零网络开销
+
+若多 Actor 同进程，可通过 **`scope`**（如 `local` / `remote` / `all`：先本地、再远端等策略）把 RPC **退化为本地路径**，减少序列化与网络开销。这是**调用路径优化**，**不是**邮箱抽象本身。
+
+### 4. 事件型：SendOnly
+
+`client.WithSendOnly()`：**只发不等**，适合通知/事件/fire-and-forget。重要业务须自补 **ack、幂等、重试、死信**。
+
+```go
+_, err := proxy.Notify(ctx, req, client.WithSendOnly())
+```
+
+### 5. 会话型：Stream RPC
+
+长生命周期「会话 Actor」：**Client / Server / 双向 Stream**。注意 `client/stream.go` 等约定：**`Send` 与 `Recv` 可跨 goroutine，多 goroutine 并发 `Send` 通常不安全**——若以 stream 当 mailbox，宜 **单写者** 或自行同步。
+
+### 补充：客户端 KeepOrderClient
+
+另有一套**客户端侧**顺序能力（如 **KeepOrderClient** + multiplexed、**每 host 单连接**等），偏向「**单逻辑发送方对链路的写出顺序**」，与「**服务端按 key 邮箱式消费**」不同层；实体级顺序仍优先 **服务端 keep-order** 或**自建 mailbox**。
+
+## trpc-go 未直接提供的 Actor 能力
+
+典型缺口包括：**公开 Actor 生命周期 API**、**邮箱抽象**、**监督树**、**崩溃后自动重启子 Actor**、**持久化邮箱**、**死信队列**、**内建定时器**、**全局 Directory**、**跨节点迁移与状态托管**等。
+
+工程边界：
+
+- 默认仍是**请求驱动的并发 RPC**；未开 keep-order 或未自建 mailbox 时，**同一实体**上的请求**未必**有序。  
+- 若在 RPC handler 内起异步 goroutine，**勿**长期误用入口 `ctx`；宜用框架提供的异步工具（如 **`trpc.Go`**）或**克隆上下文**。
+
+## 实践建议（摘要）
+
+1. 以 **`actorID`** 为业务主键。  
+2. 客户端 **`consistent_hash` + `WithKey(actorID)`** 做单 Actor 所在节点。  
+3. 服务端 **`WithKeepOrderPreUnmarshalExtractor` / `PreDecode`** 做同机串行。  
+4. 状态由业务维护（`map` 或显式 Actor 封装）。  
+5. 通知类走 **SendOnly**；长会话走 **Stream**；同进程优先 **scope 本地路径**。  
+6. 熔断、过载、健康检查、优雅重启当作**治理手段**，**不等价**于监督树。
+
+**判断**：若需求是「**同一实体按顺序处理消息**」，trpc-go **通常够用**；若目标是 **Erlang/Akka 级完整 Runtime**，trpc-go 只能作**传输与部署层**，上层仍需独立运行时或用 keep-order + 业务封装渐进演进。
+
+## 主要参考源码（仓库内路径）
+
+以下为 **trpc-go** 主仓库中常与 keep-order、本地调用、流式、哈希路由相关的路径（随版本可能调整）：
+
+- `server/options.go`、`transport/server_listenserve_options.go`、`transport/server_transport_tcp.go`
+- `internal/keeporder/actor/actor.go`、`internal/keeporder/actor/actors.go`
+- `internal/local/inprocess/inprocess.go`
+- `client/keeporder_client.go`、`client/stream.go`、`client/options.go`
+- `naming/loadbalance/consistenthash/consistenthash.go`
+- `examples/features/keeporder`、`keeporderclient`、`scope`、`sendonly`、`stream`
 
 
 # 游戏领域的具体应用
@@ -283,7 +406,7 @@ Actor 与 **会话隔离、并行战斗、分区世界** 需求高度契合。**
 
 **隔离状态 + 异步消息** 提供高于「共享内存 + 锁」的一层抽象；是否采用仍看领域与团队。
 
-技术选型与延伸阅读：语言与框架见上文各节；**对象路由** ≠ Actor，二者关系见专节；文献以 **[1]** 为主，**[2][5][4]** 与 **[3][6]** 按主题选读。落地前自问：**状态能否按消息边界切分**、**能否把异步协议与观测做规范**。
+技术选型与延伸阅读：语言与框架见上文各节；**Go + 腾讯 trpc-go** 与 Actor 风格的映射见专节；**对象路由** ≠ Actor；文献以 **[1]** 为主，**[2][5][4]** 与 **[3][6]** 按主题选读。落地前自问：**状态能否按消息边界切分**、**能否把异步协议与观测做规范**。
 
 
 # 参考链接
