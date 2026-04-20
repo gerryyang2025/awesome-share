@@ -42,8 +42,8 @@ Docker 运行容器依赖 Linux 内核的隔离与资源控制能力，并遵循
 * 是否需要对 Docker 容器做资源限制。
 * 容器安全管理。
 * 内部私有仓库的管理。
-* 建议一个容器内只运行一个应用进程。
-* Vagrant 适合管理虚拟机，而 Docker 适合管理应用环境。Docker 不是虚拟机，而是进程隔离，对于资源的消耗很少，但是目前需要 Linux 环境支持。Vagrant 是虚拟机上做的封装，虚拟机本身会消耗资源。
+* 经验法则：**优先**让一个容器承载一个“主要进程/职责”（便于扩缩容、排障、资源隔离）；但在某些场景下（如 sidecar、init、进程管理器）同一容器内存在多个进程也并非绝对错误。
+* Vagrant 适合管理虚拟机，而 Docker 更适合管理应用运行环境。Docker 不是传统虚拟机，而是基于内核特性实现的进程隔离，因此资源开销通常更小。需要注意的是：容器运行依赖 Linux 内核；在 macOS/Windows 上通常通过 Docker Desktop（VM/WSL2）来提供 Linux 运行环境。
 
 
 ![docker_dev_flow](/assets/images/201902/docker_dev_flow.jpg)
@@ -174,7 +174,7 @@ docker compose logs -f
   + `docker image prune -a`：清理所有**未被任何容器使用**的镜像（比默认更激进，建议先确认）。
 
 * **一键清理（更彻底，需谨慎）**
-  + `docker system prune`：清理无用数据（已停止容器、未使用网络、构建缓存等；默认**不删除**未使用镜像）。
+  + `docker system prune`：清理无用数据（已停止容器、未使用网络、构建缓存等；默认会清理 **dangling images**，但不会删除“所有未被任何容器使用的镜像”）。
   + `docker system prune -a`：在上面基础上额外删除未使用镜像。
   + `docker system prune -a --volumes`：再额外删除未使用的 volumes（可能会导致数据库/持久化数据丢失，务必确认）。
 
@@ -197,7 +197,7 @@ docker system prune
 
 
 
-## docker build
+## 镜像构建
 {: #build }
 
 参考：见 [Reference](#reference) 的 [docker image build](#ref-docker-image-build) 与 [Building best practices](#ref-build-best-practices)。
@@ -206,7 +206,7 @@ docker system prune
 docker build -t vieux/apache:2.0 .
 ```
 
-在现代 Docker 版本中，镜像构建默认由 **BuildKit** 后端驱动（更快、缓存更强、支持并发与更丰富的输出）。当你需要更高级的构建能力（例如：多架构镜像、远端缓存、并行 builder），通常会使用 `docker buildx`。
+在较新的 Docker 版本与多数环境中，镜像构建通常由 **BuildKit** 后端驱动（更快、缓存更强、支持并发与更丰富的输出）。当你需要更高级的构建能力（例如：多架构镜像、远端缓存、并行 builder），通常会使用 `docker buildx`。
 
 ```bash
 # 使用 BuildKit 的纯文本输出（便于在 CI 里排查）
@@ -539,7 +539,7 @@ docker system prune -a
 docker volume prune
 ```
 
-> **日志增长治理**：默认日志驱动常为 `json-file`，长时间运行的容器日志可能导致磁盘被打满。可以考虑配置日志轮转，或使用默认带轮转的 `local` 日志驱动（见 [Reference](#reference) 的 [Linux post-installation steps](#ref-linux-postinstall)）。
+> **日志增长治理**：在 Linux 上，默认日志驱动常见为 `json-file`，长时间运行的容器日志可能导致磁盘被打满。可以考虑配置日志轮转，或使用默认带轮转的 `local` 日志驱动（见 [Reference](#reference) 的 [Linux post-installation steps](#ref-linux-postinstall)）。
 
 ![docker_storage](/assets/images/202603/docker_storage.png)
 
