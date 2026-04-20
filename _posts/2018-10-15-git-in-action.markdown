@@ -1627,30 +1627,92 @@ Git LFS 全名 Git Large File Storage，是 Github 带头在 2015 年推出的�
 
 ```bash
 #!/bin/bash
+#
+# On macOS with Homebrew, the simpler option is:
+#   brew install git-lfs
+# No root required; Homebrew manages the binary and upgrades.
+#
+# This script downloads the official GitHub Release archive and runs its install.sh
+# (requires sudo). Use it when you are not on Homebrew or need a pinned version.
 
-# Download Git LFS v3.4.0
-if ! wget https://github.com/git-lfs/git-lfs/releases/download/v3.4.0/git-lfs-linux-amd64-v3.4.0.tar.gz; then
-        echo "Error: Failed to download Git LFS"
-        exit 1
+# Git LFS version; change this when upgrading
+GIT_LFS_VERSION="3.4.0"
+
+OS="$(uname -s)"
+MACHINE="$(uname -m)"
+
+case "$MACHINE" in
+arm64 | aarch64) ARCH="arm64" ;;
+x86_64 | amd64) ARCH="amd64" ;;
+*)
+	echo "Error: Unsupported architecture: $MACHINE" >&2
+	exit 1
+	;;
+esac
+
+case "$OS" in
+Darwin)
+	ARCHIVE="git-lfs-darwin-${ARCH}-v${GIT_LFS_VERSION}.zip"
+	;;
+Linux)
+	ARCHIVE="git-lfs-linux-${ARCH}-v${GIT_LFS_VERSION}.tar.gz"
+	;;
+*)
+	echo "Error: Unsupported OS: $OS (use Homebrew or official packages for this platform)" >&2
+	exit 1
+	;;
+esac
+
+DOWNLOAD_URL="https://github.com/git-lfs/git-lfs/releases/download/v${GIT_LFS_VERSION}/${ARCHIVE}"
+EXTRACT_DIR="git-lfs-${GIT_LFS_VERSION}"
+
+download_file() {
+	if command -v curl >/dev/null 2>&1; then
+		curl -fL --retry 3 -o "$ARCHIVE" "$DOWNLOAD_URL"
+	elif command -v wget >/dev/null 2>&1; then
+		wget "$DOWNLOAD_URL" -O "$ARCHIVE"
+	else
+		echo "Error: Need curl or wget to download" >&2
+		return 1
+	fi
+}
+
+# Download Git LFS
+if ! download_file; then
+	echo "Error: Failed to download Git LFS" >&2
+	exit 1
 fi
 
 # Extract the archive
-if ! tar xvf git-lfs-linux-amd64-v3.4.0.tar.gz; then
-        echo "Error: Failed to extract the tarball"
-        exit 1
+if [ "$OS" = Darwin ]; then
+	if ! unzip -o "$ARCHIVE"; then
+		echo "Error: Failed to extract the archive" >&2
+		exit 1
+	fi
+else
+	if ! tar xvf "$ARCHIVE"; then
+		echo "Error: Failed to extract the archive" >&2
+		exit 1
+	fi
 fi
 
 # Enter the extracted directory
-cd git-lfs-3.4.0 || { echo "Error: Failed to enter the extracted directory"; exit 1; }
+cd "$EXTRACT_DIR" || {
+	echo "Error: Failed to enter the extracted directory" >&2
+	exit 1
+}
 
 # Check if the user has root privileges before installing
 if [ "$(id -u)" != "0" ]; then
-        echo "Error: Installation requires root privileges" 1>&2
-        exit 1
+	echo "Error: Installation requires root privileges" 1>&2
+	exit 1
 fi
 
 # Install Git LFS
-./install.sh
+if ! ./install.sh; then
+	echo "Error: install.sh failed" >&2
+	exit 1
+fi
 
 echo "Git LFS installation successful"
 ```
