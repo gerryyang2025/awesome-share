@@ -14,21 +14,22 @@ tags:
 
 
 # 核心技术
+{: #core-tech }
 
-Docker 底层是基于成熟的 `Linux Container(LXC)` 技术实现。自 Docker 0.9 版本起，Docker 除了继续支持 LXC 之外，还开始引入自家的 [runc]，试图打造更通用的底层容器虚拟化库。
+Docker 运行容器依赖 Linux 内核的隔离与资源控制能力，并遵循 OCI（Open Container Initiative）相关规范。早期 Docker 曾支持基于 LXC 的实现，但如今主流实现已经以 OCI 运行时栈为中心：`dockerd`（Docker daemon）负责对外提供 API 与管理能力，底层通过 `containerd` 进行容器生命周期管理，实际创建/运行容器进程由 OCI runtime（常见为 `runc`）完成（见 [Reference](#reference) 的 [OCI runtime: runc](#ref-runc)）。
 
 > runc is a CLI tool for spawning and running containers according to the OCI specification.
 
-从操作系统功能上看，Docker 底层依赖的**核心技术**主要包括：
+从操作系统与运行时机制看，Docker 的关键组成通常包括：
 
-* Namespaces (Linux 操作系统的命名空间)
-* Control Groups (控制组)
-* Union File Systems (联合文件系统，目前支持的联合文件系统种类包括：AUFS，btrfs，vfs 和 DeviceMapper 等)
-* Linux 虚拟网络
-
-[runc]: https://github.com/opencontainers/runc
+* **Namespaces**：进程、网络、挂载点、用户等隔离（容器“看起来像独立系统”）。
+* **cgroups（含 cgroup v2）**：CPU/内存/IO 等资源限制与统计（容器“用多少资源”）。
+* **Union filesystem / layered image**：镜像分层与写时复制（常见存储驱动为 `overlay2`）。
+* **Linux 虚拟网络**：bridge/host/overlay 等网络模型与端口映射。
+* **安全机制**：Linux capabilities、seccomp、AppArmor/SELinux 等（决定容器“能做什么/不能做什么”）。
 
 # 一些思考
+{: #notes }
 
 * 在 Docker 应用中，项目架构师的作用贯穿整个开发，测试，生产三个环节。
 * 项目伊始，架构师根据项目预期创建好需要的基础 Base 镜像（比如，Nginx，Tomcat，MySQL 等镜像），或者将 Dockerfile 分发给所有开发，所有开发根据 Dockerfile 创建的镜像来进行开发，达到开发环境充分一致。
@@ -50,32 +51,70 @@ Docker 底层是基于成熟的 `Linux Container(LXC)` 技术实现。自 Docker
 ![docker_dev_flow_example](/assets/images/201902/docker_dev_flow_example.jpg)
 
 # 常用命令
+{: #cli-cheatsheet }
+
+这一节定位为“速查”，把最常用的命令按对象归类，便于记忆与检索。
+
+## 命令风格（推荐优先记管理命令）
+
+- **管理命令（推荐）**：`docker container ...` / `docker image ...` / `docker network ...` / `docker volume ...`
+- **传统顶层命令（仍可用）**：`docker ps` / `docker images` / `docker pull` 等（部分环境里会被标为 legacy）
+
+例如：`docker images` ≈ `docker image ls`，`docker ps` ≈ `docker container ls`。
+
+> 需要查参数时，优先看 Docker CLI 的参考手册（见 [Reference](#reference) 的 [Docker CLI reference](#ref-docker-cli)）。
+{: .prompt-tip }
+
+## 最小工作流
+{: #tldr }
 
 ![docker_cmd](/assets/images/201902/docker_cmd.jpg)
 
-## TL;DR
-
 ```bash
-# 查看已下载镜像
-docker images
+# 1) 获取镜像
+docker image pull <image>:<tag>
+docker image ls
 
-# 拉取镜像，如果不指定标签，默认下载 latest
-docker pull <镜像名>:<标签>
+# 2) 运行容器（示例：后台运行 + 端口映射 + 命名）
+docker run -d --name myapp -p 8080:8080 <image>:<tag>
 
-# 创建容器
-# 直接执行 docker run 时，如果本地没有对应的镜像，Docker 会自动先执行 pull
-docker run -itd -v /data:/data <镜像名>:<标签> bash
+# 3) 观察与排障
+docker container ls
+docker logs -f myapp
 
-# 查看容器信息
-docker ps -l
+# 4) 进入容器（需要交互时）
+docker exec -it myapp /bin/sh
 
-# 执行进入容器
-docker exec -it $container_id bash
+# 5) 停止与清理
+docker stop myapp
+docker rm myapp
+
+# 6) 快速回收空间（谨慎）
+docker system prune
 ```
 
+> 说明：示例统一使用“管理命令”风格（`docker image ...` / `docker container ...`）。你也可以按习惯换回 `docker images` / `docker ps`。
+{: .prompt-info }
 
+
+
+## Docker Compose（推荐）
+{: #compose }
+
+当你需要同时运行多个服务（例如 Web + DB + Cache），或者希望把“运行参数”固化为可版本化的配置文件时，优先使用 **Docker Compose**。在较新的 Docker 版本里，Compose 通常以插件形式集成在 Docker CLI 中（使用 `docker compose ...`，见 [Reference](#reference) 的 [Docker Compose](#ref-compose)）。
+
+```bash
+# 启动/停止（后台运行）
+docker compose up -d
+docker compose down
+
+# 查看服务状态与日志
+docker compose ps
+docker compose logs -f
+```
 
 ## 生命周期管理
+{: #lifecycle }
 
 * `docker run`：创建并启动一个新容器。这是最常用的命令，结合了 create 和 start。
   + `docker run -d --name my_container nginx`（`-d` 后台运行，`--name` 指定名称）。
@@ -95,6 +134,7 @@ docker exec -it $container_id bash
 
 
 ## 状态查看与监控
+{: #observe }
 
 * `docker ps`：列出当前正在运行的容器。
   + `docker ps -a`：查看所有容器，包括已停止的。
@@ -107,6 +147,7 @@ docker exec -it $container_id bash
 * `docker top`：查看容器内运行的进程。
 
 ## 容器交互操作
+{: #container-interaction }
 
 * `docker exec`：在运行中的容器内执行命令。
   + `docker exec -it <ID> /bin/bash`：进入容器的交互式终端。
@@ -116,24 +157,78 @@ docker exec -it $container_id bash
 
 
 ## 资源清理
+{: #cleanup }
 
 * `docker container prune`：一键清理所有已停止的容器，释放系统资源。
+
+* **容器清理（按需删除）**
+  + `docker ps -a`：先查看有哪些“退出/停止”的容器。
+  + `docker rm <容器ID或名称> [...]`：删除一个或多个**已停止**的容器。
+  + `docker rm -f <容器ID或名称>`：强制删除容器（会先停止正在运行的容器再删除，谨慎使用）。
+
+* **镜像清理（按需删除）**
+  + `docker images`：查看本地镜像列表。
+  + `docker rmi <镜像ID|镜像名:tag> [...]`：删除一个或多个镜像。
+    - 如果镜像正在被容器使用（即使容器已停止），需要先删除相关容器，或改用 `docker rmi -f`（仍需谨慎）。
+  + `docker image prune`：清理“悬空镜像”（dangling images，通常是构建过程中遗留的无 tag 中间镜像）。
+  + `docker image prune -a`：清理所有**未被任何容器使用**的镜像（比默认更激进，建议先确认）。
+
+* **一键清理（更彻底，需谨慎）**
+  + `docker system prune`：清理无用数据（已停止容器、未使用网络、构建缓存等；默认**不删除**未使用镜像）。
+  + `docker system prune -a`：在上面基础上额外删除未使用镜像。
+  + `docker system prune -a --volumes`：再额外删除未使用的 volumes（可能会导致数据库/持久化数据丢失，务必确认）。
+
+> `docker system prune -a --volumes` 很容易造成**不可逆的数据丢失**（尤其是你把数据库数据放在 named volume 的情况下）。在生产机器上建议先用 `docker system df` 做“定位”，再逐项清理。
+{: .prompt-danger }
+
+```bash
+# 常见组合：先看、再删
+docker ps -a
+docker container prune
+
+docker images
+docker image prune
+docker image prune -a
+
+# 想“一键”但保持可控时，先不加 -a/--volumes
+docker system prune
+```
 
 
 
 
 ## docker build
+{: #build }
 
-https://docs.docker.com/engine/reference/commandline/build/
+参考：见 [Reference](#reference) 的 [docker image build](#ref-docker-image-build) 与 [Building best practices](#ref-build-best-practices)。
 
 ```bash
 docker build -t vieux/apache:2.0 .
 ```
 
+在现代 Docker 版本中，镜像构建默认由 **BuildKit** 后端驱动（更快、缓存更强、支持并发与更丰富的输出）。当你需要更高级的构建能力（例如：多架构镜像、远端缓存、并行 builder），通常会使用 `docker buildx`。
+
+```bash
+# 使用 BuildKit 的纯文本输出（便于在 CI 里排查）
+BUILDKIT_PROGRESS=plain docker build -t myapp:dev .
+
+# 创建并使用 buildx builder（不同环境默认可能已存在）
+docker buildx create --use --name mybuilder
+docker buildx inspect --bootstrap
+
+# 构建多架构镜像并推送（示例：linux/amd64 + linux/arm64）
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t myrepo/myapp:1.0.0 \
+  --push \
+  .
+```
+
 
 # 容器指标
+{: #metrics }
 
-[cAdvisor](https://github.com/google/cadvisor) (Container Advisor) provides container users an understanding of the resource usage and performance characteristics of their running containers. It is a running daemon that collects, aggregates, processes, and exports information about running containers. Specifically, for each container it keeps resource isolation parameters, historical resource usage, histograms of complete historical resource usage and network statistics. This data is exported by container and machine-wide.
+`cAdvisor`（Container Advisor）是一个常用的容器监控组件，可采集并暴露容器的 CPU、内存、网络、文件系统等指标（见 [Reference](#reference) 的 [cAdvisor](#ref-cadvisor)）。
 
 
 # 测试使用 (CentOS)
@@ -219,6 +314,7 @@ Product License: Community Engine
 
 
 # 用户管理
+{: #user-permission }
 
 ```text
 sudo service docker start         # 启动 docker 服务
@@ -230,13 +326,21 @@ sudo usermod -aG docker ${USER}   # 当前用户加入 docker 组
 >
 > service docker start 是启动 Docker 的后台服务
 >
-> usermod -aG 是把当前的用户加入 Docker 的用户组。这是因为操作 Docker 必须要有 root 权限，而直接使用 root 用户不够安全，加入 Docker 用户组是一个比较好的选择，这也是 Docker 官方推荐的做法。当然，如果只是为了图省事，也可以直接切换到 root 用户来操作 Docker
+> usermod -aG 是把当前的用户加入 Docker 的用户组。这样可以在不加 `sudo` 的情况下运行 `docker` 命令。
+>
+> **重要安全提示**：Docker 官方文档明确指出，加入 `docker` 组会授予用户 **root-level privileges**（本质上等价于 root 权限）。在多用户机器或生产环境中，应谨慎评估这带来的风险；如果希望在不授予 root 等价权限的前提下使用 Docker，可以考虑 **Rootless mode**。
+>
+> 参考：见 [Reference](#reference) 的 [Linux post-installation steps](#ref-linux-postinstall) 与 [Rootless mode](#ref-rootless)。
+{: .prompt-warning }
 
 
-# [Dockerfile](https://docs.docker.com/reference/dockerfile/)
+# Dockerfile
+{: #dockerfile }
 
+参考：见 [Reference](#reference) 的 [Dockerfile reference](#ref-dockerfile)。
 
-## [CMD](https://docs.docker.com/engine/reference/builder/#cmd)
+## CMD
+{: #dockerfile-cmd }
 
 The `CMD` instruction has three forms:
 
@@ -271,11 +375,12 @@ CMD ["/usr/bin/wc","--help"]
 ```
 
 
-If you would like your container to run the same executable every time, then you should consider using `ENTRYPOINT` in combination with `CMD`. See [ENTRYPOINT](https://docs.docker.com/engine/reference/builder/#entrypoint).
+If you would like your container to run the same executable every time, then you should consider using `ENTRYPOINT` in combination with `CMD`. See `ENTRYPOINT`（见 [Dockerfile](#dockerfile-entrypoint) 以及 [Reference](#reference) 的 [Dockerfile reference](#ref-dockerfile)）。
 
 > If the user specifies arguments to `docker run` then they will override the default specified in `CMD`.
 
-## [ENTRYPOINT](https://docs.docker.com/engine/reference/builder/#entrypoint)
+## ENTRYPOINT
+{: #dockerfile-entrypoint }
 
 An `ENTRYPOINT` allows you to configure a container that will run as an executable.
 
@@ -295,9 +400,10 @@ ENTRYPOINT command param1 param2
 ```
 
 
-For more information about the different forms, see [Shell and exec form](https://docs.docker.com/reference/dockerfile#shell-and-exec-form).
+For more information about the different forms, see Shell and exec form（见 [Reference](#reference) 的 [Dockerfile reference](#ref-dockerfile)）。
 
-## [EXPOSE](https://docs.docker.com/reference/dockerfile/#expose)
+## EXPOSE
+{: #dockerfile-expose }
 
 The `EXPOSE` instruction informs Docker that the container listens on the specified network ports at runtime. You can specify whether the port listens on TCP or UDP, and the default is TCP if you don't specify a protocol.
 
@@ -328,7 +434,8 @@ docker run -p 8080:8080 -p 9090:9090 -p 9091:9091 namesvr
 
 
 
-## [HEALTHCHECK](https://docs.docker.com/reference/dockerfile/#healthcheck)
+## HEALTHCHECK
+{: #dockerfile-healthcheck }
 
 The `HEALTHCHECK` instruction has two forms:
 
@@ -354,15 +461,21 @@ HEALTHCHECK --interval=5m --timeout=3s \
 
 # Q&A
 
-## [How can I find a Docker image with a specific tag in Docker registry on the Docker command line?](https://stackoverflow.com/questions/24481564/how-can-i-find-a-docker-image-with-a-specific-tag-in-docker-registry-on-the-dock)
+## How can I find a Docker image with a specific tag in Docker registry on the Docker command line?
+{: #qa-list-tags }
 
 I try to locate one specific tag for a Docker image. How can I do it on the command line? I want to avoid downloading all the images and then removing the unneeded ones.
 
 Answers:
 
 ```bash
-#!/usr/bin/bashs
-curl -s -S "https://registry.hub.docker.com/v2/repositories/library/$@/tags/" | jq '."results"[]["name"]' | sort
+#!/usr/bin/env bash
+# 说明：Docker CLI 本身不提供“列出某镜像所有 tags”的统一命令；这是对 Docker Hub HTTP API 的一次简单调用。
+# 注意：结果可能分页；且 Docker Hub 可能存在访问频率限制。
+image="${1:?usage: $0 <image>}"
+curl -fsSL "https://registry.hub.docker.com/v2/repositories/library/${image}/tags/?page_size=100" \
+  | jq -r '.results[].name' \
+  | sort
 ```
 
 
@@ -376,7 +489,7 @@ Got permission denied while trying to connect to the Docker daemon socket at uni
 ```
 
 
-**解决方案**：通过将当前用户添加到 docker 用户组可以将 sudo 去掉，命令如下：
+**解决方案**：将当前用户加入 `docker` 组后，可在不加 `sudo` 的情况下运行 Docker CLI，命令如下：
 
 ```bash
 groupadd docker            # 添加 docker 用户组
@@ -384,6 +497,10 @@ gpasswd -a 用户名 docker    # 将登陆用户加入到 docker 用户组中
 newgrp docker              # 更新用户组
 systemctl restart docker   # 最后重启 docker 生效
 ```
+
+> **安全提示（官方 WARNING）**：`docker` 组会授予用户 **root-level privileges**。在多用户环境/生产环境中，建议优先使用 `sudo docker ...` 或评估使用 **Rootless mode**。
+>
+> 参考：见 [Reference](#reference) 的 [Linux post-installation steps](#ref-linux-postinstall)。
 
 
 
@@ -400,7 +517,29 @@ Filesystem    Size  Used Avail Use% Mounted on
 
 > 注意：1. 首先排除 root 用户的根目录下是否有不需要的数据，并进行清理。2. yum clean all 清理当前的 yum 缓存数据。
 
-**解决方法**：通过 `docker info` 命令可以查看 `Docker Root Dir: /var/lib/docker` 的存储路径。`/var/lib/docker` 目录中保存着各种信息，例如：容器数据、卷、构建文件、网络文件和集群数据。最大的文件通常是镜像。如果使用默认的 `overlay2` 存储驱动，Docker 镜像会保存在 `/var/lib/docker/overlay2` 目录。
+**解决方法**：优先做到“先定位、再清理/迁移”。
+
+1) **定位占用来源**
+
+- `docker system df`：查看镜像、容器、卷、构建缓存的磁盘占用概览。
+- `docker info`：确认 `Docker Root Dir`（默认常见为 `/var/lib/docker`）。
+
+2) **清理无用数据（谨慎）**
+
+`/var/lib/docker` 目录中保存着容器数据、卷、构建缓存、网络等信息。镜像通常占用最大；此外，构建缓存与容器日志也常常悄悄膨胀。
+
+```bash
+# 清理停止容器/未使用网络/构建缓存等（默认不会删除所有未使用镜像）
+docker system prune
+
+# 更彻底：额外清理未使用镜像（危险，建议先确认）
+docker system prune -a
+
+# 清理未被任何容器引用的本地卷（可能导致数据丢失，务必确认）
+docker volume prune
+```
+
+> **日志增长治理**：默认日志驱动常为 `json-file`，长时间运行的容器日志可能导致磁盘被打满。可以考虑配置日志轮转，或使用默认带轮转的 `local` 日志驱动（见 [Reference](#reference) 的 [Linux post-installation steps](#ref-linux-postinstall)）。
 
 ![docker_storage](/assets/images/202603/docker_storage.png)
 
@@ -431,44 +570,117 @@ Are you sure you want to continue? [y/N] y
 
 
 
-第二步：若不需要第一步清理空间，也可直接修改存储目录。解决默认存储容量不足的情况，最直接且最有效的方法就是挂载新的分区到该目录。但是在原有系统空间不变的情况下，可采用软链接的方式，修改镜像和容器的存放路径达到同样的目的。
+3) **迁移 Docker 数据目录（推荐使用 `data-root` 配置）**
+
+如果根分区容量不足，最直接有效的方式通常是把 Docker 数据目录迁移到更大的磁盘分区。相比“软链接”，更推荐通过 daemon 配置显式设置 `data-root`（更可维护、行为更确定）。
 
 ```bash
 # 停止 Docker 服务
 service docker stop
 # 如果停止不了，可尝试 systemctl stop docker.socket docker.service
 
-# 通过软链修改存储目录
-mv /var/lib/docker /data
-ln -sf /data/docker /var/lib/docker
+# 迁移旧数据到新目录（示例：/data/docker）
+mkdir -p /data/docker
+rsync -aHAXx /var/lib/docker/ /data/docker/
+
+# 配置 data-root（常见位置：/etc/docker/daemon.json）
+# 写入后再启动 docker（示例内容见下方）
 
 # 启动 Docker 服务
 service docker start
 ```
 
+`/etc/docker/daemon.json` 示例：
+
+```json
+{
+  "data-root": "/data/docker"
+}
+```
 
 
-# 历史文章
 
-* [Docker使用桥接的通信方案](https://blog.csdn.net/delphiwcdj/article/details/49508045)
-* [使用Docker registry镜像创建私有仓库](https://blog.csdn.net/delphiwcdj/article/details/43099877)
-* [Where are Docker images stored? (杂译)](https://blog.csdn.net/delphiwcdj/article/details/43602877)
-* https://github.com/gerryyang/mac-utils/tree/master/tools/docker
+# 延伸阅读
+
+见文末 [Reference](#reference) 的「其它参考（历史链接）」。
 
 
-# 书籍
+# Reference
+{: #reference }
 
-* [Docker - 从入门到实践](https://yeasy.gitbook.io/docker_practice/)
+> 本文正文不直接贴外链，统一在此集中维护；正文通过锚点交叉引用到这里，方便长期更新。
+{: .prompt-info }
 
+## Docker 官方文档
+{: #ref-docker-docs }
 
-# 优化
+- https://docs.docker.com/
+- https://docs.docker.com/get-started/
+- https://docs.docker.com/guides/
+- https://docs.docker.com/manuals/
+- https://docs.docker.com/reference/
 
-* [三个技巧，将 Docker 镜像体积减小 90%](https://www.infoq.cn/article/3-simple-tricks-for-smaller-docker-images)
+## Docker CLI / Compose
 
+### Docker CLI reference
+{: #ref-docker-cli }
 
-# 官方文档
+`https://docs.docker.com/reference/cli/docker/`
 
-* [Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
-* [Docker Manuals](https://docs.docker.com/manuals/)
-* [Building best practices](https://docs.docker.com/build/building/best-practices/)
+### `docker image build`
+{: #ref-docker-image-build }
+
+`https://docs.docker.com/reference/cli/docker/image/build/`
+
+### Docker Compose
+{: #ref-compose }
+
+`https://docs.docker.com/compose/`
+
+## Dockerfile
+
+### Dockerfile reference
+{: #ref-dockerfile }
+
+`https://docs.docker.com/reference/dockerfile/`
+
+## 安全与安装
+
+### Linux post-installation steps（含 docker group WARNING 与日志驱动建议）
+{: #ref-linux-postinstall }
+
+`https://docs.docker.com/engine/install/linux-postinstall/`
+
+### Rootless mode
+{: #ref-rootless }
+
+`https://docs.docker.com/engine/security/rootless/`
+
+## 构建最佳实践
+
+### Building best practices
+{: #ref-build-best-practices }
+
+`https://docs.docker.com/build/building/best-practices/`
+
+## 生态/工具
+
+### OCI runtime：runc
+{: #ref-runc }
+
+`https://github.com/opencontainers/runc`
+
+### cAdvisor
+{: #ref-cadvisor }
+
+`https://github.com/google/cadvisor`
+
+## 其它参考（历史链接）
+
+- Docker 使用桥接的通信方案：`https://blog.csdn.net/delphiwcdj/article/details/49508045`
+- 使用 Docker registry 镜像创建私有仓库：`https://blog.csdn.net/delphiwcdj/article/details/43099877`
+- Where are Docker images stored?：`https://blog.csdn.net/delphiwcdj/article/details/43602877`
+- 本人脚本：`https://github.com/gerryyang/mac-utils/tree/master/tools/docker`
+- 《Docker - 从入门到实践》：`https://yeasy.gitbook.io/docker_practice/`
+- 三个技巧，将 Docker 镜像体积减小 90%：`https://www.infoq.cn/article/3-simple-tricks-for-smaller-docker-images`
 
