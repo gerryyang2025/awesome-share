@@ -2350,6 +2350,32 @@ git rebase upstream/master
 git pull --rebase upstream master
 
 # 如果有代码冲突，则需要先解决，使用vscode会自动提示冲突解决
+
+### `git pull --rebase` 冲突时的 `current change` 指哪个分支？
+
+这个点非常容易在 VSCode 的冲突面板里选反。以你当前在 `dev` 分支执行 `git pull origin master --rebase` 为例：
+
+1. `git pull origin master --rebase` 实际等价于：
+   - `git fetch origin master`：把远程 `master` 的最新代码拉到本地的跟踪分支 `origin/master`
+   - `git rebase origin/master`：把当前 `dev` 分支上“独有的提交”，逐个变基到 `origin/master` 之上
+
+2. 在 `rebase` 过程中，如果某个 `dev` 提交与 `origin/master` 发生冲突：
+   - **`current change`**：当前 `HEAD` 指向的内容，也就是你正在“放上去”的目标基底（`origin/master`，以及已经成功应用的前几个 `dev` 提交）
+   - **`incoming change`**：正在尝试应用的那个 `dev` 提交所带来的修改
+
+3. 最常见的首次冲突（应用第一个 `dev` 提交时）：
+   - `HEAD` 直接指向 `origin/master`
+   - 因此 **`current change` 指的就是远程 `master`（`origin/master`）上的内容**
+
+与 `git rebase` 的常规理解一致：冲突里的 **`current` 永远是当前 `HEAD`**（目标分支/基底），所以在这个场景下：
+
+| 分支 / 角色 | 在冲突中被称为 |
+| --- | --- |
+| 远程 `master`（`origin/master`） | **current change** |
+| 本地 `dev` 上正在变基的那个提交 | **incoming change** |
+
+对应到命令行的选择也同理：`--ours` 表示保留 **`origin/master`（current）**，`--theirs` 表示保留 **`dev` 的该次提交（incoming）**。
+
 git add <解决冲突的文件>
 
 # 完成rebase
