@@ -125,6 +125,7 @@ mermaid: true
   * **广告（IAA / 流量主）**：个人主体可重点考虑，需满足平台开通条件（如 UV 等，以后台为准）。
   * **内购（IAP / 虚拟支付）**：不仅涉及主体类型，还可能牵涉**版号、类目、资质**等——个人主体通常**无法**直接走虚拟支付进件，别用独立 App 的经验硬套。
 * **交流与政策**：技术问题、案例与规则更新，可常逛 微信开放社区 · 小游戏专区 [[11]](#ref-11)。
+* **工具学习**：微信开发者工具的功能点较多（调试、真机预览、性能与包体分析等），可以配合官方的「微信开发者工具系列课程」快速过一遍 [[32]](#ref-32)。
 
 
 # 个人开发者能做什么，不能做什么 {#personal-scope}
@@ -999,6 +1000,12 @@ flowchart LR
   <li id="ref-29"><strong>GitHub: cocos-flappy-bird</strong><br /><a href="https://github.com/cocos-creator-demo/cocos-flappy-bird">https://github.com/cocos-creator-demo/cocos-flappy-bird</a></li>
   <li id="ref-30"><strong>GitHub: potato47/so-many-games</strong><br /><a href="https://github.com/potato47/so-many-games">https://github.com/potato47/so-many-games</a></li>
   <li id="ref-31"><strong>GitHub: cocos-tutorial-duang-sheep</strong><br /><a href="https://github.com/cocos-creator/cocos-tutorial-duang-sheep">https://github.com/cocos-creator/cocos-tutorial-duang-sheep</a></li>
+</ol>
+
+## 微信官方课程
+
+<ol start="32">
+  <li id="ref-32"><strong>微信开发者工具系列课程</strong><br /><a href="https://developers.weixin.qq.com/community/business/course/000884131701789a46acb81f85140d">https://developers.weixin.qq.com/community/business/course/000884131701789a46acb81f85140d</a></li>
 </ol>
 
 # 小结 {#summary}
