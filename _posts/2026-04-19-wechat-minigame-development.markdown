@@ -126,6 +126,7 @@ mermaid: true
   * **内购（IAP / 虚拟支付）**：不仅涉及主体类型，还可能牵涉**版号、类目、资质**等——个人主体通常**无法**直接走虚拟支付进件，别用独立 App 的经验硬套。
 * **交流与政策**：技术问题、案例与规则更新，可常逛 微信开放社区 · 小游戏专区 [[11]](#ref-11)。
 * **工具学习**：微信开发者工具的功能点较多（调试、真机预览、性能与包体分析等），可以配合官方的「微信开发者工具系列课程」快速过一遍 [[32]](#ref-32)。
+* **入门课程**：如果你对小程序整体还不熟（开发者工具、调试流程、基础概念），可以先看「小程序开发起步」 [[33]](#ref-33)，再回来看小游戏的引擎与发布链路会更顺。
 
 
 # 个人开发者能做什么，不能做什么 {#personal-scope}
@@ -1006,6 +1007,7 @@ flowchart LR
 
 <ol start="32">
   <li id="ref-32"><strong>微信开发者工具系列课程</strong><br /><a href="https://developers.weixin.qq.com/community/business/course/000884131701789a46acb81f85140d">https://developers.weixin.qq.com/community/business/course/000884131701789a46acb81f85140d</a></li>
+  <li id="ref-33"><strong>小程序开发起步</strong><br /><a href="https://developers.weixin.qq.com/community/business/course/000264e20a0dd8e69669b609451c0d">https://developers.weixin.qq.com/community/business/course/000264e20a0dd8e69669b609451c0d</a></li>
 </ol>
 
 # 小结 {#summary}
