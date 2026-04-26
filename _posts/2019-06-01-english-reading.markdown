@@ -60,6 +60,28 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* patrol /pəˈtrəʊl/
+  + V-T When soldiers, police, or guards **patrol** an area or building, they move around it in order to make sure that there is no trouble there. 在…巡逻
+    - Prison officers continued to patrol the grounds within the jail. 狱警们继续在监狱内的场地里巡逻。
+  + N-COUNT Patrol is also a noun. 巡逻
+  + PHRASES oldiers, police, or guards who are **on patrol** are patrolling an area. 在巡逻
+  + N-COUNT A **patrol** is a group of soldiers or vehicles that are patrolling an area. 巡逻队
+
+
+* arcade /ɑːˈkeɪd/
+  + N-COUNT An **arcade** is a place where you can play games on machines which work when you put money in them. 游戏厅
+  + N-COUNT An **arcade** is a covered passage where there are stores or market stalls. (购物) 拱廊
+
+
+
+* tombstone /ˈtuːmstəʊn/
+  + N-COUNT A **tombstone** is a large stone with words carved into it, which is placed on a grave. 墓碑
+
+* clarify /ˈklærəfaɪ/
+  + V-T To **clarify** something means to make it easier to understand, usually by explaining it in more detail. 澄清
+    - Thank you for writing and allowing me to **clarify** the present position. 谢谢你来信并允许我澄清目前的状况。
+
+
 * reconcile /ˈrɛkənˌsaɪl/
   + V-T If you **reconcile** two beliefs, facts, or demands that seem to be opposed or completely different, you find a way in which they can both be true or both be successful. 使和谐一致; 调和
     - It's difficult to **reconcile** the demands of my job and the desire to be a good father. 协调我工作的要求与我当个好父亲的愿望很难。
