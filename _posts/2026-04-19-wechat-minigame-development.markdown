@@ -614,6 +614,8 @@ flowchart LR
 
 # 第三阶段：上架流程 {#phase-release}
 
+![小程序发布流程（示例）](/assets/images/202604/wechat_miniprogram_release_flow.png)
+
 把官方流程和个人开发实操合起来，大致就是下面这条线：
 
 1. 注册小程序账号
@@ -647,6 +649,9 @@ flowchart LR
 ## 2. 有些流程可以并行，不需要傻等
 
 小游戏接入指南 [[4]](#ref-4) 里为提高上线效率，明确写了可以多线并行的几类事（原文结构如下，类目例外以文档为准）：
+
+> 这一段如果只想看“官方给的全流程图 + 并行关系 + 各节点耗时区间”，可以直接对照微信开放社区的「小游戏入驻指南」 [[42]](#ref-42)（偏流程向，比零散 Q&A 更集中）。
+{: .prompt-tip }
 
 * **名称 / 简称 / 头像、类目设置、微信认证** 可以并行；
 * **版本审核** 与 **资质审核** 可以并行，但 **棋牌 - 牌类、文化互动** 等类目除外（这类往往要先走完资质相关节点，以 IAA 指引为准）；
@@ -777,7 +782,40 @@ flowchart LR
 
 如果类目和实际内容不符，版本提审时就很容易被驳回。
 
-## 2. 名称、软著、主体信息不一致
+## 2. 小程序和小游戏的 AppID 不能共用
+
+先给结论：**小程序 AppID 和 小游戏 AppID 不能直接共用**，这是两套“身份类型”。
+
+另外，**通常情况下，多个正式运行的小程序也不能共用同一个 AppID**：AppID 是小程序在微信生态中的唯一身份标识（区分应用、配置服务器域名、管理支付等）。开发阶段“能用”不等于上线阶段“能共用” [[34]](#ref-34) [[38]](#ref-38)。
+
+它背后的原因可以拆成三条理解：
+
+* **注册时即分开**：注册时就要选“小程序”还是“小游戏”。注册完成后，该 AppID 类型就固定了，不能在同一个后台里直接互相切换发布 [[36]](#ref-36)。
+* **开发配置不同**：小游戏项目在打包、开发者工具导入、版本上传与提审等环节，需要使用“小游戏类型”的 AppID；开发阶段用测试 `appid` 只是验证流程，不等于可用于发布 [[34]](#ref-34)。
+* **数据与后台配置隔离**：同一主体下可以有多个 AppID，但小程序/小游戏在开发者工具、版本管理、提审发布等后台配置是分开的 [[35]](#ref-35)。
+* **注册上限别卡住**：同一个邮箱通常只能申请 1 个小程序账号；手机号/主体等也有各自的注册与绑定上限（以最新规则为准） [[41]](#ref-41)。
+
+你可能会遇到“开发/体验版共用”的错觉，通常来自下面这件事：
+
+* **开发/体验版可覆盖上传**：在开发与体验版阶段，你确实可以用同一个 AppID 反复上传不同项目的代码进行验证，但**新上传会覆盖旧体验版**；而**最终发布上线**，每个小程序仍需各自注册并使用独立 AppID [[34]](#ref-34) [[39]](#ref-39)。
+
+如果你需要“联动”（同一公司/同主体下的小程序 + 小游戏），通常走两条路：
+
+* **同主体账号互相关联**：各自用独立 AppID 注册与发布，但在产品形态上互相跳转/联动（以平台能力与运营规则为准）。
+* **云开发环境共享**：同主体下多个不同 AppID 的小程序/小游戏，可以使用云开发的环境共享功能，共享同一套云资源（数据库、存储、云函数等） [[37]](#ref-37)。
+
+如果你的诉求是“多个应用里把同一个用户识别成同一个人”，正确做法通常是：
+
+* **用 UnionID 做跨应用用户打通**：把小程序/小游戏等绑定到同一个微信开放平台账号后，可用 UnionID 作为同一用户在不同应用间的一致标识；不要试图靠共用 AppID 来“打通用户” [[40]](#ref-40)。
+
+支付侧常见的“共用”也不是共用 AppID，而是：
+
+* **一个商户号可关联多个 AppID**：例如同一公司多个小程序使用同一个微信支付商户号（mchid），通过“账号关联（AppID 绑定）”建立关系；官方文档注明一个商户号最多可关联 50 个 AppID [[38]](#ref-38)。
+
+> 记住一句话：**AppID 不共用，但同主体可以“共享资源/做联动”。**
+{: .prompt-tip }
+
+## 3. 名称、软著、主体信息不一致
 
 这是官方资质审核和社区指引里都反复强调的高频问题。
 
@@ -790,7 +828,7 @@ flowchart LR
 
 这些问题往往不是技术问题，却会直接拖慢上线节奏。
 
-## 3. 没做内容安全
+## 4. 没做内容安全
 
 如果你的游戏里存在任何 UGC 场景，比如：
 
@@ -808,7 +846,7 @@ flowchart LR
 
 所以只要你的游戏有玩家生成内容，就应该尽早把内容安全接进去。
 
-## 4. 后端过度相信前端
+## 5. 后端过度相信前端
 
 这是个老问题，官方安全指南也反复强调：
 
@@ -818,7 +856,7 @@ flowchart LR
 
 排行榜、奖励发放、道具结算、活动领取这类逻辑，只靠前端控制，后面很容易被刷。
 
-## 5. 一开始就做太重
+## 6. 一开始就做太重
 
 这可能是个人开发里最常见的问题。微信小游戏看起来门槛低，但如果上来就想做：
 
@@ -837,7 +875,7 @@ flowchart LR
 
 对个人开发者来说，**能上线一款完整的小项目，远比长期停留在一个大计划里更重要。**
 
-## 6. 运行环境 ≠ 浏览器
+## 7. 运行环境 ≠ 浏览器
 
 从 Web 前端转小游戏时，最容易按浏览器惯性写代码，但小游戏跑在**微信客户端定制运行时**里，能力集与浏览器**不完全一致**（详见开发指南与 API [[2]](#ref-2) [[3]](#ref-3)）：
 
@@ -970,6 +1008,22 @@ flowchart LR
   <li id="ref-13"><strong>微信公众平台</strong><br /><a href="https://mp.weixin.qq.com/">https://mp.weixin.qq.com/</a></li>
 </ol>
 
+## AppID 与多应用（社区问答）
+
+<ol start="34">
+  <li id="ref-34"><strong>微信开放社区：多个小程序项目可以共用一个 AppID 吗</strong><br /><a href="https://developers.weixin.qq.com/community/develop/doc/000600586880400a48ca03c565b400">https://developers.weixin.qq.com/community/develop/doc/000600586880400a48ca03c565b400</a></li>
+  <li id="ref-35"><strong>微信开放社区：小游戏和小程序不能同时开发吗</strong><br /><a href="https://developers.weixin.qq.com/community/develop/doc/000e643c3009984902ed6896451c00">https://developers.weixin.qq.com/community/develop/doc/000e643c3009984902ed6896451c00</a></li>
+  <li id="ref-36"><strong>微信开放社区：小程序的 AppID 不能用于开发小游戏</strong><br /><a href="https://developers.weixin.qq.com/community/minihome/doc/000e0c16274120cdcc6391cb66b400?commentid=000200428344801ec263f19446bc&amp;jumpto=comment">https://developers.weixin.qq.com/community/minihome/doc/000e0c16274120cdcc6391cb66b400?commentid=000200428344801ec263f19446bc&amp;jumpto=comment</a></li>
+  <li id="ref-39"><strong>微信开放社区：多个微信小程序是否可以使用一个 AppID</strong><br /><a href="https://developers.weixin.qq.com/community/develop/doc/00000695ce475078b41c11c7b52000">https://developers.weixin.qq.com/community/develop/doc/00000695ce475078b41c11c7b52000</a></li>
+  <li id="ref-41"><strong>微信开放社区：小程序注册上限和绑定上限</strong><br /><a href="https://developers.weixin.qq.com/community/develop/doc/000602f6724620a9fb918a9b466009">https://developers.weixin.qq.com/community/develop/doc/000602f6724620a9fb918a9b466009</a></li>
+</ol>
+
+## 小游戏入驻与发布流程（社区指南）
+
+<ol start="42">
+  <li id="ref-42"><strong>微信开放社区：小游戏入驻指南（官方精选）</strong><br /><a href="https://developers.weixin.qq.com/community/minigame/doc/0002a41828cf9075a2ff631be56c08">https://developers.weixin.qq.com/community/minigame/doc/0002a41828cf9075a2ff631be56c08</a></li>
+</ol>
+
 ## 第三方榜单与工具站
 
 <ol start="14">
@@ -1008,6 +1062,19 @@ flowchart LR
 <ol start="32">
   <li id="ref-32"><strong>微信开发者工具系列课程</strong><br /><a href="https://developers.weixin.qq.com/community/business/course/000884131701789a46acb81f85140d">https://developers.weixin.qq.com/community/business/course/000884131701789a46acb81f85140d</a></li>
   <li id="ref-33"><strong>小程序开发起步</strong><br /><a href="https://developers.weixin.qq.com/community/business/course/000264e20a0dd8e69669b609451c0d">https://developers.weixin.qq.com/community/business/course/000264e20a0dd8e69669b609451c0d</a></li>
+</ol>
+
+## 云开发（可选）
+
+<ol start="37">
+  <li id="ref-37"><strong>云开发：环境共享（资源共享）</strong><br /><a href="https://developers.weixin.qq.com/miniprogram/dev/wxcloudservice/wxcloud/guide/resource-sharing/introduce">https://developers.weixin.qq.com/miniprogram/dev/wxcloudservice/wxcloud/guide/resource-sharing/introduce</a></li>
+</ol>
+
+## 开放平台与支付（可选）
+
+<ol start="38">
+  <li id="ref-38"><strong>微信支付商户文档：管理商户号绑定的 AppID 账号</strong><br /><a href="https://pay.weixin.qq.com/doc/v3/merchant/4016328613">https://pay.weixin.qq.com/doc/v3/merchant/4016328613</a></li>
+  <li id="ref-40"><strong>微信开放文档：UnionID 机制说明</strong><br /><a href="https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/union-id.html">https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/union-id.html</a></li>
 </ol>
 
 # 小结 {#summary}
