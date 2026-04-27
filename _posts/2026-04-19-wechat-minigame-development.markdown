@@ -616,6 +616,8 @@ flowchart LR
 
 ![小程序发布流程（示例）](/assets/images/202604/wechat_miniprogram_release_flow.png)
 
+![小程序发布流程（示例2）](/assets/images/202604/wechat_miniprogram_release_flow2.png)
+
 把官方流程和个人开发实操合起来，大致就是下面这条线：
 
 1. 注册小程序账号
