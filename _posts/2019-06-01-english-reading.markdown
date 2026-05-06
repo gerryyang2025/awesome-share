@@ -60,6 +60,20 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* viable /ˈvaɪəb(ə)l/
+  + ADJ Something that is **viable** is capable of doing what it is intended to do. 可行的
+    - Cash alone will not make Eastern Europe's banks **viable**. 单靠现金不可能使东欧的银行维持下去。
+
+
+* grill /ɡrɪl/
+  + N-COUNT A **grill** is a flat frame of metal bars on which food can be cooked over a fire. (置于火上的) 烤架
+  + N-COUNT A **grill** is a part of a stove which produces strong direct heat to cook food that has been placed underneath it. (烤炉内的) 烤架
+  + V-T/V-I When you **grill** food, or when it **grills**, you cook it on metal bars above a fire or barbecue. 烧烤
+  + V-T/V-I When you **grill** food, or when it **grills**, you cook it in a stove using very strong heat directly above it. 烘烤
+  + V-T If you **grill** someone about something, you ask them a lot of questions for a long period of time. 盘问
+  + N-COUNT A **grill** is a restaurant that serves grilled food. 烤肉餐馆
+
+
 * patrol /pəˈtrəʊl/
   + V-T When soldiers, police, or guards **patrol** an area or building, they move around it in order to make sure that there is no trouble there. 在…巡逻
     - Prison officers continued to patrol the grounds within the jail. 狱警们继续在监狱内的场地里巡逻。
