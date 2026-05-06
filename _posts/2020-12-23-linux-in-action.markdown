@@ -381,24 +381,26 @@ $ cat /proc/3100717/stat
 
 The full list is long and version-dependent; for details see `proc(5)`. For quick reading, you can expand the field notes below.
 
-<details>
+<details markdown="1">
 <summary>Field notes (partial)</summary>
+
+<div markdown="1">
 
 - **(1) pid** (`%d`): The process ID.
 - **(2) comm** (`%s`): The filename of the executable, in parentheses. Strings longer than `TASK_COMM_LEN (16)` characters (including the terminating null byte) are silently truncated. This is visible whether or not the executable is swapped out.
 - **(3) state** (`%c`): One of the following characters, indicating process state:
-  - `R`: Running
-  - `S`: Sleeping in an interruptible wait
-  - `D`: Waiting in uninterruptible disk sleep
-  - `Z`: Zombie
-  - `T`: Stopped (on a signal) or (before Linux 2.6.33) trace stopped
-  - `t`: Tracing stop (Linux 2.6.33 onward)
-  - `W`: Paging (only before Linux 2.6.0)
-  - `X`: Dead (from Linux 2.6.0 onward)
-  - `x`: Dead (Linux 2.6.33 to 3.13 only)
-  - `K`: Wakekill (Linux 2.6.33 to 3.13 only)
-  - `W`: Waking (Linux 2.6.33 to 3.13 only)
-  - `P`: Parked (Linux 3.9 to 3.13 only)
+    - `R`: Running
+    - `S`: Sleeping in an interruptible wait
+    - `D`: Waiting in uninterruptible disk sleep
+    - `Z`: Zombie
+    - `T`: Stopped (on a signal) or (before Linux 2.6.33) trace stopped
+    - `t`: Tracing stop (Linux 2.6.33 onward)
+    - `W`: Paging (only before Linux 2.6.0)
+    - `X`: Dead (from Linux 2.6.0 onward)
+    - `x`: Dead (Linux 2.6.33 to 3.13 only)
+    - `K`: Wakekill (Linux 2.6.33 to 3.13 only)
+    - `W`: Waking (Linux 2.6.33 to 3.13 only)
+    - `P`: Parked (Linux 3.9 to 3.13 only)
 - **(4) ppid** (`%d`): The PID of the parent of this process.
 - **(5) pgrp** (`%d`): The process group ID of the process.
 - **(6) session** (`%d`): The session ID of the process.
@@ -418,16 +420,11 @@ The full list is long and version-dependent; for details see `proc(5)`. For quic
 - **(20) num_threads** (`%ld`): Number of threads in this process (since Linux 2.6). Before kernel 2.6, this field was hard coded to 0 as a placeholder for an earlier removed field.
 - **(21) itrealvalue** (`%ld`): The time in jiffies before the next SIGALRM is sent to the process due to an interval timer. Since kernel 2.6.17, this field is no longer maintained, and is hard coded as 0.
 - **(22) starttime** (`%llu`): The time the process started after system boot. In kernels before Linux 2.6, this value was expressed in jiffies. Since Linux 2.6, the value is expressed in clock ticks (divide by sysconf(_SC_CLK_TCK)).
-
-</details>
-
-...
-
 - **(52) exit_code** (`%d`, since Linux 3.5) `[PT]`: The thread's exit status in the form reported by `waitpid(2)`.
 
+</div>
 
-
-
+</details>
 
 
 
@@ -449,8 +446,10 @@ $ cat /proc/1457274/statm
 1079417 108417 5394 10532 0 887414 0
 ```
 
-<details>
+<details markdown="1">
 <summary>Column notes</summary>
+
+<div markdown="1">
 
 - **(1) size**: total program size (same as `VmSize` in `/proc/[pid]/status`)
 - **(2) resident**: resident set size (inaccurate; same as `VmRSS` in `/proc/[pid]/status`)
@@ -459,6 +458,8 @@ $ cat /proc/1457274/statm
 - **(5) lib**: library (unused since Linux 2.6; always 0)
 - **(6) data**: data + stack
 - **(7) dt**: dirty pages (unused since Linux 2.6; always 0)
+
+</div>
 
 </details>
 
