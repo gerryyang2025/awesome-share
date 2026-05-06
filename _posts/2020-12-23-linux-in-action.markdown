@@ -17,12 +17,12 @@ tags:
 
 ## 系统日志
 
-为什么现在会同时看到 `systemd-journald`（journal）和传统 syslog（如 `rsyslog`）两套日志体系？
+为什么会存在 `systemd-journald`（`journal`）和传统 `syslog`（如 `rsyslog`）两套日志体系？
 
-* 历史兼容：`rsyslog`（以及更早的 `syslogd`）是传统 syslog 方案，大量应用/组件仍会通过 syslog 接口记录日志（典型是写入 syslog socket）。
-* `systemd` 引入 `journald` 作为日志“汇聚中心”，它能采集内核日志、systemd 服务的 stdout/stderr、syslog 消息等，并提供结构化字段与查询过滤能力。
+* 历史兼容：`rsyslog`（以及更早的 `syslogd`）是传统 `syslog` 方案，大量应用/组件仍会通过 `syslog` 接口记录日志（典型是写入 `syslog socket`）。
+* `systemd` 引入 `journald` 作为日志“汇聚中心”，它能采集内核日志、`systemd` 服务的 `stdout`/`stderr`、`syslog` 消息等，并提供结构化字段与查询过滤能力。
 * 为了兼容旧的运维习惯/生态（文本日志文件、logrotate、集中收集链路等），很多发行版会让 `journald` 与 `rsyslog` 并存：
-  + `journald` 将日志写入 journal（`Storage=auto` 时：启动时存在 `/var/log/journal/` 才会持久化到磁盘；否则写入 `/run/log/journal/`，重启后丢失）。
+  + `journald` 将日志写入 `journal`（`Storage=auto` 时：启动时存在 `/var/log/journal/` 才会持久化到磁盘；否则写入 `/run/log/journal/`，重启后丢失）。
   + `rsyslog` 负责把（来自 `journald` 转发的）日志再落到传统文本文件中：不同发行版文件名不同，Debian/Ubuntu 常见 `/var/log/syslog`，RHEL/CentOS 常见 `/var/log/messages`、`/var/log/secure` 等。
 
 如果系统同时存在两个目录，并且两者都在记录相同内容，那么磁盘使用量会加倍。解决方法：
