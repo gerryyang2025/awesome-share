@@ -343,6 +343,7 @@ Quick cheat sheet:
 - `/proc/[pid]/status`: process status (human-readable)
 - `/proc/[pid]/cmdline`: command line (`NUL`-separated)
   - Example: `tr '\0' ' ' < /proc/$pid/cmdline`
+- `/proc/[pid]/exe`: executable path (symlink)
 - `/proc/[pid]/fd/`: open file descriptors (symlinks)
 - `/proc/[pid]/maps`: memory mappings
 - `/proc/[pid]/smaps_rollup`: memory summary (accurate, slower)
@@ -584,9 +585,7 @@ tar -xzvf archive.tar.gz -C /tmp
 
 https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/
 
-## /proc
 
-`/proc/$pid/exe`: 可执行文件软链接
 
 ## kill / pkill / killall
 
