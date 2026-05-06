@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Linux in Action"
-date:   2021-01-02 17:00:00 +0800
+date:   2026-05-06 15:50:00 +0800
 categories: Linux
 tags:
   - Linux
@@ -13,6 +13,180 @@ tags:
 
 
 # Linux 操作系统
+
+
+## 系统日志
+
+为什么现在会同时看到 `systemd-journald`（journal）和传统 syslog（如 `rsyslog`）两套日志体系？
+
+* 历史兼容：`rsyslog`（以及更早的 `syslogd`）是传统 syslog 方案，大量应用/组件仍会通过 syslog 接口记录日志（典型是写入 syslog socket）。
+* `systemd` 引入 `journald` 作为日志“汇聚中心”，它能采集内核日志、systemd 服务的 stdout/stderr、syslog 消息等，并提供结构化字段与查询过滤能力。
+* 为了兼容旧的运维习惯/生态（文本日志文件、logrotate、集中收集链路等），很多发行版会让 `journald` 与 `rsyslog` 并存：
+  + `journald` 将日志写入 journal（`Storage=auto` 时：启动时存在 `/var/log/journal/` 才会持久化到磁盘；否则写入 `/run/log/journal/`，重启后丢失）。
+  + `rsyslog` 负责把（来自 `journald` 转发的）日志再落到传统文本文件中：不同发行版文件名不同，Debian/Ubuntu 常见 `/var/log/syslog`，RHEL/CentOS 常见 `/var/log/messages`、`/var/log/secure` 等。
+
+如果系统同时存在两个目录，并且两者都在记录相同内容，那么磁盘使用量会加倍。解决方法：
+
+1. 若不需要文本日志，可停止并禁用 `rsyslog`，只依赖 `journald`
+2. 若需要 `messages`，可配置 `rsyslog` 仅转发部分日志或降低日志级别
+
+> 两者核心区别
+
+| 特性 | journal（systemd-journald） | 传统 syslog 文本（rsyslog） |
+| --- | --- | --- |
+| 格式 | 二进制 journal 文件（带结构化字段） | 纯文本行（传统 syslog 格式） |
+| 查看方式 | `journalctl`（可按字段过滤） | `less`/`tail`/`grep` 等文本工具 |
+| 元数据丰富度 | 高：`_SYSTEMD_UNIT`、PID、优先级、启动 ID、用户会话等 | 取决于模板/格式，通常弱于 journal 的结构化字段 |
+| 持久化 | 可选：`/run/log/journal/`（易失）或 `/var/log/journal/`（持久） | 通常持久（始终写入文件，依赖 rsyslog 配置） |
+| 写入/查询特性 | 写入与查询/过滤由 journald/journalctl 体系完成 | 写入简单直观；复杂过滤多靠后处理/grep |
+| 索引/过滤 | 原生支持字段索引与组合查询（如 `_SYSTEMD_UNIT=sshd.service`） | 通常需要全文扫描或额外索引系统 |
+| 启动阶段日志 | 能覆盖更早期的启动与服务 stdout/stderr | 通常只覆盖 rsyslog 启动后、且被转发/接收的日志 |
+| 日志轮转/限额 | journald 自动按配额与策略管理（如 `SystemMaxUse=`、`SystemKeepFree=`） | 常见交给 `logrotate`（配合给 rsyslog 发送 HUP/信号） |
+| 清理方式（重点） | 推荐用 `journalctl --vacuum-size/--vacuum-time`，或调整 `journald.conf` 配额；不建议手工删 journal 文件 | 用 `logrotate`/轮转策略；直接 `truncate`/`rm` 可能因进程仍持有 fd 而暂不回收空间，通常应按轮转流程让 rsyslog 重新打开文件 |
+
+> 官方参考指引（建议优先读这些）
+>
+> * systemd journal 查询/清理：`journalctl(1)`：https://www.freedesktop.org/software/systemd/man/journalctl.html
+> * journald 配额/存储配置：`journald.conf(5)`：https://www.freedesktop.org/software/systemd/man/journald.conf.html
+> * journald 采集来源、存储位置、转发行为：`systemd-journald.service(8)`：https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html
+> * systemd 与 syslog 守护进程协作（转发/套接字等）：https://systemd.io/SYSLOG/
+> * rsyslog 文档（模块/配置/与 journal 集成）：https://www.rsyslog.com/doc/
+
+
+
+### /var/log/messages (rsyslog)
+
+`/var/log/messages` 是 Linux 系统中一个非常核心的**系统日志文件**，可以理解为操作系统的“通用事件记录本”。**它的主要作用是集中记录系统运行期间发生的非安全类的重要信息，帮助管理员监控系统健康状况和排查故障**。
+
+`/var/log/messages` 是 Linux 系统的通用系统日志，记录了除认证、邮件、定时任务等专门日志以外的大部分系统运行事件。它是运维人员排查问题、了解系统“最近发生了什么”的首选信息来源。
+
+> 它记录了什么？
+
+`/var/log/messages` 通常包含以下信息（取决于 `rsyslog`/`syslog` 的配置）：
+
+1. **内核消息**：硬件驱动加载、USB 设备插拔、磁盘 I/O 错误、内存不足（OOM）警告等。许多内核信息也会出现在 `dmesg` 中，但 `messages` 会持久保存。
+2. **系统服务（daemon）信息**：Cron 定时任务执行记录、DHCP 客户端获取 IP、NTP 时间同步、NetworkManager 网络状态变化等。
+3. **应用程序的一般日志**：某些应用（没有单独日志文件的）会将其运行信息打印到 `messages`，比如邮件服务器（`postfix`/`sendmail`）的某些非错误信息、某些脚本的输出。
+4. **系统启动/关闭事件**：服务启动、停止的记录，运行级别切换等。
+
+> 它与其它日志文件有什么区别？
+
+| 文件 | 主要记录内容 | 特点 |
+| --- | --- | --- |
+| `/var/log/messages` | 通用的、非认证类的系统信息 | “大杂烩”，适合初步排查 |
+| `/var/log/secure` | 认证和授权相关日志 | SSH 登录、sudo 使用、用户新建/删除等安全事件 |
+| `/var/log/maillog` | 邮件服务器（sendmail/postfix）详细日志 | 邮件收发、队列处理 |
+| `/var/log/cron` | cron 定时任务执行日志 | 记录哪些定时任务何时运行 |
+| `journalctl`（systemd） | 所有 systemd 管理的日志 |  |
+
+> 谁负责写入这个文件？
+
+通常由 `rsyslogd`（或早期的 `syslogd`）服务负责接收来自内核、各种服务的日志消息，并根据配置规则（`/etc/rsyslog.conf` 及 `/etc/rsyslog.d/` 下的文件）将它们分发到不同的文件，其中默认规则会将 `*.info;mail.none;authpriv.none;cron.none` 级别的信息写入 `/var/log/messages`。
+
+> 它的实际作用是什么？
+
+1. **故障排查第一站**：当系统出现异常（如突然重启、硬件不响应、网络断开）时，管理员通常最先查看 `messages` 中发生错误前后的上下文。
+2. **性能诊断**：检查是否有 kernel 抱怨内存不足（OOM），或磁盘 I/O 错误，这些往往是系统卡顿的根源。
+3. **监控安全事件预警**：虽然不是安全日志，但暴力破解、非法尝试往往也会在 `messages` 中留下痕迹（比如 pam_unix 认证失败的信息）。
+4. **审计服务运行状态**：了解 cron 任务是否正常执行，DHCP 是否获得了正确的 IP 等。
+
+> 为什么 `/var/log/messages` 会一直变大？
+
+`/var/log/messages` 文件是 Linux 系统核心日志，它持续记录着内核、服务及应用的各种信息。它不断增长，主要有以下几方面原因：
+
+1. **日常写入是常态**：系统、内核及服务（如SSH、Cron）的所有日常操作都会不断地向该文件写入日志。
+2. **日志轮转失效或未配置**：这是最常见的原因之一。Linux系统通常使用logrotate工具按天、按大小自动轮转（切割）日志。但如果logrotate配置不当、未启用，或磁盘空间不足导致轮转失败，日志文件就会不分昼夜地持续增长。
+3. **服务或应用异常写入**：这是日志“疯长”的最主要原因。当某个服务出现故障、软件Bug或配置错误时，可能会在短时间内重复输出大量相同的日志条目，导致日志文件在极短时间内迅速膨胀。
+4. **系统级错误风暴**：当内核或硬件出现严重问题（如内核报错、硬件故障、驱动挂载失败等），相关错误信息会被源源不断地写入messages文件，引发“日志风暴”。
+
+> 如何预防日志占满磁盘空间？
+
+**注意：紧急情况处理，如果磁盘已快写满，尽量不要直接 `rm` 删除正在被 `rsyslog` 写入的日志文件。因为 `rm` 只是删除目录项，进程仍可能持有该文件的 fd 并继续写入，磁盘空间不一定立刻释放。更推荐走“轮转并让 rsyslog 重新打开文件”的流程（通常由 `logrotate` 完成）。若必须立刻止血，`truncate -s 0 /var/log/messages` 可以快速清空文件内容，但随后仍应尽快修复轮转策略/降低日志量，避免再次写满。日常巡检，养成定期检查磁盘空间（`df -h`）和日志大文件（`du -sh /var/log/* | sort -hr`）的习惯，是预防问题的关键。同时，可以设置磁盘使用率告警（如>80%），真正做到“防患于未然”。**
+
+*  配置好 `logrotate` 自动轮转。`logrotate` 是 Linux 系统自带的日志管理工具，是预防日志过大的第一道防线。其主配置文件通常位于 `/etc/logrotate.conf`，而针对 `rsyslog` 服务的更详细配置通常在 `/etc/logrotate.d/syslog` 或 `/etc/logrotate.d/rsyslog` 中。配置完成后，可以通过 `logrotate -f /etc/logrotate.d/syslog` 命令手动执行一次来测试配置是否生效。
+
+* 调整 `rsyslog` 配置。通过精细化管理 `rsyslog` 的配置，可以有效减少写入 `/var/log/messages` 的噪音。
+  + 减少记录的日志级别：默认配置下，rsyslog 会记录所有级别的日志。可以编辑其配置文件，调整过滤条件，比如将 `*.info` 改为更高级别。
+  + 将特定日志分流至独立文件：在 /etc/rsyslog.conf 或其包含的目录下（如 /etc/rsyslog.d/），可以为特定的程序创建专用日志文件。这样能大大减少 messages 文件的写入量。
+
+* 限制 systemd-journald 日志。当前主流 Linux 发行版同时使用 journald 和 rsyslog 管理日志，对 journald 进行限制是第二道防线。系统日志的“疯长”可能也源于此。
+  + 编辑配置文件：/etc/systemd/journald.conf
+  + 设置日志大小上限（例如 500MB）
+  + 保存文件并重启服务：`sudo systemctl restart systemd-journald`
+
+
+```bash
+[Journal]
+# 限制持久化日志最大使用空间
+SystemMaxUse=500M
+```
+
+
+### /var/log/journal/ (systemd-journald)
+
+`/var/log/journal/` 是 `systemd-journald` 服务的日志存储目录。`/var/log/journal/` 是 `systemd` 的结构化二进制日志，功能强大，需用 `journalctl` 查看。`/var/log/messages` 是传统纯文本日志，易于用常规命令处理。两者可能共存，甚至记录相同的内容，但 `journald` 提供了更精细的过滤和更好的性能。现代运维建议优先学习 `journalctl`，同时根据合规需求保留 `messages`。
+
+* **结构化日志**：每条日志包含时间戳、主机名、服务名、PID、优先级、以及 `MESSAGE=` 等键值对字段，支持索引和快速过滤。
+* **二进制格式**：非纯文本，因此不能直接用 cat、less 查看，需要使用 `journalctl` 命令查询。
+* **保留丰富元数据**：除了日志消息本身，还记录内核、服务、启动阶段、用户会话等上下文，包含 `_SYSTEMD_UNIT=, _PID=, _COMM=` 等字段，极大方便追踪特定服务。
+* **支持持久化**（可选）：
+  + 默认情况下，`journald` 将日志存储在内存（`/run/log/journal/`），重启消失。
+  + 当手动创建 `/var/log/journal/` 目录并设置权限后，日志会持久化到磁盘，这通常出现在服务器系统中。
+  + 可通过 `/etc/systemd/journald.conf` 中的 `Storage=` 选项控制：`auto`（存在目录则持久化）、`persistent`（强制持久化）、`volatile`（仅内存）。
+
+> 典型查看方式
+
+```bash
+journalctl                 # 查看所有日志（分页显示）
+journalctl -u docker       # 查看 docker 服务的日志
+journalctl --since "1 hour ago"
+journalctl -r              # 反向显示（最新在上）
+```
+
+> 如何使用 `journalctl` 安全清理？
+
+在操作前，建议先用 `journalctl --disk-usage` 查看当前日志占用的空间。
+
+```bash
+[root /var/log 15:36:18]$ journalctl --disk-usage
+Archived and active journals take up 4.0G in the file system.
+[root /var/log 15:36:24]$ du -csh journal
+4.1G    journal
+4.1G    total
+```
+
+* 完整清空
+
+如果确定要清理所有归档日志，可以使用这个方法。它会主动轮换（`--rotate`）并清理（`--vacuum-time=1s`）所有历史日志：
+
+```bash
+sudo journalctl --rotate && sudo journalctl --vacuum-time=1s
+```
+
+* 按时间清理 (`--vacuum-time`)
+
+只保留指定时间段内的日志，自动删除更早的。支持 s(秒)、m(分)、h(时)、d(天)、weeks(周)等单位。
+
+```bash
+# 只保留最近 7 天
+sudo journalctl --vacuum-time=7d
+
+# 只保留最近 2 周
+sudo journalctl --vacuum-time=2weeks
+```
+
+* 按大小清理 (`--vacuum-size`)
+
+将日志总大小控制在指定值以下，自动删除最旧的日志。
+
+```bash
+# 日志总大小限制在 500MB
+sudo journalctl --vacuum-size=500M
+
+# 日志总大小限制在 1GB
+sudo journalctl --vacuum-size=1G
+```
+
 
 ## /etc/sudoers
 
@@ -148,7 +322,7 @@ rm -rfi `find -inum 1805121`
 
 ## /proc (process information pseudo-filesystem)
 
-The proc filesystem is a pseudo-filesystem which provides an interface to kernel data structures.  It is commonly mounted at `/proc`. Typically, it is mounted automatically by the system, but it can also be mounted manually using a command such as:
+The proc filesystem is a pseudo-filesystem which provides an interface to kernel data structures. It is commonly mounted at `/proc`. Typically, it is mounted automatically by the system, but it can also be mounted manually.
 
 ```bash
 mount -t proc proc /proc
@@ -156,197 +330,99 @@ mount -t proc proc /proc
 
 Most of the files in the proc filesystem are read-only, but some files are writable, allowing kernel variables to be changed.
 
+References:
+
+- `https://man7.org/linux/man-pages/man5/proc.5.html`
+- `https://www.kernel.org/doc/html/latest/filesystems/proc.html`
+
+Quick cheat sheet:
+
+- `/proc/self`: current process (symlink)
+- `/proc/thread-self`: current thread (symlink)
+- `/proc/[pid]/stat`: process status (used by `ps(1)`)
+- `/proc/[pid]/status`: process status (human-readable)
+- `/proc/[pid]/cmdline`: command line (`NUL`-separated)
+  - Example: `tr '\0' ' ' < /proc/$pid/cmdline`
+- `/proc/[pid]/fd/`: open file descriptors (symlinks)
+- `/proc/[pid]/maps`: memory mappings
+- `/proc/[pid]/smaps_rollup`: memory summary (accurate, slower)
+
 Underneath `/proc`, there are the following general groups of files and subdirectories:
 
-refer:
-
-* https://man7.org/linux/man-pages/man5/proc.5.html
-* https://www.kernel.org/doc/html/latest/filesystems/proc.html
 
 
-
-###  `/proc/[pid]`
+### `/proc/[pid]`
 
 Each one of these subdirectories contains files and subdirectories exposing information about the **process** with the corresponding process ID.
 
-Underneath each of the `/proc/[pid]` directories, a task subdirectory contains subdirectories of the form `task/[tid]`, which contain corresponding information about each of the **threads** in the process, where tid is the kernel thread ID of the thread.
+Underneath each of the `/proc/[pid]` directories, a `task/` subdirectory contains subdirectories of the form `task/[tid]`, which contain corresponding information about each of the **threads** in the process, where `tid` is the kernel thread ID of the thread.
 
 ### `/proc/[tid]`
 
-Each one of these subdirectories contains files and subdirectories exposing information about the **thread** with the corresponding thread ID.  The contents of these directories are the same as the corresponding `/proc/[pid]/task/[tid]` directories.
+Each one of these subdirectories contains files and subdirectories exposing information about the **thread** with the corresponding thread ID. The contents of these directories are the same as the corresponding `/proc/[pid]/task/[tid]` directories.
 
-## `/proc/self`
+### `/proc/self`
 
 When a process accesses this magic symbolic link, it resolves to the process's own `/proc/[pid]` directory.
 
-## `/proc/thread-self`
+### `/proc/thread-self`
 
 When a thread accesses this magic symbolic link, it resolves to the process's own `/proc/self/task/[tid]` directory.
 
-## `/proc/[pid]/stat`
+### `/proc/[pid]/stat`
 
-Status information about the process.  This is used by `ps(1)`.  It is defined in the kernel source file `fs/proc/array.c`.
+Status information about the process. This is used by `ps(1)`. It is defined in the kernel source file `fs/proc/array.c`.
 
 ```text
-~$cat /proc/3100717/stat
+$ cat /proc/3100717/stat
 3100717 (unittestsvr) S 1 3100716 3100716 0 -1 4202560 1123163 0 56 0 1377525 296772 0 0 20 0 8 0 4715620677 3944722432 109878 18446744073709551615 4194304 47321236 140734650356688 140734650335168 140232066947133 0 0 3215367 18976 18446744073709551615 0 0 17 4 0 0 49 0 0 49420928 50225480 119697408 140734650366993 140734650367104 140734650367104 140734650392510 0
 ```
 
+The full list is long and version-dependent; for details see `proc(5)`. For quick reading, you can expand the field notes below.
 
-(1) **pid**  %d
+<details>
+<summary>Field notes (partial)</summary>
 
-    The process ID.
+- **(1) pid** (`%d`): The process ID.
+- **(2) comm** (`%s`): The filename of the executable, in parentheses. Strings longer than `TASK_COMM_LEN (16)` characters (including the terminating null byte) are silently truncated. This is visible whether or not the executable is swapped out.
+- **(3) state** (`%c`): One of the following characters, indicating process state:
+  - `R`: Running
+  - `S`: Sleeping in an interruptible wait
+  - `D`: Waiting in uninterruptible disk sleep
+  - `Z`: Zombie
+  - `T`: Stopped (on a signal) or (before Linux 2.6.33) trace stopped
+  - `t`: Tracing stop (Linux 2.6.33 onward)
+  - `W`: Paging (only before Linux 2.6.0)
+  - `X`: Dead (from Linux 2.6.0 onward)
+  - `x`: Dead (Linux 2.6.33 to 3.13 only)
+  - `K`: Wakekill (Linux 2.6.33 to 3.13 only)
+  - `W`: Waking (Linux 2.6.33 to 3.13 only)
+  - `P`: Parked (Linux 3.9 to 3.13 only)
+- **(4) ppid** (`%d`): The PID of the parent of this process.
+- **(5) pgrp** (`%d`): The process group ID of the process.
+- **(6) session** (`%d`): The session ID of the process.
+- **(7) tty_nr** (`%d`): The controlling terminal of the process.
+- **(8) tpgid** (`%d`): The ID of the foreground process group of the controlling terminal of the process.
+- **(9) flags** (`%u`): The kernel flags word of the process. For bit meanings, see the `PF_*` defines in the Linux kernel source file `include/linux/sched.h`. Details depend on the kernel version.
+- **(10) minflt** (`%lu`): The number of minor faults the process has made which have not required loading a memory page from disk.
+- **(11) cminflt** (`%lu`): The number of minor faults that the process's waited-for children have made.
+- **(12) majflt** (`%lu`): The number of major faults the process has made which have required loading a memory page from disk.
+- **(13) cmajflt** (`%lu`): The number of major faults that the process's waited-for children have made.
+- **(14) utime** (`%lu`): Amount of time that this process has been scheduled in user mode, measured in clock ticks (divide by `sysconf(_SC_CLK_TCK)`). This includes guest time, guest_time (time spent running a virtual CPU, see below), so that applications that are not aware of the guest time field do not lose that time from their calculations.
+- **(15) stime** (`%lu`): Amount of time that this process has been scheduled in kernel mode, measured in clock ticks (divide by `sysconf(_SC_CLK_TCK)`).
+- **(16) cutime** (`%ld`): Amount of time that this process's waited-for children have been scheduled in user mode, measured in clock ticks (divide by `sysconf(_SC_CLK_TCK)`). (See also times(2).) This includes guest time, cguest_time (time spent running a virtual CPU, see below).
+- **(17) cstime** (`%ld`): Amount of time that this process's waited-for children have been scheduled in kernel mode, measured in clock ticks (divide by `sysconf(_SC_CLK_TCK)`).
+- **(18) priority** (`%ld`): (Explanation for Linux 2.6) For processes running a real-time scheduling policy (policy below; see sched_setscheduler(2)), this is the negated scheduling priority, minus one; that is, a number in the range -2 to -100, corresponding to real-time priorities 1 to 99. For processes running under a non-real-time scheduling policy, this is the raw nice value (setpriority(2)) as represented in the kernel. The kernel stores nice values as numbers in the range 0 (high) to 39 (low), corresponding to the user-visible nice range of -20 to 19.
+- **(19) nice** (`%ld`): The nice value (see setpriority(2)), a value in the range 19 (low priority) to -20 (high priority).
+- **(20) num_threads** (`%ld`): Number of threads in this process (since Linux 2.6). Before kernel 2.6, this field was hard coded to 0 as a placeholder for an earlier removed field.
+- **(21) itrealvalue** (`%ld`): The time in jiffies before the next SIGALRM is sent to the process due to an interval timer. Since kernel 2.6.17, this field is no longer maintained, and is hard coded as 0.
+- **(22) starttime** (`%llu`): The time the process started after system boot. In kernels before Linux 2.6, this value was expressed in jiffies. Since Linux 2.6, the value is expressed in clock ticks (divide by sysconf(_SC_CLK_TCK)).
 
-(2) **comm**  %s
-
-    The filename of the executable, in parentheses. Strings longer than `TASK_COMM_LEN (16)` characters (including the terminating null byte) are silently truncated. This is visible whether or not the executable is swapped out.
-
-(3) **state**  %c
-
-    One of the following characters, indicating process state:
-
-    `R`  Running
-
-    `S`  Sleeping in an interruptible wait
-
-    `D`  Waiting in uninterruptible disk sleep
-
-    `Z`  Zombie
-
-    `T`  Stopped (on a signal) or (before Linux 2.6.33) trace stopped
-
-    `t`  Tracing stop (Linux 2.6.33 onward)
-
-    `W`  Paging (only before Linux 2.6.0)
-
-    `X`  Dead (from Linux 2.6.0 onward)
-
-    `x`  Dead (Linux 2.6.33 to 3.13 only)
-
-    `K`  Wakekill (Linux 2.6.33 to 3.13 only)
-
-    `W`  Waking (Linux 2.6.33 to 3.13 only)
-
-    `P`  Parked (Linux 3.9 to 3.13 only)
-
-(4) **ppid**  %d
-
-    The PID of the parent of this process.
-
-(5) **pgrp**  %d
-
-    The process group ID of the process.
-
-(6) **session**  %d
-
-    The session ID of the process.
-
-(7) **tty_nr**  %d
-
-    The controlling terminal of the process.
-
-(8) **tpgid**  %d
-
-    The ID of the foreground process group of the controlling terminal of the process.
-
-(9) **flags**  %u
-
-    The kernel flags word of the process. For bit meanings, see the PF_* defines in the Linux kernel source file include/linux/sched.h. Details depend on the kernel version.
-
-(10) **minflt**  %lu
-
-    The number of minor faults the process has made which have not required loading a memory page from disk.
-
-(11) **cminflt**  %lu
-
-    The number of minor faults that the process's waited-for children have made.
-
-(12) **majflt**  %lu
-
-    The number of major faults the process has made which have required loading a memory page from disk.
-
-(13) **cmajflt**  %lu
-
-    The number of major faults that the process's waited-for children have made.
-
-(14) **utime**  %lu
-
-        Amount of time that this process has been scheduled
-        in user mode, measured in clock ticks (divide by
-        `sysconf(_SC_CLK_TCK)`).  This includes guest time,
-        guest_time (time spent running a virtual CPU, see
-        below), so that applications that are not aware of
-        the guest time field do not lose that time from
-        their calculations.
-
-(15) **stime**  %lu
-
-        Amount of time that this process has been scheduled
-        in kernel mode, measured in clock ticks (divide by
-        `sysconf(_SC_CLK_TCK)`).
-
-(16) **cutime**  %ld
-
-        Amount of time that this process's waited-for
-        children have been scheduled in user mode, measured
-        in clock ticks (divide by `sysconf(_SC_CLK_TCK)`).
-        (See also times(2).)  This includes guest time,
-        cguest_time (time spent running a virtual CPU, see
-        below).
-
-(17) **cstime**  %ld
-
-        Amount of time that this process's waited-for
-        children have been scheduled in kernel mode,
-        measured in clock ticks (divide by
-        `sysconf(_SC_CLK_TCK)`).
-
-(18) **priority**  %ld
-
-        (Explanation for Linux 2.6) For processes running a
-        real-time scheduling policy (policy below; see
-        sched_setscheduler(2)), this is the negated
-        scheduling priority, minus one; that is, a number
-        in the range -2 to -100, corresponding to real-time
-        priorities 1 to 99.  For processes running under a
-        non-real-time scheduling policy, this is the raw
-        nice value (setpriority(2)) as represented in the
-        kernel.  The kernel stores nice values as numbers
-        in the range 0 (high) to 39 (low), corresponding to
-        the user-visible nice range of -20 to 19.
-
-(19) **nice**  %ld
-
-    The nice value (see setpriority(2)), a value in the
-    range 19 (low priority) to -20 (high priority).
-
-(20) **num_threads**  %ld
-
-    Number of threads in this process (since Linux
-    2.6).  Before kernel 2.6, this field was hard coded
-    to 0 as a placeholder for an earlier removed field.
-
-(21) **itrealvalue**  %ld
-
-    The time in jiffies before the next SIGALRM is sent
-    to the process due to an interval timer.  Since
-    kernel 2.6.17, this field is no longer maintained,
-    and is hard coded as 0.
-
-(22) **starttime**  %llu
-
-    The time the process started after system boot.  In
-    kernels before Linux 2.6, this value was expressed
-    in jiffies.  Since Linux 2.6, the value is
-    expressed in clock ticks (divide by
-    sysconf(_SC_CLK_TCK)).
+</details>
 
 ...
 
-(52) **exit_code**  %d  (since Linux 3.5)  [PT]
-
-        The thread's exit status in the form reported by
-        waitpid(2).
+- **(52) exit_code** (`%d`, since Linux 3.5) `[PT]`: The thread's exit status in the form reported by `waitpid(2)`.
 
 
 
@@ -354,12 +430,12 @@ Status information about the process.  This is used by `ps(1)`.  It is defined i
 
 
 
-## `/proc/[pid]/statm`
+### `/proc/[pid]/statm`
 
 Provides information about memory usage, measured in **pages**. The columns are:
 
 ```text
-$getconf -a|grep -i page
+$ getconf -a | grep -i page
 PAGESIZE                           4096
 PAGE_SIZE                          4096
 _AVPHYS_PAGES                      157508
@@ -368,25 +444,24 @@ _PHYS_PAGES                        32857825
 
 
 ```text
-$cat /proc/1457274/statm
+$ cat /proc/1457274/statm
 1079417 108417 5394 10532 0 887414 0
 ```
 
+<details>
+<summary>Column notes</summary>
 
-size       (1) total program size
-                             (same as `VmSize` in `/proc/[pid]/status`)
-resident   (2) resident set size
-                             (inaccurate; same as `VmRSS` in `/proc/[pid]/status`)
-shared     (3) number of resident shared pages
-                             (i.e., backed by a file)
-                             (inaccurate; same as `RssFile+RssShmem` in
-                             `/proc/[pid]/status`)
-text       (4) text (code)
-lib        (5) library (unused since Linux 2.6; always 0)
-data       (6) data + stack
-dt         (7) dirty pages (unused since Linux 2.6; always 0)
+- **(1) size**: total program size (same as `VmSize` in `/proc/[pid]/status`)
+- **(2) resident**: resident set size (inaccurate; same as `VmRSS` in `/proc/[pid]/status`)
+- **(3) shared**: number of resident shared pages (i.e., backed by a file) (inaccurate; same as `RssFile+RssShmem` in `/proc/[pid]/status`)
+- **(4) text**: text (code)
+- **(5) lib**: library (unused since Linux 2.6; always 0)
+- **(6) data**: data + stack
+- **(7) dt**: dirty pages (unused since Linux 2.6; always 0)
 
-Some of these values are **inaccurate** because of a kernel-internal scalability optimization.  If accurate values are required, use `/proc/[pid]/smaps` or `/proc/[pid]/smaps_rollup` instead, which are much slower but provide accurate, detailed information.
+</details>
+
+Some of these values are **inaccurate** because of a kernel-internal scalability optimization. If accurate values are required, use `/proc/[pid]/smaps` or `/proc/[pid]/smaps_rollup` instead, which are much slower but provide accurate, detailed information.
 
 
 
