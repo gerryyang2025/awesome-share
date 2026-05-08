@@ -41,6 +41,162 @@ tags:
 
 > 这不是“谁更好”的问题，而是**你希望取消语义是什么**。对“聚合请求、谁来都要算一次”的场景，这种“所有等待者都取消才取消”通常更符合直觉；对“只要没人等就没必要算”的场景，也更节省资源。
 
+### 实现差异与（更贴近业务的）优化点
+
+把两者都当作“同一轮同 key 合并一次执行”的工具时，差异主要集中在**类型、取消/超时传播、以及 key 的表达能力**上：
+
+- **类型与 key 的表达能力**
+  - 官方 `x/sync/singleflight`：`key` 是 `string`，返回值是 `interface{}`，业务里通常需要 `fmt.Sprintf` 拼 key + 做类型断言。
+  - `janos/singleflight`：`Group[K, V]` 里 **key 是任意 `comparable` 类型**、value 是强类型 `V`。这在工程上往往能减少两类 bug/成本：
+    - 少写一堆字符串拼接（减少临时分配，也避免 key 格式写错）
+    - 少做类型断言（避免运行时 panic）
+
+- **取消/超时语义（核心差别）**
+  - 官方包的 `Do/DoChan` 本身不接收 `context`，因此“某个等待者超时/取消”通常只能影响等待者自己（例如 `select` 超时直接返回），而**不会自然地传递到正在执行的那次 `fn`**；`Forget` 也只是让后续调用开启新一轮执行，并不会取消正在执行的那次调用。
+  - `janos/singleflight` 的 `Do(ctx, key, fn)` 把 context 纳入模型，并强调一种更适合“抗惊群”的语义：**只有当所有等待者都取消后，才取消那次真正执行的 `fn` 的 context**。这可以减少“局部超时 → 全局误取消 → 下一波又重新回源”的抖动与放大效应。
+
+- **更容易落地的工程习惯**
+  - 两者都会告诉你结果是否 `shared`（是否复用了同一轮合并执行的结果）。在缓存回源场景里，一个常见的工程优化是：**只有 `shared=false` 的那次负责写缓存/打点**，避免同一轮里重复写入或重复统计。
+
+## 官方 `golang.org/x/sync/singleflight` 用法速查
+
+很多时候你不需要额外的取消语义/泛型能力，只要“同 key 合并一次执行”就够了，这时官方包就非常合适：
+
+```bash
+go get golang.org/x/sync/singleflight
+```
+
+`singleflight` 提供的是一种**重复函数调用抑制机制**：在高并发下，多个 goroutine 同时请求相同资源（同一个 key）时，把并发请求合并成一次执行，让其它调用方等待并共享结果，从而缓解“缓存击穿/惊群”。
+
+### 核心 API：`Group` 的 `Do` / `DoChan` / `Forget`
+
+- **`Do(key, fn)`**：同步阻塞。对同一个 key，第一个调用执行 `fn`，后续调用阻塞等待并共享结果。返回值里的 `shared=true` 表示“这一轮结果被多个调用方共享”，不代表缓存命中。
+- **`DoChan(key, fn)`**：异步版 `Do`。返回 `<-chan Result`，适合配合 `select` 做超时/取消控制。
+- **`Forget(key)`**：从 `Group` 内部映射里移除 key。移除后，新的调用会重新执行 `fn`（而不是复用之前那次正在执行/已完成的结果）。
+
+### 示例：用 `Do` 防缓存击穿（缓存 + DB 回源）
+
+这个例子演示最常见的模式：先查缓存，miss 时用 `singleflight` 合并回源查询，并在回源函数里**二次查缓存**防止等待期间缓存已被填充。
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"sync"
+	"time"
+
+	"golang.org/x/sync/singleflight"
+)
+
+// 模拟缓存：用 sync.Map 保证并发安全
+var cache sync.Map
+
+func fetchFromDB(key string) (string, error) {
+	log.Printf("[DB] query start: key=%s", key)
+	time.Sleep(1 * time.Second)
+	return fmt.Sprintf("value_for_%s_from_db", key), nil
+}
+
+func getOrCreate(g *singleflight.Group, key string) (interface{}, error) {
+	// 1) 先查缓存
+	if val, ok := cache.Load(key); ok {
+		log.Printf("[Cache Hit] key=%s", key)
+		return val, nil
+	}
+
+	// 2) 缓存 miss，用 singleflight 合并回源
+	val, err, _ := g.Do(key, func() (interface{}, error) {
+		// 二次查缓存：避免等待期间其他并发已写回缓存
+		if val, ok := cache.Load(key); ok {
+			return val, nil
+		}
+		dbVal, err := fetchFromDB(key)
+		if err != nil {
+			return nil, err
+		}
+		cache.Store(key, dbVal)
+		return dbVal, nil
+	})
+	return val, err
+}
+
+func main() {
+	var g singleflight.Group
+	key := "hot_key"
+
+	const n = 10
+	var wg sync.WaitGroup
+	wg.Add(n)
+
+	for i := 0; i < n; i++ {
+		i := i
+		go func() {
+			defer wg.Done()
+			val, err := getOrCreate(&g, key)
+			if err != nil {
+				log.Printf("goroutine %d err: %v", i, err)
+				return
+			}
+			log.Printf("goroutine %d got: %v", i, val)
+		}()
+	}
+	wg.Wait()
+}
+```
+
+你会看到 `[DB]` 日志只出现一次，说明昂贵查询只执行了一次，其它请求共享结果。
+
+### `DoChan`：可超时等待（常与 `Forget` 搭配）
+
+`DoChan` 返回 `<-chan singleflight.Result`，适合对延迟有硬要求的调用方：超时后不必无限等待。
+
+```go
+func getOrCreateWithTimeout(g *singleflight.Group, key string, timeout time.Duration) (interface{}, error) {
+	if val, ok := cache.Load(key); ok {
+		return val, nil
+	}
+
+	ch := g.DoChan(key, func() (interface{}, error) {
+		// 这里演示直接回源；真实业务建议同样做二次查缓存
+		return fetchFromDB(key)
+	})
+
+	select {
+	case result := <-ch:
+		if result.Err != nil {
+			return nil, result.Err
+		}
+		// 注意：DoChan 只负责把结果送回来；缓存写回/指标统计仍由你自己处理
+		cache.Store(key, result.Val)
+		return result.Val, nil
+	case <-time.After(timeout):
+		// 超时后可选择 Forget：让后续请求触发新一轮执行，避免一直挂在慢请求上
+		g.Forget(key)
+		return nil, fmt.Errorf("timeout waiting for key=%s (>%v)", key, timeout)
+	}
+}
+```
+
+### 关键细节与最佳实践（官方包也同样适用）
+
+1. **错误也会被“共享”**
+   - 同一轮合并执行如果返回 error，等待者会一起收到这个 error。
+   - 如果你的业务希望“失败后立刻允许重试”，可以在失败场景 `Forget(key)`，避免后续调用继续复用/等待同一轮失败结果。
+
+2. **`Do` vs `DoChan` 的选择**
+   - **优先用 `Do`**：简单直接，适用于大多数“回源合并”的场景。
+   - **需要超时/不想无限阻塞时用 `DoChan`**：配合 `select` 做超时，必要时 `Forget` 解除对慢调用的绑定。
+
+3. **别把不可重入的副作用塞进 `fn`**
+   - `singleflight` 更适合“纯读”或“幂等”的昂贵操作（读 DB、请求第三方、生成可缓存结果）。
+   - 像扣库存/发短信这种副作用，会因为“只执行一次”而改变语义。
+
+4. **局限性：进程内有效 + key 高基数会占内存**
+   - `singleflight` 的合并只在**单进程内**生效；分布式场景要靠分布式锁/一致性哈希/集中缓存来做跨节点合并。
+   - `Group` 内部维护 key→call 的状态，如果 key 种类极多且生命周期短，建议评估内存占用，并在合适时机 `Forget`（或控制 key 的粒度）。
+
 ## 安装
 
 在你的 Go module 里：
