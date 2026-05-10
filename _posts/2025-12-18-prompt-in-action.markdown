@@ -102,13 +102,15 @@ I'm helpful at home. I can wash my clothes and play with my baby sister. I love 
 
 例如：[音频示例](https://raw.githubusercontent.com/gerryyang2025/my-tools/master/minimax-tts/output/scarlett_english/voice_id_1_my_family.mp3)
 
-> 通过 NotebookLM 生成小宇宙博客音频
+> 通过 NotebookLM 生成小宇宙播客音频
 
 参考提供的小学英语阅读原文，在生成的音频中添加提供的英语原文朗读原文，然后补充重点词汇介绍，以及详细的知识点用法解析，请按符合小学生学习英语的口吻进行介绍。
 
 
+> 通过 [小宇宙 Studio](https://studio.xiaoyuzhoufm.com/) 播客剪辑音频
 
 
+可以对多个音频进行编辑合成。
 
 
 # 英语学习小精灵 - 记住么
