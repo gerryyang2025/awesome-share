@@ -77,10 +77,38 @@ https://clocks.brianmoore.com/
 * 对 linter 相关的提示问题进行优化
 * 优化 `A` 函数实现，降低函数圈复杂度，保证功能一致。
 
-# 文案修改
+# 小宇宙
+
+## Gerry Is Cool
 
 * 请使用小宇宙的 Shownotes 格式对下面内容进行调整。
 * 基于此内容生成一个使用 Nano banana 生成的文章封面图提示词。
+
+## 慢慢来，我们一起
+
+> 通过 DeepSeek 生成详细的学习内容，并通过 Nano banana 生成封面图片
+
+为下面的小学英语阅读原文添加中文翻译，重点词汇介绍，详细的知识点用法解析，相关内容的小测试用于知识巩固（并给出示例答案），输出小宇宙的 Shownotes 格式。最后，基于英语原文内容生成一个使用 Nano banana 生成的文章封面图提示词。
+
+```text
+Hello, everyone! My name is Bob. I'm eleven years old. Here is a photo of my family.
+Look at the tall and strong man. He is my father. He is a doctor. He helps the sick people. And he likes sports very much. He can play basketball very well.
+The beautiful woman with long hair is my dear mother. She is a music teacher in our school. She can sing songs well. She often cooks good food for us, too.
+And who's the little lovely girl? She's my baby sister! She is only two years old now. She is very funny. She walks slowly, but she can crawl fast. We all love her very much.
+I'm helpful at home. I can wash my clothes and play with my baby sister. I love my family.
+```
+
+> 通过 [voice_cloner](https://github.com/gerryyang2025/my-tools/tree/master/minimax-tts) 工具克隆英语原文的音频
+
+例如：[音频示例](https://raw.githubusercontent.com/gerryyang2025/my-tools/master/minimax-tts/output/scarlett_english/voice_id_1_my_family.mp3)
+
+> 通过 NotebookLM 生成小宇宙博客音频
+
+参考提供的小学英语阅读原文，在生成的音频中添加提供的英语原文朗读原文，然后补充重点词汇介绍，以及详细的知识点用法解析，请按符合小学生学习英语的口吻进行介绍。
+
+
+
+
 
 
 # 英语学习小精灵 - 记住么
@@ -149,9 +177,6 @@ Kitty: We both love animals. I have a cat and Alice has a dog. (吉蒂：我们�
 Kitty: We both like helping people. We sometimes help old people cross the street. We also help them carry heavy bags. (吉蒂：我们两个都喜欢帮助别人。我们有时帮助老人穿过马路。我们还帮他们提重袋子。)
 Kitty: We like each other. We're good friends. (吉蒂：我们喜欢彼此。我们是好朋友。)
 ```
-
-
-
 
 
 # 画图工具 [Next AI Draw.io](https://github.com/DayuanJiang/next-ai-draw-io)
