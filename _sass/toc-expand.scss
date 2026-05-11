@@ -1,0 +1,12 @@
+/* Force Chirpy TOC to fully expand all levels (no progressive reveal). */
+
+/* Right-side TOC panel (desktop) */
+#toc ul ul {
+  display: block !important;
+}
+
+/* TOC popup (mobile / narrow view) */
+#toc-popup-content ul ul {
+  display: block !important;
+}
+
