@@ -7,8 +7,5 @@
 {%- endif -%}
 ';
 
-/* Site: force TOC fully expanded */
-@use 'toc-expand' as *;
-
 /* Site: post typography, tables, code blocks — regenerate: ./tools/bundle-post-content-css.sh */
 @use 'post-content-bundle' as *;
