@@ -2,6 +2,7 @@
 layout: post
 title:  "Using Go Modules"
 date:   2021-06-04 12:00:00 +0800
+last_modified_at: 2026-05-18 21:29:17 +0800
 categories: GoLang
 tags:
   - Using Go Modules
