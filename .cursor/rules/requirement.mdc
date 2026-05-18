@@ -1,0 +1,93 @@
+---
+description: 文章书写或更新时的注意事项（Front Matter、撰写规范、Chirpy 用法）
+globs: _posts/**/*.markdown
+alwaysApply: false
+---
+
+# 注意事项
+
+**规范参考**：`_posts/2026-03-21-chirpy-theme-in-action.markdown` — Chirpy 主题与本文库的写文章规范（命名、`date` / `last_modified_at`、可选 `description`、`categories` / `tags`、正文 `{:toc}`、`mermaid: true`、提示块等）。新建或改文时，Front Matter 结构与字段顺序优先对齐该文。
+
+本站使用 **jekyll-theme-chirpy**。在 `_posts/` 下**新建或修改**文章时，必须在 YAML Front Matter 中**添加或更新** `last_modified_at`。
+
+## Front Matter 与文件
+
+1. **不要改动 `date`**，除非用户明确要求修改发布时间。`date` 表示首次发布时间。
+2. **每次编辑都要设置或刷新 `last_modified_at`**，紧挨在 **`date` 下一行**（与参考文一致）。
+3. **格式**：`last_modified_at: YYYY-MM-DD HH:MM:SS +0800` — 默认 `+0800` 与当前本地时间。
+4. 若缺少 `last_modified_at`，**补上**；若已有，每次改内容时**替换**。
+5. **文件名**：`_posts/YYYY-MM-DD-title.markdown`。
+6. 需要 Mermaid 时，Front Matter 设 `mermaid: true`；需要公式时设 `math: true`。
+
+## 新文章撰写要求
+
+用户要求「汇总/写一篇专业技术文章」且提供参考链接时，按下列标准执行（主题以用户说明为准，参考 URL 用于交叉核对，勿照抄）：
+
+| 维度 | 要求 |
+|------|------|
+| **风格** | 专业、详尽、结构清晰，**理论与实践结合** |
+| **结构** | 至少覆盖：**原理与核心概念**、**使用方法**、**使用示例**、**最佳实践**、**注意事项** |
+| **交叉引用** | 对照参考文提炼；链到官方文档；链到站内相关文（`{% post_url … %}` 或相对路径） |
+| **图示** | 用 **Mermaid** 说明架构、流程、对比（flowchart / sequenceDiagram 等） |
+| **Chirpy 排版** | `{:toc}`；`{: .prompt-tip }` / `info` / `warning` / `danger` 突出重点；`{: .filepath }` 标注路径；代码块用围栏 + 可选 `{: file="…" }` |
+| **文末** | **参考资源** 小节：官方文档优先，再列社区/站内延伸阅读 |
+
+**站内范例（结构与深度可参考，非照抄）**：
+
+- ConfigMap：`_posts/2026-03-25-kubernetes-configmap.markdown`
+- Helm：`_posts/2022-07-20-helm-in-action.markdown`
+
+**参考来源示例（Kubernetes ConfigMap 类主题）**：
+
+- https://kubernetes.io/docs/concepts/configuration/configmap/
+- https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/
+- https://kubernetes.io/docs/tutorials/configuration/updating-configuration-via-a-configmap/
+- https://spacelift.io/blog/kubernetes-configmap
+- https://www.plural.sh/blog/kubernetes-configmap-guide/
+
+## 既有文章更新要求
+
+用户要求「对指定文章补充更新」且提供参考链接时：
+
+1. **分析**参考文与站内已有正文，**补充完善**，**不要删除历史内容**（除非用户明确要求替换过时段落）。
+2. 出现**已过时**的表述时，**增补或替换为更新内容**，并保留对旧版本的说明（如「Helm 3 → 4」对照表）以保持时效性。
+3. 同样满足上表：**风格、结构模块、交叉引用、Mermaid、Chirpy 排版、文末参考资源**。
+4. 同一次修改必须更新 `last_modified_at`。
+
+**参考来源示例（Helm 类主题更新）**：
+
+- https://helm.sh/docs/overview/
+- https://helm.sh/zh/docs/chart_template_guide/getting_started
+- https://github.com/helm/helm
+- https://jimmysong.io/zh/blog/helm-4-delivery-and-plugin-rebuild/
+
+## Front Matter 示例
+
+```yaml
+---
+layout: post
+title:  "文章标题"
+date:   2026-03-21 18:30:00 +0800
+last_modified_at: 2026-05-18 21:35:42 +0800
+description: "可选；SEO、列表、RSS 摘要"
+categories: Tools
+tags:
+  - 标签
+mermaid: true
+---
+```
+
+正文在 closing `---` 之后：
+
+```markdown
+* Do not remove this line (it will not be displayed)
+{:toc}
+```
+
+## 完成前检查
+
+- [ ] `_posts/` 文件已改 → `last_modified_at` 已更新
+- [ ] `date` 未改（除非用户要求）；时间戳含 `+0800`
+- [ ] 新文/大改：含原理、用法、示例、最佳实践、注意事项、参考资源
+- [ ] 更新文：历史内容保留；过时信息已修订或标注版本
+- [ ] 站内交叉引用与 Mermaid、Chirpy 提示块已按需使用
