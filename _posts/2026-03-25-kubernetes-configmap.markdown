@@ -2,6 +2,7 @@
 layout: post
 title:  "Kubernetes ConfigMap 完全指南"
 date:   2026-03-25 09:00:00 +0800
+last_modified_at: 2026-05-18 21:35:42 +0800
 categories: Kubernetes
 tags:
   - Kubernetes
@@ -17,14 +18,17 @@ mermaid: true
 
 ## 概述
 
+> 本文与站内 [Kubernetes in Action — ConfigMap 与 Secret]({% post_url 2022-07-31-k8s-in-action %}#configmap-and-secret) 互为补充：该文侧重集群视角下的配置分离；本文按官方 [Concepts](https://kubernetes.io/docs/concepts/configuration/configmap/)、[Tasks](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/) 与 [Tutorial](https://kubernetes.io/docs/tutorials/configuration/updating-configuration-via-a-configmap/) 展开原理、实操与更新行为。
+{: .prompt-info }
+
 本文将从以下几个方面对 Kubernetes ConfigMap 进行全面解析：
 
-- 原理介绍
-- 创建方法
-- 使用方式
-- 更新机制
-- 最佳实践
-- 常见问题
+- 原理与核心概念
+- 创建与使用方法
+- 使用示例（含动态更新演练）
+- 更新机制与 kubelet 行为
+- 最佳实践与注意事项
+- 常见问题排查
 
 ## 什么是 ConfigMap {#what-is-configmap}
 
@@ -338,14 +342,50 @@ sequenceDiagram
 > 信息：使用 `subPath` 挂载的 ConfigMap 不会自动接收更新。
 {: .prompt-warning }
 
-### 更新示例演示
+### 更新示例演示（交叉引用官方 Tutorial）
 
-参见官方教程 [Updating Configuration via a ConfigMap](https://kubernetes.io/docs/tutorials/configuration/updating-configuration-via-a-configmap/)，详细演示了：
+官方教程 [Updating Configuration via a ConfigMap](https://kubernetes.io/docs/tutorials/configuration/updating-configuration-via-a-configmap/) 用同一 `ConfigMap`（如 `color: red → blue`）对比三种消费方式，结论与上表一致：
 
-1. 通过文件卷挂载方式更新配置（无需重启）
-2. 通过环境变量方式更新配置（需要重启 Pod）
-3. 多容器 Pod 中的 ConfigMap 更新
-4. 带 Sidecar 容器的 Pod 中的 ConfigMap 更新
+| 场景 | 行为 | 典型做法 |
+|------|------|----------|
+| 卷挂载 + 多容器共享 `emptyDir` | 文件内容随 ConfigMap 更新；辅助容器重写 HTML，Nginx 直接提供 | 无需重启 Pod，延迟 ≈ kubelet 同步周期 + 缓存 |
+| 卷挂载 + Sidecar（Init 容器 `restartPolicy: Always`） | Sidecar 先于主容器启动，持续根据 `/etc/config` 写共享卷 | 适合「主容器只读静态文件」模式 |
+| 环境变量 | **不会**随 ConfigMap 更新 | `kubectl rollout restart deployment/<name>` 或重建 Pod |
+
+下面摘录 Tutorial 中「双容器 + 卷挂载」的核心思路（与 [Configure a Pod to Use a ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/) 一致）：
+
+```mermaid
+flowchart TB
+    CM[ConfigMap color] -->|volumeMount /etc/config| Alpine[alpine 辅助容器]
+    Alpine -->|写入| ED[emptyDir shared-data]
+    ED -->|挂载 /usr/share/nginx/html| Nginx[nginx 主容器]
+    User[用户 curl Service] --> Nginx
+```
+
+1. `kubectl create configmap color --from-literal=color=red`
+2. Deployment 中 Nginx 与 Alpine 共享 `emptyDir`；Alpine 循环读取 `/etc/config/color` 并写入 `index.html`
+3. `kubectl edit configmap color` 将 `color` 改为 `blue`
+4. 持续 `curl` Service，可观察到输出从 `red` 变为 `blue`，**无需** `rollout restart`
+
+> **注意**：若主容器用 `subPath` 挂载 ConfigMap 的单个键，该挂载点**不会**接收后续更新（见 [Mounted ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/#mounted-configmaps-are-updated-automatically)）。
+{: .prompt-warning }
+
+### kubelet 变更检测策略
+
+卷挂载的 ConfigMap 由 kubelet 周期性同步；kubelet 通过本地缓存读取当前 ConfigMap 值，策略由 [KubeletConfiguration](https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/) 的 `configMapAndSecretChangeDetectionStrategy` 控制：
+
+| 策略 | 含义 |
+|------|------|
+| `Watch`（默认） | 监视 API 变更，延迟较低 |
+| `CacheTTL` | 基于 TTL 的缓存 |
+| `Get` | 每次同步直接请求 API Server，缓存延迟为 0 |
+
+总延迟约为 **kubelet sync 周期 + 缓存传播延迟**。生产环境若对「热更新」敏感，应在应用侧实现 reload（inotify / 定期轮询）或配合 [Reloader](https://github.com/stakater/Reloader) 等控制器。
+
+### 与 Deployment / Helm 协同
+
+- **环境变量注入的配置**：修改 ConfigMap 后应对 workload 执行 `kubectl rollout restart deployment/<name>`（或更新 Pod 模板触发滚动更新）。
+- **Helm Chart**：常见模式是在 `templates/configmap.yaml` 中渲染 `values.yaml`，再被 Deployment 以卷或 `envFrom` 引用；升级 Release 时会替换 ConfigMap 对象。详见 [Helm in Action — Values]({% post_url 2022-07-20-helm-in-action %}#values-values-files-valuesyaml)。
 
 ## 不可变 ConfigMap {#immutable-configmap}
 
@@ -457,7 +497,15 @@ data:
         └── kustomization.yaml
 ```
 
-### 6. RBAC 权限控制
+### 6. 键名与环境变量合法性
+
+ConfigMap 的键若不符合 [Pod 环境变量命名规则](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/#using-environment-variables-inside-of-your-config)（字母、数字、`_`，且不以数字开头），使用 `envFrom` 时该键会被**静默忽略**，Pod 仍可能启动。排查：
+
+```bash
+kubectl get events --field-selector reason=InvalidEnvironmentVariableNames
+```
+
+### 7. RBAC 权限控制
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -632,12 +680,23 @@ ConfigMap 是 Kubernetes 中管理配置的核心资源，具有以下关键特�
 | 编辑 | `kubectl edit configmap <name>` |
 | 删除 | `kubectl delete configmap <name>` |
 
-## 参考链接 {#references}
+## 参考资源 {#references}
 
-- [总览：Kubernetes in Action（ConfigMap/Secret 小节）]({% post_url 2022-07-31-k8s-in-action %}#configmap-and-secret)
-- [相关：Helm in Action（Values / Chart 模板）]({% post_url 2022-07-20-helm-in-action %}#values-values-files-valuesyaml)
-- [Kubernetes ConfigMap 官方文档](https://kubernetes.io/docs/concepts/configuration/configmap/)
-- [Configure a Pod to Use a ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/)
-- [Updating Configuration via a ConfigMap](https://kubernetes.io/docs/tutorials/configuration/updating-configuration-via-a-configmap/)
-- [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)
-- [上篇：一文了解K8S的ConfigMap](https://developer.aliyun.com/article/1211871)
+### 官方文档（建议阅读顺序）
+
+1. [ConfigMap | Concepts](https://kubernetes.io/docs/concepts/configuration/configmap/) — 动机、对象结构、四种消费方式、不可变 ConfigMap
+2. [Configure a Pod to Use a ConfigMap | Tasks](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/) — `kubectl create`、目录/文件/字面量、环境变量与卷挂载示例
+3. [Updating Configuration via a ConfigMap | Tutorial](https://kubernetes.io/docs/tutorials/configuration/updating-configuration-via-a-configmap/) — 卷挂载热更新 vs 环境变量需重启、Sidecar 模式
+4. [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) — 敏感数据应使用 Secret
+5. [The Twelve-Factor App — Config](https://12factor.net/config) — 配置与代码分离的设计哲学
+
+### 站内交叉引用
+
+- [Kubernetes in Action — ConfigMap 与 Secret]({% post_url 2022-07-31-k8s-in-action %}#configmap-and-secret)
+- [Helm in Action — Values / Chart 模板]({% post_url 2022-07-20-helm-in-action %}#values-values-files-valuesyaml)
+
+### 社区文章
+
+- [Kubernetes ConfigMap: A Practical Guide | Spacelift](https://spacelift.io/blog/kubernetes-configmap) — 创建方式与使用模式梳理
+- [The Ultimate Guide to Kubernetes ConfigMaps | Plural](https://www.plural.sh/blog/kubernetes-configmap-guide/) — 实践场景与注意事项
+- [一文了解 K8S 的 ConfigMap](https://developer.aliyun.com/article/1211871) — 中文入门
