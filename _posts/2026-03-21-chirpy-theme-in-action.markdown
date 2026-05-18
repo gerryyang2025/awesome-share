@@ -2,7 +2,7 @@
 layout: post
 title:  "Chirpy 主题使用指南"
 date:   2026-03-21 18:30:00 +0800
-last_modified_at: 2026-03-27 10:00:00 +0800
+last_modified_at: 2026-05-18 21:32:38 +0800
 description: "全面介绍 Jekyll Chirpy 主题的安装、写文章规范、Markdown 与 Kramdown 扩展语法，以及常用配置，是其他文章的参考模版。"
 categories: Tools
 tags:
@@ -55,6 +55,7 @@ Chirpy 默认把文章的 `layout` 设为 `post`，**Front Matter 里可以不�
 ---
 title: "文章标题"
 date: 2026-03-21 12:00:00 +0800   # 建议带时区 +/-TTTT，与 _config.yml 的 timezone 配合
+last_modified_at: 2026-03-27 10:00:00 +0800   # 每次修订文章时更新；紧挨 date 之后
 description: "摘要；用于 SEO、列表、Further Reading、RSS；也会显示在标题下方"
 categories: [大类, 子类]            # 最多两个层级；也可单个字符串
 tags: [标签一, 标签二]            # 数量任意；官方建议标签名小写
@@ -73,7 +74,7 @@ image:                            # 顶部预览图；也可简写为 image: /pa
 ---
 ```
 
-**日期与时区**：除在 `_config.yml` 配置 `timezone` 外，建议在每篇文章的 `date` 里写出时区（如 `+0800`），便于准确记录发布时间。
+**日期与时区**：除在 `_config.yml` 配置 `timezone` 外，建议在每篇文章的 `date` 里写出时区（如 `+0800`），便于准确记录发布时间。每次修改正文或 Front Matter 后，应更新 `last_modified_at`（写在 `date` 下一行，格式与 `date` 相同）；`date` 保持首次发布时间不变。
 
 **分类与标签**：`categories` 设计上**最多两个元素**（如 `[Animal, Insect]`）；`tags` 可以为空到任意多个。
 
