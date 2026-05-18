@@ -2,6 +2,7 @@
 layout: post
 title:  "Helm in Action"
 date:   2022-07-20 12:30:00 +0800
+last_modified_at: 2026-05-18 21:35:42 +0800
 categories: 云原生
 tags:
   - Helm
@@ -44,6 +45,9 @@ Use `Helm` to: (使用场景)
 * 管理 `Helm` 安装包 `Charts`
 * 基于 `Chart` 的 `Kubernetes` 应用分发
 
+> **文档锚点**：[Helm 4 Overview](https://helm.sh/docs/overview/)（当前主线为 v4.x）、[Helm GitHub](https://github.com/helm/helm)、中文 [Chart 模板入门](https://helm.sh/zh/docs/chart_template_guide/getting_started)。下文在保留 2022 年原文脉络的基础上，补充 **Helm 4** 与官方 2025–2026 文档中的更新内容。
+{: .prompt-info }
+
 
 # 基本概念
 
@@ -79,6 +83,47 @@ Use `Helm` to: (使用场景)
   + `NOTES.txt`：用于介绍 Chart 帮助信息， `helm install` 部署后展示给用户。例如：如何使用这个 Chart、列出缺省的设置等。
   + `_helpers.tpl`：放置模板助手的地方，可以在整个 chart 中重复使用
 
+## Chart 模板入门（Getting Started）
+
+依据 [Chart Template Guide — Getting Started](https://helm.sh/zh/docs/chart_template_guide/getting_started)，开发 Chart 的核心步骤可概括为：
+
+```mermaid
+flowchart LR
+    A[helm create] --> B[编辑 templates/*.yaml]
+    B --> C[values.yaml 默认值]
+    C --> D[helm template 本地渲染]
+    D --> E[helm install / upgrade]
+    E --> F[集群中的 Release]
+```
+
+| 步骤 | 命令 / 文件 | 说明 |
+|------|-------------|------|
+| 脚手架 | `helm create mychart` | 生成标准目录（见上文 `tree`） |
+| 模板 | `templates/deployment.yaml` 等 | Go template + Sprig 函数；通过 `{{ .Values.xxx }}` 引用配置 |
+| 默认值 | `values.yaml` | 安装时可被 `-f`、`--set` 覆盖 |
+| 调试渲染 | `helm template myrelease ./mychart` | 不访问集群，仅输出 YAML |
+| 试运行 | `helm install --dry-run --debug` | 连接集群但不真正创建资源 |
+
+{% raw %}
+最小 Deployment 片段示例（模板中访问 Release 与 Values）：
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mychart.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+```
+{% endraw %}
+
+> 渲染进集群的 `ConfigMap` / `Secret` 往往来自 `templates/configmap.yaml` 与 `values` 中的配置块；配置在 Pod 中的挂载与热更新行为见 [Kubernetes ConfigMap 完全指南]({% post_url 2026-03-25-kubernetes-configmap %})。
+{: .prompt-tip }
 
 
 # Helm 工作原理
@@ -254,7 +299,7 @@ $ helm get -h
 
 # Helm 4 新特性
 
-> Helm 4 是继 Helm 3 之后的重大版本更新，引入了一系列新特性、架构改进和安全增强。
+> Helm 4 是继 Helm 3 之后的重大版本更新（[Helm 4 Overview](https://helm.sh/docs/overview/)，v4.0.0 于 2025 年 11 月发布）。下文在保留 Helm 3 历史说明的同时，按官方 Changelog 与 [Helm v4：交付范式收敛与插件体系重建](https://jimmysong.io/zh/blog/helm-4-delivery-and-plugin-rebuild/) 补充 **SSA、Wasm 插件、kstatus、供应链** 等要点。
 {: .prompt-tip }
 
 ## 主要更新摘要
@@ -299,19 +344,24 @@ mindmap
 | `--atomic` | `--rollback-on-failure` | 失败时自动回滚 |
 | `--force` | `--force-replace` | 强制替换资源 |
 
-## 服务端 Apply
+## 服务端 Apply（Server-Side Apply）
 
-Helm 4 默认使用**服务端 Apply**（Server-Side Apply），提供更好的冲突解决能力：
+Helm 4 将交付语义与 `kubectl apply`、GitOps 控制器对齐，默认采用 **Server-Side Apply（SSA）**，由 API Server 管理字段所有权，减少三方合并（3-way merge）带来的 silent override：
 
 ```mermaid
 flowchart TD
     A[helm install/upgrade] --> B{是否为新 Release?}
-    B -->|Yes| C[默认服务端 Apply]
-    B -->|No| D[继承上次 Apply 方式]
-    C --> E[Server-Side Apply]
-    D --> E
-    E --> F[多工具协调管理<br/>避免资源冲突]
+    B -->|Yes 新 Release| C[默认 Server-Side Apply]
+    B -->|No 升级/回滚| D[默认继承该 Release 上次 Apply 方式]
+    C --> E[SSA：字段所有权可解释]
+    D --> F{Helm 3 创建的 Release?}
+    F -->|是| G[仍为 Client-Side Apply 除非显式 --server-side]
+    F -->|否 且上次为 SSA| E
+    E --> H[与 Argo CD / Flux 等同场协作更一致]
 ```
+
+> **升级注意**（[Helm 4 Overview — Server-Side Apply](https://helm.sh/docs/overview/)）：**新** Release 在 Helm 4 下默认 SSA；**从 Helm 3 升级**的既有 Release 默认继续 Client-Side Apply，除非安装/升级时显式指定 `--server-side`。CI/CD 脚本需评估与现有 GitOps 工具的资源冲突策略。
+{: .prompt-warning }
 
 ## OCI 镜像支持
 
@@ -347,9 +397,14 @@ helm push mychart-1.0.0.tgz oci://registry.example.com/charts
 helm install myapp ./mychart -f base.yaml -f dev.yaml
 ```
 
-## Kstatus 集成
+## Kstatus 集成与 Readiness 注解
 
-Helm 4 集成 `kstatus` 提供更详细的资源状态监控：
+Helm 4 以 [kstatus](https://github.com/kubernetes-sigs/cli-utils/tree/master/pkg/kstatus) 作为 `--wait` 的健康判断基础，Chart 作者可通过注解精确定义「成功 / 失败」条件（[Overview — Better resource monitoring](https://helm.sh/docs/overview/)）：
+
+| 注解 | 作用 |
+|------|------|
+| `helm.sh/readiness-success` | 自定义资源就绪条件 |
+| `helm.sh/readiness-failure` | 自定义失败条件 |
 
 ```bash
 # 安装后查看详细状态
@@ -358,6 +413,18 @@ helm status myapp -v
 # 查看资源就绪状态
 kubectl rollout status deployment/myapp
 ```
+
+## Wasm 插件体系（可选运行时）
+
+[HIP-0026](https://github.com/helm/community/blob/main/hips/hip-0026.md) 将插件分为类型化扩展；Helm 4 起支持 **WebAssembly** 运行时（基于 Extism），与既有可执行文件插件**并存**：
+
+| 插件类型 | 用途 |
+|----------|------|
+| CLI 插件 | 扩展 `helm` 子命令 |
+| Getter 插件 | 自定义 Chart 拉取协议 |
+| Post-renderer 插件 | 渲染后修改 manifest（**替代**直接传可执行文件路径） |
+
+示例仓库：[h4-example-plugins](https://github.com/scottrigby/h4-example-plugins)。Post-renderer 工作流迁移：`--post-renderer` 参数改为**插件名称**而非脚本路径。
 
 ## Helm 2 / 3 / 4 版本演进
 
@@ -392,8 +459,12 @@ Helm 4 是自 2019 年 Helm 3 以来的重大版本，官方称改动幅度小�
 | **SDK API** | 单一 Chart API 版本 | 更新 SDK，支持多 Chart API 版本（实验性 v3 即将推出） |
 | **构建可重现性** | 无内置支持 | Chart Archive 支持可重现构建（`helm package --sign`） |
 | **CLI 标志** | `--atomic` / `--force` | `--rollback-on-failure` / `--force-replace`（旧标志保留但标记废弃） |
+| **Apply 模型** | 客户端三方合并为主 | 新 Release 默认 SSA；Helm 3 Release 升级后仍可能 Client-Side Apply |
+| **Wait** | 轮询、规则有限 | kstatus + `helm.sh/readiness-*` 注解 |
+| **Chart 缓存** | 基于 name/version | 内容哈希缓存（[Overview](https://helm.sh/docs/overview/)） |
+| **Chart API** | v2 | v2 继续可用；**Chart v3** 规划中（SDK 已为多版本做准备） |
 
-> Helm 4 与 Kubernetes 的版本兼容性：Helm 4 编译时基于 Kubernetes 1.35，支持 n-3 范围内版本（即 1.35 ~ 1.32）。v4.1.x 基于 Kubernetes 1.35，v4.0.x 基于 Kubernetes 1.34（来源：[Helm Version Support Policy](https://helm.sh/docs/topics/version_skew/)）。
+> Helm 4 与 Kubernetes 的版本兼容性：见 [Helm Version Support Policy](https://helm.sh/docs/topics/version_skew/)（随小版本更新，部署前请以官方页面为准）。Helm 4.1.x 文档当前标注基于 Kubernetes 1.35，支持 n-3 范围。
 
 
 ## 升级检查清单
@@ -733,10 +804,13 @@ helm install myapp ./mychart --kubeconfig=/path/to/config
 
 # Refer
 
-## 官方文档
+## 官方文档（核心）
 
+- [Helm 4 Overview](https://helm.sh/docs/overview/) — 新特性、Breaking Changes、升级检查项（**建议优先阅读**）
+- [Path to Helm v4](https://helm.sh/blog/path-to-helm-v4/) — 版本路线
 - [Helm 官方文档](https://helm.sh/docs/)
 - [Helm GitHub 仓库](https://github.com/helm/helm)
+- [Chart Template Guide — Getting Started（中文）](https://helm.sh/zh/docs/chart_template_guide/getting_started)
 - [Helm Architecture](https://helm.sh/docs/topics/architecture) - 架构概览（Chart/Release/Config 三概念、Client/Library 组件、Secret 存储）
 - [Using Helm](https://helm.sh/docs/intro/using_helm/) - 核心用法（search/install/upgrade/rollback/uninstall/repo）及资源安装顺序
 - [Artifact Hub](https://artifacthub.io/) - Helm Charts 市场
@@ -749,8 +823,8 @@ helm install myapp ./mychart --kubeconfig=/path/to/config
 
 ## 中文参考
 
+- [Helm v4：交付范式收敛与插件体系重建 | Jimmy Song](https://jimmysong.io/zh/blog/helm-4-delivery-and-plugin-rebuild/) — SSA、Wasm、kstatus、可重现构建与 v3→v4 对照
 - [是时候使用 Helm 了：Helm, Kubernetes 的包管理工具](https://www.kubernetes.org.cn/3435.html) - Kubernetes.io 中文社区
-- [Jimmy Song's Blog - Helm 4 发布与插件重构](https://jimmysong.io/zh/blog/helm-4-delivery-and-plugin-rebuild/)
 
 ## 进阶阅读
 
