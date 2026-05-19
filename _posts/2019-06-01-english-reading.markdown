@@ -60,6 +60,11 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* neural /ˈnjʊərəl/
+  + ADJ **Neural** means relating to a nerve or to the nervous system. 神经的; 神经系统的
+    - neural pathways in the brain. 大脑中的神经通路。
+
+
 * viable /ˈvaɪəb(ə)l/
   + ADJ Something that is **viable** is capable of doing what it is intended to do. 可行的
     - Cash alone will not make Eastern Europe's banks **viable**. 单靠现金不可能使东欧的银行维持下去。
