@@ -60,6 +60,19 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* envelope /ˈenvələʊp/
+  + N-COUNT An **envelope** is the rectangular paper cover in which you send a letter to someone through the mail. 信封
+  + PHRASE If someone **pushes the envelope**, they do something to a greater degree or in a more extreme way than it has ever been done before. 挑战极限; 突破常规
+    - There's a valuable place for fashion and design that **pushes the envelope** a bit. 突破点儿常规的时尚和设计有其宝贵地位。
+
+
+* annotation /ˌænəˈteɪʃ(ə)n/
+  + N-UNCOUNT **Annotation** is the activity of annotating something. 加注释
+    - She retained a number of copies for further **annotation**. 她为进一步解释保留了好多复印件。
+  + N-COUNT An **annotation** is a note that is added to a text or diagram, often in order to explain it. 注释
+    - He supplied **annotations** to nearly 15,000 musical works. 他给近15,000部音乐作品提供了注释
+
+
 * neural /ˈnjʊərəl/
   + ADJ **Neural** means relating to a nerve or to the nervous system. 神经的; 神经系统的
     - neural pathways in the brain. 大脑中的神经通路。
