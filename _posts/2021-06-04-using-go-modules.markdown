@@ -2,7 +2,7 @@
 layout: post
 title:  "Using Go Modules"
 date:   2021-06-04 12:00:00 +0800
-last_modified_at: 2026-05-18 21:29:17 +0800
+last_modified_at: 2026-05-22 12:00:00 +0800
 categories: GoLang
 tags:
   - Using Go Modules
@@ -211,6 +211,42 @@ rsc.io/quote v1.5.2
 rsc.io/sampler v1.3.0
 ```
 
+### Listing packages used in the build（查看编译链上的外部 package）
+
+`go list -m all` answers **which modules** appear in `go.mod`’s dependency graph. To see **which non-standard-library packages** are actually pulled into a specific build (for example one service binary), use `go list` with `-deps` and a package pattern such as `./app/lobby/...`:
+
+> `go list -m all` 列出的是 **module**（`go.mod` 依赖图）。若要核对某条编译路径上**真正参与构建的非标准库 package**，对目标路径使用 `go list -deps`（`./...` 表示该目录下所有 package）。
+
+```text
+# All non-stdlib packages on the compile graph for one service (e.g. lobby)
+go list -deps -f '{{if not .Standard}}{{.ImportPath}}{{end}}' ./app/lobby/... | sort -u
+
+# Only packages directly imported in source (the import lines in each .go file)
+go list -f '{{join .Imports "\n"}}' ./app/lobby/... | sort -u
+
+# Whole business tree (app + lib; adjust paths if you exclude frame, tools, etc.)
+go list -deps -f '{{if not .Standard}}{{.ImportPath}}{{end}}' ./app/... ./lib/... | sort -u
+```
+
+> 上例中：`./app/lobby/...` 表示 lobby 服务目录下所有 package；第一条命令列出**传递依赖在内的全部外部 import path**；第二条只列**源码里直接 `import` 的包**；第三条可用来盘点整块业务代码的外部依赖。
+
+The `-f` template prints each package’s `ImportPath`; the `not .Standard` condition in the template skips the Go standard library. Piping through `sort -u` deduplicates paths when several packages under `./...` share the same dependency subtree.
+
+> `-f` 按模板输出字段；`Standard` 为 true 的是标准库，过滤后只剩第三方与你自己 module 内的包；`sort -u` 去重。
+
+Compare this with `go.mod`:
+
+> 与 `go.mod` 对照理解：
+
+* **In `go list -deps` output** → the package is on the build/import graph for the pattern you passed; it is really compiled in (or required for that build).
+* **Only in `go.mod` / `go list -m all`, never in `go list -deps` for your packages** → often a leftover `require`, or something used only by tests, tools, or another build tag; consider `go mod tidy` after confirming with `go mod why`.
+
+> * 出现在 **`go list -deps` 结果里** → 对该路径而言真的在依赖/编译链上；
+> * **只在 `go.mod` 或 `go list -m all` 里、对你关心的 `./app/...` 跑 `-deps` 却从不出现** → 可能是历史 `require`、仅测试/工具链或别的 build tag 用到；用 `go mod why` 确认后可 `go mod tidy` 清理。
+
+See also **Removing unused dependencies** and **Using `go mod why`** later in this article.
+
+> 清理未使用 module 的完整流程见下文「移除未使用的依赖」与「用 `go mod why` 查看依赖来源」两节。
 
 The `golang.org/x/text` version `v0.0.0-20170915032832-14c0d48ead0c` is an example of a [pseudo-version](https://golang.org/cmd/go/#hdr-Pseudo_versions), which is the go command's version syntax for a specific untagged commit.
 
@@ -569,6 +605,10 @@ ok      github.com/gerryyang/goinaction/module/hello    0.003s
 
 
 ## Removing unused dependencies（移除未使用的依赖）
+
+A module can linger in `go.mod` even when no package on your build path imports it anymore. Use `go list -deps` on the packages you care about (see **Listing packages used in the build** above) to see what is actually on the compile graph, then `go mod why` and `go mod tidy` to clean up.
+
+> 某 module 可能仍写在 `go.mod` 里，但对你关心的 `./app/...` 已不再出现在 `go list -deps` 结果中。可先按上文 **查看编译链上的外部 package** 核对真实编译依赖，再用 `go mod why` 与 `go mod tidy` 清理。
 
 We've removed all our uses of rsc.io/quote, but it still shows up in go list -m all and in our go.mod file:
 
