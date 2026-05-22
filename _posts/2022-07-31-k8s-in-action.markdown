@@ -2,7 +2,7 @@
 layout: post
 title:  "Kubernetes in Action"
 date:   2022-07-31 16:30:00 +0800
-last_modified_at: 2026-04-15 17:37:04 +0800
+last_modified_at: 2026-05-20 10:24:21 +0800
 mermaid: true
 categories: 云原生
 tags:
@@ -311,6 +311,158 @@ selector:
 * **凡是要被 Service / Controller 选中的对象，Label 设计要稳定、清晰。**
 * **不要让不同控制器的 selector 在同一 namespace 内意外重叠**，否则容易产生管理冲突。
 * **Label 放可检索属性，Annotation 放说明性元数据。**
+
+### 用 kubectl label 管理标签
+
+前面介绍了 Label 的用途与设计原则；在集群里真正「贴标签、改标签、撕标签」，最常用的是 **`kubectl label`**。它通过 API 直接修改对象的 `metadata.labels`，不必为了改一两个标签而编辑整份 YAML 再 `kubectl apply`。
+
+官方参考：[kubectl label](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_label/)
+
+#### 命令形式
+
+给 Kubernetes 资源（如 Namespace、Deployment、Pod 等）打标签，统一使用：
+
+```bash
+kubectl label <资源类型> <资源名称> <标签键>=<标签值>
+```
+
+其他常用变体：
+
+```bash
+kubectl label <资源类型> <资源名称> <标签键>-              # 删除标签
+kubectl label <资源类型> <资源名称> <标签键>=<标签值> --overwrite  # 覆盖已有标签
+kubectl label <资源类型> -l <selector> <标签键>=<标签值>     # 按 selector 批量
+kubectl label -f manifest.yaml <标签键>=<标签值>           # 从清单文件打标
+```
+
+* `<资源类型>`：如 `namespace`、`deployment`、`pod`、`service`、`node` 等（支持缩写，如 `ns`、`deploy`、`po`、`svc`）。
+* `<资源名称>`：对象名称；配合 `-l` 或 `--all` 时可批量操作。
+* **namespaced 资源**（Deployment、Pod 等）在非 `default` 命名空间时，需加 **`-n <命名空间>`**；Namespace 本身是集群级对象，不需要 `-n`。
+* `<标签键>=<标签值>`：新增标签；同一 key 已存在且值不同时，须加 **`--overwrite`**。
+* `<标签键>-`：删除该 key（末尾 `-` 表示 remove）。
+
+```mermaid
+flowchart LR
+  A["kubectl label"] --> B["apiserver"]
+  B --> C["metadata.labels"]
+  C --> D["Service / Deployment selector"]
+  C --> E["kubectl get -l"]
+```
+
+#### 给 Namespace 打标签
+
+Namespace 是**集群级资源**，命令中不需要 `-n`：
+
+```bash
+kubectl label namespace <namespace名称> <标签键>=<标签值>
+```
+
+**示例**：给 `demo-ns` 命名空间添加 `tbus2-injection=enabled` 标签：
+
+```bash
+kubectl label namespace demo-ns tbus2-injection=enabled
+```
+
+这类标签常用于准入控制、策略引擎或运维工具按 namespace 维度筛选，例如只对打了 `tbus2-injection=enabled` 的 namespace 注入 sidecar。
+
+#### 给 Deployment 打标签
+
+Deployment 属于 **namespaced 资源**，在 `default` 以外命名空间时要指定 `-n`：
+
+```bash
+kubectl label deployment <deployment名称> <标签键>=<标签值> [-n <命名空间>]
+```
+
+**示例**：在 `default` 命名空间下，给 `my-app` Deployment 添加 `version=v1` 标签：
+
+```bash
+kubectl label deployment my-app version=v1
+```
+
+若 Deployment 在 `demo-ns` 命名空间：
+
+```bash
+kubectl label deployment my-app version=v1 -n demo-ns
+```
+
+> 注意：`kubectl label deployment ...` 修改的是 **Deployment 对象自身** 的 `metadata.labels`，不会自动同步到其管理的 Pod。若要让 Pod 带上相同标签，通常应在 Deployment 的 `spec.template.metadata.labels` 中声明，或单独对 Pod 执行 `kubectl label`。
+{: .prompt-info }
+
+#### 覆盖已有标签
+
+标签键已存在且要改成新值时，加上 **`--overwrite`**：
+
+```bash
+kubectl label namespace demo-ns tbus2-injection=enabled --overwrite
+kubectl label deployment my-app version=v2 -n demo-ns --overwrite
+```
+
+不加 `--overwrite` 时，apiserver 会拒绝覆盖并提示标签已存在。
+
+#### 删除标签
+
+使用 **`标签键-`**（key 后加 `-`）删除，不要漏掉末尾的 `-`：
+
+```bash
+# 删除 namespace 上的标签
+kubectl label namespace demo-ns tbus2-injection-
+
+# 删除 deployment 上的标签
+kubectl label deployment my-app version- -n demo-ns
+```
+
+#### 验证标签
+
+打标、改标或删标后，用 `kubectl get ... --show-labels` 确认：
+
+```bash
+kubectl get namespace demo-ns --show-labels
+kubectl get deployment my-app -n demo-ns --show-labels
+```
+
+按标签筛选列表时，使用 **`-l` / `--selector`**：
+
+```bash
+kubectl get namespace -l tbus2-injection=enabled
+kubectl get deployment -n demo-ns -l version=v1
+```
+
+#### 其他常见操作（Pod 等）
+
+```bash
+# 给单个 Pod 打标签
+kubectl label pod nginx-7d4b8c9f4-xk2lm env=prod -n prod
+
+# 按 label selector 批量打标签
+kubectl label pods -l app=web release=v20260520 -n prod --overwrite
+
+# 给某 namespace 下全部 Deployment 打标签（影响面大，生产慎用）
+kubectl label deployment --all tier=backend -n prod --overwrite
+```
+
+`kubectl get` 的 **`-l`** 负责筛选，**`--show-labels`** 在列表中打印标签列；与 `kubectl label` 配合，是日常运维里最顺手的一组组合。
+
+#### 与 kubectl annotate 的区分
+
+| 操作 | 命令 | 作用字段 | 能否被 Selector 使用 |
+|------|------|----------|----------------------|
+| 管理可筛选标签 | `kubectl label` | `metadata.labels` | 是 |
+| 管理说明性元数据 | `kubectl annotate` | `metadata.annotations` | 否 |
+
+凡是要被 Service、Deployment、DaemonSet 等 **selector** 匹配的属性，应通过 `kubectl label` 维护，而不是 `kubectl annotate`。
+
+#### 使用建议与注意事项
+
+> 不要随意修改已被 Controller 用作 **selector** 的标签。例如 Deployment 靠 `app=web` 管理 Pod，若用 `kubectl label` 改掉 Pod 上的 `app`，该 Pod 会从 ReplicaSet 管理中脱离，Deployment 可能再创建新 Pod，导致副本数异常或 Service 找不到后端。
+{: .prompt-warning }
+
+此外还可以记住：
+
+* **标签键值规范**：key 可有 DNS 子域前缀（如 `example.com/name`），名称部分建议不超过 63 个字符；value 允许为空字符串。详见官方 [Labels — Syntax and character set](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#syntax-and-character-set)。
+* **区分 Pod 标签与控制器 selector**：改 Pod 上的 label 不等于改 Deployment 的 `spec.selector`；后者在多数工作负载里创建后不可变，应在清单或 Helm/Kustomize 中规划好。
+* **声明式 vs 命令式**：生产环境长期存在的标签更宜写在 Git 管理的 YAML 里；`kubectl label` 适合排障、临时归类、一次性批量运维脚本。
+
+经验上可以记一句：**查询用 `kubectl get -l`，匹配逻辑写在 YAML 的 selector 里，运行中的批量贴标用 `kubectl label`。**
 
 ## Ingress 与集群外 HTTP/HTTPS 流量入口
 
@@ -2389,6 +2541,19 @@ kubectl logs deploy-redis1-7ffdbff548-2k4sf --namespace dev-test-gerry
 kubectl get services --namespace dev-test-gerry
 
 kubectl get deployments --namespace dev-test-gerry
+
+# 管理资源标签（详见上文「用 kubectl label 管理标签」）
+kubectl label namespace <ns-name> <key>=<value>
+kubectl label namespace demo-ns tbus2-injection=enabled --overwrite
+kubectl label deployment <name> <key>=<value> -n <namespace>
+kubectl label deployment my-app version=v1 -n demo-ns
+kubectl label namespace demo-ns <key>-
+kubectl label deployment my-app version- -n demo-ns
+kubectl get namespace demo-ns --show-labels
+kubectl get deployment my-app -n demo-ns --show-labels
+kubectl label pod <pod-name> env=prod -n <namespace>
+kubectl label pods -l app=web tier=frontend -n <namespace> --overwrite
+kubectl get pods -n <namespace> -l app=web,env=prod --show-labels
 
 # 查询 namespace 下 pods 的容器镜像
 kubectl get pods --namespace dev-test-gerry -o jsonpath="{.items[*].spec.containers[*].image}"
