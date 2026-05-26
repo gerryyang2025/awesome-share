@@ -51,6 +51,13 @@ tags:
 
 # 专业词汇
 
+## [MVP](https://en.wikipedia.org/wiki/Minimum_viable_product)
+
+A minimum viable product (`MVP`) is a version of a product with just enough features to be usable by early customers who can then provide feedback for future product development.
+
+A focus on releasing an MVP means that developers potentially avoid lengthy and (possibly) unnecessary work. Instead, they iterate on working versions and respond to feedback, challenging and validating assumptions about a product's requirements.
+
+
 ## 3C
 
 Control, Camera, Character, 操作, 镜头, 角色
