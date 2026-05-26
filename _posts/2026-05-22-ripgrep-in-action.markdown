@@ -2,7 +2,7 @@
 layout: post
 title:  "ripgrep (rg)：比 grep 更高效的搜索工具"
 date:   2026-05-22 16:50:00 +0800
-last_modified_at: 2026-05-22 17:08:26 +0800
+last_modified_at: 2026-05-22 17:11:47 +0800
 description: "介绍 ripgrep（命令 rg）：比 grep 更高效的目录内容搜索工具，含实现原理、安装、常用选项、与 grep 功能对照及典型场景等价写法。"
 categories: Linux
 tags:
@@ -37,6 +37,7 @@ grep -rn "pattern" /path/to/project
 - **grep 与 rg 功能对照表**
 - **场景用法**：每种场景给出 `rg` 与对应的 `grep` 写法
 - **最佳实践与注意事项**
+- **官方 GitHub 仓库**要点与文档速链
 - 文末 **参考资源**
 
 ## 原理与核心概念
@@ -559,16 +560,128 @@ man rg                  # 若系统安装了手册页
 
 把 `rg` 当成**为性能优化的 `grep -r`** 即可：速度来自**少搜 × 并行 × I/O × 匹配**整条流水线，而非单一正则技巧；顺手好用的默认选项是附加收益。对照上表的 **grep 等价命令**，可以在团队仍用 `grep` 的机器或文档里无缝切换说法。
 
+## 官方仓库参考（GitHub）
+
+权威说明与发布均在 [BurntSushi/ripgrep](https://github.com/BurntSushi/ripgrep)。README 对项目的定义是：
+
+> **ripgrep** is a line-oriented search tool that recursively searches the current directory for a regex pattern. By default, ripgrep will respect gitignore rules and automatically skip hidden files/directories and binary files.
+
+中文可概括为：**按行匹配的正则搜索工具**，默认递归当前目录，并尊重 **gitignore**、跳过隐藏项与二进制。与 The Silver Searcher（`ag`）、`ack`、`grep` 同类，但在代码仓库场景下通常更快。许可证为 **MIT / Unlicense** 双许可；支持 **Windows、macOS、Linux**，每版提供预编译二进制。
+
+### 文档速链（仓库 README）
+
+| 主题 | 链接 |
+|------|------|
+| 安装 | [README — Installation](https://github.com/BurntSushi/ripgrep#installation) |
+| 用户指南 | [GUIDE.md](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md) |
+| FAQ | [FAQ.md](https://github.com/BurntSushi/ripgrep/blob/master/FAQ.md) |
+| 正则语法 | [Regex syntax](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md#regular-expression-syntax) |
+| 配置文件 | [Configuration files](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md#configuration-file) |
+| Shell 补全 | [Shell completions](https://github.com/BurntSushi/ripgrep/blob/master/FAQ.md#complete) |
+| 从源码构建 | [README — Building](https://github.com/BurntSushi/ripgrep#building) |
+| 变更记录 | [CHANGELOG.md](https://github.com/BurntSushi/ripgrep/blob/master/CHANGELOG.md) |
+| 发布包 | [Releases](https://github.com/BurntSushi/ripgrep/releases) |
+| 社区文档翻译列表 | [README — Translations](https://github.com/BurntSushi/ripgrep#translations)（含中文、西班牙文等） |
+
+### 为何选用 ripgrep（官方归纳）
+
+README [Why should I use ripgrep?](https://github.com/BurntSushi/ripgrep#why-should-i-use-ripgrep-instead-of-grep) 中的要点，与本文「实现原理」一致，可对照阅读：
+
+- **速度与过滤**：在保留多数 `grep` 能力的前提下通常更快；默认递归，并自动过滤 `.gitignore` / `.ignore` / `.rgignore`、隐藏文件、二进制（全部关闭过滤用 `rg -uuu`）。
+- **按类型搜**：`rg -tpy foo` 只搜 Python；`rg -Tjs foo` 排除 JavaScript；可用自定义规则扩展类型（`rg --type-list`）。
+- **类 grep 体验**：上下文、多 pattern、彩色高亮；**Unicode 默认开启且保持较快**（与 GNU grep 在 Unicode 场景下的表现对比，见官方 benchmark）。
+- **可选 PCRE2**：`-P` / `--pcre2` 或 `--engine auto` 支持 look-around、反向引用等（默认 Rust regex 不支持）。
+- **其它能力**（正文未逐条展开）：按匹配替换输出（rudimentary replacements）、`-E/--encoding` 非 UTF-8 编码、`-z/--search-zip` 搜压缩包内文本、预处理过滤器、**配置文件**、与 `rg --json` 配合的 [delta](https://github.com/dandavison/delta) 分页高亮等。
+
+### 何时不必用 ripgrep
+
+官方 [Why shouldn't I use ripgrep?](https://github.com/BurntSushi/ripgrep#why-shouldnt-i-use-ripgrep) 归纳：
+
+- 需要**到处都有、符合 POSIX** 的工具 → 仍用 `grep`。
+- 依赖其它工具独有、且 `rg` 尚未实现的行为（可查 FAQ / 提 issue）。
+- 存在**性能边角**（某类 pattern 或语料上 `rg` 不占优；README 也提醒勿只信单次 benchmark）。
+- 目标平台**无法安装** `rg`。
+
+### 官方性能说明与 benchmark
+
+README [Is it really faster?](https://github.com/BurntSushi/ripgrep#is-it-really-faster-than-everything-else) 将「快」归结为：
+
+- 基于 **Rust regex**（有限自动机、SIMD、字面量优化）；可选 **PCRE2**（`-P`）。
+- 在 **完整 Unicode** 下仍保持可预期性能（UTF-8 解码融入 DFA）。
+- 按文件大小在 **mmap** 与**增量缓冲**间自动选择策略。
+- 用 **RegexSet** 同时匹配多条 gitignore glob。
+- 使用 **crossbeam** 与 **ignore**  crate 的**无锁并行**目录遍历。
+
+作者在 Linux 内核源码树（`make defconfig && make -j8` 后）上对比 `rg`、`git grep`、`ag`、`ack`、`ugrep` 等；README 给出多组数据，例如搜 `[A-Z]+_SUSPEND`（整词）时 `rg` 约 **0.082s**，`git grep -P` 约 0.273s，`ag` 约 0.443s，`ack` 约 2.9s（**单次 benchmark 不足以下结论**，详见 [blog post on ripgrep](https://blog.burntsushi.net/ripgrep/)）。
+
+{: .prompt-info }
+官方也列出**性能悬崖**：无字面量优化机会的正则、极高匹配行数（输出成为瓶颈）、个别 pattern 下其它工具可能更快。评估时应用自己的仓库与 pattern 实测。
+{: .prompt-info }
+
+### 与其它搜索工具的功能对比
+
+ack 作者维护的对比表（含 ack、ag、git-grep、GNU grep、ripgrep）：[beyondgrep.com — feature comparison](https://beyondgrep.com/feature-comparison/)。`rg` 近年还增加了配置文件、passthru、压缩文件搜索、多行、PCRE2 等，表中部分项可能未更新，以 [CHANGELOG](https://github.com/BurntSushi/ripgrep/blob/master/CHANGELOG.md) 为准。
+
+同类工具简述：
+
+| 工具 | 说明 |
+|------|------|
+| [The Silver Searcher](https://github.com/ggreer/the_silver_searcher)（`ag`） | 面向代码库的 C 实现搜索器 |
+| [ack](https://github.com/beyondgrep/ack3) | Perl 实现的代码搜索，可编程过滤强 |
+| `git grep` | 在 Git 跟踪文件内搜，与索引配合 |
+| [ugrep](https://github.com/Genivia/ugrep) | 强调 Unicode 与多格式的 grep 系工具 |
+| [ripgrep-all](https://github.com/phracker/ripgrep-all)（`rga`） | 在 `rg` 上扩展 PDF、Office 等 |
+
+### 安装与构建（仓库摘要）
+
+除本文「安装」一节外，README 还列出 **Chocolatey / Scoop / Winget**（Windows）、**Nix / Guix / cargo install** 等。Rust 用户：
+
+```bash
+cargo install ripgrep
+# 或预编译二进制：cargo binstall ripgrep
+```
+
+从源码构建（需 Rust **1.85.0+**）：
+
+```bash
+git clone https://github.com/BurntSushi/ripgrep
+cd ripgrep
+cargo build --release
+./target/release/rg --version
+```
+
+启用 PCRE2：`cargo build --release --features pcre2`。试玩无需安装可使用社区 [playground](https://codapi.org/try/rg/) 与[交互教程](https://github.com/stephengrice/ripgrep-tutorial)（非官方维护）。
+
+### 相关生态
+
+- **delta**：对 `rg --json` 输出做语法高亮分页，用法 `rg --json PATTERN | delta`（见 [delta 手册 — grep](https://dandavison.github.io/delta/grep.html)）。
+- **安全**：漏洞报告见 README [Vulnerability reporting](https://github.com/BurntSushi/ripgrep#vulnerability-reporting)。
+
 ## 参考资源
+
+### 官方（GitHub / 文档）
 
 | 说明 | 链接 |
 |------|------|
-| ripgrep 官方仓库 | [BurntSushi/ripgrep](https://github.com/BurntSushi/ripgrep) |
-| 为何用 ripgrep 而非 grep | [README — Why ripgrep](https://github.com/BurntSushi/ripgrep#why-should-i-use-ripgrep-instead-of-grep) |
-| Rust regex 库（rg 默认引擎） | [rust-lang/regex](https://github.com/rust-lang/regex) |
-| 用户指南（GUIDE.md） | [ripgrep GUIDE](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md) |
-| FAQ | [ripgrep FAQ](https://github.com/BurntSushi/ripgrep/blob/master/FAQ.md) |
-| 手册页 `rg(1)` | 系统 `man rg` 或 [docs/rg.1](https://github.com/BurntSushi/ripgrep/blob/master/doc/rg.1) |
+| **ripgrep 官方仓库** | [BurntSushi/ripgrep](https://github.com/BurntSushi/ripgrep) |
+| README 总览 | [README.md](https://github.com/BurntSushi/ripgrep/blob/master/README.md) |
+| 为何用 / 为何不用 | [Why ripgrep](https://github.com/BurntSushi/ripgrep#why-should-i-use-ripgrep-instead-of-grep) · [Why not](https://github.com/BurntSushi/ripgrep#why-shouldnt-i-use-ripgrep) |
+| 是否更快（benchmark 摘要） | [Is it really faster?](https://github.com/BurntSushi/ripgrep#is-it-really-faster-than-everything-else) |
+| 工具功能对比表（ack 站） | [Feature comparison](https://beyondgrep.com/feature-comparison/) |
+| 用户指南 | [GUIDE.md](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md) |
+| FAQ | [FAQ.md](https://github.com/BurntSushi/ripgrep/blob/master/FAQ.md) |
+| 变更记录 | [CHANGELOG.md](https://github.com/BurntSushi/ripgrep/blob/master/CHANGELOG.md) |
+| 发布与二进制 | [Releases](https://github.com/BurntSushi/ripgrep/releases) |
+| 手册页 `rg(1)` | [doc/rg.1](https://github.com/BurntSushi/ripgrep/blob/master/doc/rg.1) 或系统 `man rg` |
+| 作者详细 benchmark 博文 | [Andrew Gallant — ripgrep](https://blog.burntsushi.net/ripgrep/) |
+| Rust regex 库（默认引擎） | [rust-lang/regex](https://github.com/rust-lang/regex) |
+
+### 其它
+
+| 说明 | 链接 |
+|------|------|
 | GNU grep 手册 | [grep 文档](https://www.gnu.org/software/grep/manual/) |
+| delta（配合 `rg --json`） | [dandavison/delta](https://github.com/dandavison/delta) |
+| ripgrep-all（扩展文件类型） | [phracker/ripgrep-all](https://github.com/phracker/ripgrep-all) |
 | 站内：Bash 与 grep 习惯 | [Bash in Action]({% post_url 2019-09-02-bash-in-action %}) |
 | 站内：Linux 运维 | [Linux in Action]({% post_url 2020-12-23-linux-in-action %}) |
