@@ -32,7 +32,7 @@ bundle install
 
 ## Blog Structure
 
-- `_posts/` - Blog posts in Markdown with YAML front matter. **Reference template**: `_posts/2026-03-21-chirpy-theme-in-action.markdown`. On every post edit, add or update `last_modified_at` immediately after `date` (`YYYY-MM-DD HH:MM:SS +0800`); do not change `date` unless asked. See `.cursor/rules/注意事项.mdc`.
+- `_posts/` - Blog posts in Markdown with YAML front matter. **Reference template**: `_posts/2026-03-21-chirpy-theme-in-action.markdown`. On every post edit, add or update `last_modified_at` immediately after `date` (`YYYY-MM-DD HH:MM:SS +0800`); do not change `date` unless asked. **Timestamps**: run `date '+%Y-%m-%d %H:%M:%S %z'` and use its output—do not guess. See `.cursor/rules/requirement.mdc`.
 - `_config.yml` - Jekyll configuration (theme: **jekyll-theme-chirpy**, plugins, archives)
 - `index.html` - Home page (`layout: home` from the theme)
 - `_tabs/` - Nav tabs (About, Categories, Tags, Archives)
