@@ -2,7 +2,7 @@
 layout: post
 title:  "Delve：Go 源码级调试器入门与实践"
 date:   2026-05-22 11:30:00 +0800
-last_modified_at: 2026-05-22 11:28:55 +0800
+last_modified_at: 2026-05-29 15:18:04 +0800
 description: "介绍 Go 官方推荐的 Delve 调试器：原理、安装、命令行与 IDE 用法、完整示例，以及构建与远程调试的最佳实践。"
 categories: GoLang
 tags:
@@ -28,7 +28,7 @@ mermaid: true
 本文覆盖：
 
 - 原理与核心概念
-- 安装与启动方式
+- 安装、更新与启动方式
 - 命令行 REPL 常用命令与完整示例
 - IDE 集成（VS Code / GoLand）
 - 最佳实践与注意事项
@@ -98,6 +98,29 @@ dlv version
 {: .prompt-tip }
 
 也可用系统包管理器（如 `brew install delve`），便于自动更新。
+
+### 更新 dlv
+
+与首次安装相同，**再次执行 `go install` 会覆盖** `GOPATH/bin`（或 `GOBIN`）里的 `dlv` 二进制，这是日常升级 Delve 的推荐方式：
+
+```bash
+go install github.com/go-delve/delve/cmd/dlv@latest
+dlv version
+```
+
+需要固定版本时，把 `@latest` 换成具体 tag（例如 `@v1.24.0`），再对照 [Delve Releases](https://github.com/go-delve/delve/releases) 与当前 Go 版本是否匹配；调试异常时可加 `dlv --check-go-version` 做兼容性检查（见下文「注意事项」）。
+
+其他常见路径：
+
+| 方式 | 命令 / 操作 |
+|------|-------------|
+| **go install** | `go install github.com/go-delve/delve/cmd/dlv@latest` |
+| **Homebrew** | `brew upgrade delve` |
+| **VS Code Go** | 命令面板 **Go: Install/Update Tools**，勾选 **dlv**（会调用与扩展一致的安装逻辑） |
+
+{: .prompt-tip }
+更新后若 IDE 仍报 Delve 过旧，重启编辑器或确认 `which dlv` 指向你刚安装的路径（常与 `$(go env GOPATH)/bin/dlv` 一致）。
+{: .prompt-tip }
 
 ## 使用方法
 
