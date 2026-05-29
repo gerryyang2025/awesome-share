@@ -60,6 +60,13 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* squad /skwɒd/
+  + N-COUNT A **squad** is a section of a police force that is responsible for dealing with a particular type of crime. (专门处理某类犯罪的) 警察分队
+    - The building was evacuated and the bomb **squad** called. 那座大楼进行了人员疏散，并通知了拆弹小组
+  + N-COUNT A **squad** is a group of players from which a sports team will be chosen. (将从中挑选运动员组队参赛的) 运动代表队
+    - The American **squad** has pulled out of the four-day basketball tournament. 美国运动代表队已经退出了为期4天的篮球锦标赛。
+
+
 * envelope /ˈenvələʊp/
   + N-COUNT An **envelope** is the rectangular paper cover in which you send a letter to someone through the mail. 信封
   + PHRASE If someone **pushes the envelope**, they do something to a greater degree or in a more extreme way than it has ever been done before. 挑战极限; 突破常规
