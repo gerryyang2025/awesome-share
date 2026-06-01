@@ -2,7 +2,7 @@
 layout: post
 title:  "ripgrep (rg)：比 grep 更高效的搜索工具"
 date:   2026-05-22 16:50:00 +0800
-last_modified_at: 2026-05-22 17:11:47 +0800
+last_modified_at: 2026-06-01 17:04:39 +0800
 description: "介绍 ripgrep（命令 rg）：比 grep 更高效的目录内容搜索工具，含实现原理、安装、常用选项、与 grep 功能对照及典型场景等价写法。"
 categories: Linux
 tags:
@@ -266,14 +266,14 @@ grep -rn TODO . --include='*.go'
 | 正则类型 | 默认 Rust regex；`-P` PCRE2 | 默认 BRE/ERE；`grep -E`；`-P` PCRE | |
 | 反选行 | `-v` | `grep -v` | 打印**不匹配**的行 |
 | 仅文件名 | `-l` | `grep -l` | 有匹配即列出文件 |
-| 无匹配的文件 | `-L` | `grep -L` | |
+| 无匹配的文件 | `--files-without-match`（无 `-L` 短选项） | `grep -L` | `grep -L` 与 `rg -L` **不是一回事**，见下行 |
 | 统计行数 | `-c` | `grep -c` | 每文件一行计数 |
 | 上下文 | `-A` / `-B` / `-C` | 同左 | |
 | 最大匹配数 | `-m N` | `grep -m N` | |
 | 隐藏文件 | `--hidden` | 无统一项；靠 find | 默认跳过点文件 |
 | 二进制当文本 | `-a` / `--text` | `grep -a` | |
 | 跳过二进制 | 默认跳过 | `grep -I` | |
-| 跟随符号链接 | `-L`（大写 L） | `grep -R` 会跟；`grep -r` 一般不跟 | **注意**：`rg -L` 与 `grep -L` 含义不同 |
+| 跟随符号链接 | `-L` / `--follow` | `grep -R` 会跟；`grep -r` 一般不跟 | 与 `find -L` 一致；**勿与** `grep -L` 混淆 |
 | 文件类型 | `-t go`、`-t py` 等 | `--include='*.go'` | `rg --type-list` 查看 |
 | Glob 过滤 | `-g '*.rs' -g '!tests/*'` | `--include` / `--exclude` | |
 | 尊重 gitignore | **默认** | 无 | `rg --no-ignore` 关闭 |
@@ -282,7 +282,7 @@ grep -rn TODO . --include='*.go'
 | JSON 输出 | `--json` | 无 | 便于工具链解析 |
 
 {: .prompt-warning }
-**选项同名不同义**：`grep -L` 列出「没有任何匹配行」的文件；`rg -L` 表示**跟随符号链接**（follow symlinks）。对照时以手册为准。
+**选项同名不同义**：`grep -L` 列出「没有任何匹配行」的文件，对应 `rg --files-without-match`（ripgrep 未把 `-L` 留给该用途）；`rg -L` / `--follow` 表示**跟随符号链接**。对照时以 `rg --help` 为准。
 {: .prompt-warning }
 
 ## 场景用法：rg 与等价 grep
@@ -380,14 +380,13 @@ grep -rl PATTERN .
 grep -rL PATTERN .
 ```
 
-`rg` 没有与 `grep -L` 完全同名的「反选文件列表」；可用组合，例如先 `rg -l` 再与 `find` 差集，或：
-
 ```bash
-rg -L PATTERN   # 注意：这是「跟随符号链接」，不是 grep 的 -L
+# rg：等价能力用长选项（-L 已用于 --follow）
+rg --files-without-match PATTERN
 ```
 
 {: .prompt-danger }
-不要混淆 **`grep -L`** 与 **`rg -L`**，见上表。
+不要混淆 **`grep -L`**（无匹配的文件）与 **`rg -L`**（跟随符号链接）。列出无匹配文件请用 **`rg --files-without-match`**。
 {: .prompt-danger }
 
 ### 9. 显示匹配次数
@@ -519,7 +518,9 @@ man rg                  # 若系统安装了手册页
 | `-w` | 整词 |
 | `-F` | 固定字符串 |
 | `-n` | 行号（默认已开） |
-| `-l` / `-L` | 有匹配的文件 / **跟随符号链接** |
+| `-l` | 有匹配的文件 |
+| `--files-without-match` | 无匹配的文件（对应 `grep -L`，无短选项） |
+| `-L` / `--follow` | 跟随符号链接（**不是** `grep -L`） |
 | `-c` | 计数 |
 | `-v` | 反选行 |
 | `-A` / `-B` / `-C` | 上下文 |
@@ -542,7 +543,7 @@ man rg                  # 若系统安装了手册页
 
 ## 注意事项
 
-- **不是 grep 的 drop-in**：选项字母部分重叠，但 **`grep -L` ≠ `rg -L`**，且 `rg` 默认递归、默认 ignore。
+- **不是 grep 的 drop-in**：选项字母部分重叠，但 **`grep -L`（无匹配文件）≠ `rg -L`（跟随符号链接）**；无匹配文件用 `rg --files-without-match`。`rg` 默认递归、默认 ignore。
 - **不会修改文件**：只做搜索；批量替换请用 IDE、`sed` 或专用工具。
 - **极老环境**：嵌入式或最小容器可能没有 `rg`，保留 `grep -r` 知识仍然必要。
 - **搜索压缩包、PDF、Office**：标准 `rg` 只搜普通文件；扩展场景见 [ripgrep-all](https://github.com/phracker/ripgrep-all)。
