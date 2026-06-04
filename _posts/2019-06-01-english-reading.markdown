@@ -60,6 +60,24 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+
+* brainstorm /ˈbreɪnstɔːm/
+  + N-COUNT If you have a **brainstorm**, you suddenly have a clever idea. 突发的灵感
+  + V-T/V-I If a group of people **brainstorm**, they have a meeting in which they all put forward as many ideas and suggestions as they can think of. 开头脑风暴法讨论会
+    - The women meet twice a month to **brainstorm** and set business goals for each other. 这些妇女们一个月聚头两次来开头脑风暴会议,为彼此设定商业目标。
+    - She brainstormed the possible approaches she might take. 她用头脑风暴法想出了她可以采取的可能方法。
+
+
+* disciplined /ˈdɪsəplɪnd/
+  + ADJ Someone who is **disciplined** behaves or works in a controlled way. 有纪律的
+    - For me it meant being very **disciplined** about how I run my life. 对我而言，它意味着要以非常有纪律的方式生活。
+
+
+* methodology /ˌmeθəˈdɒlədʒi/
+  + N-VAR A **methodology** is a system of methods and principles for doing something, for example for teaching or for carrying out research. 方法论
+    - Teaching methodologies vary according to the topic. 教学方法因题目而不同。
+
+
 * squad /skwɒd/
   + N-COUNT A **squad** is a section of a police force that is responsible for dealing with a particular type of crime. (专门处理某类犯罪的) 警察分队
     - The building was evacuated and the bomb **squad** called. 那座大楼进行了人员疏散，并通知了拆弹小组
@@ -783,7 +801,9 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 * toggle /ˈtɒɡəl/
   + N-COUNT A **toggle** is a small piece of wood or plastic which is sewn to something such as a coat or bag, and which is pushed through a loop or hole to fasten it. 棒形纽扣
   + V-I On computers and some other machines, if you **toggle** between two functions, you use a part of the machine that allows you to switch from one function to the other one. 切换
-
+    - You can **toggle** between them and the normal icons by selecting View Options. 你可以通过选定视图选项在它们和正常图标间切换。
+  + N-COUNT **Toggle** is also a noun. 切换
+    - Zimmer reached down on his console and flipped a **toggle** switch. 齐默把手伸到控制台上并按下了切换开关。
 
 
 * flexible /ˈfleksəb(ə)l/
