@@ -2,7 +2,7 @@
 layout: post
 title:  "Superpowers：让 AI 编程代理具备工程化超能力"
 date:   2026-06-05 12:47:52 +0800
-last_modified_at: 2026-06-05 19:16:19 +0800
+last_modified_at: 2026-06-05 19:34:46 +0800
 description: "介绍 obra/superpowers 的核心理念、技能库、完整开发工作流与最佳实践，含 Cursor 安装与端到端使用示例，帮助读者快速上手 agentic 软件工程方法论。"
 categories: Tools
 tags:
@@ -114,8 +114,8 @@ flowchart TB
     wt[using-git-worktrees<br/>隔离工作区]
     wp[writing-plans<br/> bite-sized 任务计划]
     exec{执行方式}
-    sad[subagent-driven-development<br/>每任务新子代理 + 双阶段评审]
-    ep[executing-plans<br/>同会话分批 + 人工检查点]
+    sad[subagent-driven-development<br/>Subagent-Driven 推荐<br/>按任务拆子代理 并行/分阶段]
+    ep[executing-plans<br/>Inline Execution<br/>当前会话逐步执行]
     tdd[test-driven-development<br/>RED-GREEN-REFACTOR]
     rc[requesting-code-review]
     fin[finishing-a-development-branch<br/>合并/PR/保留/丢弃]
@@ -124,8 +124,8 @@ flowchart TB
     bs -->|设计获批| wt
     wt --> wp
     wp --> exec
-    exec -->|推荐| sad
-    exec -->|并行会话| ep
+    exec -->|Subagent-Driven 推荐| sad
+    exec -->|Inline Execution| ep
     sad --> tdd
     ep --> tdd
     tdd --> rc
@@ -160,21 +160,34 @@ flowchart TB
 - 任务粒度 **2–5 分钟一步**（写失败测试 → 跑失败 → 最小实现 → 跑通过 → commit）。
 - **禁止占位符**（`TBD`、`适当处理错误`、`类似 Task 3` 等）。
 - 每步含**完整代码**、**精确文件路径**、**命令与期望输出**。
-- 计划头必须声明执行子技能：`subagent-driven-development`（推荐）或 `executing-plans`。
+- 计划头必须声明执行子技能：`subagent-driven-development`（Subagent-Driven，推荐）或 `executing-plans`（Inline Execution）。
 
-计划保存至 `docs/superpowers/plans/YYYY-MM-DD-<feature>.md`。
+计划保存至 `docs/superpowers/plans/YYYY-MM-DD-<feature>.md`。计划完成后，代理会请你二选一执行方式（见下节）。
 
-## 4. subagent-driven-development — 子代理驱动实现
+## 4. 执行计划：两种方式
+
+`writing-plans` 产出计划后，进入实现阶段有两种路径，**都在当前 Harness 会话内完成**，区别在于是主代理逐步做，还是按任务派发子代理：
+
+| 方式 | 技能 | 特点 | 更适合 |
+| :--- | :--- | :--- | :--- |
+| **Subagent-Driven（推荐）** | `subagent-driven-development` | 按计划把 Task **拆成多个子代理**执行，可并行或分阶段推进；每 Task 后 **Spec 合规 + 代码质量**双阶段评审 | 跨工具链、目录迁移、协议边界等大改造；任务多、上下文易膨胀 |
+| **Inline Execution** | `executing-plans` | **当前会话**里由主代理按 plan **逐步执行**，节奏集中，检查点由你人工把关 | 范围清晰的中小型改动；希望全程在同一对话里跟进度 |
+
+### Subagent-Driven — `subagent-driven-development`
 
 **推荐执行模式**：每个任务派发**全新子代理**（不继承主会话历史），任务完成后进行**两阶段评审**：
 
 1. **Spec 合规评审**：是否多做/少做？
 2. **代码质量评审**：结构、测试、可维护性
 
-子代理状态：`DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED` —— 主代理必须按状态处理，不能强行跳过。
+子代理状态：`DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED` —— 主代理必须按状态处理，不能强行跳过。Task 之间可连续推进，无需每个 Task 都停下来问你「是否继续」。
 
 {: .prompt-tip }
 **模型选型**：机械性单文件任务用快模型；多文件集成用标准模型；架构与评审用最强大模型 —— 在质量与成本间折中。
+
+### Inline Execution — `executing-plans`
+
+主代理在**当前会话**中按 Task 顺序执行 plan，在预设**检查点**暂停供你审阅；每步仍遵循 TDD。对话上下文会随 Task 累积，**长计划、多文件改动**时更容易接近上下文上限，需你更频繁地在检查点纠偏。
 
 ## 5. test-driven-development — 铁律
 
@@ -204,8 +217,9 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 | **调试** | `systematic-debugging` | 四阶段根因分析 |
 | | `verification-before-completion` | 完成前验证确实修好 |
 | **协作** | `brainstorming` | 设计澄清 |
-| | `writing-plans` / `executing-plans` | 计划与分批执行 |
-| | `subagent-driven-development` | 子代理 + 双阶段评审 |
+| | `writing-plans` | 实施计划拆解 |
+| | `subagent-driven-development` | Subagent-Driven：子代理 + 双阶段评审 |
+| | `executing-plans` | Inline Execution：当前会话逐步执行 |
 | | `dispatching-parallel-agents` | 并行子代理 |
 | | `requesting-code-review` / `receiving-code-review` | 发起与响应评审 |
 | | `using-git-worktrees` | 隔离分支 |
@@ -247,7 +261,8 @@ Superpowers 安装后，多数场景会**自动**加载对应技能。若代理�
 | :--- | :--- | :--- |
 | `brainstorming` | 新功能、改行为、架构取舍；**禁止先写代码** | 见下方 |
 | `writing-plans` | 设计/spec 已确认，要拆成可执行任务 | 见下方 |
-| `executing-plans` | 计划已写好，在本会话**分批执行**（带检查点） | 见下方 |
+| `subagent-driven-development` | 大改造、多 Task；**推荐**，子代理 + 双阶段评审 | 见下方 |
+| `executing-plans` | 中小型改动；**当前会话逐步执行**（Inline Execution） | 见下方 |
 | `test-driven-development` | 实现或修 Bug；**必须先写失败测试** | 见下方 |
 | `systematic-debugging` | 测试失败、异常行为、构建/集成问题 | 见下方 |
 | `requesting-code-review` | 一批改动完成，合并或 PR 前自检 | 见下方 |
@@ -270,9 +285,19 @@ Superpowers 安装后，多数场景会**自动**加载对应技能。若代理�
 【在此说明已批准的设计或改动范围；若有 spec 文件请写明路径，例如 docs/superpowers/specs/2026-06-05-xxx-design.md】
 ```
 
-**代理应做**：产出 `docs/superpowers/plans/YYYY-MM-DD-<feature>.md`，任务粒度 2–5 分钟一步，含完整测试代码、文件路径、命令与期望输出，**无 TBD/占位符**。完成后询问你用 `subagent-driven-development` 还是 `executing-plans` 执行。
+**代理应做**：产出 `docs/superpowers/plans/YYYY-MM-DD-<feature>.md`，任务粒度 2–5 分钟一步，含完整测试代码、文件路径、命令与期望输出，**无 TBD/占位符**。完成后询问执行方式：**Subagent-Driven（推荐）** 或 **Inline Execution**。
 
-## executing-plans — 执行计划（分批 + 检查点）
+## subagent-driven-development — Subagent-Driven（推荐）
+
+```text
+使用 subagent-driven-development skill，执行这个计划
+
+【附上计划路径，例如 docs/superpowers/plans/2026-06-05-migration.md】
+```
+
+**代理应做**：按 Task 派发**全新子代理**（可并行或分阶段），每 Task 完成后 Spec 合规评审 → 代码质量评审 → 下一 Task。适合**跨工具链、目录迁移、协议边界**等任务多、改动面大的计划。
+
+## executing-plans — Inline Execution（当前会话逐步执行）
 
 ```text
 使用 executing-plans skill，执行这个计划
@@ -280,10 +305,10 @@ Superpowers 安装后，多数场景会**自动**加载对应技能。若代理�
 【附上计划路径，例如 docs/superpowers/plans/2026-06-05-rate-limit.md】
 ```
 
-**代理应做**：按 plan 中的 Task 顺序执行，在检查点暂停供你审阅；每步遵循 TDD。适合**同一对话内**、希望**人工在中间把关**的场景。
+**代理应做**：在**当前会话**中由主代理按 Task **逐步**执行，在检查点暂停供你审阅；每步遵循 TDD。节奏集中，适合范围清晰的中型改动；**长任务**时注意上下文压力，必要时改选 Subagent-Driven。
 
 {: .prompt-info }
-若希望**少打断、连续跑完**各 Task，可在计划确认后说：「用 **subagent-driven-development** 执行计划」—— 每任务派发新子代理，并在任务间做 Spec 合规 + 代码质量双阶段评审（见上文工作流第 4 步）。
+**怎么选**：大改造、多 Task、怕主会话上下文爆掉 → **Subagent-Driven**；想全程在同一对话里跟紧每一步 → **Inline Execution**（`executing-plans`）。
 
 ## test-driven-development — 先写失败测试
 
@@ -326,8 +351,9 @@ Superpowers 安装后，多数场景会**自动**加载对应技能。若代理�
 2. 使用 writing-plans skill，为这个改动写一个实施计划
    → spec 已确认，路径：docs/superpowers/specs/...
 
-3. 使用 executing-plans skill，执行这个计划
+3. 使用 subagent-driven-development skill，执行这个计划
    → 计划路径：docs/superpowers/plans/...
+   （中小型、希望逐步跟进度时，可改为 executing-plans）
 
 4. 使用 requesting-code-review skill，帮我准备一次代码审查
    → 审查相对 main 的本分支改动
@@ -403,7 +429,7 @@ Run: `npm test -- rateLimit.test.ts`
 Expected: FAIL — `createRateLimiter` not defined
 ````
 
-4. **subagent-driven-development**：每 Task 新子代理实现 → Spec 评审 → 质量评审 → 下一 Task。
+4. **subagent-driven-development**（或中小型改动时用 **executing-plans** Inline 执行）：按 Task 推进，Subagent 模式下每 Task 新子代理 → Spec 评审 → 质量评审。
 
 5. **finishing-a-development-branch**：全绿后问你：本地合并、开 PR、保留还是丢弃。
 
