@@ -60,6 +60,14 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* canonical /kəˈnɒnɪkəl/
+  + ADJ If something has **canonical** status, it is accepted as having all the qualities that a thing of its kind should have. 标准的; 典范的
+
+
+* cursor /ˈkɜːsə(r)/
+  + N-COUNT On a computer screen, the **cursor** is a small shape that indicates where anything that is typed by the user will appear. 光标
+    - He moves the **cursor**, clicks the mouse. 他移动光标，点击鼠标。
+
 
 * brainstorm /ˈbreɪnstɔːm/
   + N-COUNT If you have a **brainstorm**, you suddenly have a clever idea. 突发的灵感
@@ -1714,8 +1722,9 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
     + Your **workplace** is the place where you work. 工作场所
 
 * transient /ˈtrænziənt/
-    + **Transient** is used to describe a situation that lasts only a short time or is constantly changing. 短暂的
-    + **Transients** are people who stay in a place for only a short time and then move somewhere else. 流动人员
+    + ADJ **Transient** is used to describe a situation that lasts only a short time or is constantly changing. 短暂的
+    + N-COUNT **Transients** are people who stay in a place for only a short time and then move somewhere else. 流动人员
+      - a dormitory for transients. 一个流动人员的宿舍。
 
 * spurious /ˈspjʊəriəs/
     + Something that is **spurious** seems to be genuine, but is false. 似是而非的
