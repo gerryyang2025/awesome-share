@@ -2,7 +2,7 @@
 layout: post
 title:  "Kubernetes in Action"
 date:   2022-07-31 16:30:00 +0800
-last_modified_at: 2026-05-20 10:24:21 +0800
+last_modified_at: 2026-06-15 11:42:48 +0800
 mermaid: true
 categories: 云原生
 tags:
@@ -1635,7 +1635,7 @@ PID（进程号）限制允许 kubelet 约束单个 Pod 最多可消耗多少个
 
 # 应用配置、健康检查与弹性
 
-前面几节已经覆盖了 Service、持久化存储、Deployment / StatefulSet、调度和资源管理。为了更完整地掌握 Kubernetes 的核心功能，这里再补上 5 组日常高频能力：**配置管理、运行时信息注入、健康检查、批处理任务、自动伸缩**。
+前面几节已经覆盖了 Service、持久化存储、Deployment / StatefulSet、调度和资源管理。为了更完整地掌握 Kubernetes 的核心功能，这里再补上 6 组日常高频能力：**配置管理、镜像拉取、运行时信息注入、健康检查、批处理任务、自动伸缩**。
 
 ## ConfigMap 与 Secret {#configmap-and-secret}
 
@@ -1703,6 +1703,109 @@ spec:
 * 如果配置更新后应用需要重读，是否自动生效取决于你的注入方式和应用自身实现；很多场景下仍然需要**滚动重启 Pod**。
 
 如果你想把这一部分单独展开学习，可进一步阅读 [Kubernetes ConfigMap 完全指南]({% post_url 2026-03-25-kubernetes-configmap %})。
+
+## 镜像拉取策略（imagePullPolicy）
+
+英文原文：[Images | Kubernetes](https://kubernetes.io/docs/concepts/containers/images/)
+
+Pod 被调度到某个 Node 之后，kubelet 会通过容器运行时（containerd、CRI-O 等）创建容器。在真正启动进程之前，kubelet 先要解决一个问题：**这个镜像在节点本地是否已经存在？如果不存在，要不要从镜像仓库拉取？** 这个决策由容器定义里的 `imagePullPolicy` 字段控制。
+
+`imagePullPolicy` 可以写在 **Pod** 的 `spec.containers[].imagePullPolicy`，也可以写在 **Deployment / StatefulSet / DaemonSet / Job** 等控制器的 `spec.template.spec.containers[]` 里。它只作用于**单个容器**，同一个 Pod 里不同容器可以配置不同的策略。
+
+### 三种取值
+
+| 取值 | 行为 |
+|------|------|
+| `Always` | **每次**创建容器前都尝试从仓库拉取镜像，即使节点本地已有同名镜像。 |
+| `IfNotPresent` | **仅当节点本地不存在该镜像**时才拉取；若本地已有，则直接使用，不再访问仓库。 |
+| `Never` | **绝不拉取**；镜像必须已经存在于节点本地，否则容器创建失败。 |
+
+### 默认值怎么定
+
+如果清单里没有显式写 `imagePullPolicy`，Kubernetes 会按**镜像标签（tag）**推断默认值：
+
+* 镜像 tag 为 **`latest`**，或**没有写 tag**（等价于 `:latest`）→ 默认 **`Always`**
+* 镜像 tag 为**其他任何具体版本**（例如 `nginx:1.27`、`myapp:v2.3.1`）→ 默认 **`IfNotPresent`**
+
+因此，生产环境里给镜像打上**固定版本 tag** 时，即使不显式声明，实际生效的往往就是 `IfNotPresent`。但**显式写出来**仍然是好习惯，可以避免团队成员对默认行为产生误解。
+
+### `IfNotPresent` 的工作流程
+
+可以把 kubelet 的决策理解成下面这条链路：
+
+```mermaid
+flowchart TD
+    A[Pod 调度到 Node] --> B{kubelet 准备创建容器}
+    B --> C{imagePullPolicy?}
+    C -->|Always| D[向仓库拉取镜像]
+    C -->|Never| E{本地已有镜像?}
+    C -->|IfNotPresent| F{本地已有镜像?}
+    E -->|是| G[用本地镜像启动容器]
+    E -->|否| H[创建失败 ImagePullBackOff]
+    F -->|是| G
+    F -->|否| D
+    D --> I{拉取成功?}
+    I -->|是| G
+    I -->|否| H
+```
+
+对 `IfNotPresent` 来说，判断「本地是否已有」的依据是**镜像名称 + tag（或 digest）** 的组合。节点上如果已经缓存了 `nginx:1.27`，后续再创建引用同一 `image: nginx:1.27` 的 Pod，kubelet **不会**再去仓库确认有没有更新版本，而是直接复用本地缓存。
+
+### 适用场景与常见误区
+
+`IfNotPresent` 是生产环境中最常用的策略之一，尤其适合下面这些场景：
+
+* 镜像 tag **已经固定**（`v1.2.3`、`sha-abc123` 等），发布新版本靠**改 tag / 改 digest**，而不是覆盖同名 tag。
+* 集群节点较多，希望减少重复拉取，**节省带宽**、**加快 Pod 启动**。
+* 镜像仓库有拉取频率限制，或节点到仓库的网络不稳定，希望尽量走本地缓存。
+
+同时要注意几个容易踩坑的点：
+
+* **同名 tag 被覆盖**：如果仓库里 `myapp:v1` 的内容被重新 push 了，但节点本地还留着旧的 `myapp:v1`，`IfNotPresent` **不会**自动拉取新内容。滚动升级时 Pod 可能被调度到**已有旧镜像的节点**上，导致运行的仍是旧版本。生产上应使用**不可变 tag** 或 **digest**（`image: myrepo/app@sha256:...`），并把 `imagePullPolicy` 设为 `Always`，或在发版时配合节点镜像预热。
+* **与 Deployment 滚动更新配合**：改 Deployment 的 `image` 字段（例如从 `v1` 到 `v2`）会触发新 Pod 创建；新 tag 在节点上不存在时，`IfNotPresent` 会正常拉取。问题主要出在**tag 不变、内容变了**这种场景。
+* **私有仓库**：`IfNotPresent` 只决定「拉不拉」，不解决「怎么认证」。访问私有仓库仍需配置 `imagePullSecrets`（通常放在 Pod `spec.imagePullSecrets`，凭据本身存在 `Secret` 里，类型为 `kubernetes.io/dockerconfigjson`）。
+
+### 最小示例
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: web
+        image: registry.example.com/web:v1.2.3
+        imagePullPolicy: IfNotPresent
+```
+
+若镜像来自私有仓库，在同一 `spec` 下补充：
+
+```yaml
+      imagePullSecrets:
+      - name: regcred
+```
+
+### 三种策略怎么选
+
+| 场景 | 建议 |
+|------|------|
+| 生产固定版本 tag / digest | `IfNotPresent`（或 digest + `Always` 若需强一致） |
+| 开发环境频繁改 `:latest` | `Always`，确保每次拿到最新构建 |
+| 完全离线、镜像预加载到节点 | `Never` 或 `IfNotPresent` |
+| 安全合规要求每次启动都校验镜像 | `Always`，配合 digest 锁定内容 |
+
+> 简单记：`IfNotPresent` = **本地有就用、没有才拉**；它优化的是启动速度和带宽，**不是**自动感知仓库里同名 tag 的更新。需要「每次启动都重新拉」时，应显式使用 `Always`。
+{: .prompt-tip }
 
 ## Downward API：把 Pod 自身信息注入容器
 
@@ -3520,6 +3623,7 @@ kubectl delete -n default pod <your-pod-name>
 * https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 * https://kubernetes.io/docs/concepts/configuration/configmap/
 * https://kubernetes.io/docs/concepts/configuration/secret/
+* https://kubernetes.io/docs/concepts/containers/images/
 * https://kubernetes.io/zh/docs/concepts/workloads/pods/downward-api/
 * https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/
 * https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
