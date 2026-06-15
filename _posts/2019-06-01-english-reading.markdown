@@ -60,6 +60,10 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* canary /kəˈneəri/
+  + N-COUNT **Canaries** are small, yellow birds which sing beautifully and are often kept as pets. 金丝雀
+
+
 * canonical /kəˈnɒnɪkəl/
   + ADJ If something has **canonical** status, it is accepted as having all the qualities that a thing of its kind should have. 标准的; 典范的
 
