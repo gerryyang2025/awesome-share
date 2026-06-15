@@ -304,6 +304,7 @@ More: https://support.apple.com/zh-cn/102650
 
 | 工具 | 功能 |
 | --- | --- |
+| Amphetamine | Keep Your Mac Awake. Amphetamine can keep your Mac, and optionally its display, awake through a super simple on/off switch, or automatically through easy-to-configure Triggers. |
 | Adobe Reader | Adobe Reader 为免费版 PDF 阅读软件，无需授权。如需编辑 PDF 文件的内容，请申请专业版使用 |
 | [有数](https://apps.apple.com/cn/app/%E6%9C%89%E6%95%B0-%E9%87%8D%E6%96%B0%E5%AE%9A%E4%B9%89%E8%AE%A1%E7%AE%97%E5%99%A8/id721606556) | 补充 MacOS 计算器的功能 |
 | [Cleaner One](https://apps.apple.com/cn/app/apple-store/id1133028347) | 磁盘清理（免费）[refer: Mac 存储空间里面的「其他」怎么清理](https://zhuanlan.zhihu.com/p/349862578) |
