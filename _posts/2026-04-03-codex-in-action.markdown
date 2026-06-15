@@ -2,7 +2,7 @@
 layout: post
 title:  "Codex in Action"
 date:   2026-04-03 14:00:00 +0800
-last_modified_at: 2026-04-12 14:00:00 +0800
+last_modified_at: 2026-06-15 22:29:24 +0800
 description: "全面介绍 OpenAI Codex 的核心能力、多种接入方式（桌面应用、CLI、IDE 插件、网页版）、定价计划及其与 Claude Code 的对比，是使用 Codex 的参考指南。"
 categories: AI
 tags:
@@ -161,6 +161,85 @@ Codex 的 GitHub 集成是其相对于其他编程智能体的显著优势：
 ## Plugins（插件）
 
 Plugins 将可复用工作流打包，方便连接 Codex 到你依赖的工具和服务，并在团队间共享。Plugin 可组合一个或多个 Skills、可选的 App 集成或 MCP 服务器配置，是可安装的分发单元。详见 [Plugins 文档](https://developers.openai.com/codex/plugins)。
+
+### Superpowers：工程化工作流插件
+
+[Superpowers](https://github.com/obra/superpowers)（Jesse Vincent / Prime Radiant）是一套面向编程智能体的**可组合技能（Skills）框架**与**软件工程方法论**。它通过 [Codex 官方插件市场](https://github.com/openai/plugins) 分发，把「需求澄清 → 设计评审 → 计划拆解 → TDD 实现 → 子代理协作 → 代码审查 → 分支收尾」串成**强制工作流**，而不是让代理一上来就改文件。
+
+{: .prompt-info }
+**与 Codex 原生能力的关系**：Codex 自带的 [Skills](#skills技能)、[Subagents](#subagents子代理)、[Worktrees](#worktrees工作树) 提供**平台能力**；Superpowers 在其上提供**方法论与技能清单**（何时 brainstorming、如何写计划、怎样 RED-GREEN-REFACTOR）。二者互补：Superpowers 的 `subagent-driven-development` 与 `using-git-worktrees` 分别与 Codex 的子代理、worktree 能力天然对齐。更完整的技能库、口令示例与 Cursor 对照见站内 [Superpowers 使用指南]({% post_url 2026-06-05-superpowers-in-action %}).
+
+#### 安装（CLI 与 App）
+
+Superpowers 在 **Codex CLI** 与 **Codex App** 中均需**单独安装**（与其他 Harness 互不同步）。当前插件版本 **5.1.0**，技能目录挂载于 `./skills/`。
+
+**Codex CLI**（在 `codex` 交互会话内）：
+
+```text
+/plugins
+```
+
+搜索 `superpowers`，选择 **Install Plugin**。插件来自 [官方 Codex 插件市场](https://github.com/openai/plugins)。
+
+**Codex App**：
+
+1. 侧边栏打开 **Plugins**
+2. 在 **Coding** 分类找到 **Superpowers**
+3. 点击旁的 `+` 并按提示完成安装
+
+安装后无需手动 `@` 每个技能。代理会按 `using-superpowers` 规则自动判断是否加载相关技能；你仍可通过项目根目录的 `AGENTS.md` 补充技术栈、目录约定或「禁用 TDD」等项目级偏好（用户显式指令优先于 Superpowers 技能）。
+
+#### 标准工作流（七步）
+
+| 步骤 | 技能 | 作用 |
+| :--- | :--- | :--- |
+| 1 | `brainstorming` | 苏格拉底式澄清需求，分节展示设计并征求确认 |
+| 2 | `using-git-worktrees` | 设计通过后在新分支 / worktree 隔离开发 |
+| 3 | `writing-plans` | 拆成 2–5 分钟一步的可执行计划 |
+| 4 | `subagent-driven-development` 或 `executing-plans` | 子代理分任务执行（推荐）或当前会话逐步执行 |
+| 5 | `test-driven-development` | RED-GREEN-REFACTOR，先写失败测试 |
+| 6 | `requesting-code-review` | 按严重程度自检，阻断 Critical 问题 |
+| 7 | `finishing-a-development-branch` | 验证测试，选择合并 / PR / 保留 / 丢弃 |
+
+设计规格与实现计划默认落在仓库内，便于审阅与版本管理：
+
+| 路径 | 内容 |
+| :--- | :--- |
+| `docs/superpowers/specs/` | brainstorming 产出的设计文档 |
+| `docs/superpowers/plans/` | writing-plans 产出的实现计划 |
+
+#### 在 Codex 中的使用示例
+
+提出一个明确的功能需求后，观察代理是否**先进入 brainstorming**（提问、给方案）而非直接改文件——这是 Superpowers 生效的最直观信号。若代理「跑偏」（跳过设计、未看失败信息就猜修复），可在 Codex CLI / App 对话中**显式点名技能**：
+
+```text
+使用 brainstorming skill，和我一起梳理这个需求，不要直接写代码
+
+【描述需求，例如：给 API 加按用户限流，返回 429 与 Retry-After】
+```
+
+设计确认后写计划：
+
+```text
+使用 writing-plans skill，为这个改动写一个实施计划
+
+【说明已批准的设计；若有 spec 请写明路径，例如 docs/superpowers/specs/2026-06-15-rate-limit-design.md】
+```
+
+大改造推荐子代理执行（与 Codex [Subagents](#subagents子代理) 配合）：
+
+```text
+使用 subagent-driven-development skill，执行这个计划
+
+【附上计划路径，例如 docs/superpowers/plans/2026-06-15-rate-limit.md】
+```
+
+#### 与 Codex 协同的注意事项
+
+- **审批模式**：Superpowers 会频繁跑测试、改多文件；若 CLI 审批过严易卡在权限循环，可按任务调整 [审批级别](https://developers.openai.com/codex/cli)（全自动小步任务 vs 高风险命令人工确认）。
+- **用量**：brainstorming 与多轮子代理会消耗更多本地消息；复杂功能可先用 Superpowers 走完设计与计划，再交给 [Codex Cloud](#cloud云端环境) 执行大块实现以分担本地额度。
+- **与 `AGENTS.md` 并存**：`AGENTS.md` 写项目规范，Superpowers 写流程纪律；若二者冲突，以 `AGENTS.md` 为准。
+- **更新**：Superpowers 更新随 Codex 插件市场推送，部分环境会自动升级；以 [官方 README](https://github.com/obra/superpowers/blob/main/README.md) 与 [Release Notes](https://github.com/obra/superpowers/blob/main/RELEASE-NOTES.md) 为准。
 
 ## MCP（Model Context Protocol）
 
@@ -345,6 +424,10 @@ git checkout main && git branch -D feature/codex-task-1
 
 在项目根目录创建 `AGENTS.md`，定义 Codex 在该项目中应遵循的规范、代码风格、常用命令等。Codex 会自动读取并遵循。例如本博客仓库的 `CLAUDE.md` 就是类似作用。详见 [Builder.io 的 AGENTS.md 指南](https://www.builder.io/blog/agents-md)。
 
+## 第五步（可选）：安装 Superpowers 插件
+
+若希望 Codex 在复杂功能开发时自动走「设计 → 计划 → TDD → 审查」流程，可在 CLI 或 App 中安装 [Superpowers 插件](#superpowers工程化工作流插件)（`/plugins` 搜索 `superpowers`）。端到端示例与可复制口令见 [Superpowers 使用指南]({% post_url 2026-06-05-superpowers-in-action %}).
+
 准备好后，前往[参考资料](#参考资料)获取所有官方资源链接。
 
 # 参考资料
@@ -366,7 +449,9 @@ git checkout main && git branch -D feature/codex-task-1
 | 官方 | 使用条款（Plus/Pro） | [help.openai.com — your data](https://help.openai.com/en/articles/5722486-how-your-data-is-used-to-improve-model-performance) |
 | 社区 | Reddit r/codex | [reddit.com/r/codex](https://www.reddit.com/r/codex/) |
 | 社区 | Reddit r/ClaudeCode — 与 Claude Code 协同工作流讨论 | [reddit.com/r/ClaudeCode/comments/1rf645m/best_way_to_combine_claude_code_with_codex_in](https://www.reddit.com/r/ClaudeCode/comments/1rf645m/best_way_to_combine_claude_code_with_codex_in/) |
+| 开源 | obra/superpowers（Codex 工程化工作流插件） | [github.com/obra/superpowers](https://github.com/obra/superpowers) |
 | 开源 | OpenAI — codex-plugin-cc（Claude Code 内调用 Codex） | [github.com/openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) |
+| 站内 | Superpowers 使用指南（技能库、口令、最佳实践） | [2026-06-05-superpowers-in-action](/_posts/2026-06-05-superpowers-in-action.markdown) |
 | 第三方 | Builder.io — Codex vs Claude Code 对比 | [builder.io/blog/codex-vs-claude-code](https://www.builder.io/blog/codex-vs-claude-code) |
 | 博客 | Builder.io — Writing a good AGENTS.md | [builder.io/blog/agents-md](https://www.builder.io/blog/agents-md) |
 | 博客 | Builder.io — Cursor Tips | [builder.io/blog/cursor-tips](https://www.builder.io/blog/cursor-tips) |
