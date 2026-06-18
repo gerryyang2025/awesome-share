@@ -2,11 +2,15 @@
 layout: post
 title:  "OpenTelemetry in Action"
 date:   2024-08-05 20:00:00 +0800
+last_modified_at: 2026-06-18 21:09:04 +0800
+description: "OpenTelemetry（OTel）可观测性框架：OTLP 协议、Traces/Metrics/Logs 信号、Collector 管道、仪表化入门与采样实践，对照官方中文文档整理。"
 categories: 云原生
 tags:
   - OpenTelemetry
   - 云原生
-
+  - 可观测性
+  - CNCF
+mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -22,12 +26,64 @@ tags:
 
 As an industry-standard, OpenTelemetry is [supported by more than 40 observability vendors](https://opentelemetry.io/ecosystem/vendors/), integrated by many [libraries, services, and apps](https://opentelemetry.io/ecosystem/integrations/), and adopted by [numerous end users](https://opentelemetry.io/ecosystem/adopters/).
 
+> 本文在保留原有概念梳理的基础上，对照 [OpenTelemetry 官方中文文档](https://opentelemetry.io/zh/docs/what-is-opentelemetry/) 与 [OpenTelemetry 中文文档站](https://opentelemetry.opendocs.io/docs/) 补充了**参考架构、Collector 数据流、仪表化入门示例、语义约定与最佳实践**。OTel **负责生成与导出遥测数据**，存储与可视化交给 [Jaeger](https://www.jaegertracing.io/)、[Prometheus](https://prometheus.io/)、[Grafana]({% post_url 2022-08-19-grafana-in-action %}) 等后端；站内指标存储选型可参考 [Prometheus vs VictoriaMetrics]({% post_url 2024-09-13-prometheus-vs-victoriametrics %})。
+{: .prompt-info }
+
 ![otel-diagram](/assets/images/202408/otel-diagram.svg)
+
+### 参考架构与数据流 {#reference-architecture}
+
+官方推荐的典型路径：**应用 SDK / 自动仪表化 → OTLP → Collector（可选）→ 可观测性后端**。Collector 以厂商中立方式接收、处理、导出遥测，是生产环境中最常见的汇聚层。
+
+```mermaid
+flowchart LR
+    subgraph Apps["应用与基础设施"]
+        A1[服务 A<br/>SDK / Agent]
+        A2[服务 B<br/>自动仪表化]
+        A3[主机 / K8s<br/>接收器]
+    end
+  COL[OpenTelemetry Collector<br/>Receivers → Processors → Exporters]
+    subgraph Backends["可观测性后端"]
+        J[Jaeger / Tempo]
+        P[Prometheus / VM]
+        L[Loki / ES / 商业 APM]
+    end
+    A1 -->|OTLP gRPC/HTTP| COL
+    A2 -->|OTLP| COL
+    A3 --> COL
+    COL --> J
+    COL --> P
+    COL --> L
+```
+
+| 部署模式 | 说明 | 适用 |
+|----------|------|------|
+| **无 Collector** | SDK 直连后端 Exporter | 本地开发、极简 PoC |
+| **Agent 模式** | 每节点一个 Collector，应用发 localhost | DaemonSet、边车 |
+| **Gateway 模式** | 集中式 Collector 集群接收多租户流量 | 大规模、统一采样与路由 |
+
+详见官方 [Collector 部署](https://opentelemetry.io/docs/collector/deploy/) 与 [Kubernetes 入门](https://opentelemetry.io/docs/platforms/kubernetes/getting-started/)。
 
 
 # What is OTLP?
 
-`OTLP` is the standardized protocol for transmitting telemetry data in OpenTelemetry. It defines how **traces**, **metrics**, and **logs** are serialized and transported from your applications to backends or other components in your observability pipeline.
+`OTLP`（OpenTelemetry Protocol）是 OpenTelemetry 中传输遥测数据的**标准协议**，定义 **traces**、**metrics**、**logs** 如何序列化并从应用发送到 Collector 或后端。当前规范见 [OTLP 1.0](https://opentelemetry.io/docs/specs/otlp/)。
+
+| 传输 | 默认端口 | 说明 |
+|------|----------|------|
+| OTLP/gRPC | 4317 | 生产常用，二进制 Protobuf |
+| OTLP/HTTP | 4318 | 防火墙友好，`/v1/traces` 等路径 |
+
+环境变量（[通用 SDK 配置](https://opentelemetry.io/docs/languages/sdk-configuration/general/)）示例：
+
+```bash
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317"
+export OTEL_EXPORTER_OTLP_PROTOCOL="grpc"   # 或 http/protobuf
+export OTEL_SERVICE_NAME="checkout-service"
+```
+
+> 提示：OTLP 与 Jaeger Thrift、Prometheus Remote Write 等不同；Collector 常作为**协议转换枢纽**，将 OTLP 转为各后端原生格式。
+{: .prompt-tip }
 
 ![OTLP](/assets/images/202409/OTLP.png)
 
@@ -51,14 +107,14 @@ As an industry-standard, OpenTelemetry is [supported by more than 40 observabili
 
 假如：某服务，服务名叫 apiserver，其对外提供 2 个接口，分别为 read 和 write，服务部署在 3 台机器上，IP 分别为 10.123.1.1, 10.123.1.2, 10.123.1.3。假如要统计该服务的请求量指标 requests，且需要分接口和机器的请求量数据。则对应的维度基数 (时间线个数) 为：**服务名个数 * 接口个数 * 机器个数** = 1 * 2 * 3 = 6。**所以，如果关注 IP 维度的数据，服务在未变更的情况下，扩容操作会导致数据量大幅增长**。
 
-| 服务名 | 接口名 | IP
-| -- | -- | --
-| apiserver | read | 10.123.1.1
-| apiserver | read | 10.123.1.2
-| apiserver | read | 10.123.1.3
-| apiserver | write | 10.123.1.1
-| apiserver | write | 10.123.1.2
-| apiserver | write | 10.123.1.3
+| 服务名 | 接口名 | IP |
+| -- | -- | -- |
+| apiserver | read | 10.123.1.1 |
+| apiserver | read | 10.123.1.2 |
+| apiserver | read | 10.123.1.3 |
+| apiserver | write | 10.123.1.1 |
+| apiserver | write | 10.123.1.2 |
+| apiserver | write | 10.123.1.3 |
 
 
 ## 采样点
@@ -181,6 +237,70 @@ OpenTelemetry is designed to be extensible. Some examples of how it can be exten
 * Creating a custom propagator for a nonstandard context propagation format
 
 Although most users might not need to extend OpenTelemetry, the project is designed to make it possible at nearly every level.
+
+
+## OpenTelemetry Collector 详解 {#collector}
+
+[OpenTelemetry Collector](https://opentelemetry.io/docs/collector/) 是厂商中立的遥测**代理**：接收一种或多种格式，经处理器链转换/过滤/采样后，再导出到一种或多种后端。Kubernetes 中常通过 [Operator](https://opentelemetry.io/docs/platforms/kubernetes/operator/) 或 [Helm Chart](https://opentelemetry.io/docs/platforms/kubernetes/helm/) 部署。
+
+```mermaid
+flowchart LR
+    R[Receivers<br/>otlp / jaeger / prometheus / filelog]
+    P[Processors<br/>batch / memory_limiter / attributes / filter]
+    E[Exporters<br/>otlp / prometheus / logging / kafka]
+    R --> P --> E
+```
+
+| 组件 | 作用 | 示例 |
+|------|------|------|
+| **Receivers** | 接入遥测 | `otlp`、`hostmetrics`、`k8sclusterreceiver` |
+| **Processors** | 批处理、限流、改属性、采样 | `batch`、`memory_limiter`、`probabilistic_sampler` |
+| **Exporters** | 写出到后端 | `otlp`、`prometheusremotewrite`、`loki` |
+| **Connectors** | 连接 pipeline（如 spanmetrics） | `spanmetrics` 由 trace 生成 metric |
+
+最小 `collector` 配置示例（OTLP 入、日志调试出）：
+
+```yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+
+exporters:
+  debug:
+    verbosity: basic
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug]
+```
+{: file="otel-collector-config.yaml" }
+
+启动（需已安装 [Collector 发行版](https://opentelemetry.io/docs/collector/installation/)）：
+
+```bash
+otelcol --config=otel-collector-config.yaml
+```
+
+> 信息：[Grafana Alloy]({% post_url 2022-08-19-grafana-in-action %}) 是带 Prometheus pipeline 的 Collector 发行版，适合与 Grafana 栈集成。
+{: .prompt-info }
 
 
 # [OpenTelemetry Concepts](https://opentelemetry.io/docs/concepts/)
@@ -607,6 +727,64 @@ Using OpenTelemetry, you can instrument your code in two primary ways:
 
 You can use both solutions simultaneously.
 
+### 资源（Resource）与语义约定 {#resource-semconv}
+
+每条遥测信号可附带 **Resource** 属性，描述**是谁**在产生数据（服务名、版本、K8s Pod、云区域等），与 Span 上的 **Attributes**（描述**这一次操作**）区分开。Resource 通过 `OTEL_RESOURCE_ATTRIBUTES` 或 SDK API 设置：
+
+```bash
+export OTEL_RESOURCE_ATTRIBUTES="service.name=checkout,service.version=1.2.0,deployment.environment=production"
+```
+
+**语义约定**（[Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/)）为 HTTP、数据库、消息队列、K8s 等常见场景规定**标准属性名**（如 `http.request.method`、`db.system`），使不同语言与厂商的后端能一致地查询与关联。自定义业务属性应使用命名空间前缀，避免与标准冲突（如 `acme.customer.id`）。
+
+| 概念 | 作用 | 示例 |
+|------|------|------|
+| Resource | 信号来源实体 | `service.name`、`k8s.pod.name` |
+| Span Attributes | 单次操作上下文 | `http.route`、`db.statement` |
+| Baggage | 跨服务传播的 KV | `user.id`（注意 PII 与体量） |
+| Instrumentation Scope | 哪段库产生的遥测 | 库名与版本 |
+
+官方 [OpenTelemetry Demo](https://opentelemetry.io/docs/demo/)（Docker / Kubernetes）演示了多服务微商店场景下的完整仪表化，可作为架构参考。
+
+
+## 快速入门示例（Python） {#quickstart-python}
+
+以下用 **自动仪表化** 将 Flask 应用的 trace 经 OTLP 发往本机 Collector（需先启动上文 Collector 或 Jaeger all-in-one 的 OTLP 端口）。
+
+```bash
+pip install opentelemetry-distro opentelemetry-exporter-otlp \
+  opentelemetry-instrumentation-flask flask
+export OTEL_SERVICE_NAME=demo-flask
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
+export OTEL_TRACES_EXPORTER=otlp
+```
+
+应用代码 `app.py`：
+
+```python
+from flask import Flask
+app = Flask(__name__)
+
+@app.route("/hello")
+def hello():
+    return "Hello, OTel!"
+
+if __name__ == "__main__":
+    app.run(port=5000)
+```
+
+以自动包装方式启动（无需改业务代码）：
+
+```bash
+opentelemetry-instrument python app.py
+# 另开终端：curl http://localhost:5000/hello
+```
+
+在 Jaeger UI 或 Collector `debug` exporter 日志中应能看到 `GET /hello` 的 Span。各语言入门见 [仪表化文档](https://opentelemetry.io/docs/languages/)（Java Agent、Node.js、Go、.NET 等路径类似：安装 SDK/Agent → 配置 OTLP 端点 → 运行）。
+
+**手动仪表化**适合需要自定义 Span 名称、属性或细粒度采样的场景，见各语言 [Manual Instrumentation](https://opentelemetry.io/docs/concepts/instrumentation/)。
+
+
 ## Sampling (采样)
 
 With **traces**, you can observe requests as they move from one service to another in a distributed system. Tracing is highly practical for both high-level and in-depth analysis of systems.
@@ -647,6 +825,27 @@ Consider sampling if you meet any of the following criteria(标准):
 Finally, consider your overall budget. If you have limited budget for observability, but can afford to spend time to effectively sample, then sampling can generally be worth it.
 
 
+## 最佳实践 {#best-practices}
+
+1. **统一出口**：生产环境优先 **SDK → OTLP → Collector → 多后端**，避免每个服务直连不同厂商 API。
+2. **语义约定优先**：HTTP/DB/Messaging 使用 [semconv](https://opentelemetry.io/docs/specs/semconv/) 标准属性，降低跨团队查询成本。
+3. **结构化日志**：日志信号与 trace 通过 `trace_id` / `span_id` 关联；优先 JSON 等可解析格式（见上文 Logs 章节）。
+4. **控制基数**：指标 label 避免高基数维度（用户 ID、无界 URL path）；与上文「维度基数」一节呼应。
+5. **采样分层**：边缘 Gateway Collector 做 head sampling，结合 tail sampling（如仅保留错误/高延迟 trace）控制成本。
+6. **Resource 一致**：`service.name` 与 K8s `app.kubernetes.io/name` 等对齐，便于 Service Graph。
+7. **版本与迁移**：从 OpenTracing / OpenCensus 迁移时遵循 [Migration 指南](https://opentelemetry.io/docs/migration/)；新服务直接采用 OTLP。
+8. **演示与压测**：上线前用 [OpenTelemetry Demo](https://opentelemetry.io/docs/demo/) 或 staging 验证 pipeline 无丢数。
+
+## 注意事项 {#caveats}
+
+> 警告：Baggage 会随请求全链传播，**不要放入大对象或敏感 PII**；默认无大小限制，滥用会放大延迟与存储。
+{: .prompt-warning }
+
+- **OTel 不是后端**：仍需部署 Jaeger、Prometheus、Loki 或商业 APM 做存储与查询。
+- **自动仪表化覆盖有限**：框架支持列表见各语言文档；未覆盖的库需手动或社区 instrumentation 包。
+- **日志桥梁**：OTel 不替代现有日志 API，而是通过 SDK / Collector `filelog` 等**桥接**已有日志。
+- **Profiles 信号**：性能剖析（Profiling）仍在演进中，关注 [OTEP 与规范状态](https://opentelemetry.io/docs/specs/status/)。
+- **Collector 资源**：`memory_limiter` + `batch` 几乎为生产必备，防止 OOM 与导出风暴。
 
 
 # [Glossary](https://opentelemetry.io/docs/concepts/glossary/)
@@ -659,12 +858,32 @@ The OpenTelemetry project uses terminology you might not be familiar with. In ad
 * https://github.com/jupp0r/prometheus-cpp
 
 
+## 参考资源 {#references}
 
+### 官方文档
 
-# Refer
+| 主题 | 链接 |
+|------|------|
+| 文档首页（英文） | [opentelemetry.io/docs](https://opentelemetry.io/docs/) |
+| 什么是 OpenTelemetry？（中文） | [opentelemetry.io/zh/docs/what-is-opentelemetry](https://opentelemetry.io/zh/docs/what-is-opentelemetry/) |
+| 中文文档站 | [opentelemetry.opendocs.io/docs](https://opentelemetry.opendocs.io/docs/) |
+| 概念：信号 / 仪表化 / 采样 | [Concepts](https://opentelemetry.io/docs/concepts/) |
+| OTLP 规范 | [OTLP 1.0](https://opentelemetry.io/docs/specs/otlp/) |
+| Collector | [Collector 文档](https://opentelemetry.io/docs/collector/) |
+| 语义约定 | [Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/) |
+| 演示应用 | [OpenTelemetry Demo](https://opentelemetry.io/docs/demo/) |
+| 厂商与集成 | [Ecosystem](https://opentelemetry.io/ecosystem/) |
+| OpenTracing / OpenCensus 迁移 | [Migration](https://opentelemetry.io/docs/migration/) |
 
-* https://opentelemetry.io/docs/
-* https://opentelemetry.io/docs/what-is-opentelemetry/
-* [Google Cloud 中的可观测性](https://cloud.google.com/stackdriver/docs?hl=zh-cn)
-* [OpenTelemetry Protocol (OTLP): A Deep Dive into Observability](https://last9.io/blog/opentelemetry-protocol-otlp/)
-* https://last9.io/blog/opentelemetry-protocol-otlp/
+### 社区与延伸阅读
+
+| 主题 | 链接 |
+|------|------|
+| OTLP 深入介绍 | [OpenTelemetry Protocol (OTLP): A Deep Dive](https://last9.io/blog/opentelemetry-protocol-otlp/) |
+| Google Cloud 可观测性 | [Cloud 可观测性文档](https://cloud.google.com/stackdriver/docs?hl=zh-cn) |
+
+### 站内相关
+
+- [Grafana in Action]({% post_url 2022-08-19-grafana-in-action %}) — Alloy / 可视化
+- [Prometheus vs VictoriaMetrics]({% post_url 2024-09-13-prometheus-vs-victoriametrics %}) — 指标后端选型
+- [etcd in Action]({% post_url 2023-09-09-etcd-in-action %}) — 分布式系统可观测与 Prometheus 指标
