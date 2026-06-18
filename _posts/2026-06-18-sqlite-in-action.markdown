@@ -2,7 +2,7 @@
 layout: post
 title:  "SQLite 完全指南：原理、使用、与 MySQL 对比及数据恢复"
 date:   2026-06-18 11:21:41 +0800
-last_modified_at: 2026-06-18 11:45:37 +0800
+last_modified_at: 2026-06-18 17:16:31 +0800
 description: "深入解析 SQLite 的嵌入式架构与 B-Tree 存储原理，涵盖 Linux 安装、命令行 CRUD、多语言使用、与 MySQL 的功能对比、数据损坏风险及官方与工程化恢复手段。"
 categories: Database
 tags:
@@ -56,7 +56,7 @@ flowchart TB
     LIB -->|可选| MEM[(":memory:")]
 ```
 
-> 提示：SQLite 读作 **S-Q-L-ite**（如矿石 sqlite）或 **sequel-ite**，两种发音均被作者认可。
+> 提示：**读音没有唯一标准。** 创始人 D. Richard Hipp 本人常读 **/ˌɛsˌkjuːˌɛlˈaɪt/**，即把 **SQL 三个字母分开念**，再接 **-ite**（类似 hematite、quartzite 等矿物名的后缀）；他也演示过 **/ˈsiːkwəˌlaɪt/**（把 SQL 读成 sequel，再接 lite）。他说过「你怎么念都行」——两种都常见。注意：名称灵感来自矿物命名里的 **-ite** 后缀，**并不是**要按锂矿石 trade name「sqlite」那个单词来发音；中文技术圈也常见「SQL 莱特」「西奎莱特」等口语说法。详见 [Wikipedia — SQLite](https://en.wikipedia.org/wiki/SQLite) 与 [The Changelog 访谈](https://changelog.com/podcast/201)。
 {: .prompt-tip }
 
 ## 核心原理与架构 {#architecture}
