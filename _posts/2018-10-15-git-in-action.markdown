@@ -833,11 +833,10 @@ git push --mirror
 git clone https://git.woa.com/jlib/jlib_mesh.git
 
 # 7. 注意事项
-# 确保新仓库为空：若 jlib/jlib_mesh 已存在内容，需先清空或联系管理员处理
-# 权限检查：确认你有权限推送到目标仓库
-# 处理特殊内容：如原仓库使用 Git LFS，需额外迁移 LFS 对象
-  git lfs fetch --all
-  git lfs push --all origin
+# 如原仓库使用 Git LFS，需额外迁移 LFS 对象
+  git lfs fetch --all  # 原仓库执行此命令，或者 git lfs fetch origin master
+  git remote add new-origin https://git.woa.com/jlib/jlib_mesh.git # 原仓库执行，添加新仓库地址为 remote
+  git lfs push new-origin master # 将 lfs 推送到新仓库地址
 ```
 
 
