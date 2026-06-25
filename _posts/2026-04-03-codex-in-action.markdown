@@ -2,7 +2,7 @@
 layout: post
 title:  "Codex in Action"
 date:   2026-04-03 14:00:00 +0800
-last_modified_at: 2026-06-19 23:53:01 +0800
+last_modified_at: 2026-06-25 18:11:11 +0800
 description: "全面介绍 OpenAI Codex 的核心能力、多种接入方式（桌面应用、CLI、IDE 插件、网页版）、通过 cc-switch 接入第三方模型、定价计划及其与 Claude Code 的对比，是使用 Codex 的参考指南。"
 mermaid: true
 categories: AI
@@ -438,7 +438,70 @@ Codex 支持 MCP，可连接第三方工具获取额外的上下文和功能。�
 
 # 定价计划
 
-Codex 包含在标准 ChatGPT 套餐中，同时也支持纯 API 按量付费。
+Codex 包含在 ChatGPT **Free、Go、Plus、Pro、Business、Enterprise、Edu** 等套餐中，也可通过 **OpenAI API Key** 按标准 API 费率单独计费。官方完整费率见 [Codex rate card](https://help.openai.com/en/articles/20001106-codex-rate-card) 与 [Codex 定价页面](https://developers.openai.com/codex/pricing)。
+
+## 计费模型：Credits 与 Token
+
+自 **2026 年 4 月** 起，Codex 对绝大多数工作区已从「按消息估算 Credits」迁移为 **按 API Token 消耗计费**：
+
+| 时间节点 | 适用范围 |
+| :--- | :--- |
+| 2026-04-02 | Plus、Pro、ChatGPT Business 及**新签** Enterprise 工作区 |
+| 2026-04-23 | **全部**既有 Enterprise（含 Edu、Health、Gov、ChatGPT for Teachers） |
+
+**Credits** 仍是购买与消耗的核心单位，但扣费依据三类 Token 用量（每百万 Token 对应不同 Credits，见下节费率表）：
+
+| Token 类型 | 含义 | 对成本的影响 |
+| :--- | :--- | :--- |
+| **Input tokens** | Prompt、仓库上下文、`AGENTS.md`、diff、工具返回等 Codex 读入的内容 | 大仓库、长会话、多 MCP 会显著抬高输入 |
+| **Cached input tokens** | 可复用的已缓存上下文，费率约为普通输入的 **10%** | 同一会话内重复上下文是主要省钱手段 |
+| **Output tokens** | 生成的代码、解释、计划、审查评论等 | 大段输出或多文件改写消耗更高 |
+
+{: .prompt-info }
+**与旧计费的区别**：此前「一条本地消息 ≈ 固定 Credits」只是粗算；现在同一轮对话里，修一个小函数与重构整个模块可能相差数十倍 Token。官方称典型 GPT-5.5 任务约 **5–45 Credits/条消息**，实际取决于上下文规模、工具调用与输出长度。Business 场景下官方经验值约为 **$100–$200/开发者/月**，随模型、并行实例数、Automations 与 Fast 模式波动很大。
+
+**额度用尽后**：Plus / Pro 符合条件的用户可**购买额外 Credits** 继续工作；Business / Enterprise / Edu（Flexible 定价）可购买**工作区 Credits**。Free / Go 达限后通常需升级 Plus。所有用户也可用 **API Key** 跑额外本地任务，按 [OpenAI API 定价](https://openai.com/api/pricing/) 单独计费。
+
+## 费率表（Token 计费，当前版）
+
+下表摘自 [Codex rate card](https://help.openai.com/en/articles/20001106-codex-rate-card)，单位为 **Credits / 100 万 Token**：
+
+| 模型 | Input | Cached input | Output |
+| :--- | :--- | :--- | :--- |
+| GPT-5.5 | 125 | 12.50 | 750 |
+| GPT-5.4 | 62.50 | 6.250 | 375 |
+| GPT-5.4 mini | 18.75 | 1.875 | 113 |
+| GPT-5.3-Codex | 43.75 | 4.375 | 350 |
+| GPT-5.2 | 43.75 | 4.375 | 350 |
+| GPT-5.3-Codex-Spark | 研究预览 | 研究预览 | 研究预览 |
+| GPT-Image-2（image） | 200 | 50 | 750 |
+| GPT-Image-2（text） | 125 | 31.25 | 250 |
+
+{: .prompt-tip }
+**模型选择提示**：GitHub **自动代码审查**固定使用 **GPT-5.3-Codex**（不可在审查流程中自行换模）。日常本地开发可在 GPT-5.5（质量默认）、GPT-5.4、GPT-5.4 mini（省额度）间切换；Pro 用户还可试用 **GPT-5.3-Codex-Spark**（独立低延迟模型，有单独用量上限，见 [Speed 文档](https://developers.openai.com/codex/speed)）。
+
+### Fast 模式加成
+
+[Fast 模式](https://developers.openai.com/codex/speed) 将支持模型的推理速度提升约 **1.5×**，同时按更高倍率消耗 Credits（仅 **ChatGPT 登录**可用，API Key 会话走标准 API 定价且无 Fast Credits）：
+
+| 模型 | Fast 模式 Credits 倍率 |
+| :--- | :--- |
+| GPT-5.5 | **2.5×** Standard |
+| GPT-5.4 | **2×** Standard |
+
+CLI 可用 `/fast on`、`/fast off`、`/fast status`；或在 `config.toml` 中设置 `service_tier = "fast"` 与 `[features].fast_mode = true`。图像生成类任务平均会比纯文本多消耗约 **3–5×** 的包含额度。
+
+### Legacy 费率表（按消息估算，仅未迁移 Enterprise）
+
+少数**尚未迁移**的 Enterprise 工作区仍使用旧版「平均 Credits / 消息或 PR」费率表；其余用户应以 Token 表为准。Legacy 估算值（便于粗算，实际随任务规模波动）：
+
+| 计费单位 | GPT-5.5 | GPT-5.4 | GPT-5.3-Codex | GPT-5.1-Codex-mini |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 条本地任务消息 | ~14 | ~7 | ~5 | ~2 |
+| 1 条云端任务消息 | 不可用 | ~34 | ~25 | 不可用 |
+| 1 次代码审查 PR | 不可用 | ~34 | ~25 | 不可用 |
+
+上述平均值亦适用于较旧的 GPT-5.2、GPT-5.1-Codex-Max、GPT-5-Codex 等模型。若工作区已迁移，请忽略本表，改用上文 Token 费率。
 
 ## 各计划包含内容
 
@@ -447,44 +510,66 @@ Codex 包含在标准 ChatGPT 套餐中，同时也支持纯 API 按量付费。
 | 网页 / CLI / IDE / iOS 版 Codex | Yes | Yes | Yes | Yes |
 | GitHub 自动代码审查 | No | No | Yes | Yes |
 | Slack 集成 | No | No | Yes | Yes |
-| 最新模型（GPT-5.4、GPT-5.3-Codex） | Yes | Yes | Yes | Yes |
-| GPT-5.4-mini（更高用量限制） | No | Yes | No | No |
-| 6 倍本地和云端任务用量限制 | No | Yes | No | No |
-| 10 倍代码审查次数 | No | Yes | No | No |
+| 最新模型（GPT-5.5、GPT-5.4、GPT-5.3-Codex） | Yes | Yes | Yes | Yes |
+| GPT-5.4 mini（更高用量上限） | Yes | Yes | Yes | Yes |
+| Pro 5× / 20× 用量（相对 Plus） | No | Yes（$100 / $200 档） | — | — |
 | GPT-5.3-Codex-Spark（研究预览） | No | Yes | No | No |
-| API 按量付费（仅 CLI/SDK/IDE） | No | No | Yes（Flexible） | Yes |
+| 工作区 Credits / Flexible 按量 | No | No | Yes | Yes（Flexible） |
+| API Key 按量（CLI / SDK / IDE） | 可选 | 可选 | Yes | Yes |
 | 企业级安全控制（SCIM、EKM、RBAC） | No | No | No | Yes |
 | 数据驻留与合规 API | No | No | No | Yes |
 | 审核日志与用量监控 | No | No | No | Yes |
 
-> 当前限时优惠：符合条件的 ChatGPT Business 工作区在团队成员开始使用 Codex 时可获得最高 **$500** 额度。详见[官方条款](https://help.openai.com/en/articles/20001150-codex-for-business-promotion-earn-up-to-500-in-credits)。
+公开订阅价（个人）：Free $0、Go $8、Plus $20、Pro 5× $100、Pro 20× $200；Business 标准席位约 $25/人/月（年付 $20），另提供 **Codex-only 按量席位**。Enterprise / Edu 为定制合同。
+
+> 当前限时优惠：符合条件的 ChatGPT Business 工作区在团队成员开始使用 Codex 时可获得最高 **$500** 额度。详见[官方条款](https://help.openai.com/en/articles/20001150-codex-for-business-promotion-earn-up-to-500-in-credits)。Business 工作区 Credits 与支出控制见 [Managing credits and spend controls](https://help.openai.com/en/articles/20001155-managing-credits-and-spend-controls-in-chatgpt-business)。
 
 ## 用量限制参考
 
-Plus 用户（5 小时窗口内）：
+官方公布的 **本地消息数**为区间而非固定值，因 Token 消耗随任务复杂度变化。本地消息与云端任务共享 **5 小时滚动窗口**；部分功能另有**每周**上限。Enterprise / Edu（Flexible 定价）**无固定速率上限**，随工作区 Credits 扩展。
 
-| 模型 | 本地消息数 | 云端任务数 | 每周代码审查次数 |
+### Plus（$20/月，5 小时窗口）
+
+| 模型 | 本地消息数 / 5h | 云端任务 / 5h | 代码审查 / 5h |
 | :--- | :--- | :--- | :--- |
-| GPT-5.4 | 33–168 | No | No |
-| GPT-5.4-mini | 110–560 | No | No |
-| GPT-5.3-Codex | 45–225 | 10–60 | 10–25 |
+| GPT-5.5 | 15–80 | 不可用 | 不可用 |
+| GPT-5.4 | 20–100 | 不可用 | 不可用 |
+| GPT-5.4 mini | 60–350 | 不可用 | 不可用 |
 
-Pro 用户（5 小时窗口内）：
+### Pro 5×（$100/月，约为 Plus 的 5 倍）
 
-| 模型 | 本地消息数 | 云端任务数 | 每周代码审查次数 |
-| :--- | :--- | :--- | :--- |
-| GPT-5.4 | 223–1120 | No | No |
-| GPT-5.4-mini | 743–3733 | No | No |
-| GPT-5.3-Codex | 300–1500 | 50–400 | 100–250 |
+| 模型 | 本地消息数 / 5h |
+| :--- | :--- |
+| GPT-5.5 | 75–400 |
+| GPT-5.4 | 100–500 |
+| GPT-5.4 mini | 300–1,750 |
 
-> 注意：本地消息与云端任务的用量共享同一个 **5 小时窗口**。详细最新的费率信息见 [Codex 定价页面](https://developers.openai.com/codex/pricing)。
+### Pro 20×（$200/月，约为 Plus 的 20 倍）
+
+| 模型 | 本地消息数 / 5h |
+| :--- | :--- |
+| GPT-5.5 | 300–1,600 |
+| GPT-5.4 | 400–2,000 |
+| GPT-5.4 mini | 1,200–7,000 |
+
+### Business 与 API Key
+
+- **Business**（标准席位）：本地消息区间与 Plus 相同；超出包含额度后通过**工作区 Credits** 按 Token 费率继续计费。
+- **API Key**：无 ChatGPT 套餐式消息上限，按 [OpenAI API 定价](https://openai.com/api/pricing/) 计费；部分依赖 ChatGPT 工作区的 Cloud 功能可能受限。
+
+{: .prompt-warning }
+**GitHub 代码审查**：仅当通过 GitHub App 触发（如 PR 中 @Codex 或开启自动审查）时，审查用量单独计入 Code Review 配额；本地或非 GitHub 审查计入一般本地消息额度。Business 及以上才包含 GitHub 自动审查能力。
+
+> 用量区间与费率以官方为准，本文写作时对照 [Codex rate card](https://help.openai.com/en/articles/20001106-codex-rate-card) 与 [定价页](https://developers.openai.com/codex/pricing)（约 2026 年 6 月）。若你仍在使用 Legacy Enterprise 费率，请联系 OpenAI 销售确认迁移状态。
 
 ## 节省用量的技巧
 
-- 控制 Prompt 大小，只提供必要的上下文。
-- 减少 `AGENTS.md` 的体积，必要时使用嵌套方式分层注入。
-- 限制使用的 MCP 服务器数量，不需要时禁用。
-- 日常任务切换到 GPT-5.4-mini，延长约 2.5x–3.3x 的本地消息限制。
+- **收窄任务范围**：一次只改一个文件或一个行为，避免「审查整个应用」式 Prompt。
+- **控制上下文**：精简 Prompt；压缩 `AGENTS.md`，必要时用嵌套分层注入；不需要时关闭 MCP 服务器。
+- **善用 Cached input**：同一会话内保持 CLI / App 不频繁重启，让重复上下文走缓存费率（约为普通输入的 10%）。
+- **按任务选模型**：日常小改用 **GPT-5.4 mini**；复杂实现再用 GPT-5.5 / GPT-5.4；审查场景固定 GPT-5.3-Codex，需控制 PR 审查频率。
+- **谨慎开 Fast 模式**：交互调试可开 `/fast on`，后台批处理与 `codex exec` 自动化应关闭，避免 2×–2.5× Credits 倍率。
+- **监控实际消耗**：在 Codex 设置与 Billing 面板查看 Credits 与 Token 明细；Business 管理员可用工作区分析做 per-developer 预算。
 
 # Codex vs Claude Code
 
@@ -631,6 +716,9 @@ git checkout main && git branch -D feature/codex-task-1
 | 官方 | GitHub 仓库（CLI 开源） | [github.com/openai/codex](https://github.com/openai/codex) |
 | 官方 | 开发者文档 | [developers.openai.com/codex](https://developers.openai.com/codex) |
 | 官方 | 定价与用量限制 | [developers.openai.com/codex/pricing](https://developers.openai.com/codex/pricing) |
+| 官方 | Codex 费率表（Credits / Token） | [help.openai.com — Codex rate card](https://help.openai.com/en/articles/20001106-codex-rate-card) |
+| 官方 | Fast 模式与 Codex-Spark | [developers.openai.com/codex/speed](https://developers.openai.com/codex/speed) |
+| 官方 | Business Credits 与支出控制 | [help.openai.com — managing credits](https://help.openai.com/en/articles/20001155-managing-credits-and-spend-controls-in-chatgpt-business) |
 | 官方 | 快速入门指南 | [developers.openai.com/codex/quickstart](https://developers.openai.com/codex/quickstart) |
 | 官方 | CLI 详细文档 | [developers.openai.com/codex/cli](https://developers.openai.com/codex/cli) |
 | 官方 | App 文档 | [developers.openai.com/codex/app](https://developers.openai.com/codex/app) |
