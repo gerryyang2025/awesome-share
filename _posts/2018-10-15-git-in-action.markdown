@@ -2,7 +2,7 @@
 layout: post
 title:  "Git in Action"
 date:   2018-10-15 13:00:00 +0800
-last_modified_at: 2026-04-04 19:15:00 +0800
+last_modified_at: 2026-06-25 19:55:10 +0800
 categories: 版本控制
 tags:
   - Git
@@ -910,6 +910,99 @@ git sparse-checkout init --cone
 git sparse-checkout add lay1/lay2
 ```
 
+
+## 切换分支 - git switch
+
+Git 2.23 起将原先 `git checkout` 承担的职责拆成两条命令：`git switch` 专注**切换分支**，`git restore` 专注**恢复工作区/暂存区文件**。日常切分支时，优先用 `git switch` 语义更清晰，也不容易误操作覆盖未提交修改。
+
+### 基本用法
+
+```bash
+# 切换到已有分支
+git switch master
+git switch feat/login
+
+# 切换到上一个分支（等价于 git checkout -）
+git switch -
+
+# 基于当前 HEAD 新建并切换
+git switch -c feat/your-change-name
+
+# 基于远程分支新建并切换（并建立追踪关系）
+git fetch origin
+git switch -c feat/login origin/feat/login
+```
+
+与旧写法对照：
+
+| 目的 | `git switch` | `git checkout` |
+| :--- | :--- | :--- |
+| 切换分支 | `git switch <branch>` | `git checkout <branch>` |
+| 新建并切换 | `git switch -c <branch>` | `git checkout -b <branch>` |
+| 回到上一分支 | `git switch -` | `git checkout -` |
+
+### `git switch master` 与 `git checkout master` 有何不同
+
+在**工作区干净**、且本地已有 `master` 分支的前提下，两条命令的**最终结果相同**：HEAD 都会指向 `master`，检出该分支最新一次提交。差别主要在**命令职责**和**对工作区未提交修改的处理**上。
+
+| 维度 | `git switch master` | `git checkout master` |
+| :--- | :--- | :--- |
+| 命令定位 | 只做分支切换（Git 2.23+） | 兼管切分支、恢复文件、分离 HEAD 等 |
+| 工作区有未提交修改 | 默认**拒绝切换**，避免误覆盖；可用 `-m` 尝试合并带入，或 `-f` 强制丢弃（慎用） | 往往**允许切换**，并把未提交修改**带到** `master`（只要不冲突） |
+| 传入提交而非分支名 | 默认报错，需显式 `git switch --detach <commit>` | `git checkout <commit>` 会直接进入**分离 HEAD** |
+| 与恢复文件混淆 | 无此歧义 | `git checkout -- <file>` 恢复文件，勿与切分支混记 |
+
+```bash
+# 工作区有修改时：switch 更保守，checkout 更「宽松」
+git switch master          # 若切换会覆盖本地修改 → 中止并提示
+git switch -m master       # 尝试把修改合并带入 master 再切换
+git checkout master        # 修改通常随你一起切到 master（无冲突时）
+
+# checkout 的另一面：同名参数可能是分支，也可能是提交
+git checkout abc1234       # 分离 HEAD，停在某次提交
+git switch abc1234         # 报错；需 git switch --detach abc1234
+```
+
+**怎么选**：日常切到 `master` 继续开发，优先 `git switch master`——语义单一，也不容易把「切分支」和「丢弃文件修改」（`git checkout --`）记混。需要沿用旧教程、脚本，或要把未提交修改直接带到目标分支时，`git checkout master` 仍可用；若 `switch` 因脏工作区拒绝切换，先 `git stash` 再切分支通常更稳妥。
+
+### 场景：本地 master 有提交，但 master 不允许直接 push
+
+不少团队会对 `master` / `main` 做分支保护，禁止直接 `git push`。若误在本地 `master` 上做了提交，核心思路是：**先在当前 `master` 的 HEAD 上创建新分支保住提交，再把本地 `master` 指回 `origin/master`**，最后从新分支推送。
+
+```bash
+# 1. 确认当前在 master，并查看本地多出的提交
+git branch --show-current
+git fetch origin
+git log --oneline origin/master..HEAD
+
+# 2. 从当前 master 创建新分支，分支名按变更类型改一下
+git switch -c feat/your-change-name
+
+# 3. 回到 master，把 master 恢复到远端 master
+git switch master
+git reset --hard origin/master
+
+# 4. 回到新分支并推送
+git switch feat/your-change-name
+git push -u origin feat/your-change-name
+```
+
+若还有**未提交的修改**，先暂存工作区，等新分支创建好再恢复：
+
+```bash
+git status
+git stash -u
+# …完成上述第 2 步创建新分支后…
+git stash pop
+```
+
+第 3 步若不确定工作区是否干净，可把 `reset --hard` 换成更保守的 `--keep`——遇到可能覆盖工作区修改时会中止，而不是强行丢弃：
+
+```bash
+git reset --keep origin/master
+```
+
+> **注意**：`reset --hard` 会丢弃本地 `master` 上尚未推送到远端的提交，但第 2 步已把这些提交挂在新分支上，因此不会丢代码。执行前务必确认第 1 步 `git log origin/master..HEAD` 列出的提交正是你要保留的内容。
 
 
 ## 远程仓库操作 - git fetch
