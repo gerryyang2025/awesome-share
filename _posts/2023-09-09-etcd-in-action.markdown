@@ -2,6 +2,7 @@
 layout: post
 title:  "ETCD in Action"
 date:   2023-09-09 09:00:00 +0800
+last_modified_at: 2026-06-25 20:35:07 +0800
 categories: ETCD
 tags:
   - ETCD
@@ -1213,21 +1214,111 @@ type generation struct {
 ```
 
 
-* 需要注意的是版本号（revision）并不是一个简单的整数，而是一个结构体。revision 结构及含义如下：revision 包含 main 和 sub 两个字段，main 是全局递增的版本号，它是个 etcd 逻辑时钟，随着 put/txn/delete 等事务递增。sub 是一个事务内的子版本号，从 0 开始随事务内的 put/delete 操作递增。
+### etcd 原生 revision
 
-> 解释：通过引入事务的子版本号 sub，实现了同一事务的操作可见，不同事务的操作不可见，满足了不同事务间的隔离性。
+* **etcd 原生的 revision 用 `int64` 表示**。这是 etcd 在 API 层和 Go client 里统一使用的类型（有符号 64 位整数）。etcd 维护一个 **64 位、集群全局** 的单调递增计数器；每次 keyspace 变更都会递增。
+
+#### 对外 API（gRPC / protobuf）
+
+* 在 `mvccpb.KeyValue` 和 `ResponseHeader` 中，相关字段都是 **`int64`**：
+
+| 字段 | 含义 |
+|------|------|
+| `ResponseHeader.revision` | 当前集群 store 的全局 revision |
+| `KeyValue.create_revision` | key 创建时的 revision |
+| `KeyValue.mod_revision` | key 最后一次修改时的 revision |
+
+#### Go client（`go.etcd.io/etcd/client/v3`）
+
+* 对外暴露的 revision 同样是 **`int64`**，例如：
+
+  + `kv.ModRevision`、`kv.CreateRevision`
+  + `resp.Header.Revision`
+  + `WithRev(rev int64)`、`WithMinModRev(rev int64)` 等选项
+
+#### 内部存储（MVCC）
+
+* 服务端内部用结构体 `Revision`，包含两个 `int64`：
 
 ```go
-type revision struct {
-   main int64    // 一个全局递增的主版本号，随 put/txn/delete 事务递增，一个事务内的 key main 版本号是一致的
-   sub int64     // 一个事务内的子版本号，从 0 开始随事务内 put/delete 操作递增
+type Revision struct {
+    Main int64  // 主 revision（一次原子事务共享同一个 Main）
+    Sub  int64  // 子 revision（同一事务内多次变更递增）
 }
 ```
 
+* **对外 API 通常只暴露 Main 部分**；`Sub` 用于同一事务内多次变更的排序，一般不直接给业务使用。etcd 要同时满足两件事：**一次事务只占用一个全局 revision**，以及**一次事务里改多个 key 时，每个 key 的历史版本在存储里仍要有唯一、可排序的标识**。
 
-* 比如启动一个空集群，全局版本号默认为 1，执行下面的 txn 事务，它包含两次 put、一次 get 操作，那么按照上面介绍的原理，全局版本号随读写事务自增，因此是 main 为 2，sub 随事务内的 put/delete 操作递增，因此 key hello 的 revison 为 {2,0}，key world 的 revision 为 {2,1}。
+| 字段 | 含义 |
+|------|------|
+| **Main** | 集群全局逻辑时钟，每次**提交**到 keyspace 时 +1 |
+| **Sub** | 同一次原子提交内部，第 1、2、3… 个变更的序号（0, 1, 2, …） |
 
-> 解释：初始 main 为 1 事务 main++ 为 2 操作 put hello，使用初始事务内子版本号，sub 为 0 操作 get hello，读操作不影响事务内子版本号。操作 put world，sub++，事务内子版本号增加，sub 为 1
+* etcd 源码注释写得很直白：
+
+```go
+// Main is the main revision of a set of changes that happen atomically.
+// Sub is the sub revision of a change in a set of changes that happen atomically.
+// Each change has different increasing sub revision in that set.
+```
+
+> 解释：通过引入事务的子版本号 Sub，实现了同一事务的操作可见，不同事务的操作不可见，满足了不同事务间的隔离性。
+
+#### 为什么需要 Main 和 Sub 两个字段
+
+**1. 一次 Txn 改多个 key，但全局 revision 只涨一次**
+
+* 例如一个事务里同时写 `key-A` 和 `key-B`：
+
+```text
+Txn 提交 → Main = 42（全局只 +1）
+  ├─ 改 key-A → 内部 revision = {Main: 42, Sub: 0}
+  └─ 改 key-B → 内部 revision = {Main: 42, Sub: 1}
+```
+
+* 如果只有 Main，同一次提交里两个 key 的新版本会「撞号」，MVCC 无法在 backend 里区分、排序它们。
+
+**2. 后端存储需要全序**
+
+* MVCC 在 BoltDB 里用 revision 作为 key 存历史版本，编码为 `Main(8 字节) + '_' + Sub(8 字节)`。比较规则是：
+
+```go
+func (a Revision) GreaterThan(b Revision) bool {
+    if a.Main != b.Main { return a.Main > b.Main }
+    return a.Sub > b.Sub
+}
+```
+
+* 这样即使 Main 相同，Sub 不同也能排出先后，保证内部历史记录有**全序**。
+
+**3. 对外 API 故意只暴露 Main**
+
+* 客户端看到的 `create_revision` / `mod_revision` / `Header.revision` 都是 **Main**，不包含 Sub。etcd 文档的语义是：
+
+  + 一次修改操作（含整个 Txn）只分配**一个**递增 revision
+  + 同一 Txn 里改过的多个 key，它们的 `mod_revision` **相同**
+  + 相同 revision 的 key 视为在该操作里**并发**修改
+
+* 也就是说：**Sub 是存储层实现细节，Main 是对外逻辑时钟**。
+
+#### 直观类比
+
+* 可以把 Main 想成「第几号提交」，Sub 想成「这次提交里的第几步」：
+
+```text
+Main=100, Sub=0  →  这次提交的第 1 个变更
+Main=100, Sub=1  →  这次提交的第 2 个变更
+Main=101, Sub=0  →  下一次提交的第 1 个变更
+```
+
+* 单次 `Put` 一般就是 `{Main: N, Sub: 0}`。
+
+> **一句话：** Main 表示「哪一次原子提交」，Sub 表示「这次提交里的第几个变更」；两个合在一起，才能在**一次事务只消耗一个全局 revision** 的前提下，给 MVCC 存储提供唯一、可排序的版本 key。
+
+
+* 比如启动一个空集群，全局版本号默认为 1，执行下面的 txn 事务，它包含两次 put、一次 get 操作，那么按照上面介绍的原理，全局版本号随读写事务自增，因此是 Main 为 2，Sub 随事务内的 put/delete 操作递增，因此 key hello 的 revision 为 {2,0}，key world 的 revision 为 {2,1}。
+
+> 解释：初始 Main 为 1，事务 Main++ 为 2；操作 put hello，使用初始事务内子版本号 Sub 为 0；操作 get hello，读操作不影响事务内子版本号；操作 put world，Sub++，事务内子版本号增加为 1
 
 ```text
 $ etcdctl txn -i
@@ -3732,8 +3823,9 @@ $ etcdctl get /ns/counter/agent --prefix --endpoints http://ip:port --user root:
 
 
 * `Version`: Key 被修改的次数（从创建开始计数）。
-* `CreateRevision`: Key 创建时的全局 revision。
-* `ModRevision`: Key 最后一次修改时的全局 revision（集群级别）。
+* `CreateRevision`: Key 创建时的全局 revision（**Main**，`int64`）。
+* `ModRevision`: Key 最后一次修改时的全局 revision（集群级别，**Main**，`int64`）。同一 Txn 内修改的多个 key 具有相同的 `mod_revision`。
+* `Revision`（响应头）: 当前集群 store 的全局 revision（`int64`）。详见上文 [etcd 原生 revision](#etcd-原生-revision) 小节。
 
 
 通过 `-w json` 也可以查看：
