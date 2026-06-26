@@ -2,6 +2,7 @@
 layout: post
 title:  "Cursor in Action"
 date:   2025-03-11 12:30:00 +0800
+last_modified_at: 2026-06-26 09:54:47 +0800
 categories: ML
 tags:
   - Cursor
@@ -206,6 +207,27 @@ Cursor 是一款集成了 AI 技术的代码编辑器，支持多种操作系统
 > 使用功能
 
 Cursor 提供了强大的代码生成和优化功能。用户可以通过输入需求或描述来生成代码，并与代码进行对话以获取反馈和建议。
+
+## 切换账号
+
+在 Cursor 里切换用户，目前只能先退出再登录，没有类似 GitHub/Google 的一键账号切换器。
+
+1. 打开 **Cursor Settings**（不是 VS Code 的 Settings）
+   - 左下角头像 / 齿轮 → **Cursor Settings**
+   - 或命令面板：`Ctrl+Shift+P` → 输入 `Cursor Settings`
+2. 进入 **General** 标签页
+3. 滚动到页面**底部**，点击 **Log out** / **Sign out**
+   （注意：不是 “Manage account”，那个只会打开网页）
+4. 用另一个账号重新登录
+5. **建议完全退出 Cursor 再重新打开**，否则界面有时仍显示旧账号信息
+
+补充说明：
+
+| 场景 | 说明 |
+| -- | -- |
+| 个人 Pro ↔ 公司 Team | 退出后用对应邮箱重新登录即可 |
+| 聊天记录 / 项目规则 | 存在本机，换账号一般不会丢 |
+| 同一邮箱从个人升级到 Team | 通常只改计费侧，IDE 里不用特别操作 |
 
 ## 导入扩展、主题、设置和快捷键
 
