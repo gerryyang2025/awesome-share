@@ -2,6 +2,7 @@
 layout: post
 title:  "Go in Action"
 date:   2019-04-14 10:00:00 +0800
+last_modified_at: 2026-06-28 19:01:28 +0800
 categories: [GoLang]
 tags:
   - GoLang
@@ -1658,6 +1659,43 @@ CopyFile success:  8
 使用 `-mod=vendor` 的好处是可以将项目依赖的包保存在项目根目录下的 vendor 目录中，避免了依赖包的版本冲突和不稳定性。同时，也可以避免在构建项目时从远程仓库中下载依赖包，提高了构建的速度和稳定性。
 
 需要注意的是，使用 `-mod=vendor` 的时候，需要在项目根目录下创建 vendor 目录，并将依赖的包复制到 vendor 目录中。可以使用 `go mod vendor` 命令来自动将依赖的包复制到 vendor 目录中。
+
+
+## 更新 submodule commit 对应的 Go pseudo-version
+
+当依赖的模块没有打 tag，或者需要更新到某个具体 commit 时，可以通过 `go get module@commit` 让 Go 根据该 commit 解析出新的 pseudo-version，并写入 `go.mod`。这类场景常见于内部模块、私有仓库、submodule 或尚未发布正式 tag 的依赖。
+
+核心用法如下：
+
+```bash
+cd /path/to/project
+go get example.com/private/module@<commit>
+```
+
+如果项目需要固定 `GOPATH`、`GOMODCACHE` 或 `GOCACHE`，可以在命令前显式指定，避免污染默认缓存，或者确保使用项目约定的 Go 工具链和模块缓存：
+
+```bash
+cd /path/to/project
+
+GOPATH=/path/to/project/.tools/gopath \
+GOMODCACHE=/path/to/project/.tools/gopath/pkg/mod \
+GOCACHE=/tmp/project-gocache \
+/path/to/go get example.com/private/module@<commit>
+```
+
+然后确认当前解析到的模块版本：
+
+```bash
+/path/to/go list -m example.com/private/module
+```
+
+输出中的版本会是 Go 自动生成的 pseudo-version，格式通常类似：
+
+```go
+example.com/private/module v0.0.0-yyyymmddhhmmss-abcdef123456
+```
+
+其中，`yyyymmddhhmmss` 是 Go 使用的 UTC commit 时间，不是本地时区时间；末尾的 `abcdef123456` 是 commit hash 的前缀。因此，如果需要和本地提交时间核对，需要先把 UTC 时间换算到本地时区。
 
 
 ## [Format errors in Go - %s %v or %w](https://stackoverflow.com/questions/61283248/format-errors-in-go-s-v-or-w)
