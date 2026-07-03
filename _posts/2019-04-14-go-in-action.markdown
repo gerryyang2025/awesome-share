@@ -2,10 +2,11 @@
 layout: post
 title:  "Go in Action"
 date:   2019-04-14 10:00:00 +0800
-last_modified_at: 2026-06-28 19:01:28 +0800
+last_modified_at: 2026-07-03 16:09:38 +0800
 categories: [GoLang]
 tags:
   - GoLang
+mermaid: true
 
 ---
 
@@ -1351,6 +1352,253 @@ Three dots are used by the go command as a **wildcard** when describing package 
 $ go test ./...
 ```
 
+更多 `go test` 用法见下文 [单元测试 (go test)](#单元测试-go-test)。
+
+
+# 单元测试 (go test)
+
+Go 把测试当作一等公民：测试文件与源码同目录，通过 `go test` 子命令编译并运行，无需额外测试框架即可覆盖单元测试、基准测试、示例测试与（Go 1.18+）模糊测试。
+
+```mermaid
+flowchart LR
+  A["*_test.go"] --> B["go test"]
+  B --> C["Test / Benchmark / Example / Fuzz"]
+  C --> D["通过 / 失败退出码"]
+```
+
+## 约定与文件组织
+
+| 约定 | 说明 |
+| :--- | :--- |
+| 文件名 | `xxx_test.go`，与待测源码同包、同目录 |
+| 测试函数 | `func TestXxx(t *testing.T)`，`Xxx` 首字母大写，不以 `Test` 开头 |
+| 基准测试 | `func BenchmarkXxx(b *testing.B)` |
+| 示例测试 | `func ExampleXxx()`，输出写入 `// Output:` 注释做文档与回归 |
+| 模糊测试 | `func FuzzXxx(f *testing.F)`（Go 1.18+） |
+| 包名 | 通常与被测包同名；外部黑盒测试用 `package xxx_test` |
+
+简单示例：
+
+```go
+// calc.go
+package calc
+
+func Add(a, b int) int { return a + b }
+```
+
+```go
+// calc_test.go
+package calc
+
+import "testing"
+
+func TestAdd(t *testing.T) {
+	if got := Add(1, 2); got != 3 {
+		t.Fatalf("Add(1,2) = %d, want 3", got)
+	}
+}
+```
+
+运行当前包测试：
+
+```bash
+go test
+go test -v                    # 打印每个 Test 名称
+go test -count=1              # 禁用测试结果缓存，保证实跑（见下文）
+```
+
+## 常用命令
+
+| 命令 | 作用 |
+| :--- | :--- |
+| `go test` | 测试当前目录包 |
+| `go test ./...` | 递归测试当前模块下所有包（`...` 为通配符） |
+| `go test ./pkg/...` | 测试 `pkg` 及其子包 |
+| `go test example.com/mod/pkg` | 按导入路径测试指定包 |
+| `go test -c` | 编译测试二进制到当前目录（不运行），便于 CI 或离线执行 |
+| `go test -json` | 以 JSON 行格式输出事件，便于 IDE / CI 解析 |
+| `go test -list=TestAdd` | 列出匹配的测试函数名，不执行 |
+| `go test -exec xprog` | 用自定义程序启动测试二进制（交叉编译时常用） |
+
+在模块根目录，`go test ./...` 是最常见的本地与 CI 入口；只改了一个子包时，进入该目录执行 `go test` 更快。
+
+## 常用标志
+
+### 选择与过滤
+
+```bash
+go test -run '^TestAdd$'              # 正则匹配 Test 函数名
+go test -run 'Add/negative'           # 子测试名也可匹配：TestAdd/negative
+go test -skip 'Integration'           # 跳过名称匹配的测试（Go 1.20+）
+go test -short                        # 跳过标记了 testing.Short() 的长测试
+go test -failfast                     # 首个失败后立即停止
+go test -shuffle=on                   # 随机打乱测试顺序，暴露隐式依赖（Go 1.20+）
+go test -parallel 8                   # 包内 Test 默认最大并行 goroutine 数
+```
+
+### 输出与调试
+
+```bash
+go test -v                            # 详细输出
+go test -v -run TestFoo               # 只跑单个测试并看日志
+go test -timeout 30s                  # 整包测试超时（默认 10 分钟）
+go test -cpu=1,4                      # 在不同 GOMAXPROCS 下各跑一遍
+go test -tags=integration             # 配合 //go:build integration 条件编译
+```
+
+失败时，`go test` 会打印文件名与行号；在测试里用 `t.Log` / `t.Logf` 配合 `-v` 可输出诊断信息，未失败时默认不显示。
+
+### 覆盖率
+
+```bash
+go test -cover                        # 摘要：coverage: 80.0% of statements
+go test -coverprofile=cover.out       # 写入 profile
+go tool cover -func=cover.out         # 按函数查看
+go tool cover -html=cover.out -o cover.html
+```
+
+集成测试或 E2E 往往覆盖率偏低，更关注关键路径与 `-race` 组合使用。
+
+### 基准测试
+
+```bash
+go test -bench=.                      # 运行所有 Benchmark
+go test -bench=BenchmarkAdd -benchmem # 附带每次操作的分配次数与字节
+go test -bench=. -benchtime=3s        # 每个 benchmark 至少跑约 3 秒
+go test -bench=. -count=5             # 重复 5 次，观察波动
+```
+
+示例：
+
+```go
+func BenchmarkAdd(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Add(1, 2)
+	}
+}
+```
+
+### 竞态与模块
+
+```bash
+go test -race ./...                   # 启用竞态检测器（见下文 [数据竞争检查](#数据竞争检查-go-build--race)）
+go test -mod=readonly ./...           # 禁止改 go.mod / go.sum（CI 推荐）
+go test -mod=vendor ./...              # 使用 vendor 目录（与构建一致）
+```
+
+### 禁用测试缓存
+
+Go 1.10 起，`go test` 会**缓存成功的测试结果**：源码、测试二进制、相关环境未变时，再次执行可能直接复用上次输出，终端里会出现 `(cached)`，**测试函数体并不会真正再跑一遍**。本地迭代时这能省时间；调试偶发问题、依赖外部状态、或 CI 要求「每次都实跑」时需要关掉。
+
+**推荐做法：显式加 `-count=1`**
+
+```bash
+go test -count=1 ./...
+go test -count=1 -race -v ./pkg/...
+```
+
+虽然默认也是跑 1 次，但**只有显式传入 `-count=1`（或 `-count` 取其他非默认值）才会关闭结果缓存**。CI 脚本里应固定写上 `-count=1`，避免误以为「刚改过代码却仍在用旧结果」。
+
+**清空已有测试缓存**
+
+```bash
+go clean -testcache    # 只清测试结果缓存，不动编译产物
+```
+
+怀疑缓存状态异常、或想在本机强制全量重跑一遍时，可先 `go clean -testcache` 再 `go test`。
+
+**其他方式（较少用）**
+
+```bash
+GOCACHE=off go test ./...   # 关闭整个 Go 构建/测试缓存，明显变慢，一般不必
+```
+
+以下情况**本来就不会写入/命中**测试缓存，无需额外 `-count=1`：
+
+- 测试**失败**（失败结果不缓存）
+- 带 `-bench`、`-fuzz` 的运行
+- 部分会改变执行语义的标志组合（以当前 `go help test` 为准）
+
+本地日常开发可保留默认缓存加速；集成测试、竞态检测、发布流水线建议统一 `go test -count=1 ...`，与文中 [实践建议](#实践建议) 里的 CI 组合一致。
+
+## 子测试与子基准
+
+用 `t.Run` / `b.Run` 把场景拆开，便于 `-run` 精确执行与失败定位：
+
+```go
+func TestAdd(t *testing.T) {
+	tests := []struct {
+		name string
+		a, b int
+		want int
+	}{
+		{"positive", 1, 2, 3},
+		{"zero", 0, 0, 0},
+		{"negative", -1, -2, -3},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Add(tt.a, tt.b); got != tt.want {
+				t.Fatalf("got %d, want %d", got, tt.want)
+			}
+		})
+	}
+}
+```
+
+```bash
+go test -run 'TestAdd/negative' -v
+```
+
+表驱动测试（table-driven tests）是 Go 社区最普遍的写法：用切片描述输入与期望，循环里 `t.Run`，新增用例只加一行数据。
+
+辅助函数里应调用 `t.Helper()`，失败时报告调用方行号；可并行时用 `t.Parallel()`，注意不要与共享可变状态冲突。
+
+## TestMain、清理与 HTTP 测试
+
+包级初始化或集成环境可用 `TestMain`：
+
+```go
+func TestMain(m *testing.M) {
+	// setup
+	code := m.Run()
+	// teardown
+	os.Exit(code)
+}
+```
+
+每个测试或子测试可用 `t.Cleanup(func() { ... })` 注册逆序清理逻辑（类似 defer，在子测试结束时也会执行）。
+
+HTTP 处理器测试用标准库 `net/http/httptest`，无需起真实端口：
+
+```go
+func TestHandler(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/hello", nil)
+	rec := httptest.NewRecorder()
+	HelloHandler(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status %d", rec.Code)
+	}
+	if !strings.Contains(rec.Body.String(), "hello") {
+		t.Fatalf("body %q", rec.Body.String())
+	}
+}
+```
+
+## 模糊测试（简述）
+
+Go 1.18+ 内置 fuzzing：`go test -fuzz=FuzzName -fuzztime=30s` 在失败时把语料写入 `testdata/fuzz/FuzzName` 目录，下次 `go test` 会自动回归。适合解析器、编解码、校验函数等输入空间大的 API。
+
+## 实践建议
+
+- 测试文件与源码同包，需要只测公开 API 时用 `package xxx_test` 黑盒测试。
+- 单元测试要快、可重复；依赖外部服务的放到 `//go:build integration` 构建标签下，CI 用 `-tags=integration` 单独跑。
+- CI 常见组合：`go test -race -count=1 -shuffle=on -timeout 5m ./...`；发布前再加 `-coverprofile` 看缺口。
+- 示例函数 `ExampleXxx` 会出现在 `go doc` 与 pkg.go.dev，适合作为可执行文档。
+
+官方教程：[Add a test](https://go.dev/doc/tutorial/add-a-test)；包文档：[testing](https://pkg.go.dev/testing)、[httptest](https://pkg.go.dev/net/http/httptest)。
+
 
 # 模版生成代码（go generate / ast）
 
@@ -2298,6 +2546,9 @@ https://book.douban.com/subject/35902219/
 * [Go 语言简介（上）— 语法](http://coolshell.cn/articles/8460.html)
 * [Go 语言简介（下）— 特性](http://coolshell.cn/articles/8489.html)
 * [Go Wiki: Go Code Review Comments](https://go.dev/wiki/CodeReviewComments)
+* [Add a test (官方教程)](https://go.dev/doc/tutorial/add-a-test)
+* [testing 包](https://pkg.go.dev/testing)
+* [httptest 包](https://pkg.go.dev/net/http/httptest)
 
 
 [Go官网]: https://golang.org
