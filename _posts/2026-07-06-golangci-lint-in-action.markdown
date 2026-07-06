@@ -2,8 +2,8 @@
 layout: post
 title:  "Golangci-lint 实战：用法、配置与最佳实践"
 date:   2026-07-06 10:28:57 +0800
-last_modified_at: 2026-07-06 10:39:25 +0800
-description: "系统介绍 golangci-lint 的原理、安装与命令行用法，.golangci.yml 配置结构、常用检查示例、CI/编辑器集成、v2 迁移与 FAQ，并对比社区中的替代方案。"
+last_modified_at: 2026-07-06 10:58:45 +0800
+description: "系统介绍 go vet 与 Staticcheck 轻量静态检查路径，以及 golangci-lint 的原理、配置、CI 集成、v2 迁移与 FAQ，并对比社区替代方案。"
 categories: GoLang
 tags:
   - GoLang
@@ -17,14 +17,329 @@ mermaid: true
 * Do not remove this line (it will not be displayed)
 {:toc}
 
-Go 项目做静态检查时，常见路径是 `go vet ./...` 加上 [Staticcheck](https://staticcheck.io/)。两者覆盖「编译器级可疑写法」和「高信噪比 correctness 规则」，但团队一旦需要统一风格、安全、复杂度、测试规范，往往还要再装 revive、gosec、errcheck 等十几个工具，各自配置、各自输出格式，CI 里串起来既慢又难维护。
+Go 项目做静态检查时，**最常见的基础组合**是 `go vet ./...` 加上 [Staticcheck](https://staticcheck.io/)：前者随 Go 工具链自带，后者专注高信噪比的 bug / 性能 / 简化建议。两者覆盖「编译器级可疑写法」和「correctness 规则」，对小项目、库作者或「只要 correctness、不要风格大棒」的团队往往已经足够。下文 [go vet 与 Staticcheck](#go-vet-与-staticcheck轻量静态检查) 一节展开详细用法；若还需要统一风格、安全、复杂度、测试规范，往往要再装 revive、gosec、errcheck 等十几个工具——这时 [golangci-lint](#golangci-lint-解决什么问题) 的聚合价值才体现出来。
 
-[golangci-lint](https://golangci-lint.run/) 的定位就是 **Go 静态分析聚合器（linters runner）**：并行跑上百个 linter，复用 Go build cache 与自身分析缓存，用一份 YAML 配置统一开关与排除规则，输出格式可选 text、JSON、SARIF、JUnit 等。官方仓库见 [golangci/golangci-lint](https://github.com/golangci/golangci-lint)；当前主线为 **v2.x**（本文以 **v2.12.2** 为准）。
-
-站内若已读过 [Go 实战]({% post_url 2019-04-14-go-in-action %}) 里 2019 年的简短介绍，或 [100 Go Mistakes]({% post_url 2025-12-24-100-go-mistakes %}) 对 `go vet` / golangci-lint 的提及，本文会从零展开配置与落地实践，并补充 v2 迁移与替代方案讨论。
+站内若已读过 [Go 实战]({% post_url 2019-04-14-go-in-action %}) 里 2019 年的简短介绍，或 [100 Go Mistakes]({% post_url 2025-12-24-100-go-mistakes %}) 对 `go vet` / golangci-lint 的提及，本文会从零展开 **vet + Staticcheck 基础路径** 与 **golangci-lint 团队规范** 两条线，并补充 v2 迁移与替代方案讨论。
 {: .prompt-info }
 
-# 它解决什么问题
+# go vet 与 Staticcheck：轻量静态检查
+
+```mermaid
+flowchart LR
+    subgraph toolchain [Go 工具链自带]
+        VET[go vet ./...]
+    end
+    subgraph sc [Staticcheck 单独安装]
+        SC[staticcheck ./...]
+    end
+    SRC[Go 源码] --> VET
+    SRC --> SC
+    VET --> OUT[终端 / CI 非零退出]
+    SC --> OUT
+```
+
+| 工具 | 安装 | 定位 | 典型命令 |
+| :--- | :--- | :--- | :--- |
+| **`go vet`** | Go 自带 | 官方可疑写法启发式检查 | `go vet ./...` |
+| **Staticcheck** | `go install` 或 Release 二进制 | 150+ 条低误报静态分析规则 | `staticcheck ./...` |
+
+Staticcheck 官方建议：**在 `go vet ./...` 之外再跑** `staticcheck ./...`，用法刻意对齐 `go build` / `go vet` 的包路径语义（见 [Getting started](https://staticcheck.dev/docs/getting-started/)）。golangci-lint 内置的 `govet` 与 `staticcheck` linter 本质上就是在编排这两类（及更多）分析。
+{: .prompt-tip }
+
+## go vet
+
+`go vet` 检查 Go 源码中的 **可疑写法**（如 `Printf` 格式串与参数不匹配、错误的 `defer`、向 `errors.As` 传入非指针等）。它使用启发式规则，**不保证**报出的每一条都是真 bug，但能在编译器未报错时发现常见问题。官方说明见 [`go doc cmd/vet`](https://pkg.go.dev/cmd/vet)。
+
+### 基本用法
+
+```bash
+# 当前目录 package
+go vet
+
+# 整个模块（最常用）
+go vet ./...
+
+# 指定子树
+go vet ./cmd/... ./internal/...
+
+# 单个 package 路径
+go vet my/module/pkg/foo
+```
+
+包路径规则与 `go test`、`go build` 相同：`./...` 表示递归所有 package；详见 `go help packages`。
+
+**退出码**：调用错误或发现问题时 **非零**，CI 可直接 `go vet ./...` 作为门禁。
+
+### 内置 checker 一览
+
+运行 `go tool vet help` 可列出全部 checker。常用项包括：
+
+| Checker | 检查内容 |
+| :--- | :--- |
+| `printf` | `Print`/`Printf`/`Sprint` 等与 format 参数一致性 |
+| `assign` | 无效赋值 |
+| `atomic` | `sync/atomic` 常见误用 |
+| `copylocks` | 锁被值拷贝传递 |
+| `errorsas` | `errors.As` 参数类型 |
+| `httpresponse` | HTTP response body 未关闭等 |
+| `loopclosure` | 循环变量被闭包错误捕获 |
+| `lostcancel` | `context.WithCancel` 的 cancel 未调用 |
+| `shift` | 移位宽度超出整数位宽 |
+| `slog` | 结构化日志 `slog` 调用合法性 |
+| `structtag` | struct tag 是否符合 `reflect.StructTag` 规则 |
+| `testinggoroutine` | 在测试启动的 goroutine 里调用 `t.Fatal` |
+| `unreachable` | 不可达代码 |
+| `unusedresult` | 忽略某些函数的返回值 |
+
+查看某个 checker 的细节与专属 flag，例如：
+
+```bash
+go tool vet help printf
+```
+
+### 选择性启用 / 禁用 checker
+
+默认 **运行全部** checker。若显式将某个 flag 设为 `true`，则 **只跑** 列出的那些；若设为 `false`，则 **排除** 该 checker：
+
+```bash
+# 只跑 printf 检查
+go vet -printf=true ./...
+
+# 跑全部，但跳过 shift
+go vet -shift=false ./...
+```
+
+### 构建相关 flag
+
+`go vet` 支持与 `go build` 相同的 **包解析与执行** flag，例如：
+
+```bash
+go vet -tags=integration ./...
+go vet -C subdir ./...    # 在 subdir 下执行（Go 1.20+）
+```
+
+JSON 输出（便于 CI 解析）：
+
+```bash
+go vet -json ./...
+```
+
+### 自定义分析器：`-vettool`
+
+可替换或扩展 vet 使用的分析工具：
+
+```bash
+go install golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow@latest
+go vet -vettool="$(which shadow)" ./...
+```
+
+适合试验 `golang.org/x/tools/go/analysis` 生态里的单个 pass；团队日常仍以默认 `go vet` 为主。
+
+### go vet 的边界
+
+- 依赖 **整 package 可编译**；与 golangci-lint 的 `typecheck` 类似，缺文件或语法错误会导致分析失败。
+- 规则集 **有限**，不包含 unused 导出、API 废弃、性能级简化等——这些交给 Staticcheck。
+- 官方明确：应作 **指导**，不能当作「程序正确」的充分条件。
+
+## Staticcheck
+
+[Staticcheck](https://staticcheck.io/) 是 Go 生态里事实上的 **correctness 向** 静态分析工具：150+ 条检查（[Checks 列表](https://staticcheck.io/docs/checks/)），强调 **低误报、可行动**；许多团队在 CI 里只开 vet + Staticcheck 而不引入 golangci-lint。站内 [Go 实战]({% post_url 2019-04-14-go-in-action %}) 亦有简介。
+
+### 安装
+
+Go 1.17+ 最常见方式（**务必 pin 版本**，勿在 CI 用 `@latest`）：
+
+```bash
+go install honnef.co/go/tools/cmd/staticcheck@2025.1.1
+
+staticcheck -version
+```
+
+也可从 [GitHub Releases](https://github.com/dominikh/go-tools/releases) 下载预编译二进制，或通过发行版包管理器安装（版本可能滞后）。
+
+Staticcheck 版本号格式为 **`YYYY.N`**（如 `2025.1.1`），与 Go 的 `1.22` 版本号不同；升级时需阅读 Release note，新版本可能 **新增检查** 导致 CI 失败。
+
+### 基本用法
+
+```bash
+# 整个模块（与 go vet 相同习惯）
+staticcheck ./...
+
+# 当前目录
+staticcheck .
+
+# 指定 package
+staticcheck ./cmd/server/...
+```
+
+输出格式与 vet 类似，每条带 **检查 ID**：
+
+```text
+foo.go:42:9: unnecessary use of fmt.Sprintf (S1039)
+```
+
+### 理解检查：`-explain`
+
+```bash
+staticcheck -explain S1039
+```
+
+会输出摘要、说明段落、首次引入版本及文档链接——排查「该不该修」时非常有用。
+
+### 目标 Go 版本：`-go`
+
+默认读取 `go.mod` 里 `go` 指令作为目标版本（影响「某简化是否适用于当前最低 Go 版本」等建议）。可手动覆盖：
+
+```bash
+staticcheck -go 1.22 ./...
+```
+
+### 测试代码：`-tests`
+
+默认 **包含** `_test.go`。若只想找「仅被测试引用」的死代码，可跳过测试：
+
+```bash
+staticcheck -tests=false ./...
+```
+
+### 构建 tag
+
+```bash
+staticcheck -tags=integration ./...
+```
+
+与 `go vet -tags` 一致。
+
+### 输出格式：`-f`
+
+```bash
+staticcheck -f stylish ./...
+staticcheck -f json ./...
+```
+
+完整列表见 [Formatters](https://staticcheck.dev/docs/running-staticcheck/cli/formatters/)。
+
+### 配置文件：`staticcheck.conf`
+
+项目级配置放在 **`staticcheck.conf`**（TOML），对 **子目录树** 生效；子目录中的文件会 **覆盖** 上级选项（见 [Configuration](https://staticcheck.dev/docs/configuration/)）。
+
+目录示例：
+
+```text
+.
+├── staticcheck.conf          # 全仓库默认
+├── internal/
+│   └── staticcheck.conf      # 仅 internal/...
+└── pkg/
+    └── foo/
+        └── staticcheck.conf  # 仅 pkg/foo/...
+```
+
+**默认等价配置**（理解「出厂行为」）：
+
+```toml
+checks = ["all", "-SA9003", "-ST1000", "-ST1003", "-ST1016", "-ST1020", "-ST1021", "-ST1022", "-ST1023"]
+initialisms = ["ACL", "API", "ASCII", "CPU", "CSS", "DNS", "EOF", "GUID", "HTML", "HTTP", "HTTPS", "ID", "IP", "JSON", "QPS", "RAM", "RPC", "SLA", "SMTP", "SQL", "SSH", "TCP", "TLS", "TTL", "UDP", "UI", "GID", "UID", "UUID", "URI", "URL", "UTF8", "VM", "XML", "XMPP", "XSRF", "XSS", "SIP", "RTP", "AMQP", "DB", "TS"]
+```
+
+常用定制：
+
+```toml
+# 启用全部，但关闭「空 if/else 分支」和「包注释」类风格检查
+checks = ["all", "-SA9003", "-ST1000"]
+
+# 在 inherited 基础上追加/排除
+checks = ["inherit", "-ST1000"]
+
+# 常见缩写词（影响 ST1003 等命名检查）
+initialisms = ["ACL", "API", "HTTP", "ID", "URL", "gRPC"]
+```
+
+检查 ID 前缀含义：`SA` 静态分析 / bug，`S` 简化建议，`ST` 风格，`U` unused 等——详见 [Checks](https://staticcheck.io/docs/checks/)。
+
+### 忽略问题：lint directive
+
+优先 **改代码**；确需忽略时使用 directive（**必须写 reason**）：
+
+```go
+//lint:ignore SA4000 we intentionally compare two errors.New results in test
+if errors.New("abc") == errors.New("abc") {
+    t.Errorf(`New("abc") == New("abc")`)
+}
+```
+
+整文件（常见于生成代码）：
+
+```go
+//lint:file-ignore U1000 Ignore all unused code, it's generated
+```
+
+过期的 `//lint:ignore` 会被 Staticcheck 报告为 **应删除**，避免注释与代码脱节。
+
+### 编辑器：gopls
+
+VS Code / GoLand 等通过 **gopls** 可启用 Staticcheck 分析（`"staticcheck": true`），见 [gopls settings](https://github.com/golang/tools/blob/master/gopls/doc/settings.md#staticcheck-bool)。本地实时诊断 + CI 跑 `staticcheck ./...` 是常见组合。
+
+## 组合用法：Makefile 与 CI
+
+### Makefile
+
+```makefile
+.PHONY: vet staticcheck lint
+
+vet:
+	go vet ./...
+
+staticcheck:
+	staticcheck ./...
+
+lint: vet staticcheck
+```
+
+### GitHub Actions
+
+vet 用标准 `run`；Staticcheck 可用官方 [staticcheck-action](https://staticcheck.dev/docs/running-staticcheck/ci/github-actions/)（**pin `version`**）：
+
+```yaml
+name: CI
+on: [push, pull_request]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - run: go vet ./...
+      - uses: dominikh/staticcheck-action@v1.3.0
+        with:
+          version: "2025.1.1"
+          install-go: false   # 上一步已装 Go
+```
+
+若 job 里还有 `go test`，建议 `install-go: false` 并共用 Go 构建缓存，避免重复下载。
+
+### 与 golangci-lint 的关系
+
+| 维度 | `go vet` + Staticcheck | golangci-lint |
+| :--- | :--- | :--- |
+| 安装 | vet 零成本；Staticcheck 一个二进制 | 一个二进制含 100+ linter |
+| 配置 | `staticcheck.conf`；vet 几乎无配置 | `.golangci.yml` 统一一切 |
+| 速度 | 通常更快、依赖更少 | 功能多，冷启动更重 |
+| 覆盖 | correctness 为主 | + 安全、风格、复杂度、测试规范等 |
+| 重叠 | — | 内置 `govet`、`staticcheck` |
+
+**选型建议**：
+
+- 库、小型服务、个人项目：**`go vet ./...` + `staticcheck ./...`** 往往足够。
+- 需要 gosec、revive、errcheck、depguard 等 **团队政策**：上 golangci-lint，或继续 vet + Staticcheck 再 **按需** 加个别工具。
+- 已有 golangci-lint 且启用 `govet`/`staticcheck`：**不必**再单独跑一遍（除非想拆分 CI job 或对比输出）。
+
+# golangci-lint 解决什么问题
+
+[golangci-lint](https://golangci-lint.run/) 的定位是 **Go 静态分析聚合器（linters runner）**：并行跑上百个 linter，复用 Go build cache 与自身分析缓存，用一份 YAML 配置统一开关与排除规则，输出格式可选 text、JSON、SARIF、JUnit 等。官方仓库见 [golangci/golangci-lint](https://github.com/golangci/golangci-lint)；当前主线为 **v2.x**（本文以 **v2.12.2** 为准）。
 
 ```mermaid
 flowchart TB
@@ -748,6 +1063,11 @@ Homebrew 与 `go install` 可能用不同 Go 版本编译，依赖树也未经�
 | CI 安装 | [CI Installation](https://golangci-lint.run/docs/welcome/install/ci/) |
 | 编辑器集成 | [Integrations](https://golangci-lint.run/docs/welcome/integrations/) |
 | Staticcheck 官方 | [staticcheck.io](https://staticcheck.io/docs/) |
+| Staticcheck · Getting started | [Getting started](https://staticcheck.dev/docs/getting-started/) |
+| Staticcheck · CLI | [Command-line interface](https://staticcheck.dev/docs/running-staticcheck/cli/) |
+| Staticcheck · 配置 | [Configuration](https://staticcheck.dev/docs/configuration/) |
+| Staticcheck · CI | [Continuous integration](https://staticcheck.dev/docs/running-staticcheck/ci/) |
+| go vet 文档 | [cmd/vet](https://pkg.go.dev/cmd/vet) |
 | 站内 · Go 实战（含早期 golangci-lint 片段） | [Go in Action]({% post_url 2019-04-14-go-in-action %}) |
 | 站内 · slog 与日志规范 | [Go log 与 slog]({% post_url 2026-06-29-go-log-and-slog %}) |
 | 社区 · 更快替代方案讨论 | [r/golang — alternatives that are fast](https://www.reddit.com/r/golang/comments/1jepzes/alternatives_to_golangcilint_that_are_fast/) |
