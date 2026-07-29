@@ -60,6 +60,15 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* scrape /skreɪp/
+  + V-T If you **scrape** something from a surface, you remove it, especially by pulling a sharp object over the surface. 刮掉
+    - She went around the car scraping the frost off the windows. 她绕着车刮掉车窗上的霜。
+  + V-T/V-I If something scrapes against something else, it rubs against it, making a noise or causing slight damage. 刮擦
+    - The only sound is that of knives and forks scraping against china. 惟一的声音是刀叉刮擦瓷器的声音。
+  + V-T If you scrape a part of your body, you accidentally rub it against something hard and rough, and damage it slightly. 擦伤
+    - She stumbled and fell, scraping her palms and knees. 她绊了一跤摔倒了，擦伤了双掌和双膝。
+
+
 * canary /kəˈneəri/
   + N-COUNT **Canaries** are small, yellow birds which sing beautifully and are often kept as pets. 金丝雀
 
