@@ -2,6 +2,7 @@
 layout: post
 title:  "Docker in Action"
 date:   2019-02-22 08:00:00 +0800
+last_modified_at: 2026-07-28 17:41:58 +0800
 categories: 云原生
 tags:
   - Docker
@@ -176,9 +177,9 @@ docker compose logs -f
 * **一键清理（更彻底，需谨慎）**
   + `docker system prune`：清理无用数据（已停止容器、未使用网络、构建缓存等；默认会清理 **dangling images**，但不会删除“所有未被任何容器使用的镜像”）。
   + `docker system prune -a`：在上面基础上额外删除未使用镜像。
-  + `docker system prune -a --volumes`：再额外删除未使用的 volumes（可能会导致数据库/持久化数据丢失，务必确认）。
+  + `docker system prune -a --volumes`：再额外删除未使用的匿名 volumes（可能会导致数据库/持久化数据丢失，务必确认）。
 
-> `docker system prune -a --volumes` 很容易造成**不可逆的数据丢失**（尤其是你把数据库数据放在 named volume 的情况下）。在生产机器上建议先用 `docker system df` 做“定位”，再逐项清理。
+> `docker system prune -a --volumes` 可能造成**不可逆的数据丢失**。当前 Docker 文档中 `--volumes` 指匿名卷；不同版本的行为应以本机 `docker system prune --help` 为准。命名卷还可能被单独的 `docker volume prune` 清理。在生产机器上建议先用 `docker system df` 做“定位”，再逐项清理。
 {: .prompt-danger }
 
 ```bash
@@ -194,6 +195,281 @@ docker image prune -a
 docker system prune
 ```
 
+### 按清理目标选择命令
+{: #image-cleanup-modes }
+
+本地同时存在大量已打 tag 的镜像和 `<none>` 镜像时，先运行 `docker system df` 查看可回收空间，再按目标选择一种清理方式即可。
+
+| 目标 | 命令 | 影响 |
+|---|---|---|
+| 只清理 dangling 镜像（相对安全） | `docker image prune -f` | 删除未打 tag 且未被引用的悬空镜像，保留 `jmesh-*`、`racinggo/*`、`golang` 等已打 tag 镜像 |
+| 清理所有未被容器使用的镜像 | `docker image prune -a -f` | 已打 tag 但没有任何容器引用的镜像也会被删除；运行中或已停止容器引用的镜像会保留 |
+| 清空所有容器和镜像 | 先 `docker rm -f ...`，再 `docker rmi -f ...` | 强制删除全部容器，随后删除全部镜像 |
+| 尽量释放 Docker 占用空间 | `docker system prune -a --volumes -f` | 同时清理未使用的容器、网络、镜像、构建缓存和匿名卷，最激进 |
+
+> `REPOSITORY` 或 `TAG` 显示为 `<none>` 不一定就能被默认 prune 删除；`docker image prune` 只删除 Docker 判定为 dangling 的镜像。可以先用 `docker image ls --filter dangling=true` 查看候选项。
+{: .prompt-info }
+
+只删除悬空镜像：
+
+```bash
+docker image ls --filter dangling=true
+docker image prune -f
+```
+
+删除所有未被任何容器引用的镜像（包括已打 tag 的镜像）：
+
+```bash
+docker image prune -a -f
+```
+
+清空本机全部容器和镜像：
+
+```bash
+# 先停掉并删除所有容器，否则被容器引用的镜像无法删除
+container_ids="$(docker ps -aq)"
+if [[ -n "${container_ids}" ]]; then
+  docker rm -f ${container_ids}
+fi
+
+# 再删除全部镜像
+image_ids="$(docker images -aq)"
+if [[ -n "${image_ids}" ]]; then
+  docker rmi -f ${image_ids}
+fi
+```
+
+如果只想精确删除某个镜像，不要执行全量清理：
+
+```bash
+docker rmi mirrors.tencent.com/jlib-framework/jmesh-agent:v1.0.0
+
+# 或按 IMAGE ID 强制删除
+docker rmi -f 32aa5d188a9b
+```
+
+### 镜像清理工具脚本
+{: #docker-clean-images-script }
+
+下面的脚本把四种清理范围封装为显式模式，默认要求二次确认；在 CI 或确定无需确认时可增加 `--yes`。
+
+```bash
+#!/bin/bash
+# Clean local Docker images.
+#
+# Usage:
+#   ./docker-clean-images.sh dangling   # remove <none> dangling images only
+#   ./docker-clean-images.sh unused     # remove all unused images
+#   ./docker-clean-images.sh all        # remove all images and containers
+#   ./docker-clean-images.sh system     # most aggressive system prune
+#   ./docker-clean-images.sh -h
+
+set -euo pipefail
+
+SCRIPT_CMD="./$(basename -- "${0}")"
+
+log_info() {
+  printf 'INFO: %s\n' "$*"
+}
+
+log_warn() {
+  printf 'WARN: %s\n' "$*" >&2
+}
+
+log_error() {
+  printf 'ERROR: %s\n' "$*" >&2
+}
+
+show_help() {
+  cat <<EOF
+Clean local Docker images
+
+Usage:
+  ${SCRIPT_CMD} <mode> [--yes]
+  ${SCRIPT_CMD} -h|--help
+
+Modes:
+  dangling   Remove dangling (<none>) images only
+  unused     Remove all unused images (not referenced by any container)
+  all        Remove ALL images (force-remove all containers first)
+  system     Run: docker system prune -a --volumes
+             Also removes unused containers, networks, anonymous volumes,
+             images, and build cache
+
+Options:
+  --yes, -y  Skip confirmation prompt
+  -h, --help Show this help message
+
+Examples:
+  ${SCRIPT_CMD} dangling
+  ${SCRIPT_CMD} unused --yes
+  ${SCRIPT_CMD} all
+  ${SCRIPT_CMD} system -y
+EOF
+}
+
+ensure_docker() {
+  if ! command -v docker >/dev/null 2>&1; then
+    log_error "docker command not found"
+    exit 1
+  fi
+  if ! docker info >/dev/null 2>&1; then
+    log_error "docker daemon is not reachable (permission or daemon down?)"
+    exit 1
+  fi
+}
+
+confirm() {
+  local prompt="$1"
+  local answer
+  printf '%s [y/N] ' "${prompt}"
+  if ! read -r answer; then
+    printf '\n'
+    log_info "Aborted"
+    exit 0
+  fi
+  case "${answer}" in
+    y|Y|yes|YES)
+      return 0
+      ;;
+    *)
+      log_info "Aborted"
+      exit 0
+      ;;
+  esac
+}
+
+show_disk_summary() {
+  log_info "Docker disk usage:"
+  docker system df || true
+}
+
+clean_dangling() {
+  log_info "Removing dangling images..."
+  docker image prune -f
+}
+
+clean_unused() {
+  log_info "Removing unused images..."
+  docker image prune -a -f
+}
+
+clean_all() {
+  local ids
+  log_info "Force-removing all containers..."
+  ids="$(docker ps -aq || true)"
+  if [[ -n "${ids}" ]]; then
+    # Docker IDs contain no whitespace, so intentional word splitting is safe.
+    # shellcheck disable=SC2086
+    docker rm -f ${ids}
+  else
+    log_info "No containers found"
+  fi
+
+  log_info "Force-removing all images..."
+  ids="$(docker images -aq || true)"
+  if [[ -n "${ids}" ]]; then
+    # shellcheck disable=SC2086
+    docker rmi -f ${ids}
+  else
+    log_info "No images found"
+  fi
+}
+
+clean_system() {
+  log_warn "This removes unused containers, networks, anonymous volumes, images, and build cache"
+  docker system prune -a --volumes -f
+}
+
+main() {
+  local mode=""
+  local assume_yes=false
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -h|--help)
+        show_help
+        exit 0
+        ;;
+      --yes|-y)
+        assume_yes=true
+        shift
+        ;;
+      dangling|unused|all|system)
+        if [[ -n "${mode}" ]]; then
+          log_error "Multiple modes specified"
+          show_help >&2
+          exit 1
+        fi
+        mode="$1"
+        shift
+        ;;
+      *)
+        log_error "Unknown argument: $1"
+        show_help >&2
+        exit 1
+        ;;
+    esac
+  done
+
+  if [[ -z "${mode}" ]]; then
+    show_help
+    exit 1
+  fi
+
+  ensure_docker
+  show_disk_summary
+
+  if [[ "${assume_yes}" != "true" ]]; then
+    case "${mode}" in
+      dangling)
+        confirm "Delete dangling (<none>) images only?"
+        ;;
+      unused)
+        confirm "Delete ALL unused images, including tagged images?"
+        ;;
+      all)
+        confirm "Delete ALL containers and ALL images on this machine?"
+        ;;
+      system)
+        confirm "Run docker system prune -a --volumes?"
+        ;;
+    esac
+  fi
+
+  case "${mode}" in
+    dangling)
+      clean_dangling
+      ;;
+    unused)
+      clean_unused
+      ;;
+    all)
+      clean_all
+      ;;
+    system)
+      clean_system
+      ;;
+  esac
+
+  log_info "Done"
+  show_disk_summary
+}
+
+main "$@"
+```
+{: file="docker-clean-images.sh" }
+
+使用前增加执行权限，然后选择一种模式：
+
+```bash
+chmod +x docker-clean-images.sh
+./docker-clean-images.sh dangling
+./docker-clean-images.sh unused --yes
+```
+
+> `all` 会强制删除所有容器和镜像；`system` 还会清理匿名卷等资源。执行前应确认本地容器与卷中没有需要保留的数据。脚本只适合本机开发或已确认可以清空的环境，不应直接用于生产节点。
+{: .prompt-danger }
 
 
 
