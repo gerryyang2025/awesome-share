@@ -93,7 +93,7 @@ MiniMax 开放平台另提供 **Token Plan** 按月/按年订阅，覆盖文本�
 | **Music-2.6** | 100 首 / 天（限免）（每首 ≤5 分钟） | 同左 | 同左 |
 
 
-# 在 Claude Code 中使用 MiniMax-M2.1
+# 在 Claude Code 中使用 MiniMax-M2.1 (为例)
 
 ![cc0](/assets/images/202601/cc0.png)
 
@@ -320,7 +320,7 @@ $ claude-minimax --version
 ![cc35](/assets/images/202601/cc35.png)
 
 
-# [在 Cursor 中使用 MiniMax-M2.1](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-cursor-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-1)
+# [在 Cursor 中使用 MiniMax-M2.1 (为例)](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-cursor-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-1)
 
 
 ## 安装 Cursor
@@ -358,17 +358,7 @@ $ claude-minimax --version
 ![cc43](/assets/images/202601/cc43.png)
 
 
-# [在 Cursor 中使用 MiniMax-M2.5](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-cursor-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-5)
-
-模型名改为 “MiniMax-M2.5”。其余方法参考 [在 Cursor 中使用 MiniMax-M2.1](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-cursor-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-1)。
-
-# [在 Cursor 中使用 MiniMax-M2.7](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-cursor-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-7)
-
-模型名改为 “MiniMax-M2.7”。其余方法参考 [在 Cursor 中使用 MiniMax-M2.1](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-cursor-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-1)。
-
-
-
-# [在 OpenClaw 中使用 MiniMax-M2.5](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-openclaw-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-5)
+# [在 OpenClaw 中使用 MiniMax-M2.5 (为例)](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-openclaw-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-5)
 
 OpenClaw（原 Clawdbot） 是一个开源的 AI 助手，完全本地化，可以将各种消息平台与 AI 模型连接起来。它支持 WhatsApp、Telegram、Discord、iMessage 等多种平台，让您可以随时随地与 AI 助手对话。
 
@@ -425,12 +415,6 @@ OAuth 登录完成后，进入模型选择。系统会默认勾选 minimax-porta
 输入 `openclaw tui`，若成功对话则表示配置成功。
 
 ![openclaw28](/assets/images/202601/openclaw28.png)
-
-
-
-# [在 OpenClaw 中使用 MiniMax-M2.7](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-openclaw-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2-7)
-
-模型名改为 "MiniMax-M2.7"。其余方法参考 [在 OpenClaw 中使用 MiniMax-M2.5](#在-openclaw-中使用-minimax-m2-5)。
 
 
 
