@@ -2,7 +2,7 @@
 layout: post
 title:  "Kubernetes in Action"
 date:   2022-07-31 16:30:00 +0800
-last_modified_at: 2026-06-15 11:42:48 +0800
+last_modified_at: 2026-08-05 10:48:03 +0800
 mermaid: true
 categories: 云原生
 tags:
@@ -840,8 +840,12 @@ allowVolumeExpansion: true
 
 * [Deployments | Kubernetes](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 * [StatefulSets | Kubernetes](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/)
+* [StatefulSet — Rolling Updates](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#rolling-updates)
 
 这两个对象都属于 Kubernetes 的 **Workload Controller**：都会根据模板去维护一组 Pod，但它们解决的问题不一样。
+
+> **滚动更新（Rolling Update）** 是 Kubernetes 在生产环境中最常用的无损升级方式：控制器逐步用新版本 Pod 替换旧版本，而不是一次性全部重建。Deployment 与 StatefulSet 都支持滚动更新，但**替换顺序、身份约束、可用副本控制字段**差异很大，不能简单套用同一套参数。
+{: .prompt-info }
 
 ### Deployment 是什么，适合什么场景
 
@@ -943,6 +947,48 @@ spec:
 * 升级过程中，最多允许 `1` 个旧 Pod 先下线。
 * 同时最多允许临时多跑 `1` 个新 Pod。
 * 所以升级时总体 Pod 数通常在 `3` 到 `5` 之间波动。
+
+#### 2.1 Deployment 滚动更新的底层机制（ReplicaSet 交替扩缩）
+
+Deployment 本身**不直接管理 Pod**，而是通过 **ReplicaSet** 间接维护 Pod。只有当 `spec.template` 发生变化（例如镜像 Tag、环境变量、标签）时才会触发 rollout；单纯改 `spec.replicas` 只做扩缩容，**不会**产生新版本。
+
+典型过程如下（参考 [Deployment — Creating a Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment)）：
+
+1. 修改 `spec.template` 后，Deployment 控制器创建**新 ReplicaSet**（名称形如 `web-7d4b8c9f6`），并为其 Pod 打上 `pod-template-hash` 标签。
+2. 按 `maxSurge` / `maxUnavailable` **逐步放大新 ReplicaSet、缩小旧 ReplicaSet**。
+3. 每个新 Pod Ready（且满足 `minReadySeconds`）后，继续推进，直到旧 ReplicaSet 缩到 0。
+4. 旧 ReplicaSet 保留在集群中（受 `revisionHistoryLimit` 约束），供 `kubectl rollout undo` 回滚。
+
+```mermaid
+sequenceDiagram
+    participant User as 用户 / CI
+    participant Dep as Deployment
+    participant OldRS as 旧 ReplicaSet
+    participant NewRS as 新 ReplicaSet
+    participant Pod as Pod
+
+    User->>Dep: 更新 spec.template（如新镜像）
+    Dep->>NewRS: 创建新 ReplicaSet
+    loop 按 maxSurge / maxUnavailable 推进
+        NewRS->>Pod: 创建新 Pod
+        Pod-->>NewRS: Ready
+        OldRS->>Pod: 终止旧 Pod
+    end
+    OldRS->>OldRS: 缩容至 0（保留供回滚）
+```
+
+常用运维命令：
+
+```bash
+kubectl rollout status deployment/web          # 观察发布进度
+kubectl rollout history deployment/web         # 查看 revision 历史
+kubectl rollout undo deployment/web              # 回滚到上一 revision
+kubectl rollout pause deployment/web             # 暂停发布（Canary 手工切流前常用）
+kubectl rollout resume deployment/web            # 恢复发布
+```
+
+> **暂停/恢复发布**：`kubectl rollout pause` 可在一次 template 变更中多次修改后再 `resume`，合并为一次 rollout；适合需要人工确认中间状态的场景。
+{: .prompt-tip }
 
 #### 3. `minReadySeconds`、`progressDeadlineSeconds`、`revisionHistoryLimit`
 
@@ -1113,15 +1159,31 @@ kubectl delete pod mysql-0
 
 #### 2. `RollingUpdate`
 
-`RollingUpdate` 是 StatefulSet 默认更新策略。与 Deployment 最大的不同在于，它更强调**顺序**和**身份稳定**：
+`RollingUpdate` 是 StatefulSet 默认更新策略。官方 [Rolling Updates](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#rolling-updates) 描述的行为是：
 
-* 控制器会按 **ordinal 从大到小** 更新 Pod，也就是通常先更新 `web-2`，再 `web-1`，最后 `web-0`。
-* 每更新完一个 Pod，都会等待它 Running、Ready；如果配置了 `minReadySeconds`，还会继续等到满足该时间，再继续更新前一个 Pod。
+* 控制器**删除并重建**每个 Pod（不是原地 patch 容器），顺序与 Pod 终止顺序相同：**从最大 ordinal 到最小**，即先 `web-2`，再 `web-1`，最后 `web-0`。
+* 控制面在更新**前一个** Pod 之前，必须等待当前 Pod **Running 且 Ready**。
+* 若配置了 `spec.minReadySeconds`，Pod Ready 之后还要再稳定等待该秒数，才继续更新下一个 ordinal。
+
+这与 Deployment「新旧 ReplicaSet 并行、Pod 可任意顺序替换」形成鲜明对比——StatefulSet 默认**严格串行**，且每个 Pod 的身份（名字、PVC、DNS）在重建后保持不变。
+
+```mermaid
+flowchart LR
+    subgraph Deployment 滚动更新
+        D1[旧 RS Pod] --> D2[新 RS Pod]
+        D3[任意顺序替换]
+    end
+    subgraph StatefulSet 滚动更新
+        S2[web-2 重建] --> S1[web-1 重建]
+        S1 --> S0[web-0 重建]
+    end
+```
 
 示例：
 
 ```yaml
 spec:
+  minReadySeconds: 10
   updateStrategy:
     type: RollingUpdate
 ```
@@ -1159,19 +1221,19 @@ spec:
 
 #### 4. `maxUnavailable`：限制更新期间的不可用副本数
 
-从官方文档当前版本来看，StatefulSet 也支持：
+FEATURE STATE: `Kubernetes v1.35 [beta]`
 
-* `spec.updateStrategy.rollingUpdate.maxUnavailable`
+StatefulSet 也支持 `spec.updateStrategy.rollingUpdate.maxUnavailable`，用于控制更新期间最多允许多少个 Pod 不可用：
 
-它用于控制 StatefulSet 更新期间，最多允许多少个 Pod 不可用：
+* 可写绝对值或百分比；百分比按**向上取整**换算。
+* **不能为 `0`**；未指定时默认 `1`。
+* 作用于 ordinal 范围 `0` 到 `replicas - 1`；该范围内任何已不可用的 Pod 都会计入 `maxUnavailable`。
+* 当 `maxUnavailable > 1` 且 `podManagementPolicy=OrderedReady` 时，控制器可**同时**终止并创建最多 `maxUnavailable` 个 Pod（称为 **bursting**），加快更新但可能导致 Pod **乱序 Ready**，不适合强依赖启动顺序的系统。
 
-* 可以写绝对值或百分比。
-* 百分比换算时按**向上取整**计算。
-* 这个值不能为 `0`。
-* 默认值是 `1`。
-* 在官方文档当前版本中，它处于 **Beta**，且默认开启。
+> **注意**：该字段目前为 **Beta**，且 **Feature Gate 默认关闭**（需集群显式开启 `StatefulSetUpdateStrategyMaxUnavailable` 后才生效）。未开启时，StatefulSet 仍按默认串行、一次一个 Pod 更新。详见官方 [Maximum unavailable Pods](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#maximum-unavailable-pods)。
+{: .prompt-warning }
 
-示例：
+示例（集群已开启对应 Feature Gate 时）：
 
 ```yaml
 spec:
@@ -1181,7 +1243,35 @@ spec:
       maxUnavailable: 1
 ```
 
-对强调严格顺序和强一致性的系统，通常还是建议保守一点，不要把这个值设得太大。
+对 MySQL 主从、Kafka、Etcd 等强调顺序的系统，即使开启了该字段，也建议保持 `maxUnavailable: 1`，避免 bursting 破坏成员协调。
+
+#### 5. 强制回滚（Forced rollback）
+
+官方文档 [Forced rollback](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#forced-rollback) 指出：在 `podManagementPolicy=OrderedReady` 下，若 `spec.template` 被改成**永远无法 Running/Ready** 的配置（错误镜像、错误启动参数等），StatefulSet 会**停住 rollout 并一直等待**，此时：
+
+* **仅把 template 改回正确版本是不够的**——控制器仍会等待已处于坏配置的那个 Pod 变 Ready（永远不会发生）。
+* 必须**手动删除**已被坏 template 创建/更新的 Pod，控制器才会用回滚后的 template 重建。
+
+```bash
+# 1. 将 spec.template 恢复为正确配置
+kubectl apply -f statefulset-fixed.yaml
+# 2. 删除卡在坏配置上的 Pod（按 ordinal 从大到小）
+kubectl delete pod mysql-2 mysql-1 mysql-0
+```
+
+这与 Deployment 的 `ProgressDeadlineExceeded` + `rollout undo` 体验不同，有状态服务的发布失败往往需要**人工介入删 Pod**。
+
+#### 6. Revision 历史与回滚
+
+StatefulSet 通过 **ControllerRevision** 记录每次 `spec.template` 变更（类似 Deployment 的 ReplicaSet revision）。可用 `spec.revisionHistoryLimit` 控制保留条数（默认 `10`）。
+
+```bash
+kubectl rollout history statefulset/webapp
+kubectl rollout undo statefulset/webapp --to-revision=3
+kubectl get controllerrevisions -l app.kubernetes.io/name=webapp
+```
+
+回滚会应用指定 revision 的 Pod template 并创建新的 ControllerRevision，行为细节见官方 [Revision history](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#revision-history)。
 
 ### `podManagementPolicy` 与更新行为的关系
 
@@ -1197,6 +1287,52 @@ StatefulSet 还有一个容易和更新策略混在一起看的字段：
   + 放宽顺序要求，允许并行创建/删除 Pod。
 
 官方文档提到：当 `podManagementPolicy=Parallel` 且 `rollingUpdate.maxUnavailable > 1` 时，StatefulSet 在滚动更新中可以一次终止并创建多个 Pod，这会更快，但不一定适合要求严格顺序的应用。
+
+### Deployment 与 StatefulSet 滚动更新对比
+
+下表汇总两者在滚动更新上的核心差异（对照 [Deployment Strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) 与 [StatefulSet Rolling Updates](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#rolling-updates)）：
+
+| 维度 | Deployment | StatefulSet |
+|------|------------|-------------|
+| **策略字段** | `spec.strategy` | `spec.updateStrategy` |
+| **内建类型** | `RollingUpdate`（默认）、`Recreate` | `RollingUpdate`（默认）、`OnDelete` |
+| **触发条件** | `spec.template` 变更 | `spec.template` 变更 |
+| **底层实现** | 新建 ReplicaSet，新旧 RS 交替扩缩 | 按 ordinal **删除并重建** Pod |
+| **替换顺序** | **无固定顺序**，任意 Pod 可先下后上 | **从大到小**（N-1 → … → 0），默认严格串行 |
+| **Pod 身份** | 可互换，名字随机 | 固定 ordinal 名、PVC、DNS |
+| **可用性控制** | `maxSurge` + `maxUnavailable`（双参数） | 仅 `maxUnavailable`（Beta，默认 Gate 关闭）；无 `maxSurge` |
+| **百分比取整** | `maxUnavailable` 向下取整；`maxSurge` 向上取整 | `maxUnavailable` 向上取整 |
+| **分段/灰度** | 需多 Deployment + Service 切流，或 Argo Rollouts | 原生 `partition` 字段 |
+| **失败卡住时** | `ProgressDeadlineExceeded`，`rollout undo` 较顺畅 | 坏 template 可能永久等待 Ready，需**删 Pod 强制回滚** |
+| **历史版本** | 旧 ReplicaSet + `revisionHistoryLimit` | ControllerRevision + `revisionHistoryLimit` |
+| **暂停发布** | `kubectl rollout pause/resume` | 无等价命令；用 `OnDelete` 或调 `partition` 控节奏 |
+
+```mermaid
+flowchart TB
+    subgraph Dep["Deployment RollingUpdate"]
+        direction TB
+        T1[template 变更] --> RS1[创建新 ReplicaSet]
+        RS1 --> Loop1{maxSurge / maxUnavailable}
+        Loop1 -->|扩新缩旧| Done1[旧 RS 缩至 0]
+    end
+
+    subgraph STS["StatefulSet RollingUpdate"]
+        direction TB
+        T2[template 变更] --> Ord[从最大 ordinal 开始]
+        Ord --> Del[删除 Pod N-1]
+        Del --> Wait{Running & Ready<br/>+ minReadySeconds}
+        Wait -->|是| Next[更新下一个 ordinal]
+        Next --> Del
+        Wait -->|否| Block[rollout 阻塞]
+    end
+```
+
+**选用经验**：
+
+* **无状态 Web/API**：Deployment + `RollingUpdate`，调 `maxSurge`/`maxUnavailable` 平衡速度与可用性。
+* **数据库、消息队列、分布式存储**：StatefulSet + `RollingUpdate`，利用顺序更新与 `partition` 做分阶段验证；主节点（通常 `ordinal=0`）最后更新。
+* **必须人工逐步确认**：StatefulSet + `OnDelete`，或 Deployment + `rollout pause`。
+* **Canary / 蓝绿**：Deployment 侧靠多副本集 + 流量治理；StatefulSet 侧优先 `partition` 先升级高序号副本。
 
 ### Deployment 和 StatefulSet 应该怎么选
 
