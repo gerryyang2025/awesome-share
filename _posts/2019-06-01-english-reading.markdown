@@ -60,6 +60,28 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+* surge /sɜːdʒ/
+  + N-COUNT A **surge** is a sudden large increase in something that has previously been steady, or has only increased or developed slowly. 剧增
+    - Specialists see various reasons for the recent **surge** in inflation. 专家认为最近通货膨胀加剧有各种原因。
+  + V-I If something **surges**, it increases suddenly and greatly, after being steady or developing only slowly. 剧增
+    - The Freedom Party's electoral support **surged** from just under 10 percent to nearly 17 percent. 自由党的选举支持率从只有不到10%剧增到近17%。
+  + V-I If a crowd of people **surge** forward, they suddenly move forward together. 涌动
+    - The photographers and cameramen **surged** forward. 那些摄影和摄像师们涌向前去。
+  + N-COUNT A **surge** is a sudden powerful movement of a physical force such as wind or water. (风、水等) 突然的涌动
+    - The whole car shuddered with an almost frightening **surge** of power. 整辆车因受到一股几乎令人惊骇的冲力而颤动。
+  + V-I If a physical force such as water or electricity **surges** through something, it moves through it suddenly and powerfully. (水、电流等) 涌
+    - Thousands of volts **surged** through his car after he careered into a lamp post, ripping out live wires. 当他急速撞向一个灯柱、扯断了通电的电线之后，几千伏的电流涌过他的汽车。
+
+
+
+* ordinal /ˈɔːdɪn(ə)l/
+  + ADJ denoting a certain position in a sequence of numbers 序数的
+
+
+* anomaly /əˈnɒməli/
+  + N-COUNT If something is an **anomaly**, it is different from what is usual or expected. 反常的事物
+    - The space shuttle had stopped transmitting data, a very serious **anomaly** for the mission. 这架航天飞机已经停止了传输数据，这是这次任务中一个十分严重的反常现象。
+
 * scrape /skreɪp/
   + V-T If you **scrape** something from a surface, you remove it, especially by pulling a sharp object over the surface. 刮掉
     - She went around the car scraping the frost off the windows. 她绕着车刮掉车窗上的霜。
