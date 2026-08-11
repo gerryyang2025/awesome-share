@@ -4,9 +4,9 @@ title: "Singleflight：并发请求合并原理与实践"
 date: 2026-05-08 20:30:00 +0800
 last_modified_at: 2026-05-08 20:30:00 +0800
 description: "用 singleflight 解决并发下的“缓存击穿/惊群”：把同 key 的重复请求合并为一次执行。本文以 janos/singleflight（resenje.org/singleflight）为例，讲原理、与 x/sync/singleflight 的差异、以及可运行示例。"
-categories: [Go]
+categories: [GoLang]
 tags:
-  - Go
+  - GoLang
   - Concurrency
   - singleflight
   - Context
