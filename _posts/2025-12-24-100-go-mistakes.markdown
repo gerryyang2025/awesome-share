@@ -2,6 +2,7 @@
 layout: post
 title:  "100 Go Mistakes and How to Avoid Them"
 date:   2025-12-24 20:30:00 +0800
+last_modified_at: 2026-08-11 14:22:25 +0800
 categories: [GoLang]
 tags:
   - 100 Go Mistakes
@@ -445,7 +446,7 @@ func init() {
 ```go
 // 多个包的 init 函数执行顺序
 // 由导入依赖决定，不易理解和维护
-package A: init() → package B: init() → main.init()
+package A: init() -> package B: init() -> main.init()
 ```
 
 
@@ -1695,6 +1696,159 @@ func main() {
 ```
 
 
+这段代码完美地展示了**何时该用泛型**和**何时不该用泛型**的对比。
+
+
+> 不该用泛型：getKeys 函数
+
+
+```go
+func getKeys(m any) ([]any, error) {
+    switch t := m.(type) {
+    case map[string]int:
+        var keys []any
+        for k := range t {
+            keys = append(keys, k)
+        }
+        return keys, nil
+    case map[int]string:
+        // ...
+    }
+    return nil, nil
+}
+```
+
+问题：
+
+* 使用 `any` 放弃了类型安全
+* 返回 `[]any`，调用者需要做类型断言
+* 每个 `map` 类型都要写一个 `case`，样板代码很多
+* 运行时错误而非编译时错误
+
+这是"过早不使用泛型"的反例——这里泛型才是更好的解决方案。
+
+
+> 应该用泛型：getKeysGenerics 函数
+
+```go
+func getKeysGenerics[K comparable, V any](m map[K]V) []K {
+    var keys []K
+    for k := range m {
+        keys = append(keys, k)
+    }
+    return keys
+}
+```
+
+优点：
+
+* 一个函数处理所有 `map` 类型
+* 编译时类型安全
+* 返回 `[]K`，键的类型被保留
+* 零运行时开销
+
+```go
+// 使用示例
+m1 := map[string]int{"a": 1, "b": 2}
+keys1 := getKeysGenerics(m1) // []string
+
+m2 := map[int]string{1: "a", 2: "b"}
+keys2 := getKeysGenerics(m2) // []int
+```
+
+这就是"具体需要"的场景：提取 map 的键是一个通用操作，用泛型避免了为每种 map 写重复代码。
+
+> 不必要的泛型：getKeysWithConstraint 函数
+
+```go
+type customConstraint interface {
+    ~int | ~string
+}
+
+func getKeysWithConstraint[K customConstraint, V any](m map[K]V) []K {
+    return nil
+}
+```
+
+
+问题：
+
+* `customConstraint` 限制了 `K` 只能是 `int` 或 `string`
+* 但 `map` 的键本来就要求是可比较类型（`comparable`）
+* 这个约束过于严格，排除了 float64、bool 等合法的 map 键类型
+* 除非有特殊业务需求（比如只处理 `int`/`string` 键），否则这就是不必要的抽象
+
+正确做法：直接用 `[K comparable, V any]`，这是 Go 内置的通用约束。
+
+
+> 应该用泛型：Node 链表
+
+```go
+type Node[T any] struct {
+    Val  T
+    next *Node[T]
+}
+
+func (n *Node[T]) Add(next *Node[T]) {
+    n.next = next
+}
+```
+
+为什么用泛型合适：
+
+* 链表是一种**数据结构**，与元素类型无关
+* 如果不使用泛型，需要为 `int`、`string` 等各写一个版本
+* 或者用 `interface{}` 失去类型安全
+
+这是泛型的经典应用场景——容器数据结构。
+
+
+> 应该用泛型：SliceFn 排序包装
+
+```go
+type SliceFn[T any] struct {
+    S       []T
+    Compare func(T, T) bool
+}
+
+func (s SliceFn[T]) Len() int           { return len(s.S) }
+func (s SliceFn[T]) Less(i, j int) bool { return s.Compare(s.S[i], s.S[j]) }
+func (s SliceFn[T]) Swap(i, j int)      { s.S[i], s.S[j] = s.S[j], s.S[i] }
+```
+
+为什么用泛型合适：
+
+* 实现了 `sort.Interface`，可以用自定义比较函数排序任意类型
+* 如果不泛型，`S` 必须是 `[]interface{}`，比较函数要处理类型断言
+
+```go
+// 按字符串长度排序
+s := SliceFn[string]{
+    S: []string{"hello", "hi", "world"},
+    Compare: func(a, b string) bool {
+        return len(a) < len(b)
+    },
+}
+sort.Sort(s)
+// 结果: ["hi", "hello", "world"]
+```
+
+这是泛型的另一个经典场景——算法抽象（排序、过滤、映射等）。
+
+
+**核心原则：**
+
+1. **需要时才用泛型**：getKeysGenerics 解决了具体问题（避免为每种 map 写重复代码）
+2. **不要过度约束**：comparable 通常足够，不要随意加 `~int | ~string`
+3. **容器和算法是泛型的最佳场景**：如 Node 链表、SliceFn 排序
+4. **类型安全优于 `any`**：getKeys 的反面教材告诉我们，用 any 并不比用泛型好
+
+**简言之：当你发现自己为不同类型写相同的逻辑时，考虑泛型；但不要为了"可能有用"而加泛型，这会让代码更难理解和维护。**
+
+
+
+
+
 ## 10. Not being aware of the possible problems with type embedding (类型嵌入风险)
 
 > TL;DR
@@ -2275,7 +2429,7 @@ project/
 * 易于维护：修改某个功能时只需关注单个目录
 * 符合微服务趋势：便于未来拆分为独立服务
 
-2. 按技术层（分层架构）
+按技术层（分层架构）
 
 ```text
 project/
@@ -2582,13 +2736,13 @@ com.company.util -> 包含 DateUtil, FileUtil, HttpUtil, EncryptionUtil
 **正面重构：这样，从包名就能立刻知道其核心职责**
 
 ```text
-com.company.**time**.DateParser (专注于时间相关)
+com.company.time.DateParser (专注于时间相关)
 
-com.company.**io**.FileReader (专注于输入输出)
+com.company.io.FileReader (专注于输入输出)
 
-com.company.**http**.client.HttpClient (专注于HTTP通信)
+com.company.http.client.HttpClient (专注于HTTP通信)
 
-com.company.**security**.encryption.Encryptor (专注于安全)
+com.company.security.encryption.Encryptor (专注于安全)
 ```
 
 
@@ -2607,11 +2761,11 @@ com.company.common -> 包含 OrderHelper, UserDto, ConfigConstants
 **正面重构：这强化了领域边界，让代码与业务结构对齐**
 
 ```text
-com.company.**order**.domain.OrderIdGenerator (属于order领域)
+com.company.order.domain.OrderIdGenerator (属于order领域)
 
-com.company.**user**.dto.UserResponse (属于user领域)
+com.company.user.dto.UserResponse (属于user领域)
 
-com.company.**configuration**.AppConfig (属于配置领域)
+com.company.configuration.AppConfig (属于配置领域)
 ```
 
 
@@ -2893,6 +3047,31 @@ Linters and formatters are a powerful way to improve the quality and consistency
 
 
 **核心观点：使用 linter 和格式化工具是提高 Go 代码质量的关键实践。它们能自动发现潜在问题、保持代码一致性，并强制执行最佳实践。**
+
+### 实践建议：如何避免 CI 集体失败
+
+书中推荐 golangci-lint 聚合多工具并行分析；落地时若配置不当，会出现 **所有 pipeline 同一时刻变红**——常见于 `linters.default: all` 或未 pin 工具版本，上游新增 linter / 升级 Release 后规则集突变。
+
+建议用法（与站内 [Golangci-lint 实战]({% post_url 2026-07-06-golangci-lint-in-action %}) 对齐）：
+
+| 做法 | 说明 |
+| :--- | :--- |
+| **Pin golangci-lint 版本** | 本地 `install.sh` 与 CI `golangci-lint-action` 的 `version:` 使用同一 Release（如 `v2.12.2`），禁止 `@latest` |
+| **显式 linter 白名单** | `default: standard` + `enable: [...]`，或 `default: none` 逐项开启；**生产门禁勿用 `default: all`** |
+| **升级单独 MR** | bump 版本 → 读 Changelog → 全量 `golangci-lint run` 修差异 → 再合并 |
+| **存量只卡新代码** | CI 配置 `issues.new-from-merge-base: main`，历史债务与工具升级解耦 |
+| **分层** | 编辑器 `--fast-only`；PR/CI 跑完整 `.golangci.yml` |
+
+最小 CI 示例：
+
+```yaml
+- uses: golangci/golangci-lint-action@v8
+  with:
+    version: v2.12.2
+    args: --timeout=5m
+```
+
+`.golangci.yml` 中 linter 集与版本号一并提交进 Git，作为团队契约；详见 [Golangci-lint 实战 — 如何应对双 pin]({% post_url 2026-07-06-golangci-lint-in-action %}#如何应对版本与-linter-集双-pin)。
 
 
 
