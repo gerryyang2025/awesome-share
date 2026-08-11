@@ -60,6 +60,29 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Words (柯林斯英汉双解大词典)
 
+
+* overwhelming /ˌəʊvəˈwelmɪŋ/
+  + ADJ If something is **overwhelming**, it affects you very strongly, and you do not know how to deal with it. 强悍而令人难以应对的
+    - The task won't feel so **overwhelming** if you break it down into small, easy-to-accomplish steps. 如果你把这个任务分解成一个个容易完成的小步骤，就不会觉得那么难以应对。
+  + ADJ You can use **overwhelming** to emphasize that an amount or quantity is much greater than other amounts or quantities. (数量上) 压倒性的
+    - The **overwhelming** majority of small businesses go broke within the first twenty-four months. 绝大多数的小公司在最初的24个月里破产。
+
+
+
+* idiomatic /ˌɪdiəˈmætɪk/
+  + ADJ **Idiomatic** language uses words in a way that sounds natural to native speakers of the language. 符合母语习惯用法的; 地道的
+    - her remarkable command of **idiomatic** English. 她对地道英语的娴熟把握。
+
+
+* revive /rɪˈvaɪv/
+  + V-T/V-I When something such as the economy, a business, a trend, or a feeling is **revived** or when it **revives**, it becomes active, popular, or successful again. 恢复; 复兴
+    - an attempt to **revive** the economy. 一次重振经济的尝试。
+  + V-T When someone **revives** a play, opera, or ballet, they present a new production of it. 重新上演 (作品的新版)
+    - His plays continue to be **revived** both here and abroad. 他的剧作在国内外继续重新上演。
+  + V-T/V-I If you revive someone who has fainted or if they **revive**, they become conscious again. 使苏醒; 苏醒
+    - She and a neighbour tried in vain to **revive** him. 她和一个邻居试图使他苏醒过来，却没有成功。
+
+
 * surge /sɜːdʒ/
   + N-COUNT A **surge** is a sudden large increase in something that has previously been steady, or has only increased or developed slowly. 剧增
     - Specialists see various reasons for the recent **surge** in inflation. 专家认为最近通货膨胀加剧有各种原因。
