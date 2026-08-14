@@ -61,6 +61,27 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 # Words (柯林斯英汉双解大词典)
 
 
+* brainstorming /ˈbreɪnstɔːmɪŋ/
+  + N-COUNT If you have a **brainstorm**, you suddenly have a clever idea. 突发的灵感
+  + V-T/V-I If a group of people **brainstorm**, they have a meeting in which they all put forward as many ideas and suggestions as they can think of. 开头脑风暴法讨论会
+    - The women meet twice a month to **brainstorm** and set business goals for each other. 这些妇女们一个月聚头两次来开头脑风暴会议,为彼此设定商业目标。
+    -  She **brainstormed** the possible approaches she might take. 她用头脑风暴法想出了她可以采取的可能方法。
+
+
+
+* secretary /ˈsɛkrətrɪ/
+  + N-COUNT A **secretary** is a person who is employed to do office work, such as typing letters, answering phone calls, and arranging meetings. 秘书
+  + N-COUNT The **secretary** of a company is the person who has the legal duty of keeping the company's records. (公司负责保管各种记录的) 干事
+  + N-COUNT/N-TITLE **Secretary** is used in the titles of high officials who are in charge of main government departments. 大臣; 部长
+
+
+* shorthand /ˈʃɔːtˌhænd/
+  + N-UNCOUNT **Shorthand** is a quick way of writing and uses signs to represent words or syllables. Shorthand is sometimes used by secretaries and journalists to write down what someone is saying. 速记法
+    - Ben took notes in **shorthand**. 本用速记法记笔记。
+  + N-UNCOUNT You can use **shorthand** to mean a quick or simple way of referring to something. 简约表达法
+    - Laslett uses the **shorthand** of "second age" for the group of younger people who are creating families. 拉斯莱特用“第二代”来简单指称那些更年轻、正在组建家庭的人。
+
+
 * overwhelming /ˌəʊvəˈwelmɪŋ/
   + ADJ If something is **overwhelming**, it affects you very strongly, and you do not know how to deal with it. 强悍而令人难以应对的
     - The task won't feel so **overwhelming** if you break it down into small, easy-to-accomplish steps. 如果你把这个任务分解成一个个容易完成的小步骤，就不会觉得那么难以应对。
