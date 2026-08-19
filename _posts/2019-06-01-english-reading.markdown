@@ -61,6 +61,13 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 # Words (柯林斯英汉双解大词典)
 
 
+* assimilate /əˈsɪməleɪt/
+  + V-T/V-I When people such as immigrants **assimilate into** a community or when that community assimilates them, they become an accepted part of it. 同化; 被同化
+    - There is every sign that new Asian-Americans are just as willing to **assimilate**. 各种迹象表明新的亚裔美籍人简直一样愿意被同化。
+  + V-T If you **assimilate** new ideas, customs, or techniques, you learn them or adopt them. 吸纳
+    - My mind could only **assimilate** one impossibility at a time. 我的头脑一次只能吸纳一件不可能的事情。
+
+
 * brainstorming /ˈbreɪnstɔːmɪŋ/
   + N-COUNT If you have a **brainstorm**, you suddenly have a clever idea. 突发的灵感
   + V-T/V-I If a group of people **brainstorm**, they have a meeting in which they all put forward as many ideas and suggestions as they can think of. 开头脑风暴法讨论会
