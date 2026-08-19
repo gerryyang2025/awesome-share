@@ -2,12 +2,14 @@
 layout: post
 title:  "Git in Action"
 date:   2018-10-15 13:00:00 +0800
-last_modified_at: 2026-06-25 19:55:10 +0800
+last_modified_at: 2026-08-19 10:30:36 +0800
 categories: 版本控制
 tags:
   - Git
   - 版本控制
+  - worktree
 toc: true
+mermaid: true
 
 ---
 
@@ -1392,6 +1394,174 @@ git push <remote> -u <new_name>
 * [How do I rename both a Git local and remote branch name?](https://stackoverflow.com/questions/30590083/how-do-i-rename-both-a-git-local-and-remote-branch-name/30590238#30590238)
 * [How do I rename a local Git branch?](https://stackoverflow.com/questions/6591213/how-do-i-rename-a-local-git-branch)
 
+同一时刻只在一个目录里干活，用上一节的 `git branch` 加上 [git switch](#切换分支---git-switch) 即可。需要**同时**检出多个分支、又不想 `stash` 打断当前脏工作区时，用下一节的 `git worktree`。
+{: .prompt-tip }
+
+
+
+## 工作树操作 - git worktree
+
+`git branch` 管的是**分支引用**（指向某次提交的指针）；`git worktree` 管的是**额外工作目录**。二者不是替代关系：创建、列出、删除分支仍然用 `git branch`；需要「同一个仓库、两套工作区同时干活」时才上 worktree。
+
+Git 2.5 起，一个仓库可以挂多个工作树：`git init` / `git clone` 得到的是**主工作树**（main worktree），再用 `git worktree add` 挂上**链接工作树**（linked worktree）。它们共享同一份对象库和 `refs/heads`，但各自有独立的 `HEAD`、暂存区和工作区文件。官方文档：[git-worktree](https://git-scm.com/docs/git-worktree)。
+
+```mermaid
+flowchart LR
+    subgraph gitdir [".git 对象库（共享）"]
+        OBJ[objects]
+        REFS["refs/heads/*"]
+    end
+    subgraph mainWT [主工作树]
+        MHEAD["HEAD → feat/login"]
+        MWD[工作区 / index]
+    end
+    subgraph linkedWT [链接工作树]
+        LHEAD["HEAD → hotfix"]
+        LWD[另一目录的工作区 / index]
+    end
+    OBJ --- MHEAD
+    OBJ --- LHEAD
+    REFS --- MHEAD
+    REFS --- LHEAD
+```
+
+### 与 `git branch` 的功能差异
+
+| 维度 | `git branch`（配合 `switch` / `checkout`） | `git worktree` |
+| :--- | :--- | :--- |
+| 操作对象 | 分支名（指针，约 41 字节） | 额外检出目录 |
+| 磁盘开销 | 几乎为零 | 工作区文件再占一份；**对象不复制** |
+| 同时检出 | 一个工作区同一时刻只能停在一个分支 | 多个目录可同时停在**不同**分支 |
+| 脏工作区要去修 bug | 先 `stash` / 提交 / 丢弃，再切分支 | 不必动当前目录，另开 worktree |
+| 删除命令 | `git branch -d` 删的是**分支名** | `git worktree remove` 删的是**目录**，分支还在 |
+| 典型搭档 | 日常串行开发 | 并行任务、紧急修复、多窗口 / 多代理 |
+
+同一条分支默认**不能**在两个 worktree 里同时检出（`add` 会拒绝；`--force` 或 `--detach` 才能绕过，日常不要这么做）。这是为了避免两个工作区同时改同一条分支的 index，把仓库改乱。
+
+> 官方举例：重构做到一半、工作区很乱，老板要立刻修线上问题。与其 `git stash` 冒险打乱现场，不如 `git worktree add -b emergency-fix ../temp master`，修完 `git worktree remove ../temp`，再回到原来的重构。
+{: .prompt-info }
+
+### 使用方法
+
+```bash
+# 列出主工作树和所有链接工作树
+git worktree list
+git worktree list -v
+
+# 在兄弟目录新建 worktree，并自动创建同名分支（基于当前 HEAD）
+# 例如路径 ../hotfix → 新分支 hotfix
+git worktree add ../hotfix
+
+# 检出已有分支到新目录（该分支不能已在别处检出）
+git worktree add ../feat-login feat/login
+
+# 从 master 拉出新分支，并放到新目录（官方紧急修复写法）
+git worktree add -b emergency-fix ../temp master
+
+# 一次性实验、不挂分支：分离 HEAD
+git worktree add --detach ../scratch HEAD
+
+# 基于远程分支（仅一个 remote 上有同名跟踪分支时，会自动 -b 并设 upstream）
+git fetch origin
+git worktree add ../feat-login feat/login
+
+# 用完后删除链接工作树（工作区必须干净；脏目录加 -f）
+git worktree remove ../temp
+git worktree remove -f ../temp
+
+# 主工作树不能 remove；若曾手工 rm -rf 目录，清掉残留元数据
+git worktree prune
+
+# 移动链接工作树（含 submodule 的、以及主工作树，不能用这条）
+git worktree move ../temp ../hotfix-pr-123
+
+# 手工挪过目录后，修复双向链接
+git worktree repair
+git worktree repair /new/path/to/linked
+
+# 便携盘 / 网络盘上的 worktree，避免被 gc 当成失效而 prune
+git worktree lock ../temp --reason "on USB drive"
+git worktree unlock ../temp
+```
+
+链接工作树的根目录里是一个 **`.git` 文件**（不是目录），指向主仓的 `.git/worktrees/<name>/`。对象、绝大多数 `refs/` 仍在主仓；每个 worktree 自己的 `HEAD`、index 放在那份子目录里。需要解析路径时用 `git rev-parse --git-path`，不要手写 `.git/...`。
+
+```bash
+# 在链接工作树里
+git rev-parse --git-path HEAD          # …/.git/worktrees/hotfix/HEAD
+git rev-parse --git-path refs/heads/master  # 主仓共享的分支
+```
+
+### 使用示例
+
+场景：主目录停在 `feat/login`，改了一半；同时要基于 `master` 修线上问题。
+
+```bash
+# 主工作树：~/src/awesome-share（当前分支 feat/login，工作区很脏）
+cd ~/src/awesome-share
+git status          # 先确认别误切分支
+
+# 另开兄弟目录，从 master 建 hotfix 分支
+git fetch origin
+git worktree add -b hotfix/timeout ~/src/awesome-share-hotfix origin/master
+
+cd ~/src/awesome-share-hotfix
+# 这里是干净的 hotfix 工作区；原来的 feat/login 目录原封不动
+git commit -am "fix: request timeout"
+git push -u origin hotfix/timeout
+
+cd ~/src/awesome-share
+git worktree remove ~/src/awesome-share-hotfix
+# 分支 hotfix/timeout 仍在，合完 PR 后再 git branch -d hotfix/timeout
+```
+
+`git worktree list` 类似：
+
+```text
+/Users/gerry/src/awesome-share          abcd1234 [feat/login]
+/Users/gerry/src/awesome-share-hotfix   5678abcd [hotfix/timeout]
+```
+
+同一仓库里，Cursor / Codex 等多代理并行改代码，也是给每个代理单独 worktree，避免抢同一个工作区。站内 [Cursor in Action]({% post_url 2025-03-11-cursor-in-action %})、[Codex in Action]({% post_url 2026-04-03-codex-in-action %})、[Superpowers 的 using-git-worktrees]({% post_url 2026-06-05-superpowers-in-action %}#2-using-git-worktrees--隔离开发) 都走这条隔离方式。
+
+### 推荐用法
+
+1. **主工作树尽量停在 `master` / `main`**，用来 pull、看历史、切只读浏览；功能开发放到链接 worktree。主目录长期停在脏功能分支，紧急修复时还是会手忙脚乱。
+2. **一个任务一个目录，放在仓库的兄弟路径**，例如 `~/src/repo` 与 `~/src/repo-feat-login`。不要把 worktree 建在主工作树**里面**（会被当成未跟踪目录，搜索、打包、部分工具也会误扫）。
+3. **创建时就把分支带上**：`git worktree add -b feat/foo ../repo-foo origin/master`，避免先 `git branch` 再忘了检出到哪个目录。
+4. **用 `remove` 收尾，不要只 `rm -rf`**。先提交或丢掉该目录的修改，再 `git worktree remove <path>`；若已经手动删了目录，再 `git worktree prune`。合完代码后，分支仍用 `git branch -d` 删。
+5. **依赖和构建产物按工作区各自装一份**。`node_modules`、编译缓存不在 Git 对象库里，新 worktree 是一份新的工作区文件，需要重新 `npm install` / 构建。
+6. **能串行就别开 worktree**。只是改两个提交、工作区干净，用 `git switch` 更轻。worktree 的价值是**并行**和**保住脏现场**，不是「另一种切分支」。
+7. **网络盘 / U 盘上的 worktree 要 `lock`**，否则主仓 `gc` 可能把元数据当成失效条目清掉。
+
+怎么选可以压成一张图：
+
+```mermaid
+flowchart TD
+    A{是否要同时保留当前工作区?} -->|否，可以切走| B{工作区干净?}
+    B -->|是| SW[git switch / checkout]
+    B -->|否| ST[git stash 再 switch]
+    A -->|是，当前改动不能动| WT[git worktree add]
+    WT --> C{是否已有目标分支?}
+    C -->|否| NB["git worktree add -b new-branch ../path start-point"]
+    C -->|是| EB["git worktree add ../path existing-branch"]
+```
+
+### 注意事项
+
+- **同一分支不能双开。** 已在主工作树检出的 `feat/login`，不能再 `git worktree add ../x feat/login`。要对照旧代码，用 `--detach` 指到某次提交，或从该分支再切一条新分支。
+- **删 worktree ≠ 删分支。** `remove` 只拆目录；误把「目录没了」当成「功能分支没了」，远端 PR 还在。
+- **配置默认共享。** `.git/config` 对所有 worktree 生效。某个 worktree 要单独的 sparse-checkout 等，需 `git config extensions.worktreeConfig true`，再用 `git config --worktree`。`core.worktree` 不要写进共享配置。
+- **子模块支持不完整。** 官方 BUGS 写明：不建议给含 submodule 的超项目做多工作树检出；含 submodule 的链接 worktree 也不能 `git worktree move`。
+- **主工作树搬家后链接会断。** 手工移动主仓或链接目录后跑 `git worktree repair`，不要只改路径期望 Git 自己跟上。
+- **Git 版本。** `worktree` 需要 Git ≥ 2.5；`repair`、`--orphan`、`worktree.useRelativePaths` 等是后续版本加上的，脚本里用新选项前先 `git worktree -h`。
+
+更多：
+
+* [git-worktree(1)](https://git-scm.com/docs/git-worktree)
+* [gitrepository-layout：worktrees 目录](https://git-scm.com/docs/gitrepository-layout)
+* [Atlassian：git worktree](https://www.atlassian.com/git/tutorials/git-worktree)
+
 
 
 ## 变基操作 - git rebase
@@ -1437,6 +1607,9 @@ $ git merge experiment
 ## 暂存操作 - git stash
 
 当前你在开发feature1分支，开发了一半，还要2天才能开发完成，这时候又不想提交。这时突然来了个bug，你必须今天就得修复bug，修复完了后才继续开发需求，怎么办？这里就使用到了暂存的功能。
+
+工作区文件很多、又增又删、`stash` 心里没底时，更稳妥的做法是开一个 [git worktree](#工作树操作---git-worktree) 去修 bug，主目录的半成品完全不用动。
+{: .prompt-tip }
 
 ```bash
 # 先把所有的修改暂存起来，这时候你的所有改动都好像消失了一样，但其实是被暂存起来了
@@ -2870,6 +3043,7 @@ refer:
 # Refer
 
 * [Scott Chacon, Ben Straub - Pro Git-Apress (2014)](https://git-scm.com/book/en/v2)
+* [git-worktree — Manage multiple working trees](https://git-scm.com/docs/git-worktree)
 * [图解Git](https://marklodato.github.io/visual-git-guide/index-zh-cn.html)
 * [阮一峰: 版本控制入门插图教程](http://www.ruanyifeng.com/blog/2008/12/a_visual_guide_to_version_control.html)
 * [阮一峰: Git远程操作详解](http://www.ruanyifeng.com/blog/2014/06/git_remote.html)
