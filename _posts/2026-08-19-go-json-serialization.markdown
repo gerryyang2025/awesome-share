@@ -2,7 +2,7 @@
 layout: post
 title:  "Go JSON 序列化对比：json-iterator 与主流编解码库"
 date:   2026-08-19 10:20:29 +0800
-last_modified_at: 2026-08-19 10:20:29 +0800
+last_modified_at: 2026-08-20 16:23:43 +0800
 description: "从 encoding/json 的反射开销出发，系统介绍 json-iterator 的原理、兼容迁移与配置档，并对照 easyjson、goccy/go-json、sonic、jsonparser 以及实验性 encoding/json/v2 的性能与选型。"
 categories: GoLang
 tags:
@@ -168,6 +168,66 @@ jsoniter.Get(val, "Colors", 0).ToString() // "Crimson"
 
 返回值是 `Any`，可 `ToString` / `ToInt` / `ToBool` 或继续 `Get`。适合日志里只抽一两个字段、网关只读 `code`/`msg` 的场景。若字段很多且类型稳定，结构体绑定仍然更快、更安全。
 
+### 为什么 Get 比 map[string]interface{} 快 {#get-vs-map}
+
+两条路径做的不是同一份工作。`Unmarshal` 进 `map[string]interface{}` 是先把整份 JSON **建成一棵通用 DOM**，再从树里取字段；`Get` 是在字节流上 **按路径定位，路过的节点只 skip、不解码**。官方迁移文档也写了这一点：比解析进 `map[string]interface{}` 更快，也更好读。源码在 [`locatePath` / `locateObjectField`](https://github.com/json-iterator/go/blob/v1.1.12/any.go)。
+
+```mermaid
+flowchart TB
+    JSON["JSON []byte"]
+    JSON --> MAP["Unmarshal 进 map[string]interface{}"]
+    JSON --> GET["jsoniter.Get(path...)"]
+    MAP --> TREE["每个 key 一张 map<br/>每个 array 一个 slice<br/>数字/bool 装箱成 interface{}"]
+    TREE --> IDX["再 m[\"Colors\"].([]interface{})[0]"]
+    GET --> SCAN["扫 key：不匹配则 Skip()"]
+    SCAN --> HIT["命中字段：切出原始 []byte"]
+    HIT --> LAZY["Any：object/array/number 仍可 lazy"]
+    LAZY --> TO["ToString / ToInt 才真正解析"]
+```
+
+以 `Get(val, "Colors", 0)` 为例，Iterator 会：
+
+1. 扫顶层 object 的 key。不是 `Colors` 的，对整段 value 调 `Skip()`：按括号配对跳过字符串、数字、嵌套结构，**不分配 Go 值**。
+2. 碰到 `Colors`，用 `SkipAndReturnBytes()` 把这段 value 的原始字节切出来，再在数组里数到下标 `0`。
+3. 只把这一个元素读成 `Any`。object / array / number 往往还是 lazy 的 `*objectLazyAny` 等，内部仍是 `[]byte`，直到 `ToString()` / `ToInt()` 才解析。
+
+`locateObjectField` 的逻辑可以直接读成「匹配才留下字节，否则 skip」：
+
+```go
+func locateObjectField(iter *Iterator, target string) []byte {
+    var found []byte
+    iter.ReadObjectCB(func(iter *Iterator, field string) bool {
+        if field == target {
+            found = iter.SkipAndReturnBytes()
+            return false
+        }
+        iter.Skip()
+        return true
+    })
+    return found
+}
+```
+
+`map[string]interface{}` 则每一层都要付完整语义转换的代价：
+
+| 开销 | `Unmarshal` → `map[string]interface{}` | `Get` 按路径 |
+|------|----------------------------------------|--------------|
+| 扫描范围 | 整份文档 | 路径上的 key，以及为找路径而 skip 的兄弟节点 |
+| 分配 | 每个 object 一张 map、每个 array 一个 slice、每个 string 一份拷贝 | 基本只有命中路径上的那几段 |
+| `interface{}` 装箱 | 每个数字 / bool 都装箱上堆 | 目标值才装箱，或 `ToInt` 直接成标量 |
+| 嵌套 | 深层结构整棵树都建好 | 未走到的子树保持原始字节 |
+| 取完之后 | 还要断言 `m["Colors"].([]interface{})[0].(string)` | `ToString()` 直接取出 |
+
+所以快的本质是：**少做语义转换，多做字节级跳过**。jsoniter 主页把这套 `Any` 称为 lazy parsing：没读到的部分保持 JSON 原文，性能会明显好于 `Map<String, Object>` 那种通用 DOM。
+
+两个边界：
+
+- 目标字段在很大的 object **末尾**时，前面的 key 仍要扫一遍。skip 比解码便宜，但不是零成本。
+- 随后对 `Any` 调 `GetInterface()`、`Keys()`，或把整棵树走完，lazy 优势就没了，接近又做了一次通用解码。
+
+> 只抽一两个字段时用 `Get`（以及 jsonparser、gjson）。字段几乎都要用，还是具体结构体更快、更安全，不要为了「不用定义类型」先 Unmarshal 成 `map[string]any`。
+{: .prompt-tip }
+
 ## 复用 Iterator / Stream
 
 官方「绝对性能」清单里，除了 `ConfigFastest`，就是把底层实例还回池子：
@@ -293,7 +353,7 @@ id := jsoniter.Get(raw, "user", "id").ToInt()
 role0 := jsoniter.Get(raw, "user", "roles", 0).ToString()
 ```
 
-适合 schema 不稳定、或只关心几个字段的遥测数据。错误路径上 `Any` 会变成 invalid，调用方应检查 `LastError()` / `ValueType()`，不要默认 `ToInt()` 的零值就是业务零。
+适合 schema 不稳定、或只关心几个字段的遥测数据。底层为何比 `map[string]interface{}` 便宜，见上文 [为什么 Get 比 map[string]interface{} 快](#get-vs-map)。错误路径上 `Any` 会变成 invalid，调用方应检查 `LastError()` / `ValueType()`，不要默认 `ToInt()` 的零值就是业务零。
 
 # 主流编解码库对照 {#landscape}
 
@@ -541,6 +601,7 @@ json-iterator 证明了一件事：在不牺牲 `encoding/json` 手感的前提�
 
 - [json-iterator/go](https://github.com/json-iterator/go) — 仓库（已归档）、官方基准与 drop-in 示例
 - [Migrate from go standard library](https://jsoniter.com/migrate-from-go-std.html) — 兼容替换、`Get`、三套 Config、Borrow API
+- [jsoniter Any / locatePath 源码](https://github.com/json-iterator/go/blob/v1.1.12/any.go) — 路径查找时对未命中字段 `Skip`，命中值可 lazy 保留 `[]byte`
 - [encoding/json](https://pkg.go.dev/encoding/json) — 标准库文档
 - [A new experimental Go API for JSON](https://go.dev/blog/jsonv2-exp) — `json/v2` 与 `jsontext` 设计动机
 - [goccy/go-json](https://github.com/goccy/go-json) — opcode / typeptr 实现说明与库对比表
