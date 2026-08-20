@@ -2,7 +2,7 @@
 layout: post
 title:  "Go JSON 序列化对比：json-iterator 与主流编解码库"
 date:   2026-08-19 10:20:29 +0800
-last_modified_at: 2026-08-20 16:23:43 +0800
+last_modified_at: 2026-08-20 16:43:22 +0800
 description: "从 encoding/json 的反射开销出发，系统介绍 json-iterator 的原理、兼容迁移与配置档，并对照 easyjson、goccy/go-json、sonic、jsonparser 以及实验性 encoding/json/v2 的性能与选型。"
 categories: GoLang
 tags:
@@ -174,15 +174,15 @@ jsoniter.Get(val, "Colors", 0).ToString() // "Crimson"
 
 ```mermaid
 flowchart TB
-    JSON["JSON []byte"]
-    JSON --> MAP["Unmarshal 进 map[string]interface{}"]
-    JSON --> GET["jsoniter.Get(path...)"]
-    MAP --> TREE["每个 key 一张 map<br/>每个 array 一个 slice<br/>数字/bool 装箱成 interface{}"]
-    TREE --> IDX["再 m[\"Colors\"].([]interface{})[0]"]
-    GET --> SCAN["扫 key：不匹配则 Skip()"]
-    SCAN --> HIT["命中字段：切出原始 []byte"]
-    HIT --> LAZY["Any：object/array/number 仍可 lazy"]
-    LAZY --> TO["ToString / ToInt 才真正解析"]
+    JSON[JSON 字节]
+    JSON --> MAP[Unmarshal 进通用 map]
+    JSON --> GET[jsoniter Get 按路径]
+    MAP --> TREE[为每个字段建 map 和 slice]
+    TREE --> IDX[再从 map 里断言取值]
+    GET --> SCAN[扫 key 不匹配则 Skip]
+    SCAN --> HIT[命中字段切出原始字节]
+    HIT --> LAZY[Any 保持 lazy]
+    LAZY --> TO[ToString 或 ToInt 才解析]
 ```
 
 以 `Get(val, "Colors", 0)` 为例，Iterator 会：
