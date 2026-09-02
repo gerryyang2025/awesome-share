@@ -61,6 +61,20 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 # Words (柯林斯英汉双解大词典)
 
 
+* eligible /ˈɛlɪdʒəbəl/
+  + ADJ Someone who is **eligible** to do something is qualified or able to do it, for example, because they are old enough. 有资格的
+    - Almost half the population are **eligible** to vote in today's election. 将近一半的居民有资格在今天的选举中投票。
+  + ADJ An **eligible** man or woman is not yet married and is thought by many people to be a suitable partner. (指结婚对象) 令人中意的
+    - He's the most **eligible** bachelor in Japan. 他是日本最令人中意的单身汉。
+
+
+
+* topology /təˈpɒlədʒi/
+  + N the branch of mathematics concerned with generalization of the concepts of continuity, limit, etc 拓扑学
+    - network topology [计]网络拓扑结构
+    - topology structure [计]拓扑结构
+
+
 * assimilate /əˈsɪməleɪt/
   + V-T/V-I When people such as immigrants **assimilate into** a community or when that community assimilates them, they become an accepted part of it. 同化; 被同化
     - There is every sign that new Asian-Americans are just as willing to **assimilate**. 各种迹象表明新的亚裔美籍人简直一样愿意被同化。
