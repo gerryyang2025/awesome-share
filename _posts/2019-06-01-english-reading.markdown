@@ -61,6 +61,10 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 # Words (柯林斯英汉双解大词典)
 
 
+* tooltip
+  + N Computing a message which appears when a cursor is positioned over an icon, image, hyperlink, or other element in a graphical user interface [计算机] 工具提示，信息提示（当光标置于图标，画像，超链接或图形用户界面中的其他内容时所显示的信息）
+
+
 * eligible /ˈɛlɪdʒəbəl/
   + ADJ Someone who is **eligible** to do something is qualified or able to do it, for example, because they are old enough. 有资格的
     - Almost half the population are **eligible** to vote in today's election. 将近一半的居民有资格在今天的选举中投票。
