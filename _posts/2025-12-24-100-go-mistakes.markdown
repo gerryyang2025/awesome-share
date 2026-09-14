@@ -4304,19 +4304,1250 @@ func readAll(r io.Reader) ([]byte, error) {
 
 
 
+## 22. Being confused about nil vs. empty slice
+
+> TL;DR
+>
+> **To prevent common confusions such as when using the `encoding/json` or the `reflect` package, you need to understand the difference between nil and empty slices. Both are zero-length, zero-capacity slices, but only a nil slice doesn’t require allocation.**
+
+In Go, there is a distinction between **nil** and **empty slices**. A nil slice is equals to `nil`, whereas an empty slice has a length of zero. A nil slice is empty, but an empty slice isn’t necessarily `nil`. Meanwhile, a nil slice doesn’t require any allocation. We have seen throughout this section how to initialize a slice depending on the context by using
+
+* `var s []string` if we aren’t sure about the final length and the slice can be empty
+* `[]string(nil)` as syntactic sugar to create a nil and empty slice
+* `make([]string, length)` if the future length is known
+
+The last option, `[]string{}`, should be avoided if we initialize the slice without elements. Finally, let’s check whether the libraries we use make the distinctions between nil and empty slices to prevent unexpected behaviors.
+
+
+核心问题：在 Go 中，**nil 切片**和**空切片**都是长度为 0、容量为 0 的切片，但它们并不等价。混淆两者会导致在 `encoding/json`、`reflect` 等场景下出现意外行为。
+
+![slice-10](/assets/images/202608/slice-10.png)
+
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var s []string
+	log(1, s)
+
+	s = []string(nil)
+	log(2, s)
+
+	s = []string{}
+	log(3, s)
+
+	s = make([]string, 0)
+	log(4, s)
+}
+
+func log(i int, s []string) {
+	fmt.Printf("%d: empty=%t\tnil=%t\n", i, len(s) == 0, s == nil)
+}
+```
+
+输出结果：
+
+```
+1: empty=true   nil=true     // var s []string
+2: empty=true   nil=true     // []string(nil)
+3: empty=true   nil=false    // []string{}
+4: empty=true   nil=false    // make([]string, 0)
+```
+
+* 方式 1 和 2 创建的是 nil 切片（s == nil 为 true）
+* 方式 3 和 4 创建的是 空切片（s == nil 为 false）
+
+![slice-11](/assets/images/202608/slice-11.png)
+
+> **重要**：空切片虽然长度为 0，但它的指针**不是 nil**，而是指向一个特殊的零大小内存地址 `runtime.zerobase`。因此，在某些需要判断"是否为空"的场景下，行为会与 nil 切片不同。
+
+
+JSON 序列化（最常见的陷阱）：
+
+```go
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+)
+
+type customer struct {
+    ID         string
+    Operations []float32
+}
+
+func main() {
+    // nil 切片
+    var s1 []float32
+    customer1 := customer{
+        ID:         "foo",
+        Operations: s1,
+    }
+    b, _ := json.Marshal(customer1)
+    fmt.Println(string(b))
+    // 输出: {"ID":"foo","Operations":null}
+
+    // 空切片
+    s2 := make([]float32, 0)
+    customer2 := customer{
+        ID:         "bar",
+        Operations: s2,
+    }
+    b, _ = json.Marshal(customer2)
+    fmt.Println(string(b))
+    // 输出: {"ID":"bar","Operations":[]}
+}
+```
+
+关键差异：
+
+* **nil 切片** 被 `json.Marshal` 序列化为 `null`
+* **空切片** 被 `json.Marshal` 序列化为 `[]`
+
+这对 API 设计非常重要！如果客户端期望收到 `[]` 而不是 `null`，必须使用空切片。
+
+
+
+
+## 23. Not properly checking if a slice is empty
+
+> TL;DR
+>
+> **To check if a slice doesn’t contain any element, check its length. This check works regardless of whether the slice is `nil` or empty. The same goes for maps. To design unambiguous APIs, you shouldn’t distinguish between nil and empty slices.**
+
+To determine whether a slice has elements, we can either do it by checking if the slice is nil or if its length is equal to 0. Checking the length is the best option to follow as it will cover both if the slice is empty or if the slice is nil.
+
+Meanwhile, when designing interfaces, we should avoid distinguishing nil and empty slices, which leads to subtle programming errors. When returning slices, it should make neither a semantic nor a technical difference if we return a nil or empty slice. Both should mean the same thing for the callers. This principle is the same with maps. To check if a map is empty, check its length, not whether it’s nil.
+
+核心问题：在检查切片是否包含元素时，**应该检查长度 `len(s) != 0`，而不是检查是否为 `nil`**。因为 `len(s)` 的判断方式同时覆盖了 nil 切片和空切片两种情况，是更健壮、更符合 Go 惯用法的做法。
+
+
+
+```go
+package main
+
+func handleOperations1(id string) {
+    operations := getOperations(id)
+    // ❌ 错误：只检查了 nil，会漏掉空切片的情况
+    if operations != nil {
+        handle(operations)
+    }
+}
+
+func handleOperations2(id string) {
+    operations := getOperations(id)
+    // ✅ 正确：检查长度，同时覆盖 nil 和空切片
+    if len(operations) != 0 {
+        handle(operations)
+    }
+}
+
+func getOperations(id string) []float32 {
+    operations := make([]float32, 0)  // 这是空切片，不是 nil
+    if id == "" {
+        return operations
+    }
+    // 添加元素...
+    return operations
+}
+
+func handle(operations []float32) {}
+```
+
+设计 API 的原则：
+
+> **核心原则**：在设计和实现接口时，**不应该区分 nil 切片和空切片**。对调用者而言，两者应该意味着同一件事：**没有元素**。
+
+```go
+// ✅ 好的 API 设计：调用者无需关心返回的是 nil 还是空切片
+func GetItems(id string) []Item {
+    // 有时可能返回 nil
+    if id == "" {
+        return nil
+    }
+    // 有时可能返回空切片
+    items := make([]Item, 0)
+    // ... 填充逻辑
+    return items
+}
+
+// 调用者统一使用 len() 检查
+func process(id string) {
+    items := GetItems(id)
+    if len(items) == 0 {
+        // 统一处理"无数据"的情况
+        return
+    }
+    // 处理有元素的情况
+}
+```
+
+总结：
+
+* 核心原则：**检查切片是否为空，永远使用 `len(s) == 0`，而不是 `s == nil`**。这一规则同时适用于切片和 map。
+* 在设计 API 时，**不应该让调用者区分 nil 切片和空切片**——两者对调用者应该意味着完全相同的事情：**没有元素**。这样能避免细微的编程错误，让代码更健壮、更易维护。
+* 记住这个简单规则：**要判断"有没有元素"，问长度；不要问是否为 nil**。
+
+
+## 24. Not making slice copies correctly
+
+> TL;DR
+>
+> **To copy one slice to another using the `copy` built-in function, remember that the number of copied elements corresponds to the minimum between the two slice’s lengths.**
+
+Copying elements from one slice to another is a reasonably frequent operation. When using copy, we must recall that the number of elements copied to the destination corresponds to the minimum between the two slices’ lengths. Also bear in mind that other alternatives exist to copy a slice, so we shouldn’t be surprised if we find them in a codebase.
+
+核心问题：使用内置的 `copy` 函数复制切片时，**实际复制的元素数量等于两个切片长度的最小值**。如果目标切片（dst）长度不足，`copy` 不会自动扩容，也不会 panic，而是**静默地只复制一部分元素**——这是最常见的错误来源。
+
+`copy` 函数的行为规则：**实际复制元素数量 = min(len(dst), len(src))**
+
+```go
+func copy(dst, src []T) int
+```
+
+`copy` 返回实际复制的元素个数，但它不会：
+
+* 自动扩容目标切片
+* 在长度不足时 panic
+* 复制整个源切片（如果目标太短）
+
+问题代码演示：
+
+```go
+package main
+
+import "fmt"
+
+func bad() {
+    src := []int{0, 1, 2}
+    var dst []int          // ⚠️ len(dst) = 0，cap(dst) = 0
+    n := copy(dst, src)    // min(0, 3) = 0，什么都不复制
+    fmt.Println(dst)       // 输出: []
+    fmt.Println(n)         // 输出: 0
+}
+
+func correct() {
+    src := []int{0, 1, 2}
+    dst := make([]int, len(src))  // ✅ 长度与源切片一致
+    n := copy(dst, src)           // min(3, 3) = 3
+    fmt.Println(dst)              // 输出: [0 1 2]
+    fmt.Println(n)                // 输出: 3
+}
+
+func main() {
+    bad()
+    correct()
+}
+```
+
+输出：
+
+```
+bad()     → []
+correct() → [0 1 2]
+```
+
+正确的复制方式：
+
+> 方式1：使用 make + copy（推荐）
+
+优点：显式、高效、语义清晰。
+
+```go
+src := []int{0, 1, 2}
+dst := make([]int, len(src))
+copy(dst, src)
+```
+
+> 方式2：使用 append（简洁）
+
+优点：一行代码，自动处理长度。
+缺点：可能多次分配（不过 Go 会优化），略微不如方式1直观。
+
+```go
+src := []int{0, 1, 2}
+dst := append([]int(nil), src...)
+// 或
+dst := append([]int{}, src...)
+```
+
+> 方式3：使用 slices.Clone（Go 1.21+，最推荐）
+
+优点：语义最清晰，官方推荐。slices.Clone 会自动处理 nil 切片（返回 nil）和长度。
+
+```go
+import "slices"
+
+src := []int{0, 1, 2}
+dst := slices.Clone(src)
+```
+
+总结：
+
+* 核心原则：`copy` 复制的元素数量是 `min(len(dst), len(src))`。**使用 `copy` 前必须确保目标切片长度足够，否则会静默丢失数据**。
+* 推荐的复制方式（按优先级）：
+  + `slices.Clone(src)`（Go 1.21+，语义最清晰）
+  + `make([]T, len(src)) + copy(dst, src)`（通用）
+  + `append([]T(nil), src...)`（简洁）
+* 永远不要对 nil 或空切片直接使用 `copy` 期望它能自动扩容——它不会，它只会默默复制 0 个元素。
+
+
+
+## 25. Unexpected side effects using slice append
+
+> TL;DR
+>
+> **Using copy or the full slice expression is a way to prevent `append` from creating conflicts if two different functions use slices backed by the same array. However, only a slice copy prevents memory leaks if you want to shrink a large slice.**
+
+When using slicing, we must remember that we can face a situation leading to unintended side effects. If the resulting slice has a length smaller than its capacity, append can mutate the original slice. If we want to restrict the range of possible side effects, we can use either a slice copy or the full slice expression, which prevents us from doing a copy.
+
+Note: `s[low:high:max]` (full slice expression): This statement creates a slice similar to the one created with `s[low:high]`, except that the resulting slice’s capacity is equal to `max - low`.
+
+核心问题：当两个不同的函数共享同一个底层数组的切片时，**如果某个切片的长度小于其容量，对它执行 `append` 操作会直接修改底层数组**，从而影响到其他引用同一数组的切片——即使这些切片在逻辑上看起来是"独立的"。
+
+问题根源：共享底层数组
+
+回顾切片的结构：一个切片由**指针、长度、容量**三部分组成。切片操作（如 `s[:2]`）创建的新切片**与原始切片共享同一个底层数组**，只是指针位置、长度、容量不同。
+
+如果新切片的**长度 < 容量**，那么 append 会直接在底层数组的空闲位置写入数据，**不会分配新数组**，从而产生副作用。
+
+
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	listing1()
+	listing2()
+	listing3()
+}
+
+func listing1() {
+    s := []int{1, 2, 3}   // len=3, cap=3
+    f(s[:2])              // 传入 s[:2]，len=2, cap=3
+    fmt.Println(s)        // 输出: [1 2 10]
+}
+
+func listing2() {
+    s := []int{1, 2, 3}
+    sCopy := make([]int, 2)   // 创建独立的新切片
+    copy(sCopy, s)            // 复制前 2 个元素
+    f(sCopy)                  // 传入独立的切片
+    result := append(sCopy, s[2])
+    fmt.Println(result)       // 输出: [1 2 3]
+}
+
+func listing3() {
+    s := []int{1, 2, 3}
+    f(s[:2:2])           // 完整切片表达式，限制容量
+    fmt.Println(s)       // 输出: [1 2 3]
+}
+
+func f(s []int) {
+	_ = append(s, 10)
+}
+```
+
+> listing1：直接切片，产生副作用
+
+
+![slice-12](/assets/images/202608/slice-12.png)
+
+关键点：`s[:2]` 的容量是 3（从索引 0 到数组末尾），长度为 2。`append` 时长度小于容量，所以**直接在底层数组的索引 2 处写入 10**。由于 `s` 也引用同一个底层数组，`s` 的第三个元素被悄悄修改了！
+
+> listing2：使用 copy 避免副作用
+
+关键点：`sCopy` 是通过 `make` + `copy` 创建的，**拥有独立的底层数组**。`append` 时长度等于容量，触发扩容，分配新数组。因此 `s` 完全不受影响。
+
+> listing3：使用完整切片表达式避免副作用
+
+完整切片表达式语法：`s[low:high:max]`
+
+* 结果切片长度 = high - low
+* 结果切片容量 = max - low
+
+关键点：`s[:2:2]` 将容量限制为 2（等于长度）。`append` 时长度等于容量，触发扩容，分配新数组。因此 `s` 不受影响。
+
+完整切片表达式详解：
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    s := []int{1, 2, 3, 4, 5}  // len=5, cap=5
+
+    // 普通切片
+    s1 := s[1:3]        // len=2, cap=4（从索引1到数组末尾）
+    fmt.Printf("s1: len=%d, cap=%d, %v\n", len(s1), cap(s1), s1)
+
+    // 完整切片表达式
+    s2 := s[1:3:3]      // len=2, cap=2（max-low = 3-1 = 2）
+    fmt.Printf("s2: len=%d, cap=%d, %v\n", len(s2), cap(s2), s2)
+
+    // 对比 append 行为
+    s1 = append(s1, 100)  // len=2 < cap=4，修改底层数组
+    fmt.Printf("s:  %v\n", s)   // s 被修改！[1 2 3 100 5]
+
+    s = []int{1, 2, 3, 4, 5}   // 重置
+    s3 := s[1:3:3]
+    s3 = append(s3, 100)       // len=2 == cap=2，扩容，不影响 s
+    fmt.Printf("s:  %v\n", s)  // s 未被修改 [1 2 3 4 5]
+}
+```
+
+![slice-13](/assets/images/202608/slice-13.png)
+
+
+关键区别：
+
+* **完整切片表达式**只限制了容量，**仍然共享底层数组**。它通过让 len == cap 来强制 append 触发扩容，从而避免副作用。**但它无法防止内存泄漏**——因为新切片仍然引用着大数组。
+* **切片复制**创建了**全新的底层数组**，既防止副作用，又防止内存泄漏。
+
+内存泄漏问题：为什么完整切片表达式不够？
+
+```go
+package main
+
+import "fmt"
+
+// 返回一个大切片的一小部分
+func getSmallSlice() []int {
+    big := make([]int, 1_000_000)
+    // 填充数据...
+    return big[:10:10]  // ⚠️ 仍然引用大数组！
+    // 整个 1_000_000 元素的数组无法被 GC 回收
+}
+
+// ✅ 正确做法：使用 copy
+func getSmallSliceSafely() []int {
+    big := make([]int, 1_000_000)
+    // 填充数据...
+    small := make([]int, 10)
+    copy(small, big[:10])
+    return small  // 独立数组，big 可被 GC 回收
+}
+```
+
+
+总结：
+
+* 核心原则：切片操作（如 `s[:2]`）创建的新切片**与原始切片共享底层数组**。如果新切片的长度小于容量，对其执行 `append` **会直接修改底层数组**，产生意外的副作用。
+* 两种防护手段：
+  + **完整切片表达式** `s[low:high:max]`：零成本，通过限制容量强制 `append` 扩容，**防止副作用但不防内存泄漏**
+  + **切片复制** `make` + `copy`：有成本，创建独立底层数组，**同时防止副作用和内存泄漏**
+* 选择哪种方式取决于具体需求：只关心副作用时用完整切片表达式；需要长期持有小切片或关心内存时用复制。
+
+
+## 26. Slices and memory leaks
+
+> TL;DR
+>
+> **Working with a slice of pointers or structs with pointer fields, you can avoid memory leaks by marking as nil the elements excluded by a slicing operation.**
+
+切片操作可能引发的两类内存泄漏问题，以及对应的解决方案.
+
+
+**Leaking capacity**
+
+Remember that slicing a large slice or array can lead to potential high memory consumption. The remaining space won’t be reclaimed by the GC, and we can keep a large backing array despite using only a few elements. Using a slice copy is the solution to prevent such a case.
+
+问题本质：当你从一个大切片或大数组中截取出一小部分时，新切片仍然引用着整个底层数组。即使你只使用其中几个元素，剩余的空间也不会被 GC 回收。
+
+```go
+func consumeMessages() {
+    for {
+        msg := receiveMessage()          // 每次接收 1MB 的消息
+        storeMessageType(getMessageType(msg))  // 只存储前 5 字节
+    }
+}
+
+func getMessageType(msg []byte) []byte {
+    return msg[:5]                       // ⚠️ 仍引用 1MB 的底层数组
+}
+
+func receiveMessage() []byte {
+    return make([]byte, 1_000_000)       // 1MB
+}
+```
+
+关键点：`msg[:5]` 的容量仍然是 1MB（从索引 0 到数组末尾）。只要这个切片被存储、被引用，整个 1MB 的底层数组就无法被 GC 回收。循环中每次处理一条消息，就**会泄漏约 1MB 内存**。
+
+解决方案：使用 `copy`
+
+```go
+func getMessageTypeWithCopy(msg []byte) []byte {
+    msgType := make([]byte, 5)    // 分配一个只有 5 字节的新数组
+    copy(msgType, msg)            // 只复制前 5 字节
+    return msgType                // 独立的 5 字节数组
+}
+```
+
+核心原则：如果要长期持有大切片的一小部分，**必须使用 `copy` 创建独立副本**，而不是直接切片。
+
+
+
+**Slice and pointers**
+
+When we use the slicing operation with pointers or structs with pointer fields, we need to know that the GC won’t reclaim these elements. In that case, the two options are to either perform a copy or explicitly mark the remaining elements or their fields to `nil`.
+
+问题本质：当切片元素是指针或包含指针字段的结构体时，即使切片操作后长度变小，被排除的元素仍然被底层数组引用，GC 无法回收它们指向的内存。
+
+
+```go
+type Foo struct {
+    v []byte    // 指针字段，指向 1MB 的内存
+}
+
+func main() {
+    foos := make([]Foo, 1_000)    // 1000 个 Foo 元素
+
+    for i := 0; i < len(foos); i++ {
+        foos[i] = Foo{
+            v: make([]byte, 1024*1024),  // 每个 Foo 持有 1MB
+        }
+    }
+    // 此时总共约 1000MB = 1GB
+
+    two := keepFirstTwoElementsOnly(foos)
+    runtime.GC()
+    printAlloc()
+    runtime.KeepAlive(two)
+}
+
+func keepFirstTwoElementsOnly(foos []Foo) []Foo {
+    return foos[:2]    // ⚠️ 仍引用 1000 个 Foo 的底层数组
+}
+```
+
+关键点：`foos[:2]` 长度虽然只有 2，但容量仍是 1000。底层数组的 1000 个 `Foo` 元素都还在，每个 `Foo.v` 都指向一块 1MB 的内存。GC 看到 two 引用了这个数组，就认为所有 1000 个元素都还在使用，因此所有 1MB 内存块都无法回收。
+
+两种解决方案
+
+方案1：使用 copy 创建独立副本
+
+```go
+func keepFirstTwoElementsOnlyCopy(foos []Foo) []Foo {
+    res := make([]Foo, 2)    // 只分配 2 个元素的数组
+    copy(res, foos)          // 复制前 2 个
+    return res               // 独立的 2 个元素
+}
+```
+
+效果：
+
+* 新数组只有 2 个 Foo，它们的 v 指向 2 块 1MB 内存
+* 原 1000 个元素的数组无引用，可被 GC 回收
+* 剩余 998 个 Foo.v 指向的 1MB 内存也被回收
+* 内存从 1GB 降到约 2MB
+
+方案2：将剩余元素的指针字段置为 nil
+
+```go
+func keepFirstTwoElementsOnlyMarkNil(foos []Foo) []Foo {
+    for i := 2; i < len(foos); i++ {
+        foos[i].v = nil    // 将不需要的元素的指针字段置 nil
+    }
+    return foos[:2]
+}
+```
+
+效果：
+
+* 底层数组仍是 1000 个元素（没有复制）
+* 但索引 2 到 999 的 Foo.v 都被置为 nil
+* 这些 nil 不再引用 1MB 内存块，GC 可以回收它们
+* 内存从 1GB 降到约 2MB + 数组本身开销
+
+
+总结：
+
+* 核心原则：切片操作**共享底层数组**，这会导致两类内存泄漏：
+  + **泄漏容量**：大数组的小切片长期持有整个大数组，使用 `copy` 解决。
+  + **切片与指针**：被排除的元素仍被底层数组引用，其指针字段指向的内存无法回收。使用 `copy` 或将剩余元素置 `nil` 解决。
+* 关键判断：如果切片元素包含指针（如 `[]*T`、`[]struct{ ptr *T }`），泄漏的不仅是数组本身，还有指针指向的所有内存——这类泄漏往往非常严重。纯值类型切片的泄漏通常只是数组本身，影响相对较小。
+* 选择方案：需要独立副本时用 `copy`；能修改原切片且希望复用底层数组时，将不需要的元素置 `nil` 是更高效的方式。
+
+
+
+## 27. Inefficient map initialization
+
+> TL;DR
+>
+> **When creating a map, initialize it with a given length if its length is already known. This reduces the number of allocations and improves performance.**
+
+A map provides an unordered collection of key-value pairs in which all the keys are distinct. In Go, a map is based on the hash table data structure. Internally, a hash table is an array of buckets, and each bucket is a pointer to an array of key-value pairs.
+
+If we know up front the number of elements a map will contain, we should create it by providing an initial size. Doing this avoids potential map growth, which is quite heavy computation-wise because it requires reallocating enough space and rebalancing all the elements.
+
+
+核心问题：创建 map 时，如果预先知道最终元素数量，却没有提供初始容量，会导致 map 在插入过程中多次扩容（grow）——每次扩容都需要重新分配内存并重新哈希（rehash）所有已存在的元素，开销很大。
+
+
+**Go map 的底层结构**
+
+Go 的 map 基于**哈希表**实现，其内部结构大致如下：
+
+![slice-14](/assets/images/202608/slice-14.png)
+
+关键点：
+
+* map 由一组 **bucket（桶）** 组成，每个桶默认存放 8 个键值对
+* 当元素数量超过负载因子阈值（约 6.5 个/桶）时，map 会**触发扩容**
+* 扩容时，Go 会分配**两倍**大小的新 buckets 数组，并**逐步迁移（rehash）所有元素**
+* 这个过程成本很高，尤其在元素量大时
+
+问题代码对比：
+
+
+```go
+package main
+
+import "testing"
+
+const n = 1_000_000
+
+var global map[int]struct{}
+
+// ❌ 未指定容量：会多次扩容
+func BenchmarkMapWithoutSize(b *testing.B) {
+    var local map[int]struct{}
+    for i := 0; i < b.N; i++ {
+        m := make(map[int]struct{})    // 容量未知
+        for j := 0; j < n; j++ {
+            m[j] = struct{}{}          // 插入过程中反复扩容
+        }
+    }
+    global = local
+}
+
+// ✅ 指定容量：一次分配到位
+func BenchmarkMapWithSize(b *testing.B) {
+    var local map[int]struct{}
+    for i := 0; i < b.N; i++ {
+        m := make(map[int]struct{}, n)  // 预分配足够容量
+        for j := 0; j < n; j++ {
+            m[j] = struct{}{}           // 无需扩容
+        }
+    }
+    global = local
+}
+```
+
+在典型机器上运行上述基准测试，结果大致如下：**性能提升约 2 倍，元素量越大，差距越明显。**
+
+```
+BenchmarkMapWithoutSize-8    1    2500000000 ns/op    // 约 2.5 秒
+BenchmarkMapWithSize-8       1    1200000000 ns/op    // 约 1.2 秒
+```
+
+> 注意：map 的 `make` 第二个参数是**提示（hint）**，不是精确容量。Go 运行时会根据这个值计算合适的桶数量，但实际容量可能略大于或小于这个值。
+
+
+总结：
+
+* 核心原则：创建 map 时，**如果预先知道元素数量，一定要通过 `make(map[K]V, size)` 指定初始容量**。这能避免 map 在插入过程中反复扩容，每次扩容都需要重新分配内存并重新哈希所有元素，开销很大。
+* 典型收益：**性能提升约 2 倍，内存分配次数从 `O(log n)` 降到 1 次，GC 压力显著降低。**
+* 使用建议：
+  + 精确知道 → 用精确值
+  + 大致知道 → 用估算值（宁少勿多）
+  + 完全未知 → 不指定，让运行时自动处理
+  + 小 map 或短生命周期 → 无需预分配
+* 这与切片初始化的原则一致：**给运行时一个"提示"，让它一次分配到位，避免动态增长的开销**。
+
+
+
+## 28. Maps and memory leaks
+
+> TL;DR
+>
+> **A map can always grow in memory, but it never shrinks. Hence, if it leads to some memory issues, you can try different options, such as forcing Go to recreate the map or using pointers.**
+
+
+核心问题：Go 中的 map 只会增长，永远不会收缩。即使删除了所有元素并触发 GC，map 占用的桶（bucket）数量也不会减少——删除操作只是把桶中的槽位清零，而不是释放桶本身。
+
+
+
+
+Read the full section [here](https://100go.co/28-maps-memory-leaks/).
+
+When working with maps in Go, we need to understand some important characteristics of how a map grows and shrinks. Let’s delve into this to prevent issues that can cause memory leaks.
+
+First, to view a concrete example of this problem, let’s design a scenario where we will work with the following map:
+
+```go
+m := make(map[int][128]byte)
+```
+
+Each value of `m` is an array of 128 bytes. We will do the following:
+
+1. Allocate an empty map.
+2. Add 1 million elements.
+3. Remove all the elements, and run a Garbage Collection (GC).
+
+After each step, we want to print the size of the heap (using a `printAlloc` utility function). This shows us how this example behaves memory-wise:
+
+```go
+package main
+
+import (
+    "fmt"
+    "runtime"
+)
+
+func main() {
+    n := 1_000_000
+    m := make(map[int][128]byte)  // 每个值 128 字节
+    printAlloc()                   // 步骤1：空 map
+
+    for i := 0; i < n; i++ {       // 步骤2：添加 100 万个元素
+        m[i] = [128]byte{}
+    }
+    printAlloc()
+
+    for i := 0; i < n; i++ {       // 步骤3：删除 100 万个元素
+        delete(m, i)
+    }
+
+    runtime.GC()                   // 手动触发 GC
+    printAlloc()
+    runtime.KeepAlive(m)           // 保持引用，防止 map 被回收
+}
+
+func printAlloc() {
+    var m runtime.MemStats
+    runtime.ReadMemStats(&m)
+    fmt.Printf("%d MB\n", m.Alloc/(1024*1024))
+}
+```
+
+输出结果：
+
+```
+0 MB      // 空 map
+461 MB    // 添加 100 万元素后
+293 MB    // 删除所有元素并 GC 后
+```
+
+关键观察：删除全部元素并 GC 后，**堆内存从 461 MB 降到 293 MB，但没有回到 0 MB**。剩下的 293 MB 是 map 的桶（buckets）本身，它们无法被回收。
+
+**为什么 map 不能收缩？**
+
+Go 团队设计 map 时的权衡：
+
+1. **收缩成本高**：需要重新分配桶、重新哈希所有元素
+2. **收缩时机难判断**：何时收缩？删除多少元素后收缩？没有明确的阈值
+3. **性能优先**：大多数场景下，map 删除元素后会继续插入，收缩反而浪费
+
+因此，Go 选择了简单策略：**只增长，不收缩**。
+
+
+We allocate an empty map, add 1 million elements, remove 1 million elements, and then run a GC. We also make sure to keep a reference to the map using [runtime.KeepAlive](https://pkg.go.dev/runtime#KeepAlive) so that the map isn’t collected as well. Let’s run this example:
+
+```
+0 MB   <-- After m is allocated
+461 MB <-- After we add 1 million elements
+293 MB <-- After we remove 1 million elements
+```
+
+What can we observe? At first, the heap size is minimal. Then it grows significantly after having added 1 million elements to the map. But if we expected the heap size to decrease after removing all the elements, this isn’t how maps work in Go. In the end, even though the GC has collected all the elements, the heap size is still 293 MB. So the memory shrunk, but not as we might have expected. What’s the rationale? We need to delve into how a map works in Go.
+
+A map provides an unordered collection of key-value pairs in which all the keys are distinct. In Go, a map is based on the hash table data structure: an array where each element is a pointer to a bucket of key-value pairs, as shown in figure 1.
+
+![slice-15](/assets/images/202608/slice-15.png)
+
+Each bucket is a fixed-size array of eight elements. In the case of an insertion into a bucket that is already full (a bucket overflow), Go creates another bucket of eight elements and links the previous one to it. Figure 2 shows an example:
+
+![slice-16](/assets/images/202608/slice-16.png)
+
+Under the hood, a Go map is a pointer to a [runtime.hmap](https://github.com/golang/go/blob/0262ea1ff9ac3b9fd268a48fcaaa6811c20cbea2/src/runtime/map.go#L117-L131) struct. This struct contains multiple fields, including a `B` field, giving the number of buckets in the map:
+
+```go
+type hmap struct {
+    B uint8 // log_2 of # of buckets
+            // (can hold up to loadFactor * 2^B items)
+    // ...
+}
+```
+
+After adding 1 million elements, the value of B equals 18, which means 2^18 = 262,144 buckets. When we remove 1 million elements, what’s the value of B? Still 18. Hence, the map still contains the same number of buckets.
+
+The reason is that the number of buckets in a map cannot shrink. Therefore, removing elements from a map doesn’t impact the number of existing buckets; it just zeroes the slots in the buckets. A map can only grow and have more buckets; it never shrinks.
+
+In the previous example, we went from 461 MB to 293 MB because the elements were collected, but running the GC didn’t impact the map itself. Even the number of extra buckets (the buckets created because of overflows) remains the same.
+
+Let’s take a step back and discuss when the fact that a map cannot shrink can be a problem. Imagine building a cache using a `map[int][128]byte`. This map holds per customer ID (the `int`), a sequence of 128 bytes. Now, suppose we want to save the last 1,000 customers. The map size will remain constant, so we shouldn’t worry about the fact that a map cannot shrink.
+
+However, let’s say we want to store one hour of data. Meanwhile, our company has decided to have a big promotion for Black Friday: in one hour, we may have millions of customers connected to our system. But a few days after Black Friday, our map will contain the same number of buckets as during the peak time. This explains why we can experience high memory consumption that doesn’t significantly decrease in such a scenario.
+
+What are the solutions if we don’t want to manually restart our service to clean the amount of memory consumed by the map? One solution could be to re-create a copy of the current map at a regular pace. For example, every hour, we can build a new map, copy all the elements, and release the previous one. The main drawback of this option is that following the copy and until the next garbage collection, we may consume twice the current memory for a short period.
+
+Another solution would be to change the map type to store an array pointer: `map[int]*[128]byte`. It doesn’t solve the fact that we will have a significant number of buckets; however, each bucket entry will reserve the size of a pointer for the value instead of 128 bytes (8 bytes on 64-bit systems and 4 bytes on 32-bit systems).
+
+Coming back to the original scenario, let’s compare the memory consumption for each map type following each step. The following table shows the comparison.
+
+![slice-17](/assets/images/202608/slice-17.png)
+
+
+> **Note: If a key or a value is over 128 bytes, Go won’t store it directly in the map bucket. Instead, Go stores a pointer to reference the key or the value.** 如果 key 或 value 超过 128 字节，Go 不会直接存储在桶中，而是存储一个指针。这意味着：1. 大对象（>128 字节）的 map 天然使用指针存储 2. 删除元素后，大对象可被 GC 回收 3. 但桶本身仍然占用内存（存储指针）
+
+As we have seen, adding n elements to a map and then deleting all the elements means keeping the same number of buckets in memory. So, we must remember that because a Go map can only grow in size, so does its memory consumption. There is no automated strategy to shrink it. If this leads to high memory consumption, we can try different options such as forcing Go to re-create the map or using pointers to check if it can be optimized.
+
+
+总结：
+
+* 核心原则：**Go 的 map 只能增长，不能收缩**。删除元素只是清零槽位，不会减少桶的数量。这意味着，如果 map 曾达到很高的元素数量，即使之后元素被大量删除，内存占用也会保持在高位。
+* 应对策略：
+  + **定期重建 map**：适合长期运行的缓存服务
+  + **使用指针存储值**：`map[K]*V` 可大幅减少桶内存占用
+  + **接受现实**：如果 map 大小相对稳定，无需特殊处理
+* 关键判断：如果你的服务经历过流量峰值后内存不降，且使用了大型 map，那么"map 不收缩"很可能就是原因。
+
+
+## 29. Comparing values incorrectly
+
+> TL;DR
+>
+> **To compare types in Go, you can use the `==` and `!=` operators if two types are comparable: Booleans, numerals, strings, pointers, channels, and structs are composed entirely of comparable types. Otherwise, you can either use `reflect.DeepEqual` and pay the price of reflection or use custom implementations and libraries.**
+
+
+核心问题：Go 中并非所有类型都能用 `==` 和 `!=` 比较。只有可比较（comparable）的类型才能直接使用这两个运算符。对于不可比较的类型（如切片、map、函数），必须使用 `reflect.DeepEqual` 或自定义比较方法，否则会导致编译错误或运行时 panic。
+
+
+It’s essential to understand how to use `==` and `!=` to make comparisons effectively. We can use these operators on operands that are comparable:
+
+* **Booleans**—Compare whether two Booleans are equal.
+* **Numerics** (int, float, and complex types)—Compare whether two numerics are equal.
+* **Strings**—Compare whether two strings are equal.
+* **Channels**—Compare whether two channels were created by the same call to make or if both are nil.
+* **Interfaces**—Compare whether two interfaces have identical dynamic types and equal dynamic values or if both are nil.
+* **Pointers**—Compare whether two pointers point to the same value in memory or if both are nil.
+* **Structs and arrays**—Compare whether they are composed of similar types.
+
+
+> Note: We can also use the `?`, `>=`, `<`, and `>` operators with numeric types to compare values and with strings to compare their lexical order.
+
+Go 中的可比较类型：
+
+![slice-18](/assets/images/202608/slice-18.png)
+
+
+> 示例1：可比较的结构体
+
+customer1 只包含 string 字段，string 可比较，所以整个结构体可比较。
+
+```go
+type customer1 struct {
+    id string
+}
+
+cust11 := customer1{id: "x"}
+cust12 := customer1{id: "x"}
+fmt.Println(cust11 == cust12)  // ✅ 输出: true
+```
+
+> 示例2：不可比较的结构体（编译错误）
+
+编译错误信息：invalid operation: cust21 == cust22 (struct containing []float64 cannot be compared)
+
+原因：customer2 包含 `[]float64` 切片字段，切片不可比较，导致整个结构体不可比较。
+
+```go
+type customer2 struct {
+    id         string
+    operations []float64   // ⚠️ slice 字段不可比较
+}
+
+cust21 := customer2{id: "x", operations: []float64{1.}}
+cust22 := customer2{id: "x", operations: []float64{1.}}
+// fmt.Println(cust21 == cust22)  // ❌ 编译错误！
+```
+
+> 示例3：接口比较的陷阱
+
+运行时 panic 信息：panic: runtime error: comparing uncomparable type main.customer2
+
+关键点：
+
+* any（即 `interface{}`）在编译时是可比较的
+* 但在运行时，如果动态类型不可比较，比较操作会 panic
+* 这是非常隐蔽的陷阱！编译器不会报错，只有在运行时才会暴露
+
+**重要警告**：使用 `==` 比较 `interface` 时，如果动态类型是 slice、map 或含这些字段的结构体，会 panic。这种 bug 可能在特定输入下才触发，非常危险。
+
+```go
+var a any = 3
+var b any = 3
+fmt.Println(a == b)  // ✅ 输出: true
+
+var cust31 any = customer2{id: "x", operations: []float64{1.}}
+var cust32 any = customer2{id: "x", operations: []float64{1.}}
+fmt.Println(cust31 == cust32)  // ❌ 运行时 panic！
+```
+
+> 示例4：使用 reflect.DeepEqual
+
+`reflect.DeepEqual` 可以递归比较任意类型，但性能较差。
+
+
+```go
+cust41 := customer2{id: "x", operations: []float64{1.}}
+cust42 := customer2{id: "x", operations: []float64{1.}}
+fmt.Println(reflect.DeepEqual(cust41, cust42))  // ✅ 输出: true
+```
+
+> 示例5：自定义比较方法（性能优先）
+
+优点：性能最好，类型安全，无反射开销
+缺点：需要手动实现，容易出错
+
+
+```go
+func (a customer2) equal(b customer2) bool {
+    if a.id != b.id {
+        return false
+    }
+    if len(a.operations) != len(b.operations) {
+        return false
+    }
+    for i := 0; i < len(a.operations); i++ {
+        if a.operations[i] != b.operations[i] {
+            return false
+        }
+    }
+    return true
+}
+```
+
+> 特殊类型：浮点数比较
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    // ⚠️ 浮点数直接用 == 比较不可靠
+    a := 0.1 + 0.2
+    b := 0.3
+    fmt.Println(a == b)  // 输出: false
+    fmt.Println(a)       // 输出: 0.30000000000000004
+}
+```
+
+正确做法：使用容差（epsilon）比较。
+
+```go
+import "math"
+
+func nearlyEqual(a, b, epsilon float64) bool {
+    return math.Abs(a-b) < epsilon
+}
+```
+
+> 标准库中的比较函数
+
+在实现自定义比较之前，**先检查标准库是否已有优化实现**：
+
+![slice-19](/assets/images/202608/slice-19.png)
+
+```go
+import (
+    "bytes"
+    "slices"
+    "maps"
+)
+
+// ✅ 使用标准库
+bytes.Equal(b1, b2)           // []byte 比较
+slices.Equal(s1, s2)          // 任意可比较类型的切片
+maps.Equal(m1, m2)            // 可比较类型的 map
+```
+
+If operands are not comparable (e.g., slices and maps), we have to use other options such as reflection. Reflection is a form of metaprogramming, and it refers to the ability of an application to introspect and modify its structure and behavior. For example, in Go, we can use `reflect.DeepEqual`. This function reports whether two elements are deeply equal by recursively traversing two values. The elements it accepts are basic types plus arrays, structs, slices, maps, pointers, interfaces, and functions. Yet, the main catch is the performance penalty.
+
+If performance is crucial at run time, implementing our custom method might be the best solution. One additional note: we must remember that the standard library has some existing comparison methods. For example, we can use the optimized `bytes.Compare` function to compare two slices of bytes. Before implementing a custom method, we need to make sure we don’t reinvent the wheel.
+
+
+```go
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+type customer1 struct {
+	id string
+}
+
+type customer2 struct {
+	id         string
+	operations []float64
+}
+
+func main() {
+	cust11 := customer1{id: "x"}
+	cust12 := customer1{id: "x"}
+	fmt.Println(cust11 == cust12)
+
+	cust21 := customer2{id: "x", operations: []float64{1.}}
+	cust22 := customer2{id: "x", operations: []float64{1.}}
+	// Doesn't compile
+	// fmt.Println(cust21 == cust22)
+	_ = cust21
+	_ = cust22
+
+	var a any = 3
+	var b any = 3
+	fmt.Println(a == b)
+
+	var cust31 any = customer2{id: "x", operations: []float64{1.}}
+	var cust32 any = customer2{id: "x", operations: []float64{1.}}
+	fmt.Println(cust31 == cust32)
+
+	cust41 := customer2{id: "x", operations: []float64{1.}}
+	cust42 := customer2{id: "x", operations: []float64{1.}}
+	fmt.Println(reflect.DeepEqual(cust41, cust42))
+}
+
+func (a customer2) equal(b customer2) bool {
+	if a.id != b.id {
+		return false
+	}
+	if len(a.operations) != len(b.operations) {
+		return false
+	}
+	for i := 0; i < len(a.operations); i++ {
+		if a.operations[i] != b.operations[i] {
+			return false
+		}
+	}
+	return true
+}
+```
+
+**常见陷阱总结**
+
+![slice-20](/assets/images/202608/slice-20.png)
+
+
+总结：
+
+* 核心原则：Go 中只有可比较类型才能使用 == 和 !=。可比较类型包括：布尔、数值、字符串、指针、通道，以及由这些类型组成的结构体和数组。切片、map、函数不可比较（只能与 nil 比较）。
+* 三种比较策略：
+  + `==` / `!=`：可比较类型，性能最佳
+  + `reflect.DeepEqual`：任意类型，但有反射性能开销
+  + 自定义比较方法：性能关键场景，需自行实现
+
+* 最重要的陷阱：用 `==` 比较 `interface` 时，如果动态类型不可比较（如 `slice`、`map`），会在运行时 panic，而不是编译错误。这是最危险的场景，务必使用 `reflect.DeepEqual` 或先做类型断言。
+* 实用建议：Go 1.21+ 优先使用 `slices.Equal`、`maps.Equal` 等泛型标准库函数；比较 `[]byte` 用 `bytes.Equal`；浮点数用容差比较；永远不要"重新发明轮子"——先查标准库。
+
+
+
+
+
+
+# Control Structures
+
+
+## 30. Ignoring that elements are copied in `range` loops
+
+> TL;DR
+>
+> **The value element in a range loop is a copy. Therefore, to mutate a struct, for example, access it via its index or via a classic for loop (unless the element or the field you want to modify is a pointer).**
+
+A range loop allows iterating over different data structures:
+
+* String
+* Array
+* Pointer to an array
+* Slice
+* Map
+* Receiving channel
+
+Compared to a classic for `loop`, a `range` loop is a convenient way to iterate over all the elements of one of these data structures, thanks to its concise syntax.
+
+Yet, we should remember that the value element in a range loop is a copy. Therefore, if the value is a struct we need to mutate, we will only update the copy, not the element itself, unless the value or field we modify is a pointer. The favored options are to access the element via the index using a range loop or a classic for loop.
+
+
+核心问题：在 Go 的 range 循环中，**值变量（value element）是元素的副本（copy），而不是元素本身**。因此，如果你通过 range 的值变量去修改结构体字段，**只会修改副本，不会影响原始数据**。
+
+range 可以遍历以下数据结构：
+
+![slice-21](/assets/images/202608/slice-21.png)
+
+> 值变量是副本
+
+关键点：
+
+* `v` 是 `s[i]` 的副本
+* 修改 `v` 不会影响 `s[i]`
+* 如果元素是值类型（如结构体），修改 `v` 的字段不会影响原切片
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    s := []string{"a", "b", "c"}
+
+    // i 是索引，v 是元素副本
+    for i, v := range s {
+        fmt.Printf("index=%d, value=%s\n", i, v)
+    }
+
+    // 只取值，忽略索引
+    for _, v := range s {
+        fmt.Printf("value=%s\n", v)
+    }
+}
+```
+
+> 问题演示：修改结构体字段
+
+```go
+package main
+
+import "fmt"
+
+type account struct {
+    balance float32
+}
+
+func main() {
+    // ❌ 错误方式1：通过值变量修改
+    accounts := createAccounts()
+    for _, a := range accounts {
+        a.balance += 1000  // 只修改了副本 a，原切片不变
+    }
+    fmt.Println(accounts)  // 输出: [{100} {200} {300}]  ← 没有变化！
+
+    // ✅ 正确方式1：通过索引修改
+    accounts = createAccounts()
+    for i := range accounts {
+        accounts[i].balance += 1000  // 直接修改原切片元素
+    }
+    fmt.Println(accounts)  // 输出: [{1100} {1200} {1300}]  ← 修改成功
+
+    // ✅ 正确方式2：经典 for 循环
+    accounts = createAccounts()
+    for i := 0; i < len(accounts); i++ {
+        accounts[i].balance += 1000
+    }
+    fmt.Println(accounts)  // 输出: [{1100} {1200} {1300}]
+}
+```
+
+> 特殊情况：元素是指针
+
+```go
+// 元素类型是 *account（指针）
+accountsPtr := createAccountsPtr()  // []*account
+for _, a := range accountsPtr {
+    a.balance += 1000  // ✅ 修改成功！
+    // a 是指针的副本，但副本和原指针指向同一内存地址
+}
+printAccountsPtr(accountsPtr)  // 输出: [{1100} {1200} {1300}]
+```
+
+> 性能考量
+
+优化建议：
+
+* 大结构体切片，只读遍历时考虑用 `for i := range s + s[i]`
+* 或者存储指针切片 `[]*T`
+* 避免在 `range` 中不必要地复制大对象
+
+
+```go
+type LargeStruct struct {
+    data [1024]byte
+}
+
+// ⚠️ 每次迭代都复制 1024 字节
+for _, v := range largeSlice {
+    _ = v  // 即使不使用，也会复制
+}
+
+// ✅ 只复制索引（int）
+for i := range largeSlice {
+    _ = largeSlice[i]
+}
+
+// ✅ 元素是指针时，只复制 8 字节指针
+for _, p := range largeSlicePtr {
+    _ = p
+}
+```
+
+
+> Go 1.22 的变化
+
+
+**重要：Go 1.22 修改了 `for range` 的循环变量语义。**
+
+Go 1.22 之前：
+
+```go
+for _, v := range s {
+    // v 在整个循环中复用同一个变量
+    // 如果启动 goroutine 或取地址，会出问题
+    go func() {
+        fmt.Println(v)  // 所有 goroutine 可能打印同一个值
+    }()
+}
+```
+
+Go 1.22 及之后：
+
+```go
+for _, v := range s {
+    // v 每次迭代创建新变量
+    go func() {
+        fmt.Println(v)  // 正确打印各自的值
+    }()
+}
+```
+
+**但注意：Go 1.22 的改变是循环变量的作用域，不影响"值元素是副本"这一事实。修改 v 仍然不会影响原切片元素。**
+
+
+总结：
+
+* 核心原则：`range` 循环中的**值变量是元素的副本**。修改这个副本**不会影响原始数据**（除非元素本身是指针）。
+* 修改元素的正确方式：
+  + 切片：`for i := range s { s[i].Field = x }`
+  + map：`for k, v := range m { v.Field = x; m[k] = v }`（必须写回）
+  + 指针元素：`for _, p := range s { p.Field = x }`（通过指针修改有效）
+
+* **性能提示**：大结构体只读遍历时，`for i := range s` 比 `for _, v := range s` 更高效，因为避免了元素复制。
+* **Go 1.22 注意**：循环变量作用域改变（每次迭代新变量），但"值元素是副本"的语义没有改变——修改 `v` 仍然不会影响原元素。
+
+
+
+
+
+
+
+
+
+
 
 # Refer
 
 * https://github.com/teivah/100-go-mistakes
 * https://100go.co/
-
-
-
-
-
-
-
-
 
 
 
