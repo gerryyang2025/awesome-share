@@ -5537,6 +5537,116 @@ for _, v := range s {
 
 
 
+## 30. Ignoring how arguments are evaluated in `range` loops (channels and arrays)
+
+> TL;DR
+>
+> **Understanding that the expression passed to the range operator is evaluated only once before the beginning of the loop can help you avoid common mistakes such as inefficient assignment in channel or slice iteration.**
+
+The range loop evaluates the provided expression only once, before the beginning of the loop, by doing a copy (regardless of the type). We should remember this behavior to avoid common mistakes that might, for example, lead us to access the wrong element. For example:
+
+**核心问题**：range 循环中，**被遍历的表达式只在循环开始前求值一次**，并会**复制**（无论类型是什么）。这个求值结果在整个循环过程中保持不变，即使循环体内修改了原始变量，循环也不会感知到。
+
+> 示例1：遍历数组时修改，访问到旧值
+
+```go
+func listing1() {
+    a := [3]int{0, 1, 2}
+    for i, v := range a {    // ⚠️ range 复制整个数组 a
+        a[2] = 10            // 修改的是原数组 a
+        if i == 2 {
+            fmt.Println(v)   // 输出: 2，而不是 10！
+        }
+    }
+}
+```
+
+**原因**：`range a` 复制了整个数组。循环体修改 `a[2]` 只影响原数组，不影响循环所用的副本。
+
+> 示例2：通过索引访问原数组
+
+```go
+func listing2() {
+    a := [3]int{0, 1, 2}
+    for i := range a {       // 只遍历索引，不复制值
+        a[2] = 10
+        if i == 2 {
+            fmt.Println(a[2])  // 输出: 10
+        }
+    }
+}
+```
+
+**原因**：使用 `for i := range a` 时，只复制索引，循环体直接访问原数组 `a[2]`，所以能看到修改。
+
+> 示例3：遍历数组指针
+
+```go
+func listing3() {
+    a := [3]int{0, 1, 2}
+    for i, v := range &a {   // ✅ 遍历数组指针，复制的是指针
+        a[2] = 10
+        if i == 2 {
+            fmt.Println(v)   // 输出: 10
+        }
+    }
+}
+```
+
+**原因**：`range &a` 复制的是**指针**（8 字节），循环遍历的是指针指向的数组。修改 `a[2]` 会反映到遍历结果中。
+
+
+**最佳实践**
+
+> 1. 数组：用索引或指针避免复制
+
+```go
+// ❌ 大数组复制开销大，且修改看不到
+for i, v := range bigArray {
+    bigArray[i] = ...
+    _ = v  // v 是旧值
+}
+
+// ✅ 使用指针，避免复制且修改可见
+for i, v := range &bigArray {
+    bigArray[i] = ...
+    _ = v
+}
+```
+
+> 2. 切片：明确 range 的固定长度语义
+
+```go
+// ✅ 使用 range 时记住长度固定
+s := []int{0, 1, 2}
+for range s {
+    s = append(s, 10)  // 安全，不会无限循环
+}
+
+// ⚠️ 使用经典 for 循环时要小心
+for i := 0; i < len(s); i++ {
+    s = append(s, 10)  // 危险，可能无限循环
+}
+```
+
+总结：
+
+
+* **核心原则**：`range` 循环的**表达式只在循环开始前求值一次，并复制**（数组复制整个数组，切片复制 header，channel/map 复制引用）。这个求值结果在循环期间保持不变。
+* **三种典型陷阱**：
+  + **数组**：`range a` 复制整个数组，循环内修改 `a[i]` 看不到效果。解决：用 `for i := range a` + `a[i]`，或 `range &a`。
+  + **Channel**：`range ch` 绑定初始 channel，循环内 `ch = ch2` 无效。解决：用显式 `for + select`。
+  + **切片**：`range s` 长度固定，`append` 不会无限循环；但经典 `for i < len(s)` 会无限循环。理解差异，避免误用。
+* **实用建议**：
+  + 遍历大数组时，用指针 `range &a` 避免复制开销
+  + 需要动态切换数据源时，用显式循环而非 `range`
+  + 记住"求值一次 + 复制"这个核心规则，就能预测所有 range 行为
+
+
+
+
+
+
 
 
 
