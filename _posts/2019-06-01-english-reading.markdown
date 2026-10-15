@@ -61,6 +61,11 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 # Words (柯林斯英汉双解大词典)
 
 
+* interceptor /ˌɪntəˈsɛptə/
+  + N-COUNT An **interceptor** is an aircraft or ground-based missile system designed to intercept and attack enemy planes. 拦截机; 拦截导弹
+  + N 拦截器
+
+
 * tooltip
   + N Computing a message which appears when a cursor is positioned over an icon, image, hyperlink, or other element in a graphical user interface [计算机] 工具提示，信息提示（当光标置于图标，画像，超链接或图形用户界面中的其他内容时所显示的信息）
 
