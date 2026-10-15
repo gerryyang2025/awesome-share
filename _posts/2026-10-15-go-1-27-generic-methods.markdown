@@ -2,8 +2,8 @@
 layout: post
 title:  "Go 1.27 泛型方法：用法、适用场景与边界"
 date:   2026-10-15 16:55:22 +0800
-last_modified_at: 2026-10-15 17:01:44 +0800
-description: "Go 1.27 起具体方法可以声明自己的类型参数。本文说明它补上的调用场景、声明与类型推断的用法，以及它为什么仍然不能用来实现接口。"
+last_modified_at: 2026-10-15 17:51:08 +0800
+description: "从一段 Filter/Map 流水线写起，说明 Go 1.18 的泛型函数和泛型类型还留了哪一个缺口，以及 Go 1.27 的泛型方法如何补上。含声明、类型推断，以及它为什么仍然不能实现接口。"
 categories: GoLang
 tags:
   - GoLang
@@ -18,107 +18,313 @@ mermaid: true
 > 本文对照 [Go 1.27 Release Notes](https://go.dev/doc/go1.27)、[Go 1.27.0 发布记录](https://go.dev/doc/devel/release#go1.27.0)、语言规范中的 [Method declarations](https://go.dev/ref/spec#Method_declarations) 与 [Instantiations](https://go.dev/ref/spec#Instantiations)，以及已接受并在 1.27 实现的提案 [spec: generic methods for Go（#77273）](https://github.com/golang/go/issues/77273)。站内 [Being Confused About When To Use Generics]({% post_url 2025-12-26-being-confused-about-when-to-use-generics %}) 记录的是 Go 1.18 到 1.26 的规则：方法不能声明类型参数。那条限制从 1.27 起放开。何时该用泛型，仍见 [100 Go Mistakes]({% post_url 2025-12-24-100-go-mistakes %}) 第 9 条。
 {: .prompt-info }
 
-Go 1.27.0 于 2026-08-19 发布。这一版的语言变更里，泛型方法是被讨论了四年多的那一条：具体方法（带接收者、且接收者的基类型不是接口的方法）可以在方法名后面声明自己的类型参数。
-
-它解决的是一类很具体的组织问题。值的类型已经定了，这一次调用却还要再选一个类型。Go 1.18 之后，这类操作只能写成包级泛型函数。1.27 允许把它放进该类型的命名空间，调用写成 `x.Method(...)`，方法链可以从左往右读。
-
-标准库给出的对应物是 [`(*rand.Rand).N`](https://pkg.go.dev/math/rand/v2#Rand.N)。Go 1.22 就有顶层函数 `rand.N`，直到 1.27，`Rand` 上才有签名相同的方法。
-
-> 接口方法仍然不能声明类型参数。方法集里的泛型方法带着自己的类型参数列表，和接口里那个没有类型参数的方法对不上，因此不能用来实现接口。`Read[E any]([]E)` 不会变成 `io.Reader`。
-{: .prompt-warning }
+Go 1.27.0 于 2026-08-19 发布，具体方法可以在方法名后面声明自己的类型参数。要看清它补的是哪一个缺口，得先把 Go 1.18 已经做到的两件事分开：泛型函数，以及「类型上已经带了类型参数」的普通方法。下面用同一份用户列表，从「每种类型写一份函数」走到 `users.Filter(...).Map(...)`。
 
 # 原理与核心概念
 
-## 1.18 已经允许什么
+## 要算的结果
 
-Go 1.18 把类型参数加在两类声明上：
+三个用户，留下 `Active` 的，再取出名字。期望结果是 `[]string{"Ann", "Cy"}`。若再数一下名字有多长，期望是 `[]int{3, 2}`。
 
-- **泛型函数**：类型参数写在函数名后面，调用时显式给出或靠类型推断补上。
-- **泛型类型**：类型参数写在类型名后面。该类型的方法必须在接收者上重复这些参数，方法体才能使用它们。约束来自类型定义本身，方法上不再写一遍。
+```go
+type User struct {
+	Name   string
+	Active bool
+}
+
+func sample() []User {
+	return []User{
+		{"Ann", true},
+		{"Bo", false},
+		{"Cy", true},
+	}
+}
+```
+
+后面每一步都只改「这段计算写在哪里、类型参数写在哪里」，循环本身不变。
+
+## 第一步：没有泛型时，每种类型写一份
+
+Go 1.18 之前，参数类型必须写死。用户列表和订单列表各要一套：
+
+```go
+func activeUsers(users []User) []User {
+	out := make([]User, 0, len(users))
+	for _, u := range users {
+		if u.Active {
+			out = append(out, u)
+		}
+	}
+	return out
+}
+
+func userNames(users []User) []string {
+	out := make([]string, len(users))
+	for i, u := range users {
+		out[i] = u.Name
+	}
+	return out
+}
+
+names := userNames(activeUsers(sample())) // []string{"Ann", "Cy"}
+```
+
+`activeUsers` 和 `userNames` 的循环对 `[]Order` 同样适用，能改的只有切片里的元素类型。类型一变，函数就得再抄一份，或者改成 `[]any` 再做类型断言。断言把错误从编译期推到运行期：取到的若是 `int32`，写成 `.(int64)` 会直接 panic。
+
+这一步的问题是重复。泛型要抽掉的，就是「元素是 User 还是 Order」。
+
+## 第二步：Go 1.18 用类型参数把元素类型抽掉
+
+类型参数是声明里的占位符，调用时换成具体类型。方括号写在函数名后面，`any` 表示这个占位符接受任意类型：
+
+```go
+func Filter[T any](items []T, keep func(T) bool) []T {
+	out := make([]T, 0, len(items))
+	for _, v := range items {
+		if keep(v) {
+			out = append(out, v)
+		}
+	}
+	return out
+}
+
+func Map[T, U any](items []T, f func(T) U) []U {
+	out := make([]U, len(items))
+	for i, v := range items {
+		out[i] = f(v)
+	}
+	return out
+}
+```
+
+`Filter` 只有 `T`：进来是 `[]T`，出去还是 `[]T`。`Map` 有两个：`T` 是输入元素，`U` 是函数 `f` 的结果。同一份 `Map` 既能把 `User` 变成 `string`，也能把 `string` 变成 `int`。
+
+```go
+users := sample()
+names := Map(Filter(users, func(u User) bool { return u.Active }),
+	func(u User) string { return u.Name })
+// names == []string{"Ann", "Cy"}
+
+lens := Map(names, func(s string) int { return len(s) })
+// lens == []int{3, 2}
+```
+
+调用处不用写 `Map[User, string]`。编译器看着实参：`users` 是 `[]User`，所以 `T` 是 `User`；传给 `Map` 的函数返回 `string`，所以 `U` 是 `string`。这叫类型推断，1.18 起对泛型函数就可用。
+
+到这里，重复已经消掉。`Filter` 和 `Map` 是包里的函数，数据是它们的第一个参数。下一步才会碰到方法。
+
+## 第三步：方法能挂在泛型类型上，只要不再引入新类型
+
+方法是带接收者的函数。`users.Filter(...)` 里，点号左边的 `users` 就是接收者。把切片定义成自己的类型之后，操作可以出现在这个值的方法列表里：
 
 ```go
 type List[T any] []T
 
-// 合法，而且 1.18 起就合法：T 属于 List，不属于 Len 这次调用。
-func (l List[T]) Len() int { return len(l) }
+func (l List[T]) Filter(keep func(T) bool) List[T] {
+	out := make(List[T], 0, len(l))
+	for _, v := range l {
+		if keep(v) {
+			out = append(out, v)
+		}
+	}
+	return out
+}
 ```
 
-`Len` 没有自己的类型参数。`T` 在你写出 `List[int]` 或 `List[string]` 时就已经定了，方法只是把这个已经定下来的参数用起来。
-
-## 缺的是「每一次调用再选一个类型」
-
-下面这个 `Map` 在 1.26 及更早的编译器里不合法。`Pipe[T]` 的 `T` 是管道里元素的类型；`U` 是这一次映射的结果类型，每个调用都可以不同。
+接收者写成 `List[T]`，表示「使用 `List` 定义里的那个 `T`」。约束仍是类型定义上的 `any`，方法里不能改成别的约束。`List[User]` 这个值一旦造出来，`T` 就是 `User`，`Filter` 的输入和输出都是这个 `User`。
 
 ```go
-type Pipe[T any] struct {
-	items []T
-}
+users := List[User](sample())
+active := users.Filter(func(u User) bool { return u.Active })
+// active 的类型仍是 List[User]
+```
 
-func (p Pipe[T]) Map[U any](f func(T) U) Pipe[U] {
-	out := make([]U, len(p.items))
-	for i, v := range p.items {
+这在 Go 1.18 就是合法的。方法没有自己的类型参数，`[T]` 写在接收者上，不写在 `Filter` 这个名字后面。`Len`、`Append` 这类「元素类型在构造时已经知道」的操作，都属于这一类。
+
+```mermaid
+flowchart LR
+  A["每种类型一份函数"] --> B["泛型函数 Filter / Map"]
+  B --> C["泛型类型上的普通方法 Filter"]
+  C --> D["Map 还要一个新的结果类型 U"]
+  D --> E["1.27：U 写在方法名后面"]
+```
+
+## 第四步：Map 的结果类型，接收者身上没有
+
+同一个 `List[User]`，这次想要名字（`string`），下次想要名字长度（`int`）。结果类型取决于这一次传入的函数，不能写进 `List` 的定义，否则一个 `List[User]` 就只能映射成一种结果。
+
+把这个结果类型叫做 `U`，放在方法名后面：
+
+```go
+func (l List[T]) Map[U any](f func(T) U) List[U] {
+	out := make(List[U], len(l))
+	for i, v := range l {
 		out[i] = f(v)
 	}
-	return Pipe[U]{items: out}
+	return out
 }
 ```
 
-1.26 的诊断就是站内旧文里那句 `methods cannot have type parameters`。当时的替代写法是把接收者降成普通参数：
+对照前一步的 `Filter`：
+
+| | `T` 从哪里来 | 还要不要别的类型 | Go 1.18–1.26 |
+| :--- | :--- | :--- | :--- |
+| `Filter` | 接收者 `List[T]`，值一造出来就定了 | 不要 | 可以 |
+| `Map` | 同样来自接收者 | 要，`U` 由这次的 `f` 决定 | 方法上不能写 `[U any]` |
+| 包级 `Map` | 第一个参数 | `U` 也写在函数上 | 可以 |
+
+1.26 及更早的编译器对 `Map[U any]` 报 `methods cannot have type parameters`。站内 [Being Confused About When To Use Generics]({% post_url 2025-12-26-being-confused-about-when-to-use-generics %}) 记的就是这条诊断。
+
+两对方括号不要看成重复。左边 `List[T]` 引进类型定义里已有的参数；右边 `[U any]` 才是这次调用新加的参数。1.27 之前，方法只允许有左边那对。
+
+## 第五步：包级函数能编译，调用套在里面
+
+1.18 到 1.26 的做法，是把接收者改回第一个参数。计算和上面的方法体相同：
 
 ```go
-func Map[T, U any](p Pipe[T], f func(T) U) Pipe[U] { /* ... */ }
+func MapList[T, U any](l List[T], f func(T) U) List[U] {
+	out := make(List[U], len(l))
+	for i, v := range l {
+		out[i] = f(v)
+	}
+	return out
+}
+
+users := List[User](sample())
+names := MapList(users.Filter(func(u User) bool { return u.Active }),
+	func(u User) string { return u.Name })
+lens := MapList(names, func(s string) int { return len(s) })
 ```
 
-函数能表达同样的计算。它做不到的是：这个操作在 API 上属于 `Pipe`，调用点和值写在一起，后续步骤沿同一个值往下排。提案把这件事说成两层：
+`Filter` 是方法，点在值后面；`MapList` 是函数，值被塞进参数列表。两步还能看，步骤再多一层，后做的步骤包在外层，阅读顺序和执行顺序相反：
 
-1. 方法是关联到类型上的函数，即使它从不实现任何接口，也适合用来组织代码。
-2. `x.A().B()` 从左往右读；`B(A(x))` 从内往外求值。
+```go
+lens := MapList(
+	MapList(
+		users.Filter(func(u User) bool { return u.Active }),
+		func(u User) string { return u.Name },
+	),
+	func(s string) int { return len(s) },
+)
+```
 
-`math/rand/v2` 把同一件事表现在标准库里。包里几乎每个顶层函数都有 `Rand` 上的方法，唯独泛型函数 `N` 长期没有。原因不是随机数算法特殊，而是方法当时不能声明 `Int` 这个类型参数。
+最里面的 `Filter` 最先执行，最外面的 `MapList` 最后执行。1.27 把 `Map` 放回方法之后，从左往右就是执行顺序。第一次 `Map` 把 `List[User]` 变成 `List[string]`，第二次 `Map` 的 `T` 已经是 `string`，`U` 推断为 `int`：
 
-非泛型类型也会遇到同样的缺口。一行查询结果的类型是固定的 `Row`，列的 Go 类型每次不同。1.26 只能在包外写 `Get[T any](row Row, name string) (T, error)`，调用方要记住去用那个助手，而不是 `row` 上的方法。
+```go
+lens := users.
+	Filter(func(u User) bool { return u.Active }).
+	Map(func(u User) string { return u.Name }).
+	Map(func(s string) int { return len(s) })
+// List[int]{3, 2}
+```
 
-## 为什么以前不让方法带类型参数
+还有一个日常能感觉到的差别：包级函数不在 `List` 的方法列表里。编辑器对 `users.` 的补全能列出 `Filter`，列不出 `MapList`，调用方得记得函数在哪个包、第一个参数是不是这个值。提案 [#77273](https://github.com/golang/go/issues/77273) 把方法的这个用途单独说出来：它是挂在类型命名空间上的函数，就算从不拿去实现接口，也值得存在。
 
-方法在 Go 里的第一职责是实现接口。接口是结构化的：类型不用声明「我实现了谁」，方法集对得上即可。接口值里保存具体动态值，以及一张按方法名索引的方法表。
+## 标准库里的同一缺口
 
-如果接口方法自己也能带类型参数，一次通过接口的调用就可能需要这个方法的任意一个实例化。程序里会用到哪一个，编译期看不到。Go 又不能在运行时把无限个实例化都放进方法表。类型参数的原始提案因此把「方法可以声明类型参数」和「接口方法也可以」绑在一起，并搁置了两者。FAQ 里曾经写过：不预期 Go 会加入泛型方法。
+[`math/rand/v2`](https://pkg.go.dev/math/rand/v2) 从 Go 1.22 起几乎每个顶层函数都有 `Rand` 上的对应方法：`IntN`、`Int64N`、`Uint64N` 都是。结果类型写死在方法名里，所以它们是普通方法。
 
-#77273 把这两件事拆开。具体方法是「带接收者的函数」。函数可以泛型，带接收者的函数也可以泛型。接口语法里写不出带类型参数的方法，于是泛型具体方法在签名上对不上任何接口方法，自然不参与接口实现。调用方手里已经是具体类型时，编译期知道接收者的类型，也就知道要调用哪一个方法，实例化方式和泛型函数相同。
+同版本增加的泛型函数 `N` 没有对应方法。它的类型参数 `Int` 表示「任意整数类型」，一次调用可以是 `int`、`uint32`，也可以是底层类型为 `int64` 的 `time.Duration`。这个类型每次调用才选定，接收者 `*Rand` 自己又不是泛型类型，1.26 的方法语法写不出它。
+
+```go
+r := rand.New(rand.NewPCG(1, 2))
+
+_ = r.IntN(10)                     // 1.22 起的方法，结果固定为 int
+_ = rand.N(100 * time.Millisecond) // 1.22 起的泛型函数，结果是 time.Duration
+_ = r.N(100 * time.Millisecond)    // 1.27 起，同一个函数变成了方法
+```
+
+1.27 的签名是 `func (r *Rand) N[Int intType](n Int) Int`，行为与顶层 `N` 相同：返回 `[0, n)` 里的伪随机数，`n <= 0` 时 panic。随机源从全局默认源换成了这个 `r`。
+
+## 类型本身可以完全不泛型
+
+前面的 `U` 出现在已经泛型的 `List[T]` 上。另一类更常见：容器类型是固定的，取出来的 Go 类型每次不同。
+
+```go
+type Row struct {
+	cols map[string]any
+}
+
+// 断言写在调用点。动态类型若是 int32，这里会 panic。
+id := row.cols["id"].(int64)
+```
+
+助手函数能把断言收进去，可是它和 `Row` 的方法列表无关，调用写成 `Get[int64](row, "id")`。`T` 只出现在结果里，推断没有参数类型可用，类型实参 `int64` 必须自己写。1.27 允许这个函数变成方法，调用点的类型实参留在原处：
+
+```go
+id, err := row.Get[int64]("id")
+```
+
+`Row` 没有类型参数。缺的是 `Get` 这一次返回 `int64` 还是别的类型。完整实现见下文「列类型每次不同」。
+
+## 为什么 1.18 不让方法带上这段语法
+
+方法在 Go 里还负责实现接口。类型不用写 `implements`，方法名和签名对得上，就可以赋给接口。
+
+```go
+type Reader interface {
+	Read(p []byte) (int, error)
+}
+
+type File struct{}
+
+func (f *File) Read(p []byte) (int, error) { return len(p), nil }
+
+var r Reader = &File{} // *File 有匹配的 Read，赋值合法
+```
+
+接口值在运行时要调用一个签名固定的 `Read`。它保存具体的值，以及这个值的 `Read` 函数。
+
+假如 1.18 允许方法自带类型参数，就会出现下面这种声明。它不是一个 `Read`，而是一族：`Read[byte]`、`Read[int16]`，以及以后才会写到的每一种 `E`。
+
+```go
+type Buf struct{}
+
+func (b *Buf) Read[E any](p []E) (int, error) { return len(p), nil }
+
+var r Reader = &Buf{} // 1.27 同样不合法
+```
+
+把 `&Buf{}` 放进 `Reader` 时，编译器不知道以后会把 `E` 实例化成哪一种，也就没有一个固定函数可以放进接口值。类型参数的原始提案把「方法可以带类型参数」和「接口方法也可以」看成同一件事，两件一起搁置。FAQ 里因此写过：不预期 Go 会加入泛型方法。
+
+这个决定一刀切掉了两类方法。`Read[E any]` 确实和接口缠在一起；`List[T].Map[U any]` 并不实现任何接口，它只是想把 `U` 写在方法上。1.18 到 1.26 期间，第二类也只能写成包级函数。
+
+## 1.27 放开的是具体方法这一半
+
+[#77273](https://github.com/golang/go/issues/77273)（Robert Griesemer，2026-01-22）把两件事拆开：具体方法是带接收者的函数，函数可以泛型，带接收者的函数也可以。接口方法的语法仍然是 `MethodName Signature`，中间没有类型参数列表，所以泛型具体方法和接口方法对不上号，不会被当成接口的实现。
+
+调用 `users.Map(...)` 时，`users` 的类型是 `List[User]` 这种具体类型。编译器知道方法是哪一个，再按 `f` 的结果实例化 `U`，后面的代码生成和普通泛型函数相同。提案里的翻译方式，是把这次调用写成「接收者变成第一个参数」的泛型函数调用。已有程序的含义不变，这是去掉一条限制。
+
+> 接口方法仍然不能声明类型参数。`Read[E any]([]E)` 也不会因为某次可以推出 `E` 是 `byte`，就去实现 `io.Reader`。需要 `[]byte` 时，另写一个签名固定的 `Read`，在方法体里调用泛型方法。下文有完整例子。
+{: .prompt-warning }
+
+以后碰到一个操作，可以按类型参数出现的位置来选写法：
 
 ```mermaid
 flowchart TD
   q["这一次调用要再引入一个类型"]
   q --> has{"这个类型是否已由接收者声明"}
-  has -->|是| plain["普通方法：类型参数只出现在接收者上"]
-  has -->|否| via{"调用是否经过接口方法表"}
-  via -->|是| fn["包级泛型函数，或另写一个签名固定的方法"]
-  via -->|否| gen["泛型方法：类型参数写在方法名后面"]
+  has -->|是，例如 List 的 T| plain["普通方法，1.18 起就能写"]
+  has -->|否| via{"调用是否要放进接口"}
+  via -->|要，例如 io.Reader| fn["签名固定的方法；泛型部分留在另一个名字上"]
+  via -->|不要| gen["泛型方法，类型参数写在方法名后面"]
 ```
 
-这条改动是去掉一条限制，既有程序的含义不变。它也没有提前规定将来的接口泛型方法该怎么做。在那项设计出现之前，某个实例化（例如设想中的 `Read[byte]`）不会被当成接口方法。
+## 语法上多出来的那一对方括号
 
-## 规范里新增的那一句
-
-[方法声明](https://go.dev/ref/spec#Method_declarations) 的语法从 1.27 起是：
+[方法声明](https://go.dev/ref/spec#Method_declarations) 从 1.27 起是：
 
 ```text
 MethodDecl = "func" Receiver MethodName [ TypeParameters ] Signature [ FunctionBody ] .
 ```
 
-类型参数列表的位置与泛型函数相同：名字后面、参数列表前面。规范同时规定：方法声明若带有类型参数（可以和接收者上的类型参数同时存在），这个名字表示一个泛型方法。和泛型函数一样，它必须先实例化，然后才能调用或当作值使用。
+和泛型函数一样，类型参数列表在名字后面、参数列表前面。方法上的类型参数可以和接收者上的同时存在。这样声明出来的名字是泛型方法：先实例化，才能调用或当作值使用。见规范的 [Instantiations](https://go.dev/ref/spec#Instantiations) 与 [Type parameter declarations](https://go.dev/ref/spec#Type_parameter_declarations)。
 
-[类型参数列表](https://go.dev/ref/spec#Type_parameter_declarations) 的说明也改成了：它声明的是泛型函数、泛型方法或泛型类型的类型参数。
+接收者的基类型仍然不能是指针或接口，方法仍然必须和基类型写在同一个包。这些规则没有放宽。
 
-接收者基类型仍然不能是指针类型或接口类型，方法仍然必须和基类型写在同一个包里。这些旧规则没有放宽。
+模块要使用这段语法，`go.mod` 的 `go` 行得到 `1.27`。只升级工具链、不改这一行，编译器仍按旧语言版本拒绝方法上的类型参数。
 
-## 调用怎么落到机器码
-
-非接口接收者上的方法调用可以在编译期解析：接收者的类型是已知的，方法也是已知的。提案给出的翻译方式是，把这样的调用改写成对一个泛型函数的调用，接收者变成该函数的第一个参数。方法若是泛型的，对应的函数也是泛型的，随后走现有的实例化。
-
-因此，泛型方法没有单独的一套运行时分发。不用它的代码也不会多一次接口查找。用到的每个实例化，代码生成方式和普通泛型函数相同。
-
-反射走的是另一条路。[`reflect`]({% post_url 2023-04-27-go-reflect-in-action %}) 没有「给一个泛型值提供类型实参」的 API，未实例化的泛型函数本来就不能按名字从反射里取出来再实例化。泛型方法同样如此：不能通过 `Method` 或 `MethodByName` 拿到尚未实例化的方法，再在运行时决定类型实参。
+反射没有跟着开放。[`reflect`]({% post_url 2023-04-27-go-reflect-in-action %}) 不能给一个尚未实例化的泛型函数补类型实参，泛型方法同样不能通过 `Method` / `MethodByName` 取出来再在运行时决定类型参数。签名固定的那些方法（例如下面用来实现 `io.Writer` 的 `Write`）照旧出现在反射的方法列表里。
 
 # 使用方法
 
@@ -240,6 +446,8 @@ k := r.N[int64](100)                  // 显式指定；100 是无类型常量
 使用方的 `go` 行也要能看见这个符号。Go 1.27 起，`go test` 默认运行 `stdversion` 检查：文件生效的 Go 版本（由 `go` 行和构建标签决定）若早于符号引入的版本，测试会报出来。在 `go 1.26` 的模块里调用 `(*Rand).N`，会被指认为用了过新的标准库符号。
 
 # 使用示例
+
+前面的片段用来对照四种写法。下面三节是可以放进模块的完整代码：一条会改变元素类型的方法链、一次必须写明类型实参的取值，以及一个泛型方法旁边如何另写方法去实现接口。
 
 ## 接收者定元素类型，调用定结果类型
 
