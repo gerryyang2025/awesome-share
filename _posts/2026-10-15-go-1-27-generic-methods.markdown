@@ -2,7 +2,7 @@
 layout: post
 title:  "Go 1.27 泛型方法：用法、适用场景与边界"
 date:   2026-10-15 16:55:22 +0800
-last_modified_at: 2026-10-16 14:19:58 +0800
+last_modified_at: 2026-10-16 14:45:21 +0800
 description: "从一段 Filter/Map 流水线写起，说明 Go 1.18 的泛型函数和泛型类型还留了哪一个缺口，以及 Go 1.27 的泛型方法如何补上。含声明、类型推断，以及它为什么仍然不能实现接口。"
 categories: GoLang
 tags:
@@ -647,8 +647,8 @@ var _ io.Writer = (*Archive)(nil)
 
 ```mermaid
 flowchart LR
-  call["调用方手里的值"] --> concrete["静态类型是 *Archive"]
-  call --> asWriter["静态类型是 io.Writer"]
+  holder["调用方手里的值"] --> concrete["静态类型是 Archive 指针"]
+  holder --> asWriter["静态类型是 io.Writer"]
   concrete --> both["可以调用 Write 和 Store"]
   asWriter --> only["方法表里只有 Write"]
 ```
