@@ -2,7 +2,7 @@
 layout: post
 title:  "Go 1.27 泛型方法：用法、适用场景与边界"
 date:   2026-10-15 16:55:22 +0800
-last_modified_at: 2026-10-16 10:23:24 +0800
+last_modified_at: 2026-10-16 10:43:11 +0800
 description: "从一段 Filter/Map 流水线写起，说明 Go 1.18 的泛型函数和泛型类型还留了哪一个缺口，以及 Go 1.27 的泛型方法如何补上。含声明、类型推断，以及它为什么仍然不能实现接口。"
 categories: GoLang
 tags:
@@ -131,15 +131,49 @@ func (l List[T]) Filter(keep func(T) bool) List[T] {
 }
 ```
 
-接收者写成 `List[T]`，表示使用 `List` 定义里的那个 `T`。约束仍写在类型定义上，方法里不能另写一套。值的类型一旦是 `List[User]`，`T` 就是 `User`，`Filter` 的输入元素和输出元素都是 `User`。
+先看第一行类型定义。`type List[T any] []T` 给「元素类型为 `T` 的切片」起名叫 `List`。方括号里的 `T` 是占位符，`any` 表示以后可以把 `T` 换成任意具体类型。`[]T` 是这个名字背后的真实结构：一个切片，元素类型就是那个占位符。
+
+写成 `List[User]` 时，占位符 `T` 被换成 `User`。此时 `List[User]` 和 `[]User` 存放的是同一种元素，差别是 `List[User]` 有自己的名字，所以能给它写方法。`[]User` 是语言内建的切片，不能在别的包里给它增加方法。
 
 ```go
 users := List[User](sample())
-active := users.Filter(func(u User) bool { return u.Active })
-// active 的类型仍是 List[User]
 ```
 
-这在 Go 1.18 就是合法的。`Filter` 没有自己的类型参数：`[T]` 写在接收者上，不写在方法名后面。`Len`、`Append` 也属于这一类，因为元素类型在构造 `List[User]` 时就已经确定。
+`sample()` 返回 `[]User`，里面是 Ann、Bo、Cy。`List[User](...)` 把这份切片转换成命名类型 `List[User]`。转换之后，`users` 的元素类型已经确定为 `User`，后面的方法不用再选一次 `T`。
+
+再看方法声明。可以把它拆成四段：
+
+```text
+func (l List[T]) Filter(keep func(T) bool) List[T]
+     接收者        方法名  参数                  返回值
+```
+
+圆括号里的 `l List[T]` 是接收者，不是普通参数。调用 `users.Filter(...)` 时，点号左边的 `users` 会传进 `l`。方法体里的 `l` 就是这份用户列表。
+
+这里的 `[T]` 写在 `List` 后面，不写在 `Filter` 后面。它没有给 `Filter` 增加新的类型参数，只是把类型定义里的 `T` 引进方法，让参数和返回值能写 `T`。约束仍然是类型定义上的 `any`，方法上不能再写一遍。值的类型是 `List[User]` 时，方法里所有的 `T` 都是 `User`：
+
+| 写法 | `T` 换成 `User` 之后 |
+| :--- | :--- |
+| 接收者 `l List[T]` | `l` 的类型是 `List[User]` |
+| 参数 `keep func(T) bool` | `keep` 的类型是 `func(User) bool`：接收一名用户，返回是否保留 |
+| 返回值 `List[T]` | 返回的仍是 `List[User]`，元素类型没有变成别的类型 |
+
+`keep` 由调用方传入。下面这个函数在用户的 `Active` 为 true 时返回 true：
+
+```go
+active := users.Filter(func(u User) bool { return u.Active })
+```
+
+方法体按这个顺序处理三名用户：
+
+1. `make(List[T], 0, len(l))` 先造一个新的空列表 `out`。长度是 0，所以里面还没有元素；容量是 `len(l)`，也就是 3，后面追加时通常不用再申请一块新数组。`out` 和 `l` 不是同一份切片。
+2. `for _, v := range l` 依次取出 Ann、Bo、Cy。下划线表示不要下标。`v` 的类型是 `T`，在这次调用里就是 `User`。
+3. `keep(v)` 为 true 时，`append(out, v)` 把这名用户追加到 `out`。Ann 和 Cy 的 `Active` 是 true，会进入 `out`；Bo 是 false，被跳过。
+4. `return out` 把新列表返回。`l` 仍是原来的三名用户，因为追加发生在 `out` 上。
+
+因此 `active` 的类型还是 `List[User]`，元素是 Ann 和 Cy。`Filter` 只筛选，不改变元素类型。
+
+这在 Go 1.18 就是合法的。`Filter` 没有自己的类型参数：`[T]` 写在接收者上，不写在方法名后面。`Len`、`Append` 也属于这一类，因为元素类型在写成 `List[User]` 时就已经确定。
 
 ```mermaid
 flowchart LR
