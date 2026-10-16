@@ -2,7 +2,7 @@
 layout: post
 title:  "Go 1.27 泛型方法：用法、适用场景与边界"
 date:   2026-10-15 16:55:22 +0800
-last_modified_at: 2026-10-16 10:43:11 +0800
+last_modified_at: 2026-10-16 14:19:58 +0800
 description: "从一段 Filter/Map 流水线写起，说明 Go 1.18 的泛型函数和泛型类型还留了哪一个缺口，以及 Go 1.27 的泛型方法如何补上。含声明、类型推断，以及它为什么仍然不能实现接口。"
 categories: GoLang
 tags:
@@ -115,7 +115,13 @@ lens := Map(names, func(s string) int { return len(s) })
 
 ## 第三步：方法能挂在泛型类型上，只要不再引入新类型
 
-方法是带接收者的函数。在 `users.Filter(...)` 里，点号左边的 `users` 就是接收者。先把切片定义成命名类型，操作才能出现在这个值的方法列表里：
+方法是带接收者的函数。在 `users.Filter(...)` 里，点号左边的 `users` 就是接收者。Go 只允许把方法写在**本包用 `type` 定义出来的类型**上。`[]User` 是写出来就存在的切片类型，不是用 `type` 定义的名字，因此下面这种接收者不合法，编译器会拒绝在 `[]User` 上声明 `Filter`：
+
+```go
+func (users []User) Filter(keep func(User) bool) []User { /* ... */ }
+```
+
+要让 `Filter` 出现在值的方法列表里，先用 `type` 给这种切片起一个名字，再把方法写在这个名字上：
 
 ```go
 type List[T any] []T
@@ -131,9 +137,17 @@ func (l List[T]) Filter(keep func(T) bool) List[T] {
 }
 ```
 
-先看第一行类型定义。`type List[T any] []T` 给「元素类型为 `T` 的切片」起名叫 `List`。方括号里的 `T` 是占位符，`any` 表示以后可以把 `T` 换成任意具体类型。`[]T` 是这个名字背后的真实结构：一个切片，元素类型就是那个占位符。
+先看第一行。`type List[T any] []T` 从左到右是四段：
 
-写成 `List[User]` 时，占位符 `T` 被换成 `User`。此时 `List[User]` 和 `[]User` 存放的是同一种元素，差别是 `List[User]` 有自己的名字，所以能给它写方法。`[]User` 是语言内建的切片，不能在别的包里给它增加方法。
+| 片段 | 含义 |
+| :--- | :--- |
+| `type List` | 在本包定义一个新类型，名字叫 `List` |
+| `[T any]` | `T` 是元素类型的占位符；`any` 表示换成 `User`、`int` 或其他类型都可以 |
+| `[]T` | 这个新类型的底层结构是切片，元素类型就是 `T` |
+
+只写 `type UserList []User` 也能挂方法，但名字和元素类型绑死了，订单列表还得再定义一个 `OrderList`。加上 `[T any]` 之后，同一个 `List` 可以写成 `List[User]` 或 `List[Order]`，`Filter` 只写一次。
+
+`List[User]` 和 `[]User` 的元素相同，内存里都是一块切片。差别是 `List[User]` 是本包定义的类型，方法可以写在它上面；`[]User` 不是，所以 `users.Filter` 这种调用只存在于 `List[User]` 的值上。调用前要把 `[]User` 转成 `List[User]`，见下一行。
 
 ```go
 users := List[User](sample())
