@@ -2,7 +2,7 @@
 layout: post
 title:  "Harness Engineering：让编码智能体可靠交付的六条落地准则"
 date:   2026-10-28 14:33:22 +0800
-last_modified_at: 2026-10-28 14:49:55 +0800
+last_modified_at: 2026-10-28 15:20:18 +0800
 description: "对照 OpenAI、Anthropic、Stripe、LangChain 与 Huntley 的实践，说明 Harness 如何用活文档、外置状态、按需上下文和可执行约束，让编码智能体可靠交付。"
 categories: AI
 tags:
@@ -62,6 +62,9 @@ Anthropic 把 **提示词工程** 定义成怎么写指令，尤其是系统提�
 
 **Harness Engineering** 比上下文再多管几件事：工具怎么调用、状态放在哪里、做完怎么验证、失败后重试还是重规划、整个循环何时停止。Böckeler 写得很明确：为编码智能体做外层 Harness，是上下文工程的一种具体形式。提示词和上下文都还在，只是它们不再单独构成交付系统。
 
+![单轮提示词工程与面向智能体的上下文工程](/assets/images/202610/anthropic-prompt-vs-context.png){: width="760" }
+*图：左边一次放进系统提示和用户消息。右边每次推理都从文档、工具、记忆和历史里挑选一小部分放进窗口，工具结果再回到候选集合里。来源：[Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)（Anthropic）。*
+
 [Agent Skills]({% post_url 2025-12-12-agent-skills-in-action %}) 和 [OpenAI Skills 最佳实践]({% post_url 2026-06-29-openai-skills-best-practices %}) 解决的是「需要时再加载一份操作手册」。[Superpowers]({% post_url 2026-06-05-superpowers-in-action %}) 把需求澄清、计划、TDD 和审查收成技能工作流。这些都是 Harness 里的引导件。它们还没有覆盖传感、外置状态和熵回收。
 
 ## 引导在行动前，传感在行动后
@@ -116,6 +119,15 @@ OpenAI 的记录是：Codex 一开始慢，是因为环境欠指定。人的工�
 
 LangChain 把模型标识固定为 GPT-5.2-Codex，只动 Harness，在 Terminal-Bench 2.0（89 个任务，Harbor 编排沙箱并评分）上把 deepagents-cli 从 52.8% 做到 66.5%，榜上位置从 30 名开外进到第 5。他们压缩了可调旋钮，只动系统提示、工具和中间件（包在模型和工具调用外面的钩子）。一版强调构建—验证循环、注入环境信息、并限制死循环和超时的提示，把分数做到 63.6%（推理档位为 high）。全程开到 xhigh 反而只有 53.9%，原因是超时。他们最后用的是规划和高强度验证用 xhigh、实现用 high 的组合，分数到 66.5%。这组数字说明推理预算也是 Harness 旋钮：模型名字没变，预算分配变了，分数就会变。
 
+![同一模型上三次 Harness 改动的分数](/assets/images/202610/langchain-harness-scores.png){: width="720" }
+*图：基线 52.8%。加上构建—验证循环、环境上下文、死循环和超时保护后到 63.6%。再加上自适应推理到 66.5%。来源：[Improving Deep Agents with harness engineering](https://www.langchain.com/blog/improving-deep-agents-with-harness-engineering)（LangChain）。*
+
+![规划和高强度验证用更高推理档，实现阶段用较低档](/assets/images/202610/langchain-reasoning-sandwich.png){: width="760" }
+*图：时间预算的前 25% 和最后 25% 用 xhigh 做计划和最终验证，中间 50% 用 high 实现。全程 xhigh 会因超时掉到 53.9%。来源：[Improving Deep Agents with harness engineering](https://www.langchain.com/blog/improving-deep-agents-with-harness-engineering)（LangChain）。*
+
+![一次运行内的构建、验证和按错误修改](/assets/images/202610/langchain-self-verify.png){: width="680" }
+*图：退出前拦截一次，要求对照任务规格再跑测试，失败就带着错误回到实现。来源：[Improving Deep Agents with harness engineering](https://www.langchain.com/blog/improving-deep-agents-with-harness-engineering)（LangChain）。*
+
 工具协议本身就能挡住模型。Stencil 用同一批模型和同一套任务，只更换编辑工具的输出格式。[他们的文章](https://stencil.so/blog/the-harness-problem)记录：Grok Code Fast 1 在 patch 格式下成功率 6.7%，换成 hashline（读到的每一行带内容哈希，编辑指向这个锚点）之后为 68.3%。patch 大量机械失败，模型的编码能力几乎没有机会表现出来。读同一张对比表时要一起看另一列：hashline 相对 Claude 风格的 `str_replace`，表中模型平均大约提升 3.4 个百分点；Grok Code Fast 1 相对替换式编辑大约多 4.6 个百分点。十倍跳跃出现在「这个模型几乎写不好 patch」的前提下。它证明格式会掩盖能力，不能读成任意改一处输出格式都有十倍收益。
 
 Stripe 和 Huntley 没有公布同类排行榜，但他们的工程选择指向同一处。Stripe 的 Minions 是无人值守的一次性编码流程：每周超过 1000 个、后来超过 1300 个合并的 Pull Request 完全由 minion 产出，经人工审查，其中没有人手写的代码。运行环境是预热好的 devbox，大约 10 秒拉起，与生产资源和公网隔离，因此可以去掉面向人的确认提示。Huntley 在 Ralph 走偏时不去换模型，而是改规格和循环提示。他记录过一次教训：语言的词法规格里同一个关键字被定义了两次、语义相反，循环空转了大约一个月。错在规格，循环只是忠实执行了规格。
@@ -142,9 +154,18 @@ Anthropic 在 2025 年 11 月的实验里，用一句高层提示（例如「做
 
 这里要保留 Anthropic 自己的限定。初始化智能体和编码智能体共用同一套系统提示、工具和 Harness，差别是第一段用户提示。Sonnet 4.5 有「上下文焦虑」：窗口变满时会提前收尾。针对这个失效模式，重置上下文、再用交接文件注入必要信息，比在越来越浑的历史里做摘要更有效。换到 Opus 4.5 之后，这种提前收尾基本消失，他们去掉了强制重置，改由 SDK 的自动压缩处理增长。重置是针对具体模型失效模式的部件。模型变了，这个部件就该拆掉。Planner、文件交接和「一次一项」仍然留着，因为它们解决的是任务边界，不是某一个模型的焦虑。
 
-Huntley 对「一堆智能体互相通话」持保留态度。他把不确定的智能体比作不确定的微服务：每个服务自己就非确定，组合起来更难推理。Ralph 的纯形式是一个仓库里的一个进程，每次循环只做一件事。主上下文充当调度器，昂贵的检索交给子智能体；构建和测试限制为单个子智能体，避免并行改同一棵工作区。计划在 `fix_plan.md`，规格一人一份文件，都放在仓库里。每次循环重新注入计划和规格，做完就丢弃这扇窗口。他给出的可用窗口大约是 17 万 token；塞得越满，结果越差。
+Huntley 对「一堆智能体互相通话」持保留态度。他把不确定的智能体比作不确定的微服务：每个服务自己就非确定，组合起来更难推理。Ralph 的纯形式是一个仓库里的一个进程，每次循环只做一件事。主上下文充当调度器，昂贵的检索交给子智能体；构建和测试限制为单个子智能体，避免并行改同一棵工作区。计划在 `fix_plan.md`，规格一人一份文件，都放在仓库里。每次循环重新注入计划和规格，做完就丢弃这扇窗口。他给出的可用窗口大约是 17 万 token；塞得越满，结果越差。规格、标准库、构建和测试是卡住生成结果的反向压力：生成可以很快，这四件事用来检查生成的是不是要的东西。
+
+![Ralph 从需求、待办到增量循环](/assets/images/202610/ralph-process.png){: width="760" }
+*图：需求阶段和待办阶段把规格与计划写成文件，增量循环每次只做一项，并用新的上下文读这些文件。来源：[Ralph Wiggum as a software engineer](https://ghuntley.com/ralph/)（Geoffrey Huntley）。*
+
+![规格、标准库、测试和构建形成反向压力](/assets/images/202610/ralph-backpressure.png){: width="640" }
+*图：中间的问题是「怎么判断做对了」。规格、标准库、测试和构建一起把生成结果挡回来。来源：[Ralph Wiggum as a software engineer](https://ghuntley.com/ralph/)。*
 
 Stripe 的编排不靠另一个模型临场发挥。Part 2 里的 blueprint 是用代码定义的工作流：一个节点要么跑确定的程序（git、Linter、测试），要么跑一段聚焦于单任务的智能体循环。停止条件、顺序和必做步骤写在工作流里。
+
+![Minion 的 blueprint：方框是确定步骤，云朵是智能体步骤](/assets/images/202610/stripe-minion-blueprint.png){: width="420" }
+*图：先由智能体实现任务，再跑自动选定的 Linter；Lint 失败就回到智能体修。通过后推分支并等待 CI，失败进入修复节点。来源：[Minions, Part 2](https://stripe.dev/blog/minions-stripes-one-shot-end-to-end-coding-agents-part-2)（Stripe）。*
 
 三家的共同结构是：编排层决定边界和完成定义，执行层在干净的上下文里做一项，状态落在文件或工作流里。编排层可以是人、一份计划文件，或一段确定的代码。它不必是另一个长对话里的「经理模型」。
 
@@ -168,6 +189,9 @@ sequenceDiagram
 OpenAI 把这条写成操作规则：给 Codex 一张地图，不要给一本 1000 页的手册。渐进式披露的做法是，稳定的短入口永远在上下文里，更深的材料等任务碰到对应领域再打开。太多指导等于没有指导，智能体退回到局部的模式匹配。
 
 Anthropic 的上下文工程用注意力预算来解释同一件事。系统提示要落在一个可操作的高度：具体到能约束行为，又留出模型自己选择手段的空间。把复杂分支硬编码进提示，会又脆又难维护。只写空泛原则，模型会假设你们已经共享了它实际上没有的上下文。他们建议从手头最好的模型加一份最小提示开始测试，再按观察到的失败模式补充指令和例子。
+
+![系统提示的合适高度：过细、刚好、过空](/assets/images/202610/anthropic-prompt-altitude.png){: width="760" }
+*图：左边把每一种意图都写成硬编码分支，又脆又难维护。右边只给空泛原则，模型会假定并不存在的共享上下文。中间给出角色、工具和可操作的判断标准。来源：[Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)（Anthropic）。*
 
 Huntley 把预算用到更硬。循环只做一件事。规格和计划每次重新注入，这看起来浪费，因为他每圈都在重新花费这些 token，但这样主窗口不会堆上失败的工具输出。他观察到，在当时的 Claude 3.7 上，标称 20 万的窗口到大约 14.7 万至 15.2 万 token 时输出质量就会掉下去。这是他的运行记录，不是厂商规格。它说明标称窗口和还能稳定工作的窗口不是同一个数。
 
