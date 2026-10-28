@@ -2,7 +2,7 @@
 layout: post
 title:  "Harness Engineering：让编码智能体可靠交付的六条落地准则"
 date:   2026-10-28 14:33:22 +0800
-last_modified_at: 2026-10-28 15:20:18 +0800
+last_modified_at: 2026-10-28 16:03:03 +0800
 description: "对照 OpenAI、Anthropic、Stripe、LangChain 与 Huntley 的实践，说明 Harness 如何用活文档、外置状态、按需上下文和可执行约束，让编码智能体可靠交付。"
 categories: AI
 tags:
@@ -16,7 +16,7 @@ mermaid: true
 * Do not remove this line (it will not be displayed)
 {:toc}
 
-> 本文按一手材料交叉核对。[OpenAI 的 Codex 实践](https://openai.com/index/harness-engineering/)（Ryan Lopopolo，2026-02-11）、[Anthropic 的长程智能体 Harness](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)（2025-11-26）及其后续的 [Planner / Generator / Evaluator 设计](https://www.anthropic.com/engineering/harness-design-long-running-apps)、[Stripe Minions](https://stripe.dev/blog/minions-stripes-one-shot-end-to-end-coding-agents)、[LangChain 在 Terminal-Bench 2.0 上的实验](https://www.langchain.com/blog/improving-deep-agents-with-harness-engineering)、[Geoffrey Huntley 的 Ralph](https://ghuntley.com/ralph/)（2025-07-14），以及 Birgitta Böckeler 在 [Martin Fowler 站点](https://martinfowler.com/articles/harness-engineering.html) 上给出的概念框架（2026-04-02）。产品怎么接入，见 [Codex in Action]({% post_url 2026-04-03-codex-in-action %}) 与 [Cursor in Action]({% post_url 2025-03-11-cursor-in-action %})。
+> 本文按一手材料交叉核对。[OpenAI 的 Codex 实践](https://openai.com/index/harness-engineering/)（Ryan Lopopolo，2026-02-11）、[Anthropic 的长程智能体 Harness](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)（2025-11-26）及其后续的 [Planner / Generator / Evaluator 设计](https://www.anthropic.com/engineering/harness-design-long-running-apps)、[Stripe Minions](https://stripe.dev/blog/minions-stripes-one-shot-end-to-end-coding-agents)、[LangChain 在 Terminal-Bench 2.0 上的实验](https://www.langchain.com/blog/improving-deep-agents-with-harness-engineering)、[Geoffrey Huntley 的 Ralph](https://ghuntley.com/ralph/)（2025-07-14），以及 Thoughtworks Distinguished Engineer [Birgitta Böckeler](https://birgitta.info) 在 [Martin Fowler 站点](https://martinfowler.com/articles/harness-engineering.html) 上给出的概念框架（2026-04-02）。产品怎么接入，见 [Codex in Action]({% post_url 2026-04-03-codex-in-action %}) 与 [Cursor in Action]({% post_url 2025-03-11-cursor-in-action %})。
 {: .prompt-info }
 
 模型已经能改代码、跑命令、开 Pull Request。长任务仍会在半截停住、把过期规则当成现行约束，或者把团队堵在人工审查上。2025 年到 2026 年，上面这几路实践公开了各自的做法。交叉之后，结论落在同一处：可靠交付取决于模型外面的那套运行与控制系统。这套系统叫做 **Harness**。
@@ -25,7 +25,7 @@ mermaid: true
 
 ## Harness 是模型外面的控制系统
 
-Böckeler 给编码智能体用的定义很窄，也因此能落地：智能体等于模型加上 Harness。产品里已经带了一层内层 Harness，包括系统提示、代码检索和工具循环。仓库里还要再加一层外层 Harness，用来表达这个代码库的结构、验收标准和纠正方式。外层 Harness 做两件事。它提高智能体第一次就做对的概率。它也让尽可能多的错误在人看见之前就自我纠正。
+[Birgitta Böckeler](https://birgitta.info) 是 Thoughtworks 的 Distinguished Engineer，做 AI 辅助交付，有二十多年软件开发、架构和技术负责人经验。2026 年 4 月 2 日，她在 Martin Fowler 的站点发表了 [Harness engineering for coding agent users](https://martinfowler.com/articles/harness-engineering.html)。下文的引导、传感和三类调节目标都出自这篇文章。她给编码智能体用的定义很窄，也因此能落地：智能体等于模型加上 Harness。产品里已经带了一层内层 Harness，包括系统提示、代码检索和工具循环。仓库里还要再加一层外层 Harness，用来表达这个代码库的结构、验收标准和纠正方式。外层 Harness 做两件事。它提高智能体第一次就做对的概率。它也让尽可能多的错误在人看见之前就自我纠正。
 
 ![模型在最内层，产品自带的 Harness 在中间，使用者加的外层 Harness 在最外](/assets/images/202610/fowler-bounded-contexts.png){: width="640" }
 *图：同一个词在不同边界里指不同的层。最外层是使用者为自己的系统加上的引导和传感。来源：[Harness engineering for coding agent users](https://martinfowler.com/articles/harness-engineering.html)。*
@@ -431,7 +431,7 @@ blueprint 不必是平台产品。一段把「必须发生」写死的流程就�
 * [Minions: Stripe’s one-shot, end-to-end coding agents](https://stripe.dev/blog/minions-stripes-one-shot-end-to-end-coding-agents) 与 [Part 2](https://stripe.dev/blog/minions-stripes-one-shot-end-to-end-coding-agents-part-2)（blueprint 与无人值守循环）。
 * [Improving Deep Agents with harness engineering](https://www.langchain.com/blog/improving-deep-agents-with-harness-engineering)（LangChain，Terminal-Bench 2.0）。
 * [Ralph Wiggum as a software engineer](https://ghuntley.com/ralph/)（Geoffrey Huntley，2025-07-14）。
-* [Harness engineering for coding agent users](https://martinfowler.com/articles/harness-engineering.html)（Birgitta Böckeler，2026-04-02）。
+* [Harness engineering for coding agent users](https://martinfowler.com/articles/harness-engineering.html)（[Birgitta Böckeler](https://birgitta.info)，Thoughtworks Distinguished Engineer，2026-04-02）。
 
 工具格式实验，以及对其数字的拆读：
 
