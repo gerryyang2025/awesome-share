@@ -36,8 +36,13 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 # Phrase
 
+* hit a snag
+  + 遇到问题：指在某事物上遇到困难或问题。
+  + ChatGPT hit a snag. Something went wrong. Try again to continue.
 
-* FOMO (fear of missing out) 错失恐惧症
+
+* FOMO (fear of missing out)
+  + 错失恐惧症
 
 * watch your six (源自：疯狂动物城2)
   + watch your six 是一个英语俚语，直译是“注意你的六点钟方向”。它源自军事术语，其中方向用时钟表示：12点为正前方，3点为右侧，6点为正后方，9点为左侧。因此，这个短语的引申意思是 **“小心背后”或“保持警惕”**，常用于提醒某人注意来自后方的危险或意外。
@@ -59,6 +64,14 @@ A **thesaurus** is a reference book in which words with similar meanings are gro
 
 
 # Words (柯林斯英汉双解大词典)
+
+
+* snag /snæɡ/
+  + N-COUNT A **snag** is a small problem or disadvantage. 小问题; 小挫折
+    - A police clampdown on car thieves **hit a snag** when villains stole one of their cars. 匪徒偷走了警方一辆汽车后，警方打击盗车贼的行动遇到了一点儿小挫折。
+  + V-T/V-I If you snag part of your clothing on a sharp or rough object or if it **snags**, it gets caught on the object and tears. 钩破
+    - She **snagged** a heel on a root and tumbled to the ground. 她的鞋后跟绊在树根上，跌倒在地。
+    - Brambles **snagged** his suit.  刺藤钩破了他的西服。
 
 
 * interceptor /ˌɪntəˈsɛptə/
