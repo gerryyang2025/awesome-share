@@ -146,6 +146,10 @@ exclude:
   - LICENSE
   - "*.config.js"
   - "package*.json"
+  # optools appends this file inside the source tree. If the watcher sees it,
+  # every log line rebuilds the site and a 1 GB host cannot start dart-sass again.
+  - run.log
+  - .jekyll.pid
 
 jekyll-archives:
   enabled: [categories, tags]

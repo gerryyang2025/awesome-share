@@ -172,7 +172,7 @@ Tested on **macOS Apple Silicon** (`arm64-darwin`) and **Ubuntu x86_64** (`x86_6
 | Jekyll | **4.4.1** (`Gemfile` allows `~> 4.3`). |
 | Theme | **jekyll-theme-chirpy 7.5.0**. |
 | Git | Any current Git. |
-| Memory | **1 GB RAM** is enough to `bundle install` and `./optools start` with this lockfile. |
+| Memory | **1 GB RAM** is enough for `bundle install` and the first `./optools start` generation. A later rebuild starts `dart-sass` again and can exit with `Cannot allocate memory`. |
 | Disk | A few hundred MB for the rbenv Ruby, gems, and the generated `_site/`. |
 | Locale | **UTF-8**. Posts and images use Chinese filenames. `LANG=C` makes `jekyll serve` raise `Encoding::UndefinedConversionError`. `./optools start` picks a UTF-8 locale when the shell has none. |
 | Compiler | Needed the first time native gems (`json`, `eventmachine`) are built. macOS: Xcode Command Line Tools. Ubuntu: `build-essential`, which `./optools ruby-upgrade` installs. |
@@ -286,7 +286,7 @@ Use the **optools** script for environment checks, start/stop, and status:
 - **扩充约定**：在 `tools/` 或其它目录新增**需要经常手动执行**的维护脚本时，请**同时**在 **`optools`** 中增加对应子命令，并更新 **`./optools help`** 与本节命令列表，避免 README、`tools/README` 与口头约定各自一套命令。
 - **为准**：子命令以 **`./optools help`** 为准；若与上表不一致，以脚本为准，并请将 README 改到一致。
 
-- The dev server listens on **0.0.0.0:8080** (`_config.yml`). `./optools start` runs it under `nohup` and records `.jekyll.pid`. `run.log` and `.jekyll.pid` are gitignored. For a build error, run `DEBUG=1 ./optools start` and read `run.log`.
+- The dev server listens on **0.0.0.0:8080** (`_config.yml`). `./optools start` runs it under `nohup` and records `.jekyll.pid`. `run.log` and `.jekyll.pid` are gitignored, and both are in `exclude` so log writes do not rebuild the site. For a build error, run `DEBUG=1 ./optools start` and read `run.log`. On a 1 GB host, if editing a post still prints `Cannot allocate memory` for `sass-embedded` `dart`, add the 2 GB swap in the install section and run `./optools restart`.
 - `detach` in `_config.yml` stays **false**. Jekyll's own detach would exit the PID that `optools` recorded. Override the bind address with `JEKYLL_HOST` when one Linux address must be pinned.
 
 # 📊 Blog Statistics
