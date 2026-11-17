@@ -2,8 +2,7 @@
 layout: post
 title:  "Kubernetes in Action"
 date:   2022-07-31 16:30:00 +0800
-last_modified_at: 2026-08-05 10:48:03 +0800
-mermaid: true
+last_modified_at: 2026-11-17 12:15:21 +0800
 categories: 云原生
 tags:
   - Kubernetes
@@ -341,13 +340,8 @@ kubectl label -f manifest.yaml <标签键>=<标签值>           # 从清单文�
 * `<标签键>=<标签值>`：新增标签；同一 key 已存在且值不同时，须加 **`--overwrite`**。
 * `<标签键>-`：删除该 key（末尾 `-` 表示 remove）。
 
-```mermaid
-flowchart LR
-  A["kubectl label"] --> B["apiserver"]
-  B --> C["metadata.labels"]
-  C --> D["Service / Deployment selector"]
-  C --> E["kubectl get -l"]
-```
+![命令形式](/assets/images/202207/k8s-in-action-01.png){: width="760" }
+*图：命令形式。*
 
 #### 给 Namespace 打标签
 
@@ -959,23 +953,8 @@ Deployment 本身**不直接管理 Pod**，而是通过 **ReplicaSet** 间接维
 3. 每个新 Pod Ready（且满足 `minReadySeconds`）后，继续推进，直到旧 ReplicaSet 缩到 0。
 4. 旧 ReplicaSet 保留在集群中（受 `revisionHistoryLimit` 约束），供 `kubectl rollout undo` 回滚。
 
-```mermaid
-sequenceDiagram
-    participant User as 用户 / CI
-    participant Dep as Deployment
-    participant OldRS as 旧 ReplicaSet
-    participant NewRS as 新 ReplicaSet
-    participant Pod as Pod
-
-    User->>Dep: 更新 spec.template（如新镜像）
-    Dep->>NewRS: 创建新 ReplicaSet
-    loop 按 maxSurge / maxUnavailable 推进
-        NewRS->>Pod: 创建新 Pod
-        Pod-->>NewRS: Ready
-        OldRS->>Pod: 终止旧 Pod
-    end
-    OldRS->>OldRS: 缩容至 0（保留供回滚）
-```
+![2.1 Deployment 滚动更新的底层机制（ReplicaSet 交替扩缩）](/assets/images/202207/k8s-in-action-02.png){: width="760" }
+*图：2.1 Deployment 滚动更新的底层机制（ReplicaSet 交替扩缩）。*
 
 常用运维命令：
 
@@ -1167,17 +1146,8 @@ kubectl delete pod mysql-0
 
 这与 Deployment「新旧 ReplicaSet 并行、Pod 可任意顺序替换」形成鲜明对比——StatefulSet 默认**严格串行**，且每个 Pod 的身份（名字、PVC、DNS）在重建后保持不变。
 
-```mermaid
-flowchart LR
-    subgraph Deployment 滚动更新
-        D1[旧 RS Pod] --> D2[新 RS Pod]
-        D3[任意顺序替换]
-    end
-    subgraph StatefulSet 滚动更新
-        S2[web-2 重建] --> S1[web-1 重建]
-        S1 --> S0[web-0 重建]
-    end
-```
+![2. RollingUpdate](/assets/images/202207/k8s-in-action-03.png){: width="760" }
+*图：2. RollingUpdate。*
 
 示例：
 
@@ -1307,25 +1277,8 @@ StatefulSet 还有一个容易和更新策略混在一起看的字段：
 | **历史版本** | 旧 ReplicaSet + `revisionHistoryLimit` | ControllerRevision + `revisionHistoryLimit` |
 | **暂停发布** | `kubectl rollout pause/resume` | 无等价命令；用 `OnDelete` 或调 `partition` 控节奏 |
 
-```mermaid
-flowchart TB
-    subgraph Dep["Deployment RollingUpdate"]
-        direction TB
-        T1[template 变更] --> RS1[创建新 ReplicaSet]
-        RS1 --> Loop1{maxSurge / maxUnavailable}
-        Loop1 -->|扩新缩旧| Done1[旧 RS 缩至 0]
-    end
-
-    subgraph STS["StatefulSet RollingUpdate"]
-        direction TB
-        T2[template 变更] --> Ord[从最大 ordinal 开始]
-        Ord --> Del[删除 Pod N-1]
-        Del --> Wait{Running & Ready<br/>+ minReadySeconds}
-        Wait -->|是| Next[更新下一个 ordinal]
-        Next --> Del
-        Wait -->|否| Block[rollout 阻塞]
-    end
-```
+![Deployment 与 StatefulSet 滚动更新对比](/assets/images/202207/k8s-in-action-04.png){: width="760" }
+*图：Deployment 与 StatefulSet 滚动更新对比。*
 
 **选用经验**：
 
@@ -1869,21 +1822,8 @@ Pod 被调度到某个 Node 之后，kubelet 会通过容器运行时（containe
 
 可以把 kubelet 的决策理解成下面这条链路：
 
-```mermaid
-flowchart TD
-    A[Pod 调度到 Node] --> B{kubelet 准备创建容器}
-    B --> C{imagePullPolicy?}
-    C -->|Always| D[向仓库拉取镜像]
-    C -->|Never| E{本地已有镜像?}
-    C -->|IfNotPresent| F{本地已有镜像?}
-    E -->|是| G[用本地镜像启动容器]
-    E -->|否| H[创建失败 ImagePullBackOff]
-    F -->|是| G
-    F -->|否| D
-    D --> I{拉取成功?}
-    I -->|是| G
-    I -->|否| H
-```
+![IfNotPresent 的工作流程](/assets/images/202207/k8s-in-action-05.png){: width="760" }
+*图：IfNotPresent 的工作流程。*
 
 对 `IfNotPresent` 来说，判断「本地是否已有」的依据是**镜像名称 + tag（或 digest）** 的组合。节点上如果已经缓存了 `nginx:1.27`，后续再创建引用同一 `image: nginx:1.27` 的 Pod，kubelet **不会**再去仓库确认有没有更新版本，而是直接复用本地缓存。
 
@@ -3142,27 +3082,8 @@ etcd 的 [事务 API](https://etcd.io/docs/v3.6/learning/api/) 支持对 key 的
 
 下面这张图可以把这条链路看得更直观一些：
 
-```mermaid
-sequenceDiagram
-  autonumber
-  participant C as 客户端
-  participant A as apiserver
-  participant S as storage layer + etcd txn
-  participant O as 其他写入方
-
-  C->>A: GET 对象
-  A-->>C: 返回 rv=120
-
-  O->>A: 先提交写入(rv=120)
-  A->>S: Compare(rv=120) + Write
-  S-->>A: success -> rv=121
-  A-->>O: 200 OK
-
-  C->>A: 再提交 PUT(rv=120)
-  A->>S: Compare(rv=120) + Write
-  S-->>A: compare failed
-  A-->>C: 409 Conflict
-```
+![apiserver 如何安全地操作 etcd](/assets/images/202207/k8s-in-action-06.png){: width="760" }
+*图：apiserver 如何安全地操作 etcd。*
 
 从这个流程可以看出，Kubernetes 的并发控制并不是“先保证每次读出来的一定是最新，再保证绝不会冲突”，而是更偏向一种**乐观并发**思路：允许你先读，允许你基于当前认知去改，但在真正提交的最后一步，一定要用底层原子事务确认“这个对象从你读完到现在有没有被别人改过”。如果改过，就拒绝这次写入，让上层重新读取最新状态再决定下一步。
 
@@ -3194,36 +3115,8 @@ sequenceDiagram
 
 下面这张图更贴近 controller / operator 的真实工作方式：
 
-```mermaid
-sequenceDiagram
-  autonumber
-  participant Q as Cache / Queue
-  participant R as Controller
-  participant A as apiserver
-  participant S as storage layer + etcd txn
-  participant X as 用户 / 其他控制器
-
-  Q-->>R: reconcile(object rv=121)
-  Note over R: 计算期望状态
-
-  X->>A: 先更新同一对象
-  A->>S: Compare(rv=121) + Write
-  S-->>A: success -> rv=122
-  A-->>X: 200 OK
-
-  R->>A: Update/Patch(rv=121)
-  A->>S: Compare(rv=121) + Write
-  S-->>A: compare failed
-  A-->>R: 409 Conflict
-
-  R->>R: RetryOnConflict / requeue
-  Q-->>R: 最新对象 rv=122
-  Note over R: 重新计算
-  R->>A: 再次写入(rv=122)
-  A->>S: Compare(rv=122) + Write
-  S-->>A: success -> rv=123
-  A-->>R: 200 OK
-```
+![Controller / Operator 遇到冲突时是怎么收敛的](/assets/images/202207/k8s-in-action-07.png){: width="760" }
+*图：Controller / Operator 遇到冲突时是怎么收敛的。*
 
 从控制器设计的角度看，这套机制非常重要，因为它把“冲突处理”从“谁先写谁赢”的混乱状态，变成了“谁冲突谁重算，再按最新状态收敛”的稳定过程。多次事件可以被工作队列折叠，cache 可以有短暂延迟，controller 甚至可以被中断后重跑，但只要每一轮 `reconcile` 都是基于最新对象重新计算，最终仍然会收敛到期望状态。
 
@@ -3363,29 +3256,8 @@ spec:
 
 把三者放在一起看，关系大致就是下面这样：
 
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant API as kube-apiserver
-    participant E as etcd
-    participant C as Controller
-    participant R as Real Resources
-
-    U->>API: apply CRD
-    API->>E: store CRD definition
-
-    U->>API: apply CR
-    API->>E: store CR object
-
-    C->>API: watch CR
-    API-->>C: CR changed
-
-    C->>R: create/update actual resources
-    R-->>C: actual state
-
-    C->>API: update CR.status
-    API->>E: store latest status
-```
+![CRD（CustomResourceDefinition）是什么](/assets/images/202207/k8s-in-action-08.png){: width="760" }
+*图：CRD（CustomResourceDefinition）是什么。*
 
 这张图可以这样理解：
 

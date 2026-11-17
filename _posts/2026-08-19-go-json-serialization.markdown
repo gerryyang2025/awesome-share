@@ -2,7 +2,7 @@
 layout: post
 title:  "Go JSON 序列化对比：json-iterator 与主流编解码库"
 date:   2026-08-19 10:20:29 +0800
-last_modified_at: 2026-08-20 16:43:22 +0800
+last_modified_at: 2026-11-17 12:36:00 +0800
 description: "从 encoding/json 的反射开销出发，系统介绍 json-iterator 的原理、兼容迁移与配置档，并对照 easyjson、goccy/go-json、sonic、jsonparser 以及实验性 encoding/json/v2 的性能与选型。"
 categories: GoLang
 tags:
@@ -11,7 +11,6 @@ tags:
   - jsoniter
   - encoding/json
   - Performance
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -43,20 +42,8 @@ JSON 是 Go 服务里最常见的数据交换格式：HTTP API、消息队列、
 | **语法（encode / decode）** | 字节流是否合法 JSON：token、字符串转义、数字扫描 | `Decoder.Token`、jsoniter `Iterator` / `Stream` |
 | **语义（marshal / unmarshal）** | JSON 值如何对应 Go 值：结构体 tag、`omitempty`、`MarshalJSON` | `json.Marshal`、`json.Unmarshal` |
 
-```mermaid
-flowchart TB
-    subgraph semantic [语义层：Go 值 ↔ JSON 值]
-        ST[struct / map / slice]
-        TAG["json tag、MarshalJSON"]
-    end
-    subgraph syntax [语法层：JSON-text]
-        TOK[token / value]
-        BYTES["[]byte / io.Reader"]
-    end
-    ST <--> TAG
-    TAG <--> TOK
-    TOK <--> BYTES
-```
+![JSON 编解码的两层工作](/assets/images/202608/go-json-serialization-01.png){: width="760" }
+*图：JSON 编解码的两层工作。*
 
 标准库把两层揉在同一个包里，实现简单，但 `MarshalJSON` / `UnmarshalJSON` 的契约会强迫实现方先拼出完整 `[]byte`，再由库二次校验、再解析——嵌套自定义类型时复杂度接近二次。第三方库要么绕开这套接口（jsoniter 的 `RegisterTypeEncoder`），要么重新设计流式接口（`json/v2` 的 `MarshalJSONTo`）。
 
@@ -85,17 +72,8 @@ flowchart TB
 4. **对象池**。`BorrowIterator` / `BorrowStream` 把扫描器和写缓冲放进 `sync.Pool`，降低分配。
 5. **可配置的「少做一点」**。`ConfigFastest` 关掉 HTML 转义、用 6 位浮点、假设 object key 是简单字符串，用正确性换吞吐。
 
-```mermaid
-flowchart LR
-    IN["[]byte JSON"] --> ITER[Iterator]
-    ITER --> CACHE[encoder/decoder 缓存]
-    CACHE --> GO[Go 值]
-    GO --> ENC[ValEncoder]
-    ENC --> STREAM[Stream]
-    STREAM --> OUT["[]byte JSON"]
-    POOL[(sync.Pool)] -.-> ITER
-    POOL -.-> STREAM
-```
+![json-iterator 的加速策略](/assets/images/202608/go-json-serialization-02.png){: width="760" }
+*图：json-iterator 的加速策略。*
 
 和标准库一样，它仍承认 `json.Marshaler` / `json.Unmarshaler`、`NewEncoder` / `NewDecoder`、非 string key 的 map。官方迁移文档强调：**现有实现了这两个接口的类型，以及 `Unmarshal` / `NewEncoder` / `NewDecoder`，都可以原样工作**。
 
@@ -172,18 +150,8 @@ jsoniter.Get(val, "Colors", 0).ToString() // "Crimson"
 
 两条路径做的不是同一份工作。`Unmarshal` 进 `map[string]interface{}` 是先把整份 JSON **建成一棵通用 DOM**，再从树里取字段；`Get` 是在字节流上 **按路径定位，路过的节点只 skip、不解码**。官方迁移文档也写了这一点：比解析进 `map[string]interface{}` 更快，也更好读。源码在 [`locatePath` / `locateObjectField`](https://github.com/json-iterator/go/blob/v1.1.12/any.go)。
 
-```mermaid
-flowchart TB
-    JSON[JSON 字节]
-    JSON --> MAP[Unmarshal 进通用 map]
-    JSON --> GET[jsoniter Get 按路径]
-    MAP --> TREE[为每个字段建 map 和 slice]
-    TREE --> IDX[再从 map 里断言取值]
-    GET --> SCAN[扫 key 不匹配则 Skip]
-    SCAN --> HIT[命中字段切出原始字节]
-    HIT --> LAZY[Any 保持 lazy]
-    LAZY --> TO[ToString 或 ToInt 才解析]
-```
+![为什么 Get 比 map\[string\]interface{} 快](/assets/images/202608/go-json-serialization-03.png){: width="760" }
+*图：为什么 Get 比 map[string]interface{} 快。*
 
 以 `Get(val, "Colors", 0)` 为例，Iterator 会：
 
@@ -359,23 +327,8 @@ role0 := jsoniter.Get(raw, "user", "roles", 0).ToString()
 
 社区里常见的库可以按「要不要结构体绑定」和「快从哪里来」分组：
 
-```mermaid
-flowchart TB
-    subgraph bind [结构体绑定]
-        STD["encoding/json<br/>反射基线"]
-        JI["json-iterator<br/>缓存反射 + Iterator"]
-        GJ["goccy/go-json<br/>opcode + typeptr"]
-        SN["sonic<br/>JIT + SIMD"]
-        EJ["easyjson / ffjson<br/>代码生成"]
-        V2["encoding/json/v2<br/>实验，语法语义分离"]
-    end
-    subgraph parse [只解析、不绑定]
-        GET["jsoniter.Get / sonic Get"]
-        JP["buger/jsonparser"]
-        SIMD["simdjson-go"]
-        GJSON["tidwall/gjson"]
-    end
-```
+![主流编解码库对照](/assets/images/202608/go-json-serialization-04.png){: width="760" }
+*图：主流编解码库对照。*
 
 | 库 | 策略 | 与 `encoding/json` | 生成代码 | 维护状态（2026） |
 |----|------|---------------------|----------|------------------|
@@ -505,18 +458,8 @@ allocs/op 几乎相同（大数组时都是「一个元素一次分配」量级�
 
 ## 按场景选型，而不是按博客标题
 
-```mermaid
-flowchart TD
-    A{JSON 是 CPU/alloc 热点?} -->|否| STD[encoding/json]
-    A -->|是| B{结构体稳定且能接受 go generate?}
-    B -->|是| EJ[easyjson]
-    B -->|否| C{只要换 import?}
-    C -->|是| D{运行在 amd64/arm64 且可接受 unsafe/JIT?}
-    D -->|是| SN[sonic]
-    D -->|否| GJ[goccy/go-json]
-    C -->|否，只要抽几个字段| GET[Get / jsonparser / gjson]
-    E[存量 jsoniter] --> F[冻结版本 + 回归；新代码不要继续扩散]
-```
+![按场景选型，而不是按博客标题](/assets/images/202608/go-json-serialization-05.png){: width="760" }
+*图：按场景选型，而不是按博客标题。*
 
 | 场景 | 建议 |
 |------|------|

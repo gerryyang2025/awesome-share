@@ -2,7 +2,7 @@
 layout: post
 title:  "Redpanda 入门与实践：与 Kafka 对比与选型"
 date:   2026-05-26 20:41:42 +0800
-last_modified_at: 2026-05-26 20:41:42 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "介绍 Redpanda 流式平台的核心概念、本地与 Docker 用法、与 Kafka 的差异及选型；含 IBM Sarama Go 客户端在本机 Redpanda 上验证上报数据的实践。"
 categories: 云原生
 tags:
@@ -11,7 +11,6 @@ tags:
   - Sarama
   - 消息队列
   - 流式计算
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -38,13 +37,8 @@ mermaid: true
 
 业务系统产生连续事件（订单、点击、指标、CDC 变更）。流式平台把这些事件**按主题（Topic）持久化、可重放、可并行消费**，解耦生产者与消费者，并支撑实时管道（Flink、Spark Streaming）、微服务集成（Kafka Connect）与日志聚合等场景。
 
-```mermaid
-flowchart LR
-    P1[Producer A] --> T[Topic: orders]
-    P2[Producer B] --> T
-    T --> C1[Consumer Group: analytics]
-    T --> C2[Consumer Group: fulfillment]
-```
+![流式平台在解决什么问题](/assets/images/202605/redpanda-in-action-01.png){: width="760" }
+*图：流式平台在解决什么问题。*
 
 ### 与 Kafka 对齐的名词
 
@@ -63,22 +57,8 @@ Redpanda 在协议与语义上对齐 Kafka，下列概念可直接沿用既有�
 
 传统 Kafka 集群（尤其仍依赖 ZK 的部署）在逻辑上可拆成多层：
 
-```mermaid
-flowchart TB
-    subgraph KafkaClassic["典型 Kafka 栈（概念）"]
-        ZK[ZooKeeper / 或 KRaft 控制器]
-        KB1[Kafka Broker JVM]
-        KB2[Kafka Broker JVM]
-        ZK --> KB1
-        ZK --> KB2
-    end
-    subgraph RedpandaStack["Redpanda 单进程模型"]
-        RP[Redpanda Broker C++]
-        RP --> RP
-    end
-    Client[Kafka 协议客户端] --> KB1
-    Client --> RP
-```
+![Redpanda 架构要点（与 Kafka 的差异根源）](/assets/images/202605/redpanda-in-action-02.png){: width="760" }
+*图：Redpanda 架构要点（与 Kafka 的差异根源）。*
 
 Redpanda 将**元数据管理、Raft 共识、存储引擎**整合进同一 broker 进程，不再单独部署 ZooKeeper；也无需为 broker 准备 JVM 堆。存储侧采用**线程-per-core**、顺序写与零拷贝等设计，官方宣称在多种工作负载下相较传统 Kafka 有显著延迟与吞吐优势（具体倍数取决于硬件、副本数、压缩与消息大小，选型时应以你的压测为准）。
 
@@ -117,18 +97,8 @@ Redpanda 目标为 **Kafka 协议兼容**，使现有 Producer/Consumer、多数
 
 ## 方案选型
 
-```mermaid
-flowchart TD
-    Q1{是否需要完整 Kafka 生态\nConnect/Streams/MM2 等？}
-    Q1 -->|是且无法替代| K[Apache Kafka\n托管或自建]
-    Q1 -->|否或仅部分| Q2{延迟/资源/运维\n是否敏感？}
-    Q2 -->|本地开发/CI 联调| R1[Redpanda Docker / rpk container]
-    Q2 -->|新集群/云原生优先| R2[Redpanda 生产集群\n或 Redpanda Cloud]
-    Q2 -->|已有 Kafka 投资| K2[继续 Kafka\n或评估迁移工具]
-    R2 --> Q3{合规/厂商锁定？}
-    Q3 -->|接受| RP[Redpanda 企业特性]
-    Q3 -->|仅要开源兼容| OSS[Redpanda 社区版能力范围]
-```
+![方案选型](/assets/images/202605/redpanda-in-action-03.png){: width="760" }
+*图：方案选型。*
 
 | 场景 | 更倾向 | 说明 |
 |------|--------|------|
@@ -248,17 +218,8 @@ rpk topic consume hello -n 1
 
 **Redpanda 在这里的角色**：在本机提供**兼容 Kafka 协议**的 broker（默认 `127.0.0.1:9092`），让 Sarama 走与线上一致的 Produce 路径；配套 **`rpk`**（或上文单容器 `docker run`）负责**起 broker、建 Topic、消费核对**，无需部署 ZK/JVM。应用代码里仍只需配置 broker 列表（如 `KAFKA_BROKERS`），**不必为本地单独换 SDK**。
 
-```mermaid
-flowchart LR
-    subgraph 你的机器
-        App[Go 服务\nSarama Producer]
-        RP[Redpanda broker\n:9092]
-        RPK[rpk\n topic create / consume]
-        App -->|Kafka 协议| RP
-        RPK -->|管理/读回| RP
-    end
-    Test[集成测试\nSarama Consumer] --> RP
-```
+![背景：没有测试环境 Kafka 时要验证什么](/assets/images/202605/redpanda-in-action-04.png){: width="760" }
+*图：背景：没有测试环境 Kafka 时要验证什么。*
 
 典型闭环：**Docker 或 `rpk container` 起 Redpanda** → **`rpk topic create`** 对齐线上 Topic 名 → **跑服务或测试触发上报** → 用 **`rpk topic consume`** 或 **Sarama Consumer** 读回 value，与预期 JSON/Protobuf 比对。下文按该顺序展开。
 
@@ -266,17 +227,8 @@ flowchart LR
 
 Sarama 是 MIT 协议的 Go Kafka 客户端（现由 IBM 维护）。业务里常用 **`SyncProducer`** 在请求路径末尾写 Topic，或用 **`AsyncProducer`** 做旁路日志。Sarama 只认 **Kafka 协议** 与 broker 地址，**不区分**背后是 Apache Kafka 还是 Redpanda——把 `bootstrap.servers` / `KAFKA_BROKERS` 指到本机 Redpanda 即可，**无需改上报代码**。
 
-```mermaid
-sequenceDiagram
-    participant App as Go 服务 (Sarama Producer)
-    participant RP as Redpanda :9092
-    participant Verify as 校验方
-    App->>RP: Produce (topic, key, value)
-    RP-->>App: partition, offset
-    Verify->>RP: rpk consume / Sarama Consumer
-    RP-->>Verify: 原始字节流
-    Verify->>Verify: 比对 JSON/Protobuf/字段
-```
+![Sarama 与 Redpanda 如何对接](/assets/images/202605/redpanda-in-action-05.png){: width="760" }
+*图：Sarama 与 Redpanda 如何对接。*
 
 #### 1. 准备本地 broker 与 Topic
 

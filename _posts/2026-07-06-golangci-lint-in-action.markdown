@@ -2,7 +2,7 @@
 layout: post
 title:  "Golangci-lint 实战：用法、配置与最佳实践"
 date:   2026-07-06 10:28:57 +0800
-last_modified_at: 2026-08-11 14:22:25 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "系统介绍 go vet 与 Staticcheck 轻量静态检查路径，以及 golangci-lint 的原理、配置、CI 集成、v2 迁移与 FAQ，并对比社区替代方案。"
 categories: GoLang
 tags:
@@ -11,7 +11,6 @@ tags:
   - Static Analysis
   - CI
   - Best Practices
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -24,19 +23,8 @@ Go 项目做静态检查时，**最常见的基础组合**是 `go vet ./...` 加
 
 # go vet 与 Staticcheck：轻量静态检查
 
-```mermaid
-flowchart LR
-    subgraph toolchain [Go 工具链自带]
-        VET[go vet ./...]
-    end
-    subgraph sc [Staticcheck 单独安装]
-        SC[staticcheck ./...]
-    end
-    SRC[Go 源码] --> VET
-    SRC --> SC
-    VET --> OUT[终端 / CI 非零退出]
-    SC --> OUT
-```
+![go vet 与 Staticcheck：轻量静态检查](/assets/images/202607/golangci-lint-in-action-01.png){: width="760" }
+*图：go vet 与 Staticcheck：轻量静态检查。*
 
 | 工具 | 安装 | 定位 | 典型命令 |
 | :--- | :--- | :--- | :--- |
@@ -341,36 +329,8 @@ jobs:
 
 [golangci-lint](https://golangci-lint.run/) 的定位是 **Go 静态分析聚合器（linters runner）**：并行跑上百个 linter，复用 Go build cache 与自身分析缓存，用一份 YAML 配置统一开关与排除规则，输出格式可选 text、JSON、SARIF、JUnit 等。官方仓库见 [golangci/golangci-lint](https://github.com/golangci/golangci-lint)；当前主线为 **v2.x**（本文以 **v2.12.2** 为准）。
 
-```mermaid
-flowchart TB
-    subgraph input [输入]
-        SRC[Go 源码 ./...]
-        CFG[.golangci.yml]
-    end
-    subgraph gcl [golangci-lint]
-        TC[typecheck / 编译前端]
-        PAR[并行 linter 调度]
-        CACHE[Build cache + 分析缓存]
-    end
-    subgraph linters [内置 linter 示例]
-        VET[govet]
-        SC[staticcheck]
-        EC[errcheck]
-        SEC[gosec]
-        REV[revive]
-    end
-    subgraph output [输出]
-        TXT[彩色 text]
-        SARIF[SARIF / Code Scanning]
-        JUNIT[JUnit XML]
-    end
-    SRC --> TC
-    CFG --> PAR
-    TC --> PAR
-    PAR --> CACHE
-    CACHE --> VET & SC & EC & SEC & REV
-    VET & SC & EC & SEC & REV --> TXT & SARIF & JUNIT
-```
+![golangci-lint 解决什么问题](/assets/images/202607/golangci-lint-in-action-02.png){: width="760" }
+*图：golangci-lint 解决什么问题。*
 
 | 能力 | 说明 |
 | :--- | :--- |
@@ -569,13 +529,8 @@ issues:
 
 **4. 分层执行：本地快、CI 全、升级单独验**
 
-```mermaid
-flowchart TD
-    A[日常开发] -->|--fast-only / standard| B[秒级反馈]
-    C[PR / pre-push] -->|全量 .golangci.yml| D[与 CI 同配置]
-    E[升级 golangci-lint MR] -->|pin 新版本 + 全量 run| F[一次性修规则差异]
-    F --> G[合并后 CI 稳定]
-```
+![避免：CI 与生产门禁](/assets/images/202607/golangci-lint-in-action-03.png){: width="760" }
+*图：避免：CI 与生产门禁。*
 
 **5. 静态检查依赖也 pin**
 
@@ -644,21 +599,8 @@ go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
 
 ## 安装方式对照小结
 
-```mermaid
-flowchart TD
-    START[需要安装 golangci-lint] --> WHERE{运行环境?}
-    WHERE -->|本地 macOS/Linux| BIN["curl install.sh + pin v2.12.2"]
-    WHERE -->|本地 多版本管理| MISE[mise use golangci-lint@v2.12.2]
-    WHERE -->|CI GitHub| ACTION[golangci-lint-action + version]
-    WHERE -->|CI 其他| CI_BIN[install.sh 或 Docker pin tag]
-    WHERE -->|快速试用| DOCKER[Docker 一次性 run]
-    BIN --> VERIFY[golangci-lint version]
-    MISE --> VERIFY
-    ACTION --> VERIFY
-    CI_BIN --> VERIFY
-    DOCKER --> VERIFY
-    AVOID[避免: go install / @latest / 未 pin 的包管理器] -.->|官方不推荐| START
-```
+![安装方式对照小结](/assets/images/202607/golangci-lint-in-action-04.png){: width="760" }
+*图：安装方式对照小结。*
 
 | 方式 | 可复现 | 官方态度 |
 | :--- | :---: | :--- |
@@ -954,12 +896,8 @@ id := rand.Int()
 
 ## 2. 分层：本地快、CI 全
 
-```mermaid
-flowchart LR
-    DEV[本地编辑] -->|golangci-lint run --fast-only| FAST[errcheck gov vet staticcheck ...]
-    PRE[pre-commit / push] -->|golangci-lint run 全量| FULL[含 gosec revive gocritic]
-    CI[CI pipeline] -->|pin 版本 + 可选 new-from-merge-base| GATE[合并门禁]
-```
+![2. 分层：本地快、CI 全](/assets/images/202607/golangci-lint-in-action-05.png){: width="760" }
+*图：2. 分层：本地快、CI 全。*
 
 VS Code / GoLand 集成时官方建议加 `--fast-only`，否则全量分析可能 **卡住编辑器**。见 [Integrations](https://golangci-lint.run/docs/welcome/integrations/)。
 

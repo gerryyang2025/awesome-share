@@ -2,7 +2,7 @@
 layout: post
 title:  "Superpowers：让 AI 编程代理具备工程化超能力"
 date:   2026-06-05 12:47:52 +0800
-last_modified_at: 2026-06-05 19:34:46 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "介绍 obra/superpowers 的核心理念、技能库、完整开发工作流与最佳实践，含 Cursor 安装与端到端使用示例，帮助读者快速上手 agentic 软件工程方法论。"
 categories: Tools
 tags:
@@ -11,7 +11,6 @@ tags:
   - Agent
   - Superpowers
   - TDD
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -41,21 +40,8 @@ mermaid: true
 
 Superpowers 的应对策略很直接：**用技能（Skill）覆盖关键决策点，代理在行动前必须先加载对应技能并按清单执行**。技能不是「建议」，而是**强制工作流**——例如实现功能前必须走 TDD 的 RED-GREEN-REFACTOR，修 Bug 前必须完成四阶段根因调查。
 
-```mermaid
-flowchart LR
-    subgraph before["传统 Agent"]
-        U1[用户提需求] --> A1[直接改代码]
-        A1 --> R1[手动验证]
-        R1 --> F1[遗漏边界 / 回归]
-    end
-
-    subgraph after["Superpowers Agent"]
-        U2[用户提需求] --> S1[brainstorming]
-        S1 --> S2[writing-plans]
-        S2 --> S3[TDD + subagent]
-        S3 --> S4[review + finish branch]
-    end
-```
+![为什么需要 Superpowers](/assets/images/202606/superpowers-in-action-01.png){: width="760" }
+*图：为什么需要 Superpowers。*
 
 {: .prompt-info }
 **定位**：Superpowers 是**方法论 + 技能包**，不是替代 Cursor / Claude Code / Codex 的 IDE。它运行在各类 **Harness（承载环境）** 之上，通过插件市场分发。
@@ -107,31 +93,8 @@ Superpowers 默认把协作产物落在仓库内，便于审阅与版本管理�
 
 官方定义的 **Basic Workflow** 是七步闭环。下图是技能触发顺序与衔接关系：
 
-```mermaid
-flowchart TB
-    start([用户提出构建/修改需求])
-    bs[brainstorming<br/>苏格拉底式设计澄清]
-    wt[using-git-worktrees<br/>隔离工作区]
-    wp[writing-plans<br/> bite-sized 任务计划]
-    exec{执行方式}
-    sad[subagent-driven-development<br/>Subagent-Driven 推荐<br/>按任务拆子代理 并行/分阶段]
-    ep[executing-plans<br/>Inline Execution<br/>当前会话逐步执行]
-    tdd[test-driven-development<br/>RED-GREEN-REFACTOR]
-    rc[requesting-code-review]
-    fin[finishing-a-development-branch<br/>合并/PR/保留/丢弃]
-
-    start --> bs
-    bs -->|设计获批| wt
-    wt --> wp
-    wp --> exec
-    exec -->|Subagent-Driven 推荐| sad
-    exec -->|Inline Execution| ep
-    sad --> tdd
-    ep --> tdd
-    tdd --> rc
-    rc --> fin
-    fin --> done([完成])
-```
+![标准工作流](/assets/images/202606/superpowers-in-action-02.png){: width="760" }
+*图：标准工作流。*
 
 ## 1. brainstorming — 先设计，后写码
 
@@ -483,16 +446,8 @@ function submitForm(data: FormData) {
 
 **brainstorming 应先做范围判断**：多子系统（图表、导出、RBAC）→ **拆分子项目**，每个子项目独立 spec → plan → 实现循环，而不是一份巨型计划。
 
-```mermaid
-flowchart LR
-    big[管理员仪表盘]
-    big --> s1[子项目 1: RBAC 数据层]
-    big --> s2[子项目 2: 图表 API]
-    big --> s3[子项目 3: CSV 导出]
-    s1 --> c1[spec → plan → 实现]
-    s2 --> c2[spec → plan → 实现]
-    s3 --> c3[spec → plan → 实现]
-```
+![示例 C：大功能拆解 — 用户后台仪表盘](/assets/images/202606/superpowers-in-action-03.png){: width="760" }
+*图：示例 C：大功能拆解 — 用户后台仪表盘。*
 
 你先批准 **子项目 1** 的设计，再进入实现；避免代理一次吞下无法评审的大泥球。
 

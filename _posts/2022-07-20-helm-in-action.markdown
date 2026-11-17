@@ -2,7 +2,7 @@
 layout: post
 title:  "Helm in Action"
 date:   2022-07-20 12:30:00 +0800
-last_modified_at: 2026-05-18 21:35:42 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 categories: 云原生
 tags:
   - Helm
@@ -11,7 +11,6 @@ tags:
   - 包管理工具
 
 description: "深入解析 Kubernetes 包管理工具 Helm，从核心概念到高级用法，结合 Helm 4 新特性与最佳实践"
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -87,14 +86,8 @@ Use `Helm` to: (使用场景)
 
 依据 [Chart Template Guide — Getting Started](https://helm.sh/zh/docs/chart_template_guide/getting_started)，开发 Chart 的核心步骤可概括为：
 
-```mermaid
-flowchart LR
-    A[helm create] --> B[编辑 templates/*.yaml]
-    B --> C[values.yaml 默认值]
-    C --> D[helm template 本地渲染]
-    D --> E[helm install / upgrade]
-    E --> F[集群中的 Release]
-```
+![Chart 模板入门（Getting Started）](/assets/images/202207/helm-in-action-01.png){: width="760" }
+*图：Chart 模板入门（Getting Started）。*
 
 | 步骤 | 命令 / 文件 | 说明 |
 |------|-------------|------|
@@ -145,35 +138,15 @@ Helm 使用 Kubernetes Secret 存储 Release 信息，无需独立数据库。
 
 Namespace → NetworkPolicy → ResourceQuota → LimitRange → PodSecurityPolicy → PodDisruptionBudget → ServiceAccount → Secret → ConfigMap → StorageClass → PersistentVolume → PersistentVolumeClaim → CustomResourceDefinition → ClusterRole → ClusterRoleBinding → Role → RoleBinding → Service → DaemonSet → Pod → ReplicationController → ReplicaSet → Deployment → StatefulSet → Job → CronJob → Ingress → APIService → MutatingWebhookConfiguration → ValidatingWebhookConfiguration
 
-```mermaid
-flowchart LR
-    A[Chart 本地文件<br/>或远程仓库] --> B[Helm Client]
-    B --> C[Chart Repository<br/>OCI Registry]
-    C --> D[helm install/upgrade]
-    D --> E[Render Templates<br/>Go Template Engine]
-    E --> F[Kubernetes API Server]
-    F --> G[集群资源]
-```
+![Helm 工作原理](/assets/images/202207/helm-in-action-02.png){: width="760" }
+*图：Helm 工作原理。*
 
 # Helm 与 Kubernetes 交互流程
 
 Helm Client 接收用户命令后，先通过 Go Template Engine 渲染 Chart 模板，再与 Kubernetes API Server 交互完成资源创建，最后将 Release 信息持久化到集群内的 Secret/ConfigMap 中。
 
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant HC as Helm Client
-    participant K8S as Kubernetes API
-    participant SR as Secret/ConfigMap<br/>存储 Release 信息
-
-    U->>HC: helm install myapp ./chart
-    HC->>HC: Render templates
-    HC->>K8S: Apply resources
-    K8S-->>HC: Resources created
-    HC->>SR: Store release info
-    SR-->>HC: Release recorded
-    HC-->>U: Release deployed
-```
+![Helm 与 Kubernetes 交互流程](/assets/images/202207/helm-in-action-03.png){: width="760" }
+*图：Helm 与 Kubernetes 交互流程。*
 
 
 
@@ -304,30 +277,8 @@ $ helm get -h
 
 ## 主要更新摘要
 
-```mermaid
-mindmap
-  root((Helm 4))
-    新特性
-      Wasm 插件系统
-      Kstatus 状态监控
-      OCI 摘要支持
-      多文档 Values
-      服务端 Apply
-      自定义模板函数
-    架构变更
-      插件系统重构
-      包结构重组
-      CLI 标志重命名
-      版本化包支持
-    安全增强
-      OCI/Registry 增强
-      TLS 改进
-      Wasm 运行时隔离
-    现代化
-      slog 日志迁移
-      Go 1.24 支持
-      依赖清理
-```
+![主要更新摘要](/assets/images/202207/helm-in-action-04.png){: width="760" }
+*图：主要更新摘要。*
 
 ## Breaking Changes
 
@@ -348,17 +299,8 @@ mindmap
 
 Helm 4 将交付语义与 `kubectl apply`、GitOps 控制器对齐，默认采用 **Server-Side Apply（SSA）**，由 API Server 管理字段所有权，减少三方合并（3-way merge）带来的 silent override：
 
-```mermaid
-flowchart TD
-    A[helm install/upgrade] --> B{是否为新 Release?}
-    B -->|Yes 新 Release| C[默认 Server-Side Apply]
-    B -->|No 升级/回滚| D[默认继承该 Release 上次 Apply 方式]
-    C --> E[SSA：字段所有权可解释]
-    D --> F{Helm 3 创建的 Release?}
-    F -->|是| G[仍为 Client-Side Apply 除非显式 --server-side]
-    F -->|否 且上次为 SSA| E
-    E --> H[与 Argo CD / Flux 等同场协作更一致]
-```
+![服务端 Apply（Server-Side Apply）](/assets/images/202207/helm-in-action-05.png){: width="760" }
+*图：服务端 Apply（Server-Side Apply）。*
 
 > **升级注意**（[Helm 4 Overview — Server-Side Apply](https://helm.sh/docs/overview/)）：**新** Release 在 Helm 4 下默认 SSA；**从 Helm 3 升级**的既有 Release 默认继续 Client-Side Apply，除非安装/升级时显式指定 `--server-side`。CI/CD 脚本需评估与现有 GitOps 工具的资源冲突策略。
 {: .prompt-warning }

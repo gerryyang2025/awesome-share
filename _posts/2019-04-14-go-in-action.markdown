@@ -2,12 +2,10 @@
 layout: post
 title:  "Go in Action"
 date:   2019-04-14 10:00:00 +0800
-last_modified_at: 2026-07-03 16:09:38 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 categories: [GoLang]
 tags:
   - GoLang
-mermaid: true
-
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -1359,12 +1357,8 @@ $ go test ./...
 
 Go 把测试当作一等公民：测试文件与源码同目录，通过 `go test` 子命令编译并运行，无需额外测试框架即可覆盖单元测试、基准测试、示例测试与（Go 1.18+）模糊测试。
 
-```mermaid
-flowchart LR
-  A["*_test.go"] --> B["go test"]
-  B --> C["Test / Benchmark / Example / Fuzz"]
-  C --> D["通过 / 失败退出码"]
-```
+![单元测试 (go test)](/assets/images/201904/go-in-action-01.png){: width="760" }
+*图：单元测试 (go test)。*
 
 ## 约定与文件组织
 

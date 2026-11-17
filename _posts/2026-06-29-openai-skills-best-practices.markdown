@@ -2,7 +2,7 @@
 layout: post
 title:  "OpenAI Skills 最佳实践：从个人工作流到团队插件化分发"
 date:   2026-06-29 10:16:36 +0800
-last_modified_at: 2026-06-29 10:22:08 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "系统介绍 OpenAI Codex Agent Skills 的核心概念、创建方法、新项目落地示例、最佳实践与实际使用中的注意事项，并说明何时升级为 Plugins 分发。"
 categories: AI
 tags:
@@ -11,7 +11,6 @@ tags:
   - Agent Skills
   - Plugins
   - AI Agent
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -58,18 +57,8 @@ call out breaking changes first, and produce a concise Markdown changelog.
 
 Codex 使用 Skills 时采用 **progressive disclosure**，也就是渐进式披露：启动时只把每个 Skill 的名称、描述和路径放进上下文；当任务匹配某个 Skill 时，才读取完整 `SKILL.md`。这让一个环境可以安装很多 Skills，而不必一开始就把所有说明塞进上下文窗口。
 
-```mermaid
-flowchart LR
-  A[用户任务] --> B{是否匹配 Skill description}
-  B -- 否 --> C[按普通上下文处理]
-  B -- 是 --> D[读取 SKILL.md]
-  D --> E{是否需要附加资源}
-  E -- references/assets --> F[加载参考资料或模板]
-  E -- scripts --> G[执行确定性脚本]
-  F --> H[按 Skill 流程完成任务]
-  G --> H
-  C --> H
-```
+![Agent Skills 是什么](/assets/images/202606/openai-skills-best-practices-01.png){: width="760" }
+*图：Agent Skills 是什么。*
 
 # Skills、Rules、MCP、Plugins 的边界
 

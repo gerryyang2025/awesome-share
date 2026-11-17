@@ -2,7 +2,7 @@
 layout: post
 title:  "Buf：现代 Protobuf 工具链实战"
 date:   2026-05-22 10:00:00 +0800
-last_modified_at: 2026-05-22 11:25:06 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "介绍 Buf CLI 与 Buf Schema Registry（BSR）的定位、核心命令、代码生成与破坏性变更检测，并与传统 protoc 工作流对照，附可落地的项目示例与最佳实践。"
 categories: Protocol Buffers
 tags:
@@ -11,7 +11,6 @@ tags:
   - gRPC
   - protoc
   - API
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -39,24 +38,8 @@ Protobuf 的**线格式**天生支持向前/向后兼容，但 **`protoc` 不会
 | 代码生成 | 每台机器装齐插件、长命令行 | `buf.gen.yaml` + 本地/**远程插件** + **Managed mode** |
 | 对外分发 | 发 `.proto` 或自建 stub 仓库 | `buf push` 后消费者 `go get` / `npm install` 等安装 **生成 SDK** |
 
-```mermaid
-flowchart TB
-  subgraph 传统
-    P1[.proto 文件]
-    P2[protoc -I ...]
-    P3[各语言插件]
-    P4[手写 Makefile / CI]
-    P1 --> P2 --> P3 --> P4
-  end
-
-  subgraph Buf
-    B1[buf.yaml 模块]
-    B2[buf build / lint / breaking]
-    B3[buf.gen.yaml 生成]
-    B4[可选: buf push → BSR]
-    B1 --> B2 --> B3 --> B4
-  end
-```
+![为什么需要 Buf](/assets/images/202605/buf-protobuf-toolchain-01.png){: width="760" }
+*图：为什么需要 Buf。*
 
 > **核心 CLI 能力无需 BSR 账号**；登录注册表后可使用远程插件、生成 SDK、私有模块依赖与服务器端策略检查等能力。详见 [What is Buf?](https://buf.build/docs/ecosystem/)。
 {: .prompt-tip }
@@ -68,18 +51,8 @@ Buf 产品分为两层（与 [官方生态说明](https://buf.build/docs/ecosyst
 1. **Buf CLI**（[bufbuild/buf](https://github.com/bufbuild/buf)，Apache 2.0）：编译、格式化、Lint、破坏性变更检测、依赖管理、代码生成、调用 gRPC/Connect API（`buf curl`）等。
 2. **Buf Schema Registry（BSR）**：托管 Protobuf **模块**（类似 `npm` / `crates.io` 之于 Schema），提供文档、远程插件、按语言发布的生成 SDK，以及破坏性变更等 **Schema 检查**。
 
-```mermaid
-flowchart LR
-  Dev[开发者 / CI]
-  CLI[Buf CLI]
-  BSR[BSR]
-  SDK[Go / Java / Python / npm ...]
-
-  Dev --> CLI
-  CLI -->|buf push| BSR
-  BSR --> SDK
-  Dev -->|buf dep update| BSR
-```
+![Buf 生态：CLI 与 BSR](/assets/images/202605/buf-protobuf-toolchain-02.png){: width="760" }
+*图：Buf 生态：CLI 与 BSR。*
 
 相关开源项目常与 Buf 搭配：**[ConnectRPC](https://connectrpc.com/)**（基于 Protobuf 的 HTTP/gRPC/gRPC-Web）、**[Protobuf-ES](https://github.com/bufbuild/protobuf-es)**（TS/JS 运行时）、**[Protovalidate](https://github.com/bufbuild/protovalidate)**（Schema 内嵌校验规则）。一条契约可贯穿：编译 → Lint → 兼容性 → 生成 → 校验 → 调用 → 发布。
 

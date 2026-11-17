@@ -2,7 +2,7 @@
 layout: post
 title:  "WeChat Minigame Development：微信小游戏个人开发者笔记"
 date:   2026-04-19 12:00:00 +0800
-last_modified_at: 2026-05-11 20:00:00 +0800
+last_modified_at: 2026-11-17 12:36:00 +0800
 description: "个人向微信小游戏笔记：平台定位、个人主体与类目、Cocos 构建与包体、上架备案与设计要点；资料链接见文末 Reference，不替代官方说明。"
 categories: [Game]
 tags:
@@ -10,8 +10,6 @@ tags:
   - 小程序
   - Cocos Creator
   - GameDev
-mermaid: true
-
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -239,12 +237,8 @@ mermaid: true
 
 这是「学习笔记式」总览，后文各章是对同一流程的展开。
 
-```mermaid
-flowchart TD
-  P1[第一阶段 环境与资质] --> P2[第二阶段 技术开发]
-  P2 --> P3[第三阶段 上架与合规]
-  P1 -. 可与开发并行 .-> P2
-```
+![个人开发者三阶段全流程速览](/assets/images/202604/wechat-minigame-development-01.png){: width="760" }
+*图：个人开发者三阶段全流程速览。*
 {: .nolineno }
 
 ## 第一阶段：环境与资质（磨刀不误砍柴工）
@@ -374,17 +368,8 @@ IAA 发布流程把“适龄提示设置”放进了正式节点。我更倾向�
 > 若团队语言栈偏 **TypeScript**，可优先考虑 Cocos / Laya 系工作流；偏 **C#** 且已有 Unity 资产，再评估 Unity 导出小游戏的包体与适配成本 [[17]](#ref-17) [[21]](#ref-21)。
 {: .prompt-info }
 
-```mermaid
-flowchart LR
-  subgraph engine[引擎侧]
-    A[Cocos / Unity / Laya] --> B[构建发布]
-    B --> C[wechatgame/ 产物]
-  end
-  subgraph wx[微信侧]
-    C --> D[微信开发者工具]
-    D --> E[预览 / 上传 / 提审]
-  end
-```
+![第二阶段：技术开发与工具选择](/assets/images/202604/wechat-minigame-development-02.png){: width="760" }
+*图：第二阶段：技术开发与工具选择。*
 {: .nolineno }
 
 ## 1. 推荐引擎怎么选

@@ -2,7 +2,7 @@
 layout: post
 title:  "Harness Engineering：让编码智能体可靠交付的六条落地准则"
 date:   2026-10-28 14:33:22 +0800
-last_modified_at: 2026-11-11 17:33:25 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "对照 OpenAI、Anthropic、Stripe、LangChain 与 Huntley 的实践，说明 Harness 如何用活文档、外置状态、按需上下文和可执行约束，让编码智能体可靠交付。"
 categories: AI
 tags:
@@ -10,7 +10,6 @@ tags:
   - AI Agent
   - Codex
   - Claude
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -32,22 +31,8 @@ mermaid: true
 
 OpenAI 内部有一个更硬的实验边界。2025 年 8 月底，一个空仓库的第一笔提交由 Codex CLI 生成。大约五个月后，应用、测试、CI、文档、可观测性和内部工具加在一起，仓库达到百万行量级，约 1500 个 Pull Request 被合并。最初三名工程师驱动，人均每天约 3.5 个 PR；团队后来增至七人，吞吐仍在上升。这些代码都由 Codex 写成，人没有直接提交过其中任何一行。他们自己的估计是，这大约是手写同等软件所需时间的十分之一。产品有内部的每日用户，也有外部 alpha 测试者。早期变慢，是因为环境没写清楚：缺工具、缺抽象、缺可执行的内部结构。每次失败，他们补的都是智能体能够读懂、并且会被机器强制的能力。
 
-```mermaid
-flowchart TB
-  Human["人：排优先级，写验收标准，处理机器判不了的分歧"]
-  Orch["编排层：计划文件，或用代码写成的工作流"]
-  Store[("仓库：规格、进度、架构文档")]
-  Worker["执行层：一次只做一项的编码智能体"]
-  Tools["工具：读仓库、改代码、跑测试、看界面和日志"]
-  Sensors["传感：Lint、测试、类型检查、结构测试"]
-  Human --> Orch
-  Orch --> Store
-  Store --> Worker
-  Worker --> Tools
-  Tools --> Sensors
-  Sensors --> Worker
-  Worker --> Store
-```
+![Harness 是模型外面的控制系统](/assets/images/202610/harness-engineering-01.png){: width="760" }
+*图：Harness 是模型外面的控制系统。*
 
 从智能体的视角看，运行时读不到的东西等于不存在。Slack 里对齐过的架构决定、某人脑子里的惯例、打不开的日志，都不会进入下一次推理。所以 Harness 的第一份工作是把这些信息变成仓库里的版本化制品：代码、Markdown、schema、可执行的计划。
 
@@ -169,20 +154,8 @@ Stripe 的编排不靠另一个模型临场发挥。Part 2 里的 blueprint 是�
 
 三家的共同结构是：编排层决定边界和完成定义，执行层在干净的上下文里做一项，状态落在文件或工作流里。编排层可以是人、一份计划文件，或一段确定的代码。它不必是另一个长对话里的「经理模型」。
 
-```mermaid
-sequenceDiagram
-  participant H as 人
-  participant O as 编排层
-  participant R as 仓库里的状态
-  participant W as 执行智能体
-  H->>O: 给出目标和验收标准
-  O->>R: 写入计划、规格和未完成项
-  O->>W: 新开一窗，只派发一项
-  W->>R: 按需读取地图指向的文档
-  W->>W: 修改代码并运行传感
-  W->>R: 更新进度，提交可合并的状态
-  O->>R: 核对这一项是否通过
-```
+![3. 思考与执行必须分离](/assets/images/202610/harness-engineering-02.png){: width="760" }
+*图：3. 思考与执行必须分离。*
 
 ## 4. 上下文并非越多越好
 

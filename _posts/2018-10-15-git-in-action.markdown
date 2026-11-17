@@ -2,15 +2,13 @@
 layout: post
 title:  "Git in Action"
 date:   2018-10-15 13:00:00 +0800
-last_modified_at: 2026-08-19 10:30:36 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 categories: 版本控制
 tags:
   - Git
   - 版本控制
   - worktree
 toc: true
-mermaid: true
-
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -1405,25 +1403,8 @@ git push <remote> -u <new_name>
 
 Git 2.5 起，一个仓库可以挂多个工作树：`git init` / `git clone` 得到的是**主工作树**（main worktree），再用 `git worktree add` 挂上**链接工作树**（linked worktree）。它们共享同一份对象库和 `refs/heads`，但各自有独立的 `HEAD`、暂存区和工作区文件。官方文档：[git-worktree](https://git-scm.com/docs/git-worktree)。
 
-```mermaid
-flowchart LR
-    subgraph gitdir [".git 对象库（共享）"]
-        OBJ[objects]
-        REFS["refs/heads/*"]
-    end
-    subgraph mainWT [主工作树]
-        MHEAD["HEAD → feat/login"]
-        MWD[工作区 / index]
-    end
-    subgraph linkedWT [链接工作树]
-        LHEAD["HEAD → hotfix"]
-        LWD[另一目录的工作区 / index]
-    end
-    OBJ --- MHEAD
-    OBJ --- LHEAD
-    REFS --- MHEAD
-    REFS --- LHEAD
-```
+![工作树操作 - git worktree](/assets/images/201810/git-in-action-01.png){: width="760" }
+*图：工作树操作 - git worktree。*
 
 ### 与 `git branch` 的功能差异
 
@@ -1536,16 +1517,8 @@ git worktree remove ~/src/awesome-share-hotfix
 
 怎么选可以压成一张图：
 
-```mermaid
-flowchart TD
-    A{是否要同时保留当前工作区?} -->|否，可以切走| B{工作区干净?}
-    B -->|是| SW[git switch / checkout]
-    B -->|否| ST[git stash 再 switch]
-    A -->|是，当前改动不能动| WT[git worktree add]
-    WT --> C{是否已有目标分支?}
-    C -->|否| NB["git worktree add -b new-branch ../path start-point"]
-    C -->|是| EB["git worktree add ../path existing-branch"]
-```
+![推荐用法](/assets/images/201810/git-in-action-02.png){: width="760" }
+*图：推荐用法。*
 
 ### 注意事项
 

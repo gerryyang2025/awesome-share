@@ -2,7 +2,7 @@
 layout: post
 title:  "生产环境 etcd 监控：核心指标、常见异常与提前规避"
 date:   2026-10-15 15:59:42 +0800
-last_modified_at: 2026-10-15 15:59:42 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "对照 etcd 3.6 指标文档与官方 Prometheus mixin，说明生产集群该盯哪些核心指标，以及无主、磁盘变慢、配额耗尽等异常如何提前发现和规避。"
 categories: ETCD
 tags:
@@ -10,7 +10,6 @@ tags:
   - Prometheus
   - 监控
   - Kubernetes
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -48,17 +47,8 @@ etcd 在生产里通常承担 Kubernetes 对象、服务发现、分布式锁和
 
 写路径把「共识是否还在」「磁盘是否拖后腿」「状态机是否消化得动」「库文件是否要顶满配额」拆开了。读路径默认是线性读，要做 ReadIndex，因此还会碰到 `etcd_server_slow_read_indexes_total` 与 `etcd_server_read_indexes_failed_total`。
 
-```mermaid
-flowchart TB
-  Client[gRPC 客户端] --> Interceptor[gRPC 计数与延迟]
-  Interceptor --> Quota[配额检查]
-  Quota --> Propose[提交 Raft 提案]
-  Propose --> WAL[WAL fsync]
-  WAL --> Quorum[多数派确认后 committed]
-  Quorum --> Apply[异步 apply 到 MVCC]
-  Apply --> Bolt[bbolt backend commit]
-  Apply --> Watch[通知 Watcher]
-```
+![一次写请求会碰到哪些指标](/assets/images/202610/etcd-metrics-01.png){: width="760" }
+*图：一次写请求会碰到哪些指标。*
 
 对应关系：
 
@@ -300,21 +290,8 @@ process_open_fds / process_max_fds
 
 排查时按这条顺序走：先确认还有没有 Leader 和法定人数，再看磁盘与网络把选举拖垮没有，然后看 apply 与配额，最后才到客户端与 Watch。
 
-```mermaid
-flowchart TD
-  A[客户端超时或写入失败] --> B{has_leader 是否全为 1}
-  B -->|否| C[核对 up、成员数、peer 发送失败]
-  C --> D{是否仍有多数派}
-  D -->|否| E[先恢复法定人数，再处理数据]
-  D -->|是| F[查少数派的磁盘、RTT、是否在套用快照]
-  B -->|是| G{leader_changes 与 heartbeat 失败是否在涨}
-  G -->|是| H[查 WAL fsync、backend commit、peer RTT]
-  G -->|否| I{committed 减 applied 或 pending 是否持续变大}
-  I -->|是| J[查慢 apply、大 Range、大 Txn、Watcher 堆积]
-  I -->|否| K{db size 是否接近配额}
-  K -->|是| L[压缩、按成员 defrag、解除 NOSPACE]
-  K -->|否| M[按 grpc_code 区分配额、超时与取消]
-```
+![常见异常：如何提前发现和规避](/assets/images/202610/etcd-metrics-02.png){: width="760" }
+*图：常见异常：如何提前发现和规避。*
 
 ## 没有 Leader，或法定人数不够
 
@@ -339,16 +316,8 @@ flowchart TD
 
 慢盘把选举打起来的过程：
 
-```mermaid
-sequenceDiagram
-  participant L as Leader
-  participant D as WAL 磁盘
-  participant F as Follower
-  L->>D: 持久化心跳 / 日志并 fsync
-  Note over D: fsync 超过选举超时
-  F->>F: 选举超时，发起新选举
-  Note over L,F: leader_changes 增加<br/>proposals_failed 在窗口内增加<br/>客户端看到短暂 Unavailable
-```
+![Leader 频繁切换](/assets/images/202610/etcd-metrics-03.png){: width="760" }
+*图：Leader 频繁切换。*
 
 **常见原因。** 与日志、数据库或其他 etcd 共用一块盘；云盘延迟尖刺；CPU 被同机的压缩、备份或 kubelet 抢占；对端 RTT 接近选举超时；时钟无关，etcd 选举靠心跳而不是墙钟，但长时间 STW（Go GC、冻结的虚拟机）会让心跳发不出去。
 

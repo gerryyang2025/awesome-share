@@ -2,7 +2,7 @@
 layout: post
 title:  "OpenTelemetry in Action"
 date:   2024-08-05 20:00:00 +0800
-last_modified_at: 2026-06-18 21:09:04 +0800
+last_modified_at: 2026-11-17 12:36:00 +0800
 description: "OpenTelemetry（OTel）可观测性框架：OTLP 协议、Traces/Metrics/Logs 信号、Collector 管道、仪表化入门与采样实践，对照官方中文文档整理。"
 categories: 云原生
 tags:
@@ -10,7 +10,6 @@ tags:
   - 云原生
   - 可观测性
   - CNCF
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -35,26 +34,8 @@ As an industry-standard, OpenTelemetry is [supported by more than 40 observabili
 
 官方推荐的典型路径：**应用 SDK / 自动仪表化 → OTLP → Collector（可选）→ 可观测性后端**。Collector 以厂商中立方式接收、处理、导出遥测，是生产环境中最常见的汇聚层。
 
-```mermaid
-flowchart LR
-    subgraph Apps["应用与基础设施"]
-        A1[服务 A<br/>SDK / Agent]
-        A2[服务 B<br/>自动仪表化]
-        A3[主机 / K8s<br/>接收器]
-    end
-  COL[OpenTelemetry Collector<br/>Receivers → Processors → Exporters]
-    subgraph Backends["可观测性后端"]
-        J[Jaeger / Tempo]
-        P[Prometheus / VM]
-        L[Loki / ES / 商业 APM]
-    end
-    A1 -->|OTLP gRPC/HTTP| COL
-    A2 -->|OTLP| COL
-    A3 --> COL
-    COL --> J
-    COL --> P
-    COL --> L
-```
+![参考架构与数据流](/assets/images/202408/opentelemetry-in-action-01.png){: width="760" }
+*图：参考架构与数据流。*
 
 | 部署模式 | 说明 | 适用 |
 |----------|------|------|
@@ -243,13 +224,8 @@ Although most users might not need to extend OpenTelemetry, the project is desig
 
 [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/) 是厂商中立的遥测**代理**：接收一种或多种格式，经处理器链转换/过滤/采样后，再导出到一种或多种后端。Kubernetes 中常通过 [Operator](https://opentelemetry.io/docs/platforms/kubernetes/operator/) 或 [Helm Chart](https://opentelemetry.io/docs/platforms/kubernetes/helm/) 部署。
 
-```mermaid
-flowchart LR
-    R[Receivers<br/>otlp / jaeger / prometheus / filelog]
-    P[Processors<br/>batch / memory_limiter / attributes / filter]
-    E[Exporters<br/>otlp / prometheus / logging / kafka]
-    R --> P --> E
-```
+![OpenTelemetry Collector 详解](/assets/images/202408/opentelemetry-in-action-02.png){: width="760" }
+*图：OpenTelemetry Collector 详解。*
 
 | 组件 | 作用 | 示例 |
 |------|------|------|

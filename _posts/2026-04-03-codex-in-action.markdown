@@ -2,9 +2,8 @@
 layout: post
 title:  "Codex in Action"
 date:   2026-04-03 14:00:00 +0800
-last_modified_at: 2026-06-25 18:11:11 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "全面介绍 OpenAI Codex 的核心能力、多种接入方式（桌面应用、CLI、IDE 插件、网页版）、通过 cc-switch 接入第三方模型、定价计划及其与 Claude Code 的对比，是使用 Codex 的参考指南。"
-mermaid: true
 categories: AI
 tags:
   - OpenAI
@@ -56,24 +55,8 @@ Codex 运行时主要读写两个文件：
 
 早期若把第三方 API Key 直接写入 `auth.json`，模型能切过去，但会**覆盖官方登录**，App 遥控与官方插件随之失效。cc-switch **v3.16.1+** 的 **Codex App Enhancements**（`Keep official login when switching third-party providers`）把二者拆开：`auth.json` 保留官方身份，`config.toml` 承载第三方 endpoint 与 Key，从而在第三方模型与 Codex 完整能力之间取得平衡。
 
-```mermaid
-flowchart LR
-  subgraph Codex["Codex CLI / App"]
-    H[Harness: Skills / MCP / Subagents]
-    A["auth.json\n官方 OAuth"]
-    C["config.toml\n第三方 provider"]
-  end
-  subgraph CCS["cc-switch"]
-    P[供应商预设与切换]
-    R[本地路由 127.0.0.1:15721]
-  end
-  H --> A
-  H --> C
-  P --> C
-  C -->|Responses API 直连| API1[第三方 / 聚合商]
-  C -->|需协议转换| R
-  R -->|Chat Completions| API2[DeepSeek / Kimi / MiniMax 等]
-```
+![原理：两份配置文件各司其职](/assets/images/202604/codex-in-action-01.png){: width="760" }
+*图：原理：两份配置文件各司其职。*
 
 ## 前置条件
 

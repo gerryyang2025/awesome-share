@@ -2,14 +2,13 @@
 layout: post
 title:  "ripgrep (rg)：比 grep 更高效的搜索工具"
 date:   2026-05-22 16:50:00 +0800
-last_modified_at: 2026-06-01 17:04:39 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "介绍 ripgrep（命令 rg）：比 grep 更高效的目录内容搜索工具，含实现原理、安装、常用选项、与 grep 功能对照及典型场景等价写法。"
 categories: Linux
 tags:
   - Linux
   - ripgrep
   - grep
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -46,24 +45,8 @@ grep -rn "pattern" /path/to/project
 
 `rg` 只做一件事：**在（一组）文件的内容里匹配正则**，把命中的行（及文件名、行号）打印到标准输出。它不替代 `find` 找文件名、不替代 `sed`/`awk` 改文件；和 `grep` 一样，核心是 **stream / file content search**。
 
-```mermaid
-flowchart TB
-    subgraph 输入
-        PATH["目录或文件路径"]
-        PAT["正则 / 固定字符串"]
-    end
-    subgraph rg
-        WALK["遍历文件\n(并行)"]
-        FILTER["过滤\n.gitignore / glob / type"]
-        MATCH["正则引擎\n(默认 Rust regex)"]
-    end
-    subgraph 输出
-        OUT["file:line:col: 匹配行"]
-    end
-    PATH --> WALK
-    PAT --> MATCH
-    WALK --> FILTER --> MATCH --> OUT
-```
+![rg 在做什么](/assets/images/202605/ripgrep-in-action-01.png){: width="760" }
+*图：rg 在做什么。*
 
 ### 为什么比 grep 快：实现原理
 
@@ -73,21 +56,8 @@ flowchart TB
 
 两条典型路径对比如下：
 
-```mermaid
-flowchart LR
-    subgraph grep_r["grep -r 典型路径"]
-        G1["单线程遍历目录"]
-        G2["read 读文件"]
-        G3["POSIX 正则逐行匹配"]
-        G1 --> G2 --> G3
-    end
-    subgraph rg_path["rg 典型路径"]
-        R1["并行遍历 + gitignore 剪枝"]
-        R2["mmap / 缓冲读"]
-        R3["字面量/SIMD 预筛 + 自动机匹配"]
-        R1 --> R2 --> R3
-    end
-```
+![总览：快在哪里](/assets/images/202605/ripgrep-in-action-02.png){: width="760" }
+*图：总览：快在哪里。*
 
 | 环节 | `grep -r`（常见 GNU grep） | `rg` |
 |------|---------------------------|------|

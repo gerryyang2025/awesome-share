@@ -2,7 +2,7 @@
 layout: post
 title:  "Argo CD 完全指南：Kubernetes GitOps 持续交付"
 date:   2026-07-22 11:14:37 +0800
-last_modified_at: 2026-07-22 11:14:37 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "从 GitOps 原理到 Argo CD 安装、Application 配置、同步策略与多集群管理，结合官方文档梳理架构、最佳实践与常见问题排查。"
 categories: 云原生
 tags:
@@ -11,7 +11,6 @@ tags:
   - Kubernetes
   - DevOps
   - 持续交付
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -52,18 +51,8 @@ mermaid: true
 
 **GitOps** 将 Git 作为期望状态的唯一来源：变更通过 PR/MR 评审合并，由集群内的 **GitOps Agent**（如 Argo CD）**拉取（Pull）** 并应用。CI 只负责构建镜像、更新 Manifest 中的镜像 Tag，不再直接操作生产集群。
 
-```mermaid
-flowchart LR
-    subgraph 传统 Push CD
-        CI1[CI Pipeline] -->|kubectl apply| K8s1[Kubernetes]
-    end
-    subgraph GitOps Pull CD
-        Dev[开发者] -->|PR/MR| Git[Git 仓库]
-        Git -->|Pull & Sync| Argo[Argo CD]
-        Argo -->|Reconcile| K8s2[Kubernetes]
-        CI2[CI] -->|更新镜像 Tag| Git
-    end
-```
+![为什么需要 GitOps](/assets/images/202607/argo-cd-in-action-01.png){: width="760" }
+*图：为什么需要 GitOps。*
 
 ### Argo CD 能做什么
 
@@ -88,23 +77,8 @@ flowchart LR
 
 典型端到端流程如下（参考 [Octopus — Understanding Argo CD](https://octopus.com/devops/argo-cd/)）：
 
-```mermaid
-sequenceDiagram
-    participant Dev as 开发者
-    participant Git as Git 仓库
-    participant CI as CI
-    participant Argo as Argo CD
-    participant K8s as Kubernetes
-
-    Dev->>Git: 修改应用代码 / Manifest（PR）
-    CI->>Git: 构建镜像，更新镜像 Tag
-    Dev->>Git: PR 合并到 main
-    Git->>Argo: Webhook 或轮询触发
-    Argo->>Git: Clone & 渲染 Manifest
-    Argo->>K8s: 对比并 Sync
-    K8s->>K8s: Controller 协调至期望状态
-    Argo->>Dev: UI/通知：Synced & Healthy
-```
+![GitOps 工作流](/assets/images/202607/argo-cd-in-action-02.png){: width="760" }
+*图：GitOps 工作流。*
 
 ### 关键 CRD
 
@@ -374,36 +348,8 @@ PreSync Job 做数据库迁移，Sync 阶段部署 Deployment，PostSync Job 做
 
 Argo CD 以 Kubernetes Controller 模式运行，持续 Reconcile。官方架构如下（详见 [Architecture](https://argo-cd.readthedocs.io/en/stable/operator-manual/architecture/)）：
 
-```mermaid
-flowchart TB
-    subgraph 用户面
-        UI[Web UI]
-        CLI[argocd CLI]
-        WH[Git Webhook]
-    end
-
-    subgraph argocd_namespace [argocd 命名空间]
-        API[argocd-server<br/>API / gRPC / REST]
-        AC[application-controller<br/>应用控制器]
-        RS[repo-server<br/>仓库服务]
-        RC[redis<br/>缓存]
-        NC[notifications-controller]
-    end
-
-    Git[(Git / Helm Repo)]
-    K8s[(目标 Kubernetes 集群)]
-
-    UI --> API
-    CLI --> API
-    WH --> API
-    API --> AC
-    API --> RS
-    AC --> RS
-    RS --> Git
-    AC --> K8s
-    RS --> RC
-    AC --> RC
-```
+![组件架构](/assets/images/202607/argo-cd-in-action-03.png){: width="760" }
+*图：组件架构。*
 
 | 组件 | 职责 |
 |------|------|
@@ -417,25 +363,8 @@ flowchart TB
 
 ### Reconcile 循环
 
-```mermaid
-sequenceDiagram
-    participant AC as application-controller
-    participant RS as repo-server
-    participant Git as Git
-    participant K8s as Kubernetes
-
-    loop 每 3 分钟或 Webhook 触发
-        AC->>RS: 请求渲染 Manifest
-        RS->>Git: fetch revision
-        RS-->>AC: 期望 Manifest 列表
-        AC->>K8s: list live 资源
-        AC->>AC: Diff（期望 vs 实际）
-        alt OutOfSync 且 automated/手动 Sync
-            AC->>K8s: Apply / Prune / Hook
-        end
-        AC->>AC: 评估 Health
-    end
-```
+![Reconcile 循环](/assets/images/202607/argo-cd-in-action-04.png){: width="760" }
+*图：Reconcile 循环。*
 
 **selfHeal**：若有人在集群内 `kubectl edit` 改了字段，Controller 检测到 live 偏离 Git，会在下次 Reconcile 时改回，Application 显示 `OutOfSync` 后自动修复。
 
@@ -443,21 +372,8 @@ sequenceDiagram
 
 ### 与 CI 的边界
 
-```mermaid
-flowchart LR
-    subgraph CI 负责
-        Build[构建镜像]
-        Scan[安全扫描]
-        Bump[更新 Git 中 image tag]
-    end
-    subgraph Argo CD 负责
-        Render[渲染 Manifest]
-        Deploy[部署到集群]
-        Drift[漂移检测与修复]
-        Rollback[Git 历史回滚]
-    end
-    Build --> Scan --> Bump --> Render --> Deploy --> Drift
-```
+![与 CI 的边界](/assets/images/202607/argo-cd-in-action-05.png){: width="760" }
+*图：与 CI 的边界。*
 
 CI **不应**再持有集群 admin kubeconfig 直接 `kubectl apply` 生产环境；仅更新 Git 即可触发 Argo CD。镜像 Tag 更新可用 [Argo CD Image Updater](https://argocd-image-updater.readthedocs.io/) 等工具自动化。
 

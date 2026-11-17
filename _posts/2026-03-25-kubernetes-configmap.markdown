@@ -2,7 +2,7 @@
 layout: post
 title:  "Kubernetes ConfigMap 完全指南"
 date:   2026-03-25 09:00:00 +0800
-last_modified_at: 2026-05-18 21:35:42 +0800
+last_modified_at: 2026-11-17 12:36:00 +0800
 categories: Kubernetes
 tags:
   - Kubernetes
@@ -10,7 +10,6 @@ tags:
   - 运维
   - 容器
 description: "深入解析 Kubernetes ConfigMap 的原理、使用方法、最佳实践与注意事项，帮助更好地管理容器配置。"
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -41,26 +40,8 @@ mermaid: true
 
 在软件开发中，我们常常需要根据不同环境（开发、测试、生产）使用不同的配置。传统的做法是将配置硬编码在镜像中，或者通过环境变量传递。ConfigMap 提供了一种更加优雅的解决方案：
 
-```mermaid
-flowchart LR
-    subgraph 开发环境
-        CM1[ConfigMap]
-    end
-    subgraph 测试环境
-        CM2[ConfigMap]
-    end
-    subgraph 生产环境
-        CM3[ConfigMap]
-    end
-
-    IMG[容器镜像] --> CM1
-    IMG --> CM2
-    IMG --> CM3
-
-    CM1 --> POD1[Pod]
-    CM2 --> POD2[Pod]
-    CM3 --> POD3[Pod]
-```
+![为什么需要 ConfigMap](/assets/images/202603/kubernetes-configmap-01.png){: width="760" }
+*图：为什么需要 ConfigMap。*
 
 如上图所示，同一个容器镜像可以配合不同的 ConfigMap 使用，适配不同环境的配置需求，无需重新构建镜像。
 
@@ -179,20 +160,8 @@ kubectl apply -k .
 
 Pod 使用 ConfigMap 主要有四种方式：
 
-```mermaid
-flowchart TD
-    subgraph ConfigMap 使用方式
-        E1[环境变量]
-        E2[命令行参数]
-        E3[挂载为文件卷]
-        E4[直接调用 Kubernetes API]
-    end
-
-    E1 --> POD[Pod]
-    E2 --> POD
-    E3 --> POD
-    E4 --> POD
-```
+![Pod 使用 ConfigMap 的方式](/assets/images/202603/kubernetes-configmap-02.png){: width="760" }
+*图：Pod 使用 ConfigMap 的方式。*
 
 ### 方式一：环境变量
 
@@ -323,21 +292,8 @@ const configMap = await k8sApi.readNamespacedConfigMap('my-config', 'default');
 
 ### 文件卷挂载的更新流程
 
-```mermaid
-sequenceDiagram
-    participant User as 用户
-    participant API as Kubernetes API
-    participant Kubelet as Kubelet
-    participant Pod as Pod
-    participant App as 应用
-
-    User->>API: 更新 ConfigMap
-    API->>Kubelet: 通知配置变更
-    Kubelet->>Kubelet: 检查本地缓存
-    Kubelet->>Pod: 更新挂载的文件
-    Pod->>App: 文件系统事件通知
-    App->>App: 重新读取配置
-```
+![文件卷挂载的更新流程](/assets/images/202603/kubernetes-configmap-03.png){: width="760" }
+*图：文件卷挂载的更新流程。*
 
 > 信息：使用 `subPath` 挂载的 ConfigMap 不会自动接收更新。
 {: .prompt-warning }
@@ -354,13 +310,8 @@ sequenceDiagram
 
 下面摘录 Tutorial 中「双容器 + 卷挂载」的核心思路（与 [Configure a Pod to Use a ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/) 一致）：
 
-```mermaid
-flowchart TB
-    CM[ConfigMap color] -->|volumeMount /etc/config| Alpine[alpine 辅助容器]
-    Alpine -->|写入| ED[emptyDir shared-data]
-    ED -->|挂载 /usr/share/nginx/html| Nginx[nginx 主容器]
-    User[用户 curl Service] --> Nginx
-```
+![更新示例演示（交叉引用官方 Tutorial）](/assets/images/202603/kubernetes-configmap-04.png){: width="760" }
+*图：更新示例演示（交叉引用官方 Tutorial）。*
 
 1. `kubectl create configmap color --from-literal=color=red`
 2. Deployment 中 Nginx 与 Alpine 共享 `emptyDir`；Alpine 循环读取 `/etc/config/color` 并写入 `index.html`
@@ -434,23 +385,8 @@ data
 
 ### 2. 组织结构
 
-```mermaid
-flowchart LR
-    subgraph 按应用划分
-        CM1[app-frontend-config]
-        CM2[app-backend-config]
-    end
-
-    subgraph 按环境划分
-        CM3[app-config-dev]
-        CM4[app-config-prod]
-    end
-
-    subgraph 按功能划分
-        CM5[db-connection-config]
-        CM6[feature-flags-config]
-    end
-```
+![2. 组织结构](/assets/images/202603/kubernetes-configmap-05.png){: width="760" }
+*图：2. 组织结构。*
 
 ### 3. 大小限制
 

@@ -2,13 +2,12 @@
 layout: post
 title:  "Linux inode 从元数据到硬链接"
 date:   2026-03-23 09:00:00 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 categories: Linux
 tags:
   - Linux
   - 文件系统
   - inode
-mermaid: true
-
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -128,16 +127,8 @@ inode 的限制是基于文件系统（分区）的，而不是针对单个目�
 
 下图概括 **「元数据在 inode、正文在数据块」** 的关系；**文件名不在此图中**，它存放在 **目录项** 里（后文「目录是一种特殊文件」）。
 
-```mermaid
-flowchart LR
-  subgraph inode_part["inode（索引节点）"]
-    IM["权限 / 属主 / 大小<br/>时间戳 / 链接数<br/>指向数据块的指针 …"]
-  end
-  subgraph data_part["数据块"]
-    DB["文件内容（字节）"]
-  end
-  IM -->|"按指针读/写"| DB
-```
+![inode 是什么](/assets/images/202603/linux-inode-01.png){: width="760" }
+*图：inode 是什么。*
 
 # 词源与 POSIX 术语
 
@@ -185,19 +176,8 @@ flowchart LR
 
 **硬链接**时，多个目录项指向 **同一 inode**，图中表现为两条边汇入同一节点（与后文「硬链接与符号链接」一致）。
 
-```mermaid
-flowchart TB
-  subgraph names["目录项里的名字（在父目录文件中）"]
-    N1["名称: report.txt"]
-    N2["名称: report.bak"]
-  end
-  subgraph one["同一文件对象"]
-    INO["inode 314159"]
-    INO --> BLK["数据块（一份内容）"]
-  end
-  N1 -->|"inode 号"| INO
-  N2 -->|"同一 inode 号"| INO
-```
+![为什么 inode 里不存文件名](/assets/images/202603/linux-inode-02.png){: width="760" }
+*图：为什么 inode 里不存文件名。*
 
 # 目录是一种特殊文件
 
@@ -209,18 +189,8 @@ flowchart TB
 
 目录本身也是一个 **inode + 若干数据块**；其数据块里排布的是 **目录项**（名字 ↔ inode 号），而不是普通文件的「正文」。
 
-```mermaid
-flowchart TB
-  subgraph dir_inode["目录的 inode"]
-    DI["类型=目录<br/>权限 / 属主 …"]
-  end
-  subgraph dir_data["目录的数据块（概念）"]
-    E1["readme.md → inode 1001"]
-    E2["notes/   → inode 1002"]
-    E3["…"]
-  end
-  DI --> dir_data
-```
+![目录是一种特殊文件](/assets/images/202603/linux-inode-03.png){: width="760" }
+*图：目录是一种特殊文件。*
 
 # inode 号与文件名：打开文件时发生了什么
 
@@ -232,14 +202,8 @@ flowchart TB
 
 对路径 `/home/u/a.txt`，内核在每一级 **目录的数据块** 里做 **名字 → inode 号** 的查找，最后得到目标文件的 inode，再读其元数据与数据块。下图是 **逻辑顺序** 的简化（真实实现还有 dentry 缓存、挂载点等细节）。
 
-```mermaid
-flowchart LR
-  P["路径: /home/u/a.txt"] --> L1["在 / 的目录项中找 home"]
-  L1 --> L2["在 /home 的目录项中找 u"]
-  L2 --> L3["在 /home/u 的目录项中找 a.txt"]
-  L3 --> INO["得到目标 inode"]
-  INO --> RW["读 inode → 访问数据块"]
-```
+![inode 号与文件名：打开文件时发生了什么](/assets/images/202603/linux-inode-04.png){: width="760" }
+*图：inode 号与文件名：打开文件时发生了什么。*
 
 与 **普通文件** 的 inode 号、`stat` 长格式字段相关的命令见上文「查看某个文件的 inode 信息」中的 `stat`、`ls -i`、`ls -li`。此处仅补充 **查看目录自身** 的 inode（避免 `ls` 列出的是目录「里面」的条目而非目录本身）：
 
@@ -263,19 +227,8 @@ ls -idl /path/to/dir
 
 经典 ext 系布局可粗看成「一块盘上既有 **inode 表区域**，也有 **数据块区域**」（实际还有超级块、块组描述符、位图等，下图仅突出与本文最相关的两块）。
 
-```mermaid
-flowchart TB
-  subgraph vol["某个文件系统分区（概念）"]
-    subgraph meta_area["元数据区（示意）"]
-      IT["inode 表<br/>定长记录 × N 个"]
-      BM["位图 / 组描述符 / 日志等"]
-    end
-    subgraph data_area["数据块区"]
-      BK["存放目录与文件内容"]
-    end
-  end
-  IT -.->|"每条 inode 指向"| BK
-```
+![单条 inode 多大、inode 表占多少盘](/assets/images/202603/linux-inode-05.png){: width="760" }
+*图：单条 inode 多大、inode 表占多少盘。*
 
 ## 每个文件都要占一个 inode：用光 inode 时「有空间却建不了文件」
 
@@ -287,17 +240,8 @@ flowchart TB
 
 **`df -h` 与 `df -i` 要对照看**：下图表示一种常见错位——块空间仍有余，但 inode 配额已用尽，此时新建文件仍会失败。
 
-```mermaid
-flowchart LR
-  subgraph dfh["df -h（块容量）"]
-    H["数据块: 仍有空闲 ░░"]
-  end
-  subgraph dfi["df -i（inode）"]
-    I["inode: 已用尽 ████"]
-  end
-  H --> R["touch / mkdir 仍可能报 No space left on device"]
-  I --> R
-```
+![每个文件都要占一个 inode：用光 inode 时「有空间却建不了文件」](/assets/images/202603/linux-inode-06.png){: width="760" }
+*图：每个文件都要占一个 inode：用光 inode 时「有空间却建不了文件」。*
 
 查看某挂载点的 inode 总量与使用情况：
 
@@ -321,19 +265,8 @@ df -i /path   # 或 df -i /dev/sdXN
 
 **对照图**（同一目标文件 `data.bin`）：右为 **硬链接**（两个路径共享 inode）；左为 **符号链接**（链接自己是独立 inode，里面是路径文本，需再次解析）。
 
-```mermaid
-flowchart TB
-  subgraph HL["硬链接"]
-    ha["/opt/app/data.bin"] --> hi["同一 inode"]
-    hb["/var/backup/data.bin"] --> hi
-    hi --> hbk["数据块"]
-  end
-  subgraph SL["符号链接"]
-    sp["/tmp/p"] --> si["独立 inode<br/>类型=symlink"]
-    si -->|"内容=/opt/app/data.bin"| hi2["解析到目标 inode"]
-    hi2 --> hbk2["数据块"]
-  end
-```
+![硬链接与符号链接](/assets/images/202603/linux-inode-07.png){: width="760" }
+*图：硬链接与符号链接。*
 
 创建方式：
 

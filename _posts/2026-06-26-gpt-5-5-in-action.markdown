@@ -2,9 +2,8 @@
 layout: post
 title:  "GPT-5.5 使用指南与 Prompting 实践"
 date:   2026-06-26 09:01:05 +0800
-last_modified_at: 2026-06-26 09:01:05 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "介绍 OpenAI GPT-5.5 的核心能力、行为变化与迁移要点，并系统梳理 Outcome-first Prompting、Preamble、Phase 处理、检索预算等 Prompt 模式，附 Responses API 示例与生产实践建议。"
-mermaid: true
 categories: AI
 tags:
   - OpenAI
@@ -37,32 +36,8 @@ GPT-5.5 将复杂生产任务的基线能力整体抬高，但并非 `gpt-5.2` /
 
 GPT-5.5 支持 GPT-5.4 已有的 API 能力：**Prompt Caching**、Hosted Tools、Tool Search、Compaction，以及手动回放 assistant items 时的 **`phase` 处理**。
 
-```mermaid
-flowchart TB
-  subgraph Input["输入与编排"]
-    P[Outcome-first Prompt]
-    R[reasoning.effort]
-    V[text.verbosity]
-    T[Tools / Hosted Tools]
-  end
-  subgraph API["Responses API"]
-    M[GPT-5.5]
-    C[Compaction / previous_response_id]
-  end
-  subgraph Output["输出与 UX"]
-    Pre[Preamble 中间更新]
-    Phase[phase: commentary / final_answer]
-    SO[Structured Outputs]
-  end
-  P --> M
-  R --> M
-  V --> M
-  T --> M
-  C --> M
-  M --> Pre
-  M --> Phase
-  M --> SO
-```
+![适用场景](/assets/images/202606/gpt-5-5-in-action-01.png){: width="760" }
+*图：适用场景。*
 
 # 核心变化
 
@@ -163,19 +138,8 @@ print(response.output_text)
 - **去掉当前日期**：模型已知 UTC 当前日期；仅在有业务时区、政策生效日、用户本地日等非 UTC 需求时再注入。
 - 工具说明尽量写在 **tool description** 里（用途、时机、必填参数、副作用、重试安全、常见错误），跨工具的 operating policy 才放进 system instructions。
 
-```mermaid
-sequenceDiagram
-  participant App as 应用
-  participant API as Responses API
-  participant M as GPT-5.5
-  App->>API: create(model=gpt-5.5, input, tools)
-  API->>M: 推理 + 可选 tool calls
-  M-->>API: preamble (phase=commentary)
-  M-->>API: tool results loop
-  M-->>API: final_answer (phase=final_answer)
-  API-->>App: output items + usage
-  App->>API: 下一轮 previous_response_id 或手动回放 items（保留 phase）
-```
+![Prompt 迁移清单](/assets/images/202606/gpt-5-5-in-action-02.png){: width="760" }
+*图：Prompt 迁移清单。*
 
 # Prompting 指南
 
@@ -396,18 +360,8 @@ GPT-5.5 的最佳实践往往分布在 **Prompt 之外**的 API 与编排层。�
 | **Agents SDK** | 新 Agent 系统优先 SDK 的 orchestration、tracing、handoffs，而非从零写编排 |
 | **当前日期** | 无需在 system 里写 UTC 日期；业务时区/政策日等例外再注入 |
 
-```mermaid
-flowchart LR
-  subgraph Tune["调优顺序"]
-    A[最小 Outcome-first Prompt]
-    B[reasoning.effort]
-    C[text.verbosity]
-    D[工具描述 / Tool Search]
-    E[Structured Outputs]
-    F[仅对 eval 失败模式加 Prompt 块]
-  end
-  A --> B --> C --> D --> E --> F
-```
+![推理模型与 API 能力协同](/assets/images/202606/gpt-5-5-in-action-03.png){: width="760" }
+*图：推理模型与 API 能力协同。*
 
 # 最佳实践
 

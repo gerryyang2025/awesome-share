@@ -2,7 +2,7 @@
 layout: post
 title:  "SQLite 完全指南：原理、使用、与 MySQL 对比及数据恢复"
 date:   2026-06-18 11:21:41 +0800
-last_modified_at: 2026-06-18 17:16:31 +0800
+last_modified_at: 2026-11-17 12:36:00 +0800
 description: "深入解析 SQLite 的嵌入式架构与 B-Tree 存储原理，涵盖 Linux 安装、命令行 CRUD、多语言使用、与 MySQL 的功能对比、数据损坏风险及官方与工程化恢复手段。"
 categories: Database
 tags:
@@ -10,7 +10,6 @@ tags:
   - MySQL
   - 数据库
   - 嵌入式
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -45,16 +44,8 @@ SQLite 属于 **嵌入式（embedded）**、**无服务器（serverless）** 关
 
 据 [Wikipedia](https://en.wikipedia.org/wiki/SQLite) 与官网统计，SQLite 可能是全球部署量最大的数据库引擎：内置于 Android、iOS、Windows 10+、Firefox/Chrome 等浏览器与 countless 桌面应用中；美国国会图书馆亦将 SQLite 3 列为长期数据集存储的推荐格式之一。
 
-```mermaid
-flowchart TB
-    subgraph App["应用程序进程"]
-        CODE[业务代码]
-        LIB[libsqlite3.so / sqlite3.dll]
-        CODE -->|函数调用| LIB
-    end
-    LIB -->|VFS 读写| FILE[("app.db 单文件")]
-    LIB -->|可选| MEM[(":memory:")]
-```
+![什么是 SQLite](/assets/images/202606/sqlite-in-action-01.png){: width="760" }
+*图：什么是 SQLite。*
 
 > 提示：**读音没有唯一标准。** 创始人 D. Richard Hipp 本人常读 **/ˌɛsˌkjuːˌɛlˈaɪt/**，即把 **SQL 三个字母分开念**，再接 **-ite**（类似 hematite、quartzite 等矿物名的后缀）；他也演示过 **/ˈsiːkwəˌlaɪt/**（把 SQL 读成 sequel，再接 lite）。他说过「你怎么念都行」——两种都常见。注意：名称灵感来自矿物命名里的 **-ite** 后缀，**并不是**要按锂矿石 trade name「sqlite」那个单词来发音；中文技术圈也常见「SQL 莱特」「西奎莱特」等口语说法。详见 [Wikipedia — SQLite](https://en.wikipedia.org/wiki/SQLite) 与 [The Changelog 访谈](https://changelog.com/podcast/201)。
 {: .prompt-tip }
@@ -65,16 +56,8 @@ flowchart TB
 
 ### 分层结构
 
-```mermaid
-flowchart TB
-    SQL[SQL 语句] --> Parser[SQL 解析器 parse.y]
-    Parser --> Planner[查询优化器 where.c]
-    Planner --> VDBE[VDBE 虚拟机 vdbe.c]
-    VDBE --> BTree[B-Tree 引擎 btree.c]
-    BTree --> Pager[Pager 事务层 pager.c]
-    Pager --> VFS[OS 抽象层 os_unix.c / os_win.c]
-    VFS --> Disk[(数据库文件)]
-```
+![分层结构](/assets/images/202606/sqlite-in-action-02.png){: width="760" }
+*图：分层结构。*
 
 | 模块 | 职责 |
 |------|------|
@@ -99,19 +82,8 @@ SQLite 提供 **ACID** 事务。持久化策略由 `PRAGMA synchronous` 与日�
 | **DELETE**（默认回滚日志） | 事务提交时写回滚日志，提交后删除 | 写时阻塞读 | `FULL` / `NORMAL` |
 | **WAL**（Write-Ahead Logging） | 3.7+；变更先写入 `-wal` 文件 | 读不阻塞写、写不阻塞读 | 常配合 `NORMAL` |
 
-```mermaid
-sequenceDiagram
-    participant App
-    participant Pager
-    participant WAL as -wal 文件
-    participant DB as .db 主文件
-
-    App->>Pager: BEGIN / INSERT ...
-    Pager->>WAL: 追加页变更
-    App->>Pager: COMMIT
-    Pager->>WAL: 写帧头、fsync
-    Note over Pager,DB: checkpoint 时将 WAL 合并回主文件
-```
+![事务、日志与 WAL](/assets/images/202606/sqlite-in-action-03.png){: width="760" }
+*图：事务、日志与 WAL。*
 
 > 警告：SQLite 依赖 **文件系统锁** 协调多进程写；高并发写入场景应优先选 MySQL/PostgreSQL 等服务端数据库。官网 [Appropriate Uses For SQLite](https://sqlite.org/whentouse.html) 明确列出了适用与不适用的边界。
 {: .prompt-warning }
@@ -329,13 +301,8 @@ sqlite3 demo.db "
 "
 ```
 
-```mermaid
-flowchart LR
-    C[CREATE TABLE] --> I[INSERT]
-    I --> R[SELECT]
-    R --> U[UPDATE]
-    U --> D[DELETE]
-```
+![快速入门：增删改查（CRUD）](/assets/images/202606/sqlite-in-action-04.png){: width="760" }
+*图：快速入门：增删改查（CRUD）。*
 
 > 提示：批量写入时用 `BEGIN;` … `COMMIT;` 包成事务，比逐条自动提交快一个数量级以上。命令行中可用 `sqlite3 demo.db ".read script.sql"` 执行脚本文件。
 {: .prompt-tip }
@@ -438,21 +405,8 @@ PRAGMA integrity_check;
 | **许可** | 公有领域 | GPL / 商业许可 |
 | **适用规模** | 单用户～低并发、本地、边缘 | 中大型 Web、多租户 SaaS |
 
-```mermaid
-flowchart LR
-    subgraph SQLite适用
-        S1[移动 App 本地存储]
-        S2[桌面/嵌入式配置]
-        S3[单元测试替身]
-        S4[分析型单机 ETL 缓存]
-    end
-    subgraph MySQL适用
-        M1[多用户 Web 后端]
-        M2[需要远程连接与权限隔离]
-        M3[主从与高可用]
-        M4[高并发写入 OLTP]
-    end
-```
+![与 MySQL 功能对比](/assets/images/202606/sqlite-in-action-05.png){: width="760" }
+*图：与 MySQL 功能对比。*
 
 > 信息：Django、Rails 等框架可用 SQLite 作为开发默认库，生产环境通常切换至 PostgreSQL/MySQL。SQLite 官方亦强调：**不要把它当作通过网络挂载的 NFS 上的多写数据库**。
 {: .prompt-info }
@@ -557,28 +511,8 @@ sqldiff old.db new.db
 
 [微信 SQLite 数据库修复实践](https://cloud.tencent.com/developer/article/1005623) 的核心思路可抽象为：
 
-```mermaid
-flowchart TB
-    subgraph 预防
-        P1[synchronous=FULL]
-        P2[iOS: PRAGMA fullfsync=1]
-        P3[空间监控与清理]
-    end
-    subgraph 元数据保护
-        M[定时轮询 sqlite_schema]
-        M --> B1[备份文件 A + CRC]
-        M --> B2[备份文件 B + CRC]
-        B1 -->|交替覆盖| ROT[双缓冲轮换]
-        B2 --> ROT
-    end
-    subgraph 修复
-        COR[损坏库] --> USE[用有效备份还原 schema]
-        USE --> SCAN[按根页扫描各表 B-Tree]
-        SCAN --> NEW[写入新 DB]
-    end
-    预防 --> COR
-    元数据保护 --> 修复
-```
+![工程化增强：元数据备份（微信实践）](/assets/images/202606/sqlite-in-action-06.png){: width="760" }
+*图：工程化增强：元数据备份（微信实践）。*
 
 要点：
 

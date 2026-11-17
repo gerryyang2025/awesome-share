@@ -2,7 +2,7 @@
 layout: post
 title:  "Go 标准日志 log 与 slog：从文本输出到结构化可观测性"
 date:   2026-06-29 16:09:21 +0800
-last_modified_at: 2026-06-29 16:09:21 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "系统梳理 Go 标准库 log 与 log/slog 的关系、核心差异、使用方式、优劣对比，以及在服务端 SDK 和可观测性场景中的选型实践。"
 categories: GoLang
 tags:
@@ -11,7 +11,6 @@ tags:
   - slog
   - Logging
   - Observability
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -171,18 +170,8 @@ logger.Info("kafka send summary",
 
 理解 `slog` 的关键，是不要把它看成“增强版 `Printf`”。它更像一套标准接口：业务代码只依赖 `slog.Logger`，具体输出交给 `Handler`。
 
-```mermaid
-flowchart LR
-  A[业务代码] --> B[slog.Logger]
-  B --> C[slog.Record]
-  C --> D{slog.Handler}
-  D --> E[TextHandler]
-  D --> F[JSONHandler]
-  D --> G[自定义 Handler]
-  G --> H[tRPC logger]
-  G --> I[zap / logrus]
-  G --> J[文件 / 控制台 / 日志平台]
-```
+![核心架构](/assets/images/202606/go-log-and-slog-01.png){: width="760" }
+*图：核心架构。*
 
 这个模型的价值在于解耦：库和 SDK 不需要强制业务使用某个第三方日志框架，只要接受 `*slog.Logger` 或 `slog.Handler`，业务侧就可以按自己的基础设施适配。
 
@@ -404,21 +393,8 @@ msgtrace.SetLogger(slog.New(handler))
 - `MsgTraceKafkaSendSummary` 可以天然作为 Debug 日志。
 - `Topic/Partition/Offset/Count` 可以作为结构化字段输出。
 
-```mermaid
-sequenceDiagram
-  participant SDK as msgtrace-go
-  participant Slog as slog.Logger
-  participant Handler as Custom Handler
-  participant TRPC as tRPC Logger
-  participant Platform as Log Platform
-
-  SDK->>Slog: Debug("MsgTraceKafkaSendSummary", attrs...)
-  Slog->>Handler: Enabled(ctx, Debug)
-  Handler-->>Slog: true / false
-  Slog->>Handler: Handle(ctx, Record)
-  Handler->>TRPC: map level and attrs
-  TRPC->>Platform: output structured log
-```
+![msgtrace-go 场景：为什么 slog 更合适](/assets/images/202606/go-log-and-slog-02.png){: width="760" }
+*图：msgtrace-go 场景：为什么 slog 更合适。*
 
 这里的核心收益不是“换了一个日志包”，而是 SDK 的日志契约从私有接口变成了 Go 官方标准接口。业务可以保留自己的日志后端，SDK 可以保留自己的结构化语义。
 
@@ -443,17 +419,8 @@ sequenceDiagram
 - 需要标准 level，尤其需要控制 debug 日志成本。
 - 希望将 Go 标准接口转接到 zap、logrus、tRPC logger 或内部日志系统。
 
-```mermaid
-flowchart TD
-  A[需要写日志] --> B{是否服务端或 SDK 场景}
-  B -- 否 --> C{是否只需要简单文本}
-  C -- 是 --> D[使用 log]
-  C -- 否 --> E[使用 slog]
-  B -- 是 --> F{是否需要字段检索 / level / 注入}
-  F -- 是 --> E
-  F -- 否 --> G[log 或 slog 都可]
-  E --> H[选择 TextHandler / JSONHandler / Custom Handler]
-```
+![优先选择 slog](/assets/images/202606/go-log-and-slog-03.png){: width="760" }
+*图：优先选择 slog。*
 
 # 最佳实践
 

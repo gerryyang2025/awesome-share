@@ -2,7 +2,7 @@
 layout: post
 title:  "Delve：Go 源码级调试器入门与实践"
 date:   2026-05-22 11:30:00 +0800
-last_modified_at: 2026-05-29 15:18:04 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "介绍 Go 官方推荐的 Delve 调试器：原理、安装、命令行与 IDE 用法、完整示例，以及构建与远程调试的最佳实践。"
 categories: GoLang
 tags:
@@ -10,7 +10,6 @@ tags:
   - Delve
   - 调试
   - 教程
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -44,20 +43,8 @@ Go 有独特的运行时：goroutine 调度、defer/panic/recover、接口与逃
 
 Delve 通过操作系统提供的进程控制能力（在 Linux 上常基于 `ptrace`，与站内 [调试器基础]({% post_url 2024-07-06-how-debuggers-work-basics %}) 所述一致），在**可执行文件 + 调试符号（DWARF）** 与**源码行号**之间建立映射。你在 REPL 里看到的 `=>` 当前行、变量名，都来自编译时保留的调试信息。
 
-```mermaid
-flowchart LR
-    subgraph 开发者
-        CLI["dlv REPL / IDE"]
-    end
-    subgraph Delve
-        SVC["调试服务\n(JSON-RPC / DAP)"]
-    end
-    subgraph 目标进程
-        GO["Go 程序\n(含 DWARF)"]
-    end
-    CLI --> SVC
-    SVC -->|"断点 / 单步 / 读内存"| GO
-```
+![源码级调试在做什么](/assets/images/202605/delve-in-action-01.png){: width="760" }
+*图：源码级调试在做什么。*
 
 ### 子命令与调试模式
 
@@ -306,16 +293,8 @@ dlv --listen=:40000 --headless=true --api-version=2 --accept-multiclient exec ./
 
 本机再 `dlv connect localhost:40000`。镜像内需安装 `dlv`，且二进制建议带调试符号；详细 Dockerfile / Earthfile 示例见 [Earthly：go delve](https://earthly.dev/blog/golang-dlv/)。
 
-```mermaid
-sequenceDiagram
-    participant IDE as VS Code / GoLand
-    participant DLV as dlv headless
-    participant App as Go 进程
-    IDE->>DLV: DAP / JSON-RPC
-    DLV->>App: 断点 / 单步
-    App-->>DLV: 停止 + 寄存器/内存
-    DLV-->>IDE: 栈帧 / 变量
-```
+![远程与容器内调试（简述）](/assets/images/202605/delve-in-action-02.png){: width="760" }
+*图：远程与容器内调试（简述）。*
 
 ## 最佳实践
 

@@ -2,14 +2,13 @@
 layout: post
 title:  "Go 1.27 泛型方法：用法、适用场景与边界"
 date:   2026-10-15 16:55:22 +0800
-last_modified_at: 2026-10-16 14:45:21 +0800
+last_modified_at: 2026-11-17 12:15:21 +0800
 description: "从一段 Filter/Map 流水线写起，说明 Go 1.18 的泛型函数和泛型类型还留了哪一个缺口，以及 Go 1.27 的泛型方法如何补上。含声明、类型推断，以及它为什么仍然不能实现接口。"
 categories: GoLang
 tags:
   - GoLang
   - Go Generics
   - Go 1.27
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -189,13 +188,8 @@ active := users.Filter(func(u User) bool { return u.Active })
 
 这在 Go 1.18 就是合法的。`Filter` 没有自己的类型参数：`[T]` 写在接收者上，不写在方法名后面。`Len`、`Append` 也属于这一类，因为元素类型在写成 `List[User]` 时就已经确定。
 
-```mermaid
-flowchart LR
-  A["每种类型一份函数"] --> B["泛型函数 Filter / Map"]
-  B --> C["泛型类型上的普通方法 Filter"]
-  C --> D["Map 还要一个新的结果类型 U"]
-  D --> E["1.27：U 写在方法名后面"]
-```
+![第三步：方法能挂在泛型类型上，只要不再引入新类型](/assets/images/202610/go-1-27-generic-methods-01.png){: width="760" }
+*图：第三步：方法能挂在泛型类型上，只要不再引入新类型。*
 
 ## 第四步：Map 的结果类型不在接收者上
 
@@ -348,15 +342,8 @@ var r Reader = &Buf{} // 1.27 同样不合法
 
 以后碰到一个操作，可以按类型参数出现的位置来选写法：
 
-```mermaid
-flowchart TD
-  q["这一次调用要再引入一个类型"]
-  q --> has{"这个类型是否已由接收者声明"}
-  has -->|是，例如 List 的 T| plain["普通方法，1.18 起就能写"]
-  has -->|否| via{"调用是否要放进接口"}
-  via -->|要，例如 io.Reader| fn["签名固定的方法；泛型部分留在另一个名字上"]
-  via -->|不要| gen["泛型方法，类型参数写在方法名后面"]
-```
+![1.27 放开的是具体方法这一半](/assets/images/202610/go-1-27-generic-methods-02.png){: width="760" }
+*图：1.27 放开的是具体方法这一半。*
 
 ## 语法上多出来的那一对方括号
 
@@ -645,13 +632,8 @@ var _ io.Writer = (*Archive)(nil)
 
 `var _ io.Writer = (*Archive)(nil)` 检查的是 `Write`。`Store` 留在具体类型上，调用写成 `a.Store(int16s)` 或 `a.Store(p)`。
 
-```mermaid
-flowchart LR
-  holder["调用方手里的值"] --> concrete["静态类型是 Archive 指针"]
-  holder --> asWriter["静态类型是 io.Writer"]
-  concrete --> both["可以调用 Write 和 Store"]
-  asWriter --> only["方法表里只有 Write"]
-```
+![既要泛型操作，又要实现接口](/assets/images/202610/go-1-27-generic-methods-03.png){: width="760" }
+*图：既要泛型操作，又要实现接口。*
 
 # 最佳实践
 
