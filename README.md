@@ -98,7 +98,7 @@ The **site chrome** (top bar, sidebar, post layout, theme toggle) and **syntax-h
 
 **If colors disappear after an edit:** check for any new **`.content … code { color: … }`** or **`inherit`** on block **`code`**; regenerate **`./optools bundle-content-css`** and rebuild the site.
 
-- **Requirements**: Ruby **>= 3.1** and Jekyll **~> 4.3** (Chirpy depends on Jekyll 4.3 and Ruby ~> 3.1).
+- **Requirements**: Ruby **3.2.3** (minimum **3.1**), Bundler **2.4.19**, Jekyll **4.4.1**, Chirpy **7.5.0**. Install details, supported platforms, and the 1 GB memory limit are in [Getting Started](#getting-started).
 - **Home**: `index.html` uses layout `home` (rendered by the theme).
 - **Tabs**: Navigation pages are under `_tabs/` (Categories, Tags, Archives, About). Edit `_tabs/about.md` for the About page.
 - **Categories layout**: `_layouts/categories.html` overrides the theme for **leaf categories** (no sub-categories). In Chirpy, **`.category-trigger`** is only for the real expand control (`fa-angle-down`, wired by `category-collapse.js` to `.collapse`); stock HTML reused a **disabled** chevron on leaves, which reads as a broken button. This site uses an empty **`.category-leaf-spacer`** (same **1.7rem** square as in [`_categories.scss`](https://github.com/cotes2020/jekyll-theme-chirpy/blob/master/_sass/pages/_categories.scss)) so rows align without implying interaction. Diff against the gem when upgrading Chirpy.
@@ -145,9 +145,9 @@ Per [Writing a New Post — Code Block](https://chirpy.cotes.page/posts/write-a-
 - **Liquid in code**: If the snippet contains `{{` or `{%`, wrap the fence (and both lines of backticks) in `{% raw %}…{% endraw %}`, or set `render_with_liquid: false` in the post’s front matter (Jekyll 4+).
 - **Legacy migration**: Older posts that used `{% highlight %}` were converted with `ruby tools/convert_highlight_to_fenced.rb _posts` (or a single file path). **`compress_html`** in `_config.yml` is already disabled for `development` and `production`, so fenced blocks keep newlines without needing Liquid `highlight` tags.
 
-### Common deployment issue (Ruby too old)
+### Common deployment issue (Ruby too old, or the lockfile was regenerated)
 
-If your server is using Ruby 2.x (e.g. Ruby 2.5), `bundle install` / `./optools start` will fail for Chirpy/Jekyll 4.x. On **Ubuntu**, run **`AUTO_FIX=1 ./optools ruby-upgrade`** (or rely on **`./optools check`** / **`start`** with **`AUTO_FIX=1`**, the default) to install **rbenv**, Ruby **`RBENV_RUBY_VERSION`** (default **3.2.3**), **bundler**, and **bundle install**. Use **`./optools ruby-check`** if `bundle` reports **GemNotFoundException** for bundler. On other OSes, upgrade Ruby manually, then run **`bundle install`**.
+If the server is still on Ruby 2.x, `bundle install` / `./optools start` fails for Chirpy. On **Ubuntu**, `AUTO_FIX=1 ./optools ruby-upgrade` installs rbenv and Ruby **3.2.3**. Then install **Bundler 2.4.19** and run `bundle install` against the committed `Gemfile.lock`. Do not regenerate that lockfile with Bundler 4: on a **1 GB** machine, compiling `json` 2.21.x exits with `Cannot allocate memory`. Full steps are in [Getting Started](#getting-started).
 
 ## Optional enhancements
 
@@ -163,25 +163,102 @@ If your server is using Ruby 2.x (e.g. Ruby 2.5), `bundle install` / `./optools 
 
 ## Prerequisites
 
-- Ruby **3.1+** (required for Chirpy / Jekyll 4.3)
-- Bundler
-- Git
+Tested on **macOS Apple Silicon** (`arm64-darwin`) and **Ubuntu x86_64** (`x86_64-linux`). Both platforms are listed in `Gemfile.lock`. Keep that file. Install from it; do not regenerate it with a newer Bundler.
+
+| Item | Requirement |
+| --- | --- |
+| Ruby | **3.2.3** (`.ruby-version`). Chirpy refuses Ruby older than **3.1**. |
+| Bundler | **2.4.19**, the `BUNDLED WITH` version in `Gemfile.lock`. |
+| Jekyll | **4.4.1** (`Gemfile` allows `~> 4.3`). |
+| Theme | **jekyll-theme-chirpy 7.5.0**. |
+| Git | Any current Git. |
+| Memory | **1 GB RAM** is enough to `bundle install` and `./optools start` with this lockfile. |
+| Disk | A few hundred MB for the rbenv Ruby, gems, and the generated `_site/`. |
+| Locale | **UTF-8**. Posts and images use Chinese filenames. `LANG=C` makes `jekyll serve` raise `Encoding::UndefinedConversionError`. `./optools start` picks a UTF-8 locale when the shell has none. |
+| Compiler | Needed the first time native gems (`json`, `eventmachine`) are built. macOS: Xcode Command Line Tools. Ubuntu: `build-essential`, which `./optools ruby-upgrade` installs. |
+
+A lockfile produced by **Bundler 4.0.10** pulled `json` **2.21.2**. Compiling that extension on the 1 GB Ubuntu VM failed with `Cannot allocate memory`. The committed lockfile stays on Bundler **2.4.19**, `json` **2.19.1**, `sass-embedded` **1.98.0**, `google-protobuf` **4.34.0**, and `ffi` **1.17.3**. Those versions are already installed and served on that VM.
 
 ## Installation & Setup
 
 ```bash
 git clone https://github.com/gerryyang2025/awesome-share.git
 cd awesome-share
+```
 
-# Install dependencies (Ruby 3.1+ required)
-bundle install
+### macOS (Apple Silicon)
 
-# Optional: check environment (Ruby, Bundler, gems); optools can auto-fix Ruby via rbenv on Ubuntu
+```bash
+# Once, if 3.2.3 is not installed yet
+xcode-select --install
+brew install rbenv ruby-build
+rbenv install 3.2.3
+
+cd awesome-share
+rbenv local 3.2.3
+gem install bundler -v 2.4.19
+bundle _2.4.19_ install
 ./optools check
-
-# Run the blog (see "Running the Blog" below)
 ./optools start
 ```
+
+Open `http://127.0.0.1:8080/`. The process listens on `0.0.0.0:8080` (`_config.yml`), so localhost works.
+
+### Ubuntu / Linux x86_64
+
+System Ruby 2.x cannot build this site. `./optools ruby-upgrade` installs rbenv and Ruby 3.2.3 (needs `sudo` when not already root).
+
+```bash
+cd awesome-share
+AUTO_FIX=1 ./optools ruby-upgrade
+gem install bundler -v 2.4.19
+bundle _2.4.19_ install
+./optools check
+./optools start
+```
+
+`./optools check` and `./optools start` also run that Ruby upgrade on Ubuntu when `AUTO_FIX=1` (the default) and the current Ruby is too old. After rbenv is installed, `./optools shell-init && source ~/.bashrc` makes plain `ruby` and `bundle` use it.
+
+The server listens on **port 8080** on every interface. To bind one address only:
+
+```bash
+JEKYLL_HOST=172.19.0.16 ./optools start
+```
+
+### If `git pull` stops on `Gemfile.lock`
+
+An old untracked lockfile left by a previous `bundle install` blocks the merge:
+
+```text
+error: The following untracked working tree files would be overwritten by merge:
+        Gemfile.lock
+```
+
+Move it aside, then pull and install the committed file:
+
+```bash
+mv Gemfile.lock Gemfile.lock.bak
+git pull
+bundle _2.4.19_ install
+```
+
+### If `bundle install` runs out of memory
+
+Confirm the lockfile still says `BUNDLED WITH 2.4.19` and `json (2.19.1)`. If a newer Bundler rewrote it, restore the committed file with `git checkout -- Gemfile.lock` and do not run `bundle update`.
+
+When the versions are already the locked ones and compilation still prints `Cannot allocate memory`, add swap and install one gem at a time:
+
+```bash
+fallocate -l 2G /swapfile || dd if=/dev/zero of=/swapfile bs=1M count=2048
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+grep -q '/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+bundle config set --local jobs 1
+MAKEFLAGS="-j1" bundle _2.4.19_ install
+```
+
+`bundle config set --local` writes `.bundle/config`, which is gitignored.
 
 ## Running the Blog
 
@@ -209,7 +286,8 @@ Use the **optools** script for environment checks, start/stop, and status:
 - **扩充约定**：在 `tools/` 或其它目录新增**需要经常手动执行**的维护脚本时，请**同时**在 **`optools`** 中增加对应子命令，并更新 **`./optools help`** 与本节命令列表，避免 README、`tools/README` 与口头约定各自一套命令。
 - **为准**：子命令以 **`./optools help`** 为准；若与上表不一致，以脚本为准，并请将 README 改到一致。
 
-- The dev server listens on **port 8080** by default (`_config.yml`). For debugging (e.g. Liquid/build errors), set `DEBUG=1` to append `--trace` to the serve command: `DEBUG=1 ./optools start`, then inspect `run.log` (or `tail -f run.log`).
+- The dev server listens on **0.0.0.0:8080** (`_config.yml`). `./optools start` runs it under `nohup` and records `.jekyll.pid`. `run.log` and `.jekyll.pid` are gitignored. For a build error, run `DEBUG=1 ./optools start` and read `run.log`.
+- `detach` in `_config.yml` stays **false**. Jekyll's own detach would exit the PID that `optools` recorded. Override the bind address with `JEKYLL_HOST` when one Linux address must be pinned.
 
 # 📊 Blog Statistics
 
