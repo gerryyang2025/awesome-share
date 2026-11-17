@@ -156,8 +156,11 @@ jekyll-archives:
     tag: /tags/:name/
     category: /categories/:name/
 
-# Local serving (optional)
-detach: true
+# ./optools start runs this under nohup and writes .jekyll.pid.
+# detach must stay false: Jekyll's own detach exits that PID and turns regeneration off.
+# 0.0.0.0 listens on every interface, so localhost and a Linux host address both work.
+# Pin one address only when launching: JEKYLL_HOST=172.19.0.16 ./optools start
+detach: false
 port: 8080
-host: 172.19.0.16
+host: 0.0.0.0
 show_dir_listing: false

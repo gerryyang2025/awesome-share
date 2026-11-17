@@ -36,6 +36,7 @@ Env:
   AUTO_FIX=1                    Auto-fix Ruby via rbenv (Ubuntu) when too old (start/check)
   RBENV_RUBY_VERSION=3.2.3      Ruby version to install via rbenv / ruby-upgrade
   DEBUG=0                       Set to 1 to add jekyll --trace (for debugging Liquid/build errors)
+  JEKYLL_HOST=                  Override _config.yml host (default there is 0.0.0.0)
 EOF
   echo ""
   echo "Note: check / ruby-check / start load rbenv inside the script only. Your interactive shell"
@@ -388,9 +389,27 @@ EOF
   return 0
 }
 
+# Non-interactive Linux shells often have LANG=C. Chinese filenames then fail to build.
+ensure_utf8_locale() {
+  case "${LC_ALL:-${LC_CTYPE:-${LANG:-C}}}" in
+    *UTF-8*|*utf8*) return 0 ;;
+  esac
+  if locale -a 2>/dev/null | grep -qiE '^C\.(utf-?8)$'; then
+    export LANG=C.UTF-8 LC_ALL=C.UTF-8
+  elif locale -a 2>/dev/null | grep -qiE '^en_US\.(utf-?8)$'; then
+    export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+  fi
+}
+
 start_jekyll() {
   local -a jekyll_args
   jekyll_args=(serve)
+
+  ensure_utf8_locale
+
+  if [ -n "${JEKYLL_HOST:-}" ]; then
+    jekyll_args+=(--host "${JEKYLL_HOST}")
+  fi
 
   if [ "${DEBUG}" = "1" ]; then
     jekyll_args+=(--trace)
@@ -406,8 +425,9 @@ start_jekyll() {
     echo "================================================================"
   } >> "${LOG_FILE}"
 
-  # Run in background, keep stdout+stderr in one file, and record PID.
-  (bundle exec jekyll "${jekyll_args[@]}" >> "${LOG_FILE}" 2>&1) &
+  # nohup keeps the server alive after this script, and after an SSH session, exits.
+  # Do not combine this with Jekyll detach: that forks, the recorded PID exits, and stop/status lose the real process.
+  nohup bundle exec jekyll "${jekyll_args[@]}" >> "${LOG_FILE}" 2>&1 &
   echo "$!" > "${PID_FILE}"
 
   # If it exits shortly after start, show some logs to help debugging.
