@@ -2,14 +2,13 @@
 layout: post
 title:  "Claude Code 团队如何做 Code Review"
 date:   2026-11-17 11:00:27 +0800
-last_modified_at: 2026-11-17 11:40:59 +0800
+last_modified_at: 2026-11-17 12:05:59 +0800
 description: "对照 Anthropic 2026 年 10 月的内部流程和 Claude Code Review 文档，说明 AI 生成的改动怎样分层检查，以及怎样用评测把误报和来回修改压下去。"
 categories: AI
 tags:
   - Code Review
   - Claude Code
   - Anthropic
-mermaid: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -54,25 +53,8 @@ Claude Code 团队没有取消审查。他们把大部分阅读交给机器，�
 
 图里的顺序可以收成一张决策图。自动层先走完，分类器再按改动内容决定还要几个人。
 
-```mermaid
-flowchart TD
-  change["一次改动"]
-  verify["合入前验证：测试、构建、新上下文里的审查"]
-  ci["CI：lint、类型、多平台测试、构建"]
-  ai["缺陷审查：多代理并行查找，核验后按严重程度发表"]
-  sec["安全审查"]
-  tier["分类器按改动内容定风险档"]
-  low["低风险，且作者在受信名单：自动检查通过即可合入"]
-  mid["中风险：再要一个人"]
-  high["高风险：再要两个人"]
-  queue["合并队列在最新 main 上重跑检查"]
-  release["功能开关、内部先用、latest 再到 stable"]
-  change --> verify --> ci --> ai --> sec --> tier
-  tier --> low --> queue
-  tier --> mid --> queue
-  tier --> high --> queue
-  queue --> release
-```
+![一次改动的审查决策](/assets/images/202611/anthropic-cr-decision.png){: width="760" }
+*图：按 FIG A 收成的决策。自动检查走完后，按风险决定还要几个人，再进入合并队列和发布。*
 
 # 一次改动要经过的层
 
