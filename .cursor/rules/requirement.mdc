@@ -1,12 +1,12 @@
 ---
-description: 文章书写或更新时的注意事项（Front Matter、表述准确、逻辑连贯、撰写规范、Chirpy 用法）
+description: 文章书写或更新时的注意事项（Front Matter、表述准确、逻辑连贯、配图用生成图片、撰写规范、Chirpy 用法）
 globs: _posts/**/*.markdown
 alwaysApply: false
 ---
 
 # 注意事项
 
-**规范参考**：`_posts/2026-03-21-chirpy-theme-in-action.markdown` — Chirpy 主题与本文库的写文章规范（命名、`date` / `last_modified_at`、可选 `description`、`categories` / `tags`、正文 `{:toc}`、`mermaid: true`、提示块等）。新建或改文时，Front Matter 结构与字段顺序优先对齐该文。
+**规范参考**：`_posts/2026-03-21-chirpy-theme-in-action.markdown` — Chirpy 主题与本文库的写文章规范（命名、`date` / `last_modified_at`、可选 `description`、`categories` / `tags`、正文 `{:toc}`、提示块、图片题注等）。新建或改文时，Front Matter 结构与字段顺序优先对齐该文。该文里的 Mermaid 示例只说明主题能力，新文和改文的配图按下文「配图」执行，不要照抄 `mermaid: true`。
 
 本站使用 **jekyll-theme-chirpy**。在 `_posts/` 下**新建或修改**文章时，必须在 YAML Front Matter 中**添加或更新** `last_modified_at`。
 
@@ -17,7 +17,7 @@ alwaysApply: false
 3. **格式**：`date` / `last_modified_at` 均为 `YYYY-MM-DD HH:MM:SS +0800`（秒级，含时区；本站默认东八区 `+0800`）。
 4. 若缺少 `last_modified_at`，**补上**；若已有，每次改内容时**替换**。
 5. **文件名**：`_posts/YYYY-MM-DD-title.markdown`。
-6. 需要 Mermaid 时，Front Matter 设 `mermaid: true`；需要公式时设 `math: true`。
+6. 需要公式时设 `math: true`。架构、流程、对比不要用 Mermaid，按下文「配图」生成图片。不要为配图设置 `mermaid: true`。
 
 ## 时间戳：用 `date` 取真实本地时间
 
@@ -52,7 +52,7 @@ last_modified_at: 2026-05-26 20:41:42 +0800
 | **风格** | 专业、详尽、结构清晰，**理论与实践结合**；说明文字逻辑清楚、句子通顺，见下文「正文表述」 |
 | **结构** | 至少覆盖：**原理与核心概念**、**使用方法**、**使用示例**、**最佳实践**、**注意事项** |
 | **交叉引用** | 对照参考文提炼；链到官方文档；链到站内相关文（`{% post_url … %}` 或相对路径） |
-| **图示** | 用 **Mermaid** 说明架构、流程、对比（flowchart / sequenceDiagram 等） |
+| **图示** | 架构、流程、对比用**生成的图片**，不要用 Mermaid。见下文「配图」 |
 | **Chirpy 排版** | `{:toc}`；`{: .prompt-tip }` / `info` / `warning` / `danger` 突出重点；`{: .filepath }` 标注路径；代码块用围栏 + 可选 `{: file="…" }` |
 | **文末** | **参考资源** 小节：官方文档优先，再列社区/站内延伸阅读 |
 
@@ -106,6 +106,22 @@ last_modified_at: 2026-05-26 20:41:42 +0800
 ✅ Anthropic 外面的调查量到的是审查时间这一头：写出来的改动变多，审查花费的时间也变多。CodeAnt 的一篇工具文转述了几份 2025 年到 2026 年的结果。
 ```
 
+## 配图：生成图片，不用 Mermaid
+
+文章里需要自己画的架构、流程、对比时，直接生成一张图片再嵌入。不要写 ` ```mermaid ` 代码块，也不要先写 Mermaid 再导出成 PNG。图片和文中其他插图同一套阅读方式，比页内渲染的流程图更整齐。
+
+- **原文已有的图**：从原文导出或转存，嵌入正文。不要用生成图替换原文的图。
+- **自己要说明的结构**：生成图片。图中文字按语义断行，不要把一个词拆到两行。配色与同文已有插图一致；没有既有插图时，用浅底、深色字、一种强调色。
+- **存放与嵌入**：图片放在 `assets/images/YYYYMM/`（`YYYYMM` 与文章 `date` 的年月一致）。正文写法与其他插图相同：
+
+```markdown
+![一次改动的审查决策](/assets/images/202611/anthropic-cr-decision.png){: width="760" }
+*图：按 FIG A 收成的决策。自动检查走完后，按风险决定还要几个人。*
+```
+
+- **不要**设置 `mermaid: true`。文中不再有 Mermaid 代码块时，删掉已有的 `mermaid: true`。
+- 图注遵守下一节。生成图不要写成「原文原图」。
+
 ## 图注不要多余话术
 
 图注只写图在说明什么。需要出处时给来源链接。
@@ -129,7 +145,7 @@ last_modified_at: 2026-05-26 20:41:42 +0800
 
 1. **分析**参考文与站内已有正文，**补充完善**，**不要删除历史内容**（除非用户明确要求替换过时段落）。
 2. 出现**已过时**的表述时，**增补或替换为更新内容**，并保留对旧版本的说明（如「Helm 3 → 4」对照表）以保持时效性。
-3. 同样满足上表：**风格、结构模块、交叉引用、Mermaid、Chirpy 排版、文末参考资源**，以及 **正文表述**。
+3. 同样满足上表：**风格、结构模块、交叉引用、配图、Chirpy 排版、文末参考资源**，以及 **正文表述**。新增的架构、流程、对比用生成的图片，不要补 Mermaid。
 4. 同一次修改必须更新 `last_modified_at`（用 `date '+%Y-%m-%d %H:%M:%S %z'` 取值）。
 
 **参考来源示例（Helm 类主题更新）**：
@@ -151,7 +167,6 @@ description: "可选；SEO、列表、RSS 摘要"
 categories: Tools
 tags:
   - 标签
-mermaid: true
 ---
 ```
 
@@ -171,4 +186,5 @@ mermaid: true
 - [ ] 成文后已通读全文：每句写清对象和变化；不同来源的结论没有并成同一次变化；数字带着出处；示例步骤与后文指代接得上
 - [ ] 图注没有文件路径、转载套话、编辑过程说明，也没有把图上已有的名称和数字再列一遍
 - [ ] 更新文：历史内容保留；过时信息已修订或标注版本
-- [ ] 站内交叉引用与 Mermaid、Chirpy 提示块已按需使用
+- [ ] 自己画的架构、流程、对比已生成图片并嵌入；没有新增 Mermaid，也没有为配图留下 `mermaid: true`
+- [ ] 站内交叉引用与 Chirpy 提示块已按需使用
