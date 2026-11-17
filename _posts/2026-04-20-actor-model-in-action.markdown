@@ -2,7 +2,7 @@
 layout: post
 title:  "Actor Model in Action"
 date:   2026-04-20 10:00:00 +0800
-last_modified_at: 2026-04-21 20:07:33 +0800
+last_modified_at: 2026-11-17 17:01:44 +0800
 description: "系统介绍 Actor 模型：定义与公理、Shared-nothing、理论优势、语言生态；Erlang/OTP 与死锁（同步 call、超时、非自动拆环）；对比 trpc-go、bingo stateful（含同步互调与死锁）、tsf4g-go 与横向对比；游戏应用；对象路由辨析；文末六条外部参考。"
 categories: Programming
 tags:
@@ -11,7 +11,7 @@ tags:
   - Concurrency
   - Distributed Systems
   - Erlang
-  - trpc-go
+  - tRPC-Go
   - tsf4g-go
 ---
 

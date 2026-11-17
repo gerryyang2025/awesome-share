@@ -1,5 +1,5 @@
 ---
-description: 文章书写或更新时的注意事项（Front Matter、表述准确、逻辑连贯、配图用生成图片、撰写规范、Chirpy 用法）
+description: 文章书写或更新时的注意事项（Front Matter、表述准确、逻辑连贯、配图用生成图片、撰写规范、Chirpy 用法、Liquid 的 {{ }} 与标签大小写）
 globs: _posts/**/*.markdown
 alwaysApply: false
 ---
@@ -155,6 +155,32 @@ last_modified_at: 2026-05-26 20:41:42 +0800
 - https://github.com/helm/helm
 - https://jimmysong.io/zh/blog/helm-4-delivery-and-plugin-rebuild/
 
+## 示例里的 `{{ }}` 与标签大小写
+
+Jekyll 先跑 Liquid，再渲染 Markdown。代码围栏挡不住 `{{ }}` 和 `{% %}`。Go template、Helm、Jinja 写在正文里会被当成 Liquid：构建打出 `Liquid syntax error`，示例在页面上被吃掉或留空。日志里的行号是去掉 Front Matter 之后的正文行号。
+
+已出现过的警告：
+
+```text
+Liquid Warning: Liquid syntax error (line 210): Expected end_of_string but found id in "{{if not .Standard}}"
+Liquid Warning: [:dot, "."] is not a valid expression in "{{.ImportPath}}"
+Liquid Warning: Expected end_of_string but found string in "{{join .Imports "\n"}}"
+Liquid Warning: [:dot, "."] is not a valid expression in "{{ .Values.xxx }}"
+```
+
+原因是 `go list -f '{{if not .Standard}}{{.ImportPath}}{{end}}'` 和 Helm 的 `{{ .Values.xxx }}`。整段示例用 `{% raw %} ... {% endraw %}` 包住，围栏和里面的原文都放在里面；行内只有一处就只包那一处。页面上仍显示原来的 `{{ }}`，不要改示例文本来躲开解析。`_posts/2021-06-04-using-go-modules.markdown` 和 `_posts/2022-07-20-helm-in-action.markdown` 是现成写法。
+
+标签由 `jekyll-archives` 转成小写路径。`trpc-go` 和 `tRPC-Go` 都生成 `_site/tags/trpc-go/index.html`，后写的页面盖掉先写的：
+
+```text
+Conflict: The following destination is shared by multiple files.
+          _site/tags/trpc-go/index.html
+           - tags/trpc-go/index.html
+           - tags/trpc-go/index.html
+```
+
+新标签先对照已有 Front Matter，沿用同一种大小写。这一组统一写 `tRPC-Go`。
+
 ## Front Matter 示例
 
 ```yaml
@@ -188,3 +214,5 @@ tags:
 - [ ] 更新文：历史内容保留；过时信息已修订或标注版本
 - [ ] 自己画的架构、流程、对比已生成图片并嵌入；没有新增 Mermaid，也没有为配图留下 `mermaid: true`
 - [ ] 站内交叉引用与 Chirpy 提示块已按需使用
+- [ ] 正文里的 Go / Helm / Jinja `{{ }}` 已放在 `{% raw %}` 中，示例原文未改
+- [ ] 新标签与已有标签大小写一致，不会两个标签落到同一个 `/tags/` 路径

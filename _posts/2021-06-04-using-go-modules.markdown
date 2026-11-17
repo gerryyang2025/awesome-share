@@ -2,7 +2,7 @@
 layout: post
 title:  "Using Go Modules"
 date:   2021-06-04 12:00:00 +0800
-last_modified_at: 2026-05-22 12:00:00 +0800
+last_modified_at: 2026-11-17 17:01:44 +0800
 categories: GoLang
 tags:
   - Using Go Modules
@@ -217,6 +217,7 @@ rsc.io/sampler v1.3.0
 
 > `go list -m all` 列出的是 **module**（`go.mod` 依赖图）。若要核对某条编译路径上**真正参与构建的非标准库 package**，对目标路径使用 `go list -deps`（`./...` 表示该目录下所有 package）。
 
+{% raw %}
 ```text
 # All non-stdlib packages on the compile graph for one service (e.g. lobby)
 go list -deps -f '{{if not .Standard}}{{.ImportPath}}{{end}}' ./app/lobby/... | sort -u
@@ -227,6 +228,7 @@ go list -f '{{join .Imports "\n"}}' ./app/lobby/... | sort -u
 # Whole business tree (app + lib; adjust paths if you exclude frame, tools, etc.)
 go list -deps -f '{{if not .Standard}}{{.ImportPath}}{{end}}' ./app/... ./lib/... | sort -u
 ```
+{% endraw %}
 
 > 上例中：`./app/lobby/...` 表示 lobby 服务目录下所有 package；第一条命令列出**传递依赖在内的全部外部 import path**；第二条只列**源码里直接 `import` 的包**；第三条可用来盘点整块业务代码的外部依赖。
 

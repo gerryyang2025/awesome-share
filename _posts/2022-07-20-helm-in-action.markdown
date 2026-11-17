@@ -2,7 +2,7 @@
 layout: post
 title:  "Helm in Action"
 date:   2022-07-20 12:30:00 +0800
-last_modified_at: 2026-11-17 12:15:21 +0800
+last_modified_at: 2026-11-17 17:01:44 +0800
 categories: 云原生
 tags:
   - Helm
@@ -92,7 +92,7 @@ Use `Helm` to: (使用场景)
 | 步骤 | 命令 / 文件 | 说明 |
 |------|-------------|------|
 | 脚手架 | `helm create mychart` | 生成标准目录（见上文 `tree`） |
-| 模板 | `templates/deployment.yaml` 等 | Go template + Sprig 函数；通过 `{{ .Values.xxx }}` 引用配置 |
+| 模板 | `templates/deployment.yaml` 等 | Go template + Sprig 函数；通过 `{% raw %}{{ .Values.xxx }}{% endraw %}` 引用配置 |
 | 默认值 | `values.yaml` | 安装时可被 `-f`、`--set` 覆盖 |
 | 调试渲染 | `helm template myrelease ./mychart` | 不访问集群，仅输出 YAML |
 | 试运行 | `helm install --dry-run --debug` | 连接集群但不真正创建资源 |

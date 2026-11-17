@@ -36,7 +36,7 @@ exclude:
 
 Do not point `LOG_FILE` at another path inside the Jekyll source. Do not remove those exclude entries. Jekyll's watcher only ignores an exclude entry that already exists when the listener starts; `optools` creates `run.log` before `jekyll serve`, so leave that order alone.
 
-These lines in the same log are old and did not stop the build: Liquid warnings in `_posts/2021-06-04-using-go-modules.markdown` and `_posts/2022-07-20-helm-in-action.markdown`, and the shared destination `_site/tags/trpc-go/index.html`.
+Go and Helm examples use `{{ }}`. Liquid runs before Markdown, so a code fence does not protect them. Wrap those examples in `{% raw %} ... {% endraw %}` and leave the visible command text unchanged. The tag spelling is `tRPC-Go` on every post; `trpc-go` and `tRPC-Go` both slugify to `_site/tags/trpc-go/index.html`, and the second write overwrites the first.
 
 ## Locked gems
 
