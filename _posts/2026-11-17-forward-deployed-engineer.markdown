@@ -2,7 +2,7 @@
 layout: post
 title:  "前线部署工程师：把模型能力送进客户的生产环境"
 date:   2026-11-17 10:09:24 +0800
-last_modified_at: 2026-11-17 10:12:15 +0800
+last_modified_at: 2026-11-17 11:09:56 +0800
 description: "对照维基百科、OpenAI 与范冰的开源手册，说明前线部署工程师如何填上部署鸿沟，并把一次客户现场的成功收成可复用能力。"
 categories: AI
 tags:
@@ -16,13 +16,13 @@ mermaid: true
 * Do not remove this line (it will not be displayed)
 {:toc}
 
-> 本文按三份材料交叉核对。[Wikipedia: Forward deployed engineer](https://en.wikipedia.org/wiki/Forward_deployed_engineer) 给出岗位的百科定义与 2026 年的行业位置；[OpenAI《前线部署工程在 OpenAI 意味着什么》](https://openai.com/zh-Hans-CN/index/forward-deployed-engineering-means/)（Colin Jarvis，2026-10-22）给出一家模型公司怎样把现场工作收成产品和研究方向；范冰的开源手册 [《前线部署工程师》](https://github.com/xdash/FDE-the-Guidance-Book-of-Forward-Deployed-Engineer)（官网 [fde4.ai](https://fde4.ai)，纸质版 2026 年 10 月由人民邮电出版社出版）把一次交付从找问题走到规模化复制。下文转述这些材料里的判断，并配上原文中的图。模型侧怎么把一次任务跑稳，见 [Harness Engineering]({% post_url 2026-10-28-harness-engineering %}) 与 [Codex in Action]({% post_url 2026-04-03-codex-in-action %})。
+> 本文按三份材料交叉核对。[Wikipedia: Forward deployed engineer](https://en.wikipedia.org/wiki/Forward_deployed_engineer) 给出岗位的百科定义与 2026 年的行业位置；[OpenAI《前线部署工程在 OpenAI 意味着什么》](https://openai.com/zh-Hans-CN/index/forward-deployed-engineering-means/)（Colin Jarvis，2026-10-22）给出一家模型公司怎样把现场工作收成产品和研究方向；范冰的开源手册 [《前线部署工程师》](https://github.com/xdash/FDE-the-Guidance-Book-of-Forward-Deployed-Engineer)（官网 [fde4.ai](https://fde4.ai)，纸质版 2026 年 10 月由人民邮电出版社出版）把一次交付从找问题走到规模化复制。模型侧怎么把一次任务跑稳，见 [Harness Engineering]({% post_url 2026-10-28-harness-engineering %}) 与 [Codex in Action]({% post_url 2026-04-03-codex-in-action %})。
 {: .prompt-info }
 
 模型演示已经很容易做。企业把演示接进自己的数据、权限、合规和日常流程，仍然经常停在试点。前线部署工程师（Forward Deployed Engineer，FDE；也有公司写成 Forward Deployed Software Engineer，FDSE）就是被派去填这段距离的人：他为做出产品的公司工作，在一段明确的时间里和客户员工一起，把产品做成客户生产环境里真的在用的系统。
 
 ![《前线部署工程师》纸质版封面。封面把这个岗位收成三件事：能落地、能续约、能复制](/assets/images/202611/fde-book-cover.jpg){: width="280" }
-*图：范冰著《前线部署工程师（FDE）》。开源全文在 [GitHub](https://github.com/xdash/FDE-the-Guidance-Book-of-Forward-Deployed-Engineer)，封面文件为仓库中的 `assets/cover.jpg`。转载请注明作者与出处。*
+*图：范冰著《前线部署工程师（FDE）》。开源全文在 [GitHub](https://github.com/xdash/FDE-the-Guidance-Book-of-Forward-Deployed-Engineer)。*
 
 # 原理与核心概念
 
@@ -31,7 +31,7 @@ mermaid: true
 OpenAI 前线部署工程负责人 Colin Jarvis 在 2025 年初组建这支团队。他给团队的任务，是补上他称为部署鸿沟的那段落差：模型看起来已经具备的能力，和人们在工作中能够可靠使用的能力，中间还隔着系统和流程。有时缺的是一款产品。有时模型在基准上表现很好，一进真实约束就做不完那件事。
 
 ![模型能力、已部署能力和当前业务价值之间的距离](/assets/images/202611/openai-fde-social.jpg){: width="760" }
-*图：OpenAI 文章的题图。上方虚线抬得最快，中间实线跟着往上弯，底部还有一条几乎贴着横轴的线。右端的箭头标出虚线和实线仍未合上的距离。正文把这段距离叫做部署鸿沟。来源：[前线部署工程在 OpenAI 意味着什么](https://openai.com/zh-Hans-CN/index/forward-deployed-engineering-means/)。*
+*图：上方虚线抬得最快，中间实线跟着往上弯，底部还有一条几乎贴着横轴的线。右端的箭头标出虚线和实线仍未合上的距离，这就是部署鸿沟。来源：[前线部署工程在 OpenAI 意味着什么](https://openai.com/zh-Hans-CN/index/forward-deployed-engineering-means/)。*
 
 这段距离决定了 FDE 的工作顺序。客户当前已经能用模型做成的事，FDE 和产品团队一起把它做成下一家客户也能复用的方案。模型还做不到的事，FDE 和客户、研究团队一起把缺口写成可检验的任务。Jarvis 用一句工作标准收束这件事：如果每隔几个月，团队都能让自己在同类问题上变得不再必需，这支团队就尽到了职责。
 
@@ -255,7 +255,7 @@ FDE 在这里做的事，是把模型接口接进这套已有设备，让农民�
 FDE 和客户先把平台搭起来，把模型必须完成的任务写清。研究团队按这些任务发布模型快照，现场再拿客户需求去量。六个月内，关键评估从大约 60% 到 80%，随后超过 90%，达到生产要求。由此做出的语音模型，后来既服务这家客户，也服务其他定制客服部署和 Presence 上的托管部署。
 
 ![Audio Big Bench 准确率从 2024 年 12 月的 65.6% 到 2026 年 5 月的 92.29%](/assets/images/202611/openai-fde-audio-bench.jpg){: width="720" }
-*图：OpenAI 文章中的语音推理进展。五个快照分别是 2024 年 12 月的 GPT-4o Realtime（65.6%）、2025 年 6 月的 GPT-4o Realtime（81.5%）、2025 年 8 月的 GPT-Realtime（82.8%）、2026 年 2 月的 GPT-Realtime 1.5（87.7%）、2026 年 5 月标有星号的 GPT-Realtime 2（92.29%）。图内说明这些柱子混合了已发布结果和内部评估。客户现场那条「约 60% 到超过 90%」是另一套关键评估，两套分数各有自己的考题和分母。来源：[前线部署工程在 OpenAI 意味着什么](https://openai.com/zh-Hans-CN/index/forward-deployed-engineering-means/)。*
+*图：Audio Big Bench 准确率。柱子混合了已发布结果和内部评估，2026 年 5 月那根标有星号。客户现场那条「约 60% 到超过 90%」是另一套关键评估，两套分数各有自己的考题和分母。来源：[前线部署工程在 OpenAI 意味着什么](https://openai.com/zh-Hans-CN/index/forward-deployed-engineering-means/)。*
 
 把两张图放在一起看，FDE 的贡献分成两种。税务图量的是业务吞吐量：人没有增加，处理完的申报变多了。语音图量的是模型能力被客户任务拉着往上走。前一种让已有能力可复用。后一种把今天的缺口写成明天的模型能力。文章把两件事都算进「让我们自己变得不再必需」。
 
@@ -333,12 +333,12 @@ flowchart TB
 官方与百科：
 
 * [Forward deployed engineer](https://en.wikipedia.org/wiki/Forward_deployed_engineer)：岗位定义、军事用语来源、Palantir 的早期使用，以及 2026 年各大公司的编制。
-* [前线部署工程在 OpenAI 意味着什么](https://openai.com/zh-Hans-CN/index/forward-deployed-engineering-means/)：Colin Jarvis，2026-10-22。部署鸿沟、成果顺序、约翰迪尔、半导体、税务、语音，以及本文采用的原图。
+* [前线部署工程在 OpenAI 意味着什么](https://openai.com/zh-Hans-CN/index/forward-deployed-engineering-means/)：Colin Jarvis，2026-10-22。部署鸿沟、成果顺序、约翰迪尔、半导体、税务和语音。
 * [OpenAI Codex](https://openai.com/codex/) 与站内 [Codex in Action]({% post_url 2026-04-03-codex-in-action %})：半导体案例里替换定制界面的那层产品。
 
 手册与案例：
 
-* [xdash/FDE-the-Guidance-Book-of-Forward-Deployed-Engineer](https://github.com/xdash/FDE-the-Guidance-Book-of-Forward-Deployed-Engineer)：范冰著，开源全文。定义、PSF、MVD、五张地图、三级杠杆和指标都出自这里。封面图来自该仓库。
+* [xdash/FDE-the-Guidance-Book-of-Forward-Deployed-Engineer](https://github.com/xdash/FDE-the-Guidance-Book-of-Forward-Deployed-Engineer)：范冰著，开源全文。定义、PSF、MVD、五张地图、三级杠杆和指标都出自这里。
 * [fde4.ai](https://fde4.ai)：与仓库同步的阅读站，另有知识图谱和案例库。
 * 纸质版：《前线部署工程师（FDE）》，人民邮电出版社，2026 年 10 月。
 
