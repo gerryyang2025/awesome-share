@@ -2,7 +2,7 @@
 layout: post
 title:  "Claude Code 团队如何做 Code Review"
 date:   2026-11-17 11:00:27 +0800
-last_modified_at: 2026-11-17 12:05:59 +0800
+last_modified_at: 2026-11-18 10:15:26 +0800
 description: "对照 Anthropic 2026 年 10 月的内部流程和 Claude Code Review 文档，说明 AI 生成的改动怎样分层检查，以及怎样用评测把误报和来回修改压下去。"
 categories: AI
 tags:
@@ -19,7 +19,9 @@ tags:
 
 Claude Code 团队在 2026 年 10 月的工程博客里写过一个前提：Claude 写出了 Claude Code 自己大约九成的代码。合入量同时上去了。Anthropic 单体仓库每天合入的变更，从 5 月的大约 2500 次涨到 9 月的 30000 次以上。Claude Code 自己的仓库是分开的，合入量同样在涨。6 月到 9 月，这个仓库合入的 pull request 数量翻了一倍多，其中不得不撤回的比例下降了四成以上。让人逐行读完再合入，已经接不住这个量。
 
-Anthropic 外面的调查量到的是审查时间这一头：写出来的改动变多，审查花费的时间也变多。[CodeAnt 的一篇工具文](https://codeant.ai/blogs/best-ai-code-review-tools)转述了几份 2025 年到 2026 年的结果。Faros AI 跟踪一万多名开发者、1255 个团队。用了 AI 编程工具的团队，完成的任务多 21%，合并的 pull request 多 98%，审查时间增加 91%。GitClear 分析了 2.11 亿行改动：两周内又被改掉的代码从 3.1% 升到 5.7%，2020 年到 2024 年复制粘贴增加 48%。同一篇文章还引用 GitHub Octoverse 2025：每月合并约 4320 万条 pull request，同比增加 23%，新代码里大约 41% 有 AI 参与。CodeAnt 文还转述了 CodeRabbit 自己的分析：AI 生成的代码，每条 pull request 上的问题是人工代码的 1.7 倍，逻辑错误多 75%，安全问题是 1.5 到 2 倍。这些数字的原始报告本文没有再打开核对，这里记的是 CodeAnt 文中的转述。
+上面这些数字只说明 Anthropic 自己的仓库：合入变多了，撤回比例下降了，人已经没法逐行读完再合入。仓库外面的团队也在用这类编程工具，写出来的改动同样变多，但各家调查问的不是同一个问题。有人问审查多花了多久，有人问写下的代码多久又被改掉，有人问整个行业一个月合入多少，有人问一条 pull request 上能查出多少问题。这四件事要分开看。[CodeAnt 的一篇工具文](https://codeant.ai/blogs/best-ai-code-review-tools)把 2025 年到 2026 年的几份结果转述在一处。
+
+Faros AI 跟踪一万多名开发者、1255 个团队，问的是审查时间。用了 AI 编程工具的团队，完成的任务多 21%，合并的 pull request 多 98%，审查时间增加 91%。GitClear 问的是代码写下之后还留得住多少，样本是 2.11 亿行改动：两周内又被改掉的代码从 3.1% 升到 5.7%，2020 年到 2024 年复制粘贴增加 48%。合入的规模来自 GitHub Octoverse 2025，CodeAnt 的文章引用了这份报告：每月合并约 4320 万条 pull request，同比增加 23%，新代码里大约 41% 有 AI 参与。一条 pull request 上查出的问题，来自 CodeRabbit 自己的分析，CodeAnt 文做了转述：AI 生成的代码，每条 pull request 上的问题是人工代码的 1.7 倍，逻辑错误多 75%，安全问题是 1.5 到 2 倍。
 
 Claude Code 团队没有取消审查。他们把大部分阅读交给机器，把人的时间留在风险更高的改动上，并把撤回做快。目标写得很具体：Claude Code 的 CLI、桌面端、网页和移动端仓库里，多数 pull request 在至多一个人类参与的情况下合入，这个人可以就是作者本人。撤回率和事故率不能比改流程之前更高。
 
