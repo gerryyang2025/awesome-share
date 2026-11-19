@@ -2,13 +2,14 @@
 layout: post
 title:  "C++ 程序性能优化：从为什么优化，到怎么测、怎么改"
 date:   2026-11-19 17:53:45 +0800
-last_modified_at: 2026-11-19 17:59:14 +0800
+last_modified_at: 2026-11-19 19:11:39 +0800
 description: "把 C++ 性能优化收成一条可复跑的路径：先算收益和物理瓶颈，再统一口径做测量，然后按代价从工具链、语言规则、算法、布局、分配走到并发和内核。"
 categories: [C/C++]
 tags:
   - C++ Performance
   - C/C++
 math: true
+published: false
 ---
 
 * Do not remove this line (it will not be displayed)
