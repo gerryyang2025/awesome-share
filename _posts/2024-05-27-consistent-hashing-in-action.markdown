@@ -2,12 +2,13 @@
 layout: post
 title:  "Consistent Hashing in Action"
 date:   2024-05-27 12:30:00 +0800
-last_modified_at: 2026-04-03 14:21:05 +0800
+last_modified_at: 2026-11-20 11:00:34 +0800
 categories: 基础理论
 tags:
   - Consistent Hashing
   - 基础理论
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -56,21 +57,21 @@ Hash functions have many uses and for each one, different properties may be desi
 
 # Introducing Hash Tables (Hash Maps)
 
-Imagine we needed to keep a list of all the members of some club while being able to search for any specific member. We could handle it by keeping the list in an array (or linked list) and, to perform a search, iterate the elements until we find the desired one (we might be searching based on their name, for instance). In the worst case, that would mean checking all members (if the one we’re searching for is last, or not present at all), or half of them on average. In complexity theory terms, the search would then have complexity `O(n)`, and it would be reasonably fast for a small list, but it would get slower and slower in direct proportion to the number of members.
+Imagine we needed to keep a list of all the members of some club while being able to search for any specific member. We could handle it by keeping the list in an array (or linked list) and, to perform a search, iterate the elements until we find the desired one (we might be searching based on their name, for instance). In the worst case, that would mean checking all members (if the one we’re searching for is last, or not present at all), or half of them on average. In complexity theory terms, the search would then have complexity $$O(n)$$, and it would be reasonably fast for a small list, but it would get slower and slower in direct proportion to the number of members.
 
 How could that be improved? Let’s suppose all these club members had a member `ID`, which happened to be a sequential number reflecting the order in which they joined the club.
 
-Assuming that searching by `ID` were acceptable, we could place all members in an array, with their indexes matching their `IDs` (for example, a member with `ID=10` would be at the **index** `10` in the array). This would allow us to access each member directly, with no search at all. That would be very efficient, in fact, as efficient as it can possibly be, corresponding to the lowest complexity possible, `O(1)`, also known as **constant time**.
+Assuming that searching by `ID` were acceptable, we could place all members in an array, with their indexes matching their `IDs` (for example, a member with `ID=10` would be at the **index** `10` in the array). This would allow us to access each member directly, with no search at all. That would be very efficient, in fact, as efficient as it can possibly be, corresponding to the lowest complexity possible, $$O(1)$$, also known as **constant time**.
 
 But, admittedly, our club member `ID` scenario is somewhat contrived(人为的). What if `IDs` were big, non-sequential or random numbers? Or, if searching by ID were not acceptable, and we needed to search by name (or some other field) instead? It would certainly be useful to keep our fast direct access (or something close) while at the same time being able to handle arbitrary datasets and less restrictive search criteria.
 
 **Here’s where hash functions come to the rescue. A suitable hash function can be used to map an arbitrary piece of data to an integer, which will play a similar role to that of our club member `ID`, albeit with a few important differences**.
 
-First, a good hash function generally has a wide output range (typically, the whole range of a `32` or `64`-bit integer), so building an array for all possible indices would be either impractical or plain impossible, and a colossal(巨大的) waste of memory. To overcome that, we can have a reasonably sized array (say, just twice the number of elements we expect to store) and perform a modulo operation on the hash to get the array index. So, the index would be `index = hash(object) mod N`, where `N` is the size of the array.
+First, a good hash function generally has a wide output range (typically, the whole range of a `32` or `64`-bit integer), so building an array for all possible indices would be either impractical or plain impossible, and a colossal(巨大的) waste of memory. To overcome that, we can have a reasonably sized array (say, just twice the number of elements we expect to store) and perform a modulo operation on the hash to get the array index. So, the index would be $$\mathrm{index} = \mathrm{hash}(\mathrm{object}) \bmod N$$, where $$N$$ is the size of the array.
 
 Second, object hashes will not be unique (unless we’re working with a fixed dataset and a custom-built [perfect hash function](https://en.wikipedia.org/wiki/Perfect_hash_function), but we won’t discuss that here). There will be **collisions** (further increased by the modulo operation), and therefore a simple direct index access won’t work. There are several ways to handle this, but a typical one is to attach a list, commonly known as a **bucket**, to each array index to hold all the objects sharing a given index.
 
-So, we have an array of size `N`, **with each entry pointing to an object bucket**. To add a new object, we need to calculate its `hash modulo N`, and check the bucket at the resulting index, adding the object if it’s not already there. To search for an object, we do the same, just looking into the bucket to check if the object is there. **Such a structure is called a hash table**, and although the searches within buckets are linear, a properly sized hash table should have a reasonably small number of objects per bucket, resulting in almost constant time access.
+So, we have an array of size `N`, **with each entry pointing to an object bucket**. To add a new object, we need to calculate its $$\mathrm{hash} \bmod N$$, and check the bucket at the resulting index, adding the object if it’s not already there. To search for an object, we do the same, just looking into the bucket to check if the object is there. **Such a structure is called a hash table**, and although the searches within buckets are linear, a properly sized hash table should have a reasonably small number of objects per bucket, resulting in almost constant time access.
 
 With complex objects, the hash function is typically not applied to the whole object, but to a key instead. In our club member example, each object might contain several fields (like name, age, address, email, phone), but we could pick, say, the email to act as the key so that the hash function would be applied to the email only. In fact, the key need not be part of the object; it is common to store key/value pairs, where the key is usually a relatively short string, and the value can be an arbitrary piece of data. **In such cases, the hash table or hash map is used as a dictionary**, and that’s the way some high-level languages implement objects or associative arrays.
 
@@ -89,11 +90,11 @@ Such setups consist of a pool of caching servers that host many key/value pairs 
 
 **Now, how does distribution take place? What criteria(标准) are used to determine which keys to host in which servers?**
 
-The simplest way is to take the hash modulo of the number of servers. That is, `server = hash(key) mod N`, where `N` is the size of the pool. To store or retrieve a key, the client first computes the hash, applies a `modulo N` operation, and uses the resulting index to contact the appropriate server (probably by using a lookup table of IP addresses). **Note that the hash function used for key distribution must be the same one across all clients, but it need not be the same one used internally by the caching servers**.
+The simplest way is to take the hash modulo of the number of servers. That is, $$\mathrm{server} = \mathrm{hash}(\mathrm{key}) \bmod N$$, where $$N$$ is the size of the pool. To store or retrieve a key, the client first computes the hash, applies a `modulo N` operation, and uses the resulting index to contact the appropriate server (probably by using a lookup table of IP addresses). **Note that the hash function used for key distribution must be the same one across all clients, but it need not be the same one used internally by the caching servers**.
 
 # The Rehashing Problem
 
-This distribution scheme is simple, intuitive, and works fine. That is, **until the number of servers changes**. What happens if one of the servers crashes or becomes unavailable? Keys need to be redistributed to account for the missing server, of course. The same applies if one or more new servers are added to the pool; keys need to be redistributed to include the new servers. This is true for any distribution scheme, but the problem with our simple modulo distribution is that when the number of servers changes, most hashes modulo `N` will change, so most keys will need to be moved to a different server. **So, even if a single server is removed or added, all keys will likely need to be rehashed into a different server**.
+This distribution scheme is simple, intuitive, and works fine. That is, **until the number of servers changes**. What happens if one of the servers crashes or becomes unavailable? Keys need to be redistributed to account for the missing server, of course. The same applies if one or more new servers are added to the pool; keys need to be redistributed to include the new servers. This is true for any distribution scheme, but the problem with our simple modulo distribution is that when the number of servers changes, most hashes modulo $$N$$ will change, so most keys will need to be moved to a different server. **So, even if a single server is removed or added, all keys will likely need to be rehashed into a different server**.
 
 **So, most queries will result in misses, and the original data will likely need retrieving again from the source to be rehashed, thus placing a heavy load on the origin server(s) (typically a database). This may very well degrade performance severely and possibly crash the origin servers**.
 
@@ -104,7 +105,7 @@ So, how can this problem be solved? We need a distribution scheme that does not 
 
 **Consistent Hashing is a distributed hashing scheme that operates independently of the number of servers or objects in a distributed hash table by assigning them a position on an abstract circle, or hash ring. This allows servers and objects to scale without affecting the overall system**.
 
-Imagine we mapped the hash output range onto the edge of a circle. **That means that the minimum possible hash value, zero, would correspond to an angle of zero, the maximum possible value (some big integer we’ll call `INT_MAX`) would correspond to an angle of `2𝝅` radians (or 360 degrees), and all other hash values would linearly fit somewhere in between**. So, we could take a key, compute its hash, and find out where it lies on the circle’s edge. Assuming an `INT_MAX` of `1010` (for example’s sake), the keys from our previous example would look like this:
+Imagine we mapped the hash output range onto the edge of a circle. **That means that the minimum possible hash value, zero, would correspond to an angle of zero, the maximum possible value (some big integer we’ll call `INT_MAX`) would correspond to an angle of $$2\pi$$ radians (or 360 degrees), and all other hash values would linearly fit somewhere in between**. So, we could take a key, compute its hash, and find out where it lies on the circle’s edge. Assuming an `INT_MAX` of `1010` (for example’s sake), the keys from our previous example would look like this:
 
 ![chash1](/assets/images/202405/chash1.png)
 
@@ -154,7 +155,7 @@ Something similar happens if, instead of removing a server, **we add one (增加
 
 This is how consistent hashing solves the rehashing problem.
 
-> In general, only `k/N` keys need to be `remapped` when `k` is the number of `keys` and `N` is the number of `servers` (more specifically, the maximum of the initial and final number of servers).
+> In general, only $$k/N$$ keys need to be `remapped` when $$k$$ is the number of `keys` and $$N$$ is the number of `servers` (more specifically, the maximum of the initial and final number of servers).
 
 
 > We observed that when using distributed caching to optimize performance, it may happen that the number of caching servers changes (reasons for this may be a server crashing, or the need to add or remove a server to increase or decrease overall capacity). By using consistent hashing to distribute keys between the servers, we can rest assured that should that happen, the number of keys being rehashed—and therefore, the impact on origin servers—will be minimized, preventing potential downtime or performance issues.
@@ -180,15 +181,15 @@ The paper was later re-purposed to address technical challenge of keeping track 
 
 # Basic technique
 
-In the problem of [load balancing](https://en.wikipedia.org/wiki/Load_balancing_(computing)), for example, when a [BLOB](https://en.wikipedia.org/wiki/Binary_large_object) has to be assigned to one of `𝑛` servers on a cluster, a standard hash function could be used in such a way that we calculate the hash value for that BLOB, assuming the resultant value of the hash is `𝛽`, we perform [modular operation](https://en.wikipedia.org/wiki/Modular_arithmetic) with the number of servers (`𝑛` in this case) to determine the server in which we can place the BLOB: `𝜁 = 𝛽 % 𝑛`; hence the BLOB will be placed in the server whose server ID is successor of `𝜁` in this case. However, when a server is added or removed during outage or scaling (when `𝑛` changes), all the BLOBs in every server should be reassigned and moved due to rehashing, but this operation is expensive.
+In the problem of [load balancing](https://en.wikipedia.org/wiki/Load_balancing_(computing)), for example, when a [BLOB](https://en.wikipedia.org/wiki/Binary_large_object) has to be assigned to one of $$n$$ servers on a cluster, a standard hash function could be used in such a way that we calculate the hash value for that BLOB, assuming the resultant value of the hash is $$\beta$$, we perform [modular operation](https://en.wikipedia.org/wiki/Modular_arithmetic) with the number of servers ($$n$$ in this case) to determine the server in which we can place the BLOB: $$\zeta = \beta \bmod n$$; hence the BLOB will be placed in the server whose server ID is successor of $$\zeta$$ in this case. However, when a server is added or removed during outage or scaling (when $$n$$ changes), all the BLOBs in every server should be reassigned and moved due to rehashing, but this operation is expensive.
 
-Consistent hashing was designed to avoid the problem of having to reassign every BLOB when a server is added or removed throughout the cluster. The central idea is to use a hash function that maps both the BLOB and servers to a unit circle, usually `2𝜋` radians.
+Consistent hashing was designed to avoid the problem of having to reassign every BLOB when a server is added or removed throughout the cluster. The central idea is to use a hash function that maps both the BLOB and servers to a unit circle, usually $$2\pi$$ radians.
 
-For example, `𝜁 = Φ % 360` (where `Φ` is hash of a BLOB or server's identifier, like IP address or UUID). Each BLOB is then assigned to the next server that appears on the circle in clockwise order. Usually, [binary search algorithm](https://en.wikipedia.org/wiki/Binary_search_algorithm) or [linear search](https://en.wikipedia.org/wiki/Linear_search) is used to find a "spot" or server to place that particular BLOB in `𝑂(log𝑁)` or `𝑂(𝑁)` complexities respectively; and in every iteration, which happens in clockwise manner, an operation `𝜁 ≤ Ψ` (where `Ψ` is the value of the server within the cluster) is performed to find the server to place the BLOB.
+For example, $$\zeta = \Phi \bmod 360$$ (where $$\Phi$$ is hash of a BLOB or server's identifier, like IP address or UUID). Each BLOB is then assigned to the next server that appears on the circle in clockwise order. Usually, [binary search algorithm](https://en.wikipedia.org/wiki/Binary_search_algorithm) or [linear search](https://en.wikipedia.org/wiki/Linear_search) is used to find a "spot" or server to place that particular BLOB in $$O(\log N)$$ or $$O(N)$$ complexities respectively; and in every iteration, which happens in clockwise manner, an operation $$\zeta \le \Psi$$ (where $$\Psi$$ is the value of the server within the cluster) is performed to find the server to place the BLOB.
 
 **This provides an even distribution of BLOBs to servers. But, more importantly, if a server fails and is removed from the circle, only the BLOBs that were mapped to the failed server need to be reassigned to the next server in clockwise order. Likewise, if a new server is added, it is added to the unit circle, and only the BLOBs mapped to that server need to be reassigned**.
 
-**Importantly, when a server is added or removed, the vast majority of the BLOBs maintain their prior server assignments, and the addition of `𝑛`th server only causes `1/𝑛` fraction of the BLOBs to relocate**.
+**Importantly, when a server is added or removed, the vast majority of the BLOBs maintain their prior server assignments, and the addition of $$n$$th server only causes $$1/n$$ fraction of the BLOBs to relocate**.
 
 Although the process of moving BLOBs across cache servers in the cluster depends on the context, commonly, the newly added cache server identifies its "successor" and moves all the BLOBs, whose mapping belongs to this server (i.e. whose hash value is less than that of the new server), from it. However, in the case of [web page caches](https://en.wikipedia.org/wiki/Web_cache), in most implementations there is no involvement of moving or copying, assuming the cached BLOB is small enough. When a request hits a newly added cache server, a [cache miss](https://en.wikipedia.org/wiki/Cache_(computing)#CACHE-MISS) happens and a request to the actual web server is made and the BLOB is cached locally for future requests. The redundant BLOBs on the previously used cache servers would be removed as per the cache eviction policies.
 
@@ -197,7 +198,7 @@ Although the process of moving BLOBs across cache servers in the cluster depends
 
 # Comparison with rendezvous hashing and other alternatives
 
-[Rendezvous hashing](https://en.wikipedia.org/wiki/Rendezvous_hashing), designed in 1996, is a simpler and more general technique, and permits fully distributed agreement on a set of `𝑘` options out of a possible set of `𝑛` options. [It can in fact be shown](https://en.wikipedia.org/wiki/Rendezvous_hashing#Comparison_with_Consistent_Hashing) that consistent hashing is a special case of rendezvous hashing. Because of its simplicity and generality, rendezvous hashing is now being used in place of Consistent Hashing in many applications.
+[Rendezvous hashing](https://en.wikipedia.org/wiki/Rendezvous_hashing), designed in 1996, is a simpler and more general technique, and permits fully distributed agreement on a set of $$k$$ options out of a possible set of $$n$$ options. [It can in fact be shown](https://en.wikipedia.org/wiki/Rendezvous_hashing#Comparison_with_Consistent_Hashing) that consistent hashing is a special case of rendezvous hashing. Because of its simplicity and generality, rendezvous hashing is now being used in place of Consistent Hashing in many applications.
 
 If key values will always increase [monotonically](https://en.wikipedia.org/wiki/Monotonic), an alternative approach using a [hash table with monotonic keys](https://en.wikipedia.org/wiki/Hash_table#Monotonic_keys) may be more suitable than consistent hashing.
 
@@ -313,28 +314,28 @@ The unordered associative containers `std::unordered_set`, `std::unordered_multi
 
 ## Ketama 割环法
 
-构建一个巨大的虚拟环形哈希空间（`0 ~ 2^32-1`）。每个物理节点会对应生成多个虚拟节点（通常是160个）均匀地分布在这个环上。当需要为一个数据键（Key）寻找存储节点时，计算该键的哈希值，然后在环上顺时针查找第一个虚拟节点，该虚拟节点所属的物理节点就是目标节点。
+构建一个巨大的虚拟环形哈希空间（$$0 \sim 2^{32}-1$$）。每个物理节点会对应生成多个虚拟节点（通常是160个）均匀地分布在这个环上。当需要为一个数据键（Key）寻找存储节点时，计算该键的哈希值，然后在环上顺时针查找第一个虚拟节点，该虚拟节点所属的物理节点就是目标节点。
 
 实现参考：https://github.com/RJ/ketama (C library for consistent hashing, and langauge bindings)
 
 * 核心机制：基于哈希环 + 虚拟节点
-* 查询速度：较慢（`O(log n)`）。需要在排序的虚拟节点环上进行二分查找来确定目标节点。
+* 查询速度：较慢（$$O(\log n)$$）。需要在排序的虚拟节点环上进行二分查找来确定目标节点。
 * 内存占用：较高。需要存储所有虚拟节点的信息（节点数 × 虚拟节点数），随着集群规模增大，内存开销会明显增长。
 * 均衡性 (负载分布)：非常优秀。通过配置大量虚拟节点（如每个物理节点160个），能非常均匀地将数据分散到所有物理节点上，有效避免热点。
-* 扩缩容影响 (扰动)：优秀。节点变化仅影响哈希环上该节点附近的数据，只波及约 `1/n` 的数据需要重新映射。
+* 扩缩容影响 (扰动)：优秀。节点变化仅影响哈希环上该节点附近的数据，只波及约 $$1/n$$ 的数据需要重新映射。
 * 实现复杂度：中等。算法概念清晰，社区资料丰富，易于理解和实现。
 
-> **最大优点**：节点变动时影响范围极小，仅波及约 `1/n` 的数据，且通过大量虚拟节点实现极佳的负载均衡，特别适合对缓存命中率要求苛刻的分布式缓存场景。
+> **最大优点**：节点变动时影响范围极小，仅波及约 $$1/n$$ 的数据，且通过大量虚拟节点实现极佳的负载均衡，特别适合对缓存命中率要求苛刻的分布式缓存场景。
 > **最大缺点**：内存开销与虚拟节点数线性相关，在大规模集群（数千节点）下，维护大量虚拟节点会消耗可观的内存，且查询延迟随虚拟节点数增加而上升。
 
 
 
 ## [Rendezvous Hashing (HRW)](https://en.wikipedia.org/wiki/Rendezvous_hashing)
 
-这个算法比较简单粗暴，没有什么构造环或者复杂的计算过程，它对于一个给定的 Key，对每个节点都通过哈希函数 `h()` 计算一个权重值 `wi,j = h(Keyi, Nodej)`，然后在所有的权重值中选择最大一个 `Max{wi,j}`。显而易见，算法挺简单，所需存储空间也很小，但算法的复杂度是 `O(n)`。
+这个算法比较简单粗暴，没有什么构造环或者复杂的计算过程，它对于一个给定的 Key，对每个节点都通过哈希函数 `h()` 计算一个权重值 $$w_{i,j} = h(\mathrm{Key}_i, \mathrm{Node}_j)$$，然后在所有的权重值中选择最大一个 $$\max\{w_{i,j}\}$$。显而易见，算法挺简单，所需存储空间也很小，但算法的复杂度是 $$O(n)$$。
 
 * 核心机制：基于最高随机权重。对于给定的 Key，分别计算它与每个后端节点的组合哈希值（如 `hash(key, node)`），选择产生最大哈希值的节点作为目标节点。
-* 查询速度：慢（`O(n)`）。需要遍历所有节点并计算权重，节点数量较多时性能成为瓶颈。
+* 查询速度：慢（$$O(n)$$）。需要遍历所有节点并计算权重，节点数量较多时性能成为瓶颈。
 * 内存占用：极低。无需存储任何额外数据结构，完全依靠实时计算。
 * 均衡性 (负载分布)：优秀。理论上基于概率分布，只要哈希函数质量好，数据分布非常均匀。
 * 扩缩容影响 (扰动)：优秀。节点变化仅影响那些最大权重值恰好落在变化节点上的 Key，数据迁移量最小化。
@@ -365,10 +366,10 @@ int32_t JumpConsistentHash(uint64_t key, int32_t num_buckets) {
 > Jump consistent hash 有一个比较明显的缺点，它只能在尾部增删节点，而不太好在中间增删。
 
 * 核心机制：基于随机跳跃。通过一个随机数生成器，让Key从一个虚拟位置开始“跳跃”，每次跳跃都有可能落入当前桶，直到它跳出桶的范围，最终落脚的桶即为目标桶。桶必须按连续整数编号（`0, 1, 2, ..., n-1`）。
-* 查询速度：快（`O(ln n)`）。循环次数少，且完全在寄存器内计算，效率极高。
+* 查询速度：快（$$O(\ln n)$$）。循环次数少，且完全在寄存器内计算，效率极高。
 * 内存占用：零。无需内存存储任何数据结构，仅有几行代码。
 * 均衡性 (负载分布)：极佳。论文证明其方差极小，近乎完美的均匀分布。
-* 扩缩容影响 (扰动)：优秀。采用“跳跃”机制，节点增减时只影响约 `1/n` 的数据重新映射。
+* 扩缩容影响 (扰动)：优秀。采用“跳跃”机制，节点增减时只影响约 $$1/n$$ 的数据重新映射。
 * 实现复杂度：低。核心代码仅约5行，实现非常简洁，但需要理解其随机跳跃的数学原理。
 
 > **最大优点**：计算效率极高且内存零占用，同时具备理论上完美的均匀分布，是内部数据分片（如数据库分库分表）中节点编号连续场景下的最佳选择。
@@ -388,10 +389,10 @@ Consistent hashing is used in distributed systems and networking applications to
 
 
 * 核心机制：基于有状态的替换表 + 跳跃。结合了Jump Consistent Hash的核心逻辑，但增加了一个轻量级数据结构（替换表），仅用于记录已失效的节点。查询时通过跳跃定位到一个虚拟桶，若该桶已失效，则通过替换表查找其当前有效的替代桶。
-* 查询速度：极快 (接近 O(1))。在最佳和平均情况下，查找速度非常接近无状态的Jump Consistent Hash，因为它主要在寄存器内计算，仅在遇到失效节点时才需访问内存中的替换表。
+* 查询速度：极快 (接近 $$O(1)$$)。在最佳和平均情况下，查找速度非常接近无状态的Jump Consistent Hash，因为它主要在寄存器内计算，仅在遇到失效节点时才需访问内存中的替换表。
 * 内存占用：极小。内存占用远小于AnchorHash和DxHash，因为它只需要维护一个包含已移除节点的替换表，而不是记录所有节点的状态。
 * 均衡性 (负载分布)：优秀。理论保证和实验结果表明其具有良好的负载均衡能力。
-* 扩缩容影响 (扰动)：优秀。继承了Jump Consistent Hash的低扰动特性，节点增减时仅影响约 1/n 的数据。同时，通过替换表机制，能够处理任意节点的随机故障，解决了JumpHash只能移除最后一个节点的限制。
+* 扩缩容影响 (扰动)：优秀。继承了Jump Consistent Hash的低扰动特性，节点增减时仅影响约 $$1/n$$ 的数据。同时，通过替换表机制，能够处理任意节点的随机故障，解决了JumpHash只能移除最后一个节点的限制。
 * 实现复杂度：中等。核心思想是向JumpHash添加一个最小的“记忆”层，设计精巧，但理解和实现替换表的维护逻辑需要一定成本。
 * **最大优点**：融合JumpHash性能与处理随机故障的能力。它既保留了JumpHash近乎完美的计算效率（速度极快、内存为零），又克服了其无法处理随机节点故障的致命缺陷，同时不像AnchorHash等算法那样需要预先固定集群的最大容量，支持无限扩展。
 * **最大缺点**：极端场景下性能衰减。其最坏情况发生在集群中超过70%的节点同时故障时，此时替换表查询频繁，导致查找性能下降。但在常规集群生命周期中，这种情况极为罕见。
@@ -430,20 +431,20 @@ Maglev hash 是 Google 于 2016 年发表的一篇[论文](https://static.google
 > 查找看上去很简单，问题是如何产生这个查找表。
 
 * 核心机制：基于查找表 + 顺序填充
-* 查询速度：极快（`O(1)`）。直接通过哈希值在预计算的查找表中索引，一步到位，非常适合性能敏感场景 。
+* 查询速度：极快（$$O(1)$$）。直接通过哈希值在预计算的查找表中索引，一步到位，非常适合性能敏感场景 。
 * 内存占用：可控。内存占用主要由查找表大小（如 65537 个条目）决定，与后端节点数量关系不大，更易预测。
 * 均衡性 (负载分布)：良好。在节点数量变化时，填充过程可能导致一些节点的条目数略有差异，出现轻微的分配不均，但通常可接受。
 * 扩缩容影响 (扰动)：良好。节点变化需要完全重建查找表，导致几乎全部数据的映射关系都可能发生变化。
 * 实现复杂度：较高。查找表的构建逻辑相对复杂，需要仔细处理以保证最终结果的确定性。
 
-> **最大优点**：查询速度达到极致（`O(1)`），仅需一次内存访问即可定位目标节点，非常适合需要每秒处理数百万个数据包的网络负载均衡器（如 Google 的 Maglev 系统）。
+> **最大优点**：查询速度达到极致（$$O(1)$$），仅需一次内存访问即可定位目标节点，非常适合需要每秒处理数百万个数据包的网络负载均衡器（如 Google 的 Maglev 系统）。
 > **最大缺点**：节点变更时引发全局重映射，所有数据都可能需要迁移，对于缓存类系统极易导致缓存雪崩，因此仅适合低频变更或可接受短暂流量冲击的场景。
 
 ### 算法原理
 
 Maglev hash 的核心创新在于**查找表的构建算法**，它采用一种**贪心 + 轮询**的填充策略，保证每个节点在表中占有的位置数量尽可能均衡。具体步骤如下：
 
-1. **Permutation（排列）**：对每个节点 i，计算两个哈希值 `skip(i)` 和 `offset(i)`，然后生成一个长度为 M 的 permutation `P_i`，其中 `P_i[j] = (offset(i) + j * skip(i)) mod M`。这为每个节点创造了一个独特的"轮询顺序"。
+1. **Permutation（排列）**：对每个节点 i，计算两个哈希值 `skip(i)` 和 `offset(i)`，然后生成一个长度为 M 的 permutation `P_i`，其中 $$P_i[j] = (\mathrm{offset}(i) + j \cdot \mathrm{skip}(i)) \bmod M$$。这为每个节点创造了一个独特的"轮询顺序"。
 
 2. **查找表初始化**：创建一个长度为 M 的空列表 `T`，所有位置初始为 -1（表示空闲）。
 
@@ -452,7 +453,7 @@ Maglev hash 的核心创新在于**查找表的构建算法**，它采用一种*
    - 如果为空，将节点 i 填入该位置，并 `next[i]++`
    - 如果不空，则 `next[i]++` 继续尝试 permutation 中的下一个位置
 
-4. **查询**：给定一个 Key，计算 `h = hash(Key) mod M`，直接返回 `T[h]` 即为目标节点。O(1) 查询就是从这里来的——只需一次取模运算和一次内存访问。
+4. **查询**：给定一个 Key，计算 $$h = \mathrm{hash}(\mathrm{Key}) \bmod M$$，直接返回 `T[h]` 即为目标节点。$$O(1)$$ 查询就是从这里来的——只需一次取模运算和一次内存访问。
 
 
 ### 算法示例
@@ -462,10 +463,10 @@ Maglev hash 的核心创新在于**查找表的构建算法**，它采用一种*
 
 **Step 1：生成 Permutation**
 
-根据前面的公式 `P_i[j] = (offset(i) + j * skip(i)) mod M`，假设两个节点的 permutation 如下：
+根据前面的公式 $$P_i[j] = (\mathrm{offset}(i) + j \cdot \mathrm{skip}(i)) \bmod M$$，假设两个节点的 permutation 如下：
 
-- A 的 permutation：`P_A = [3, 0, 4, 1, 6, 2, 5]`
-- B 的 permutation：`P_B = [1, 5, 2, 0, 6, 3, 4]`
+- A 的 permutation：$$P_A = [3, 0, 4, 1, 6, 2, 5]$$
+- B 的 permutation：$$P_B = [1, 5, 2, 0, 6, 3, 4]$$
 
 也就是说：
 - A 依次希望占据位置 **3 → 0 → 4 → 1 → 6 → 2 → 5**
@@ -562,27 +563,27 @@ B: 3个位置（1, 2, 5）
 
 填表完成之后，查询就极其简单了：
 
-- 要查 Key 1：`hash(Key1) mod 7 = 3` → 查 T[3] = **A**
-- 要查 Key 2：`hash(Key2) mod 7 = 5` → 查 T[5] = **B**
+- 要查 Key 1：$$\mathrm{hash}(\mathrm{Key}_1) \bmod 7 = 3$$ → 查 T[3] = **A**
+- 要查 Key 2：$$\mathrm{hash}(\mathrm{Key}_2) \bmod 7 = 5$$ → 查 T[5] = **B**
 
-整个查询过程只有一次取模和一次内存访问，时间复杂度 O(1)。
+整个查询过程只有一次取模和一次内存访问，时间复杂度 $$O(1)$$。
 
 
 ### 查找表大小 M 的选取
 
-65537 不是随便选的，它是一个 **Mersenne 素数**（即 `2^16 + 1`）。选择它的原因主要有三点：
+65537 不是随便选的，它是一个 **Mersenne 素数**（即 $$2^{16}+1$$）。选择它的原因主要有三点：
 
 **1. 素数保证 permutation 是完整排列**
 
-Permutation 的生成公式是 `P_i[j] = (offset(i) + j * skip(i)) mod M`。当 M 为素数且 `skip(i)` 与 M 互质时（通常取奇数 skip 基本就互质了），这个公式会生成一个 **0 到 M-1 的完整排列**——每个位置在 permutation 中恰好出现一次，不重不漏。换句话说，每个节点"理论上想填的位置"覆盖了全部 M 个槽位，没有任何遗漏。这是从数学上保证**存在**一个填满所有空位的方案。
+Permutation 的生成公式是 $$P_i[j] = (\mathrm{offset}(i) + j \cdot \mathrm{skip}(i)) \bmod M$$。当 M 为素数且 `skip(i)` 与 M 互质时（通常取奇数 skip 基本就互质了），这个公式会生成一个 **0 到 M-1 的完整排列**——每个位置在 permutation 中恰好出现一次，不重不漏。换句话说，每个节点"理论上想填的位置"覆盖了全部 M 个槽位，没有任何遗漏。这是从数学上保证**存在**一个填满所有空位的方案。
 
 **2. 贪心填充一定能成功填满**
 
 虽然 permutation 覆盖全部 M 位置，但多个节点的 permutation 会冲突——大家都想要同一个槽位。贪心算法的巧妙之处在于：**只要每个节点的 permutation 是完整排列，贪心就一定能填满所有 M 个槽位**。每轮中如果某个节点的目标槽位被占，它就顺移到 permutation 的下一个位置。由于 permutation 覆盖所有 M 位置，每个节点最终都能找到属于自己的那 M 个槽位之一，不会出现某个节点"无位置可填"的情况。
 
-**3. `2^16 + 1` 让模运算极快**
+**3. $$2^{16}+1$$ 让模运算极快**
 
-这是另一个关键原因。`65537 = 2^16 + 1`，模 `2^16 + 1` 的除法可以用移位和条件减法优化，不需要昂贵的除法指令，查询极快。实际代码中也有保护措施：如果填充轮数超过某个阈值还没填满，就放弃重建或调整 skip 值重新来。
+这是另一个关键原因。$$65537 = 2^{16}+1$$，模 $$2^{16}+1$$ 的除法可以用移位和条件减法优化，不需要昂贵的除法指令，查询极快。实际代码中也有保护措施：如果填充轮数超过某个阈值还没填满，就放弃重建或调整 skip 值重新来。
 
 **4. 工程上的权衡**
 
@@ -594,7 +595,7 @@ M 越大，每个节点在表中的条目越多，负载分布越均匀，但内
 > 注意：原始的算法是每轮遍历所有节点，看它们"下次想填的位置"是否空闲。**对节点进行排序后再分配位置并不能减少扰动，但是可以保证最终分配的位置是一致的**。因为 permutation 序列是由节点本身的哈希值（`skip` 和 `offset`）决定的，与处理顺序无关。排序节点的价值在于让重建过程具有**确定性**——同样的节点集合无论何时重建，都会得到完全相同的查找表，这使得节点移除后重新加入时 Key 的映射可能恢复原状。
 
 
-Maglev 算法的核心取舍是用全量重建换 O(1) 查询，扰动问题（节点变化时近乎全量重映射）是其设计上的固有代价。学术界和工程界确实提出了一些改进方向：
+Maglev 算法的核心取舍是用全量重建换 $$O(1)$$ 查询，扰动问题（节点变化时近乎全量重映射）是其设计上的固有代价。学术界和工程界确实提出了一些改进方向：
 
 1. **Multi-Maglev（Google 自身改进）**
 
@@ -610,7 +611,7 @@ Maglev 算法的核心取舍是用全量重建换 O(1) 查询，扰动问题（�
 
 4. **查找表大小 M 的选择**
 
-   M 的取值直接影响扰动的粒度。M 越大，每个节点在表中的条目越多，节点变化时单个节点的离开对整体分布的影响越分散。但 M 越大也意味着内存占用越高、填充时间越长。论文推荐的 65537 是一个经过权衡的值，但针对具体场景调大 M（比如 2^20）可以在一定程度上缓解扰动的剧烈程度。
+   M 的取值直接影响扰动的粒度。M 越大，每个节点在表中的条目越多，节点变化时单个节点的离开对整体分布的影响越分散。但 M 越大也意味着内存占用越高、填充时间越长。论文推荐的 65537 是一个经过权衡的值，但针对具体场景调大 M（比如 $$2^{20}$$）可以在一定程度上缓解扰动的剧烈程度。
 
 5. **确定性重建（幂等性）**
 
@@ -642,7 +643,7 @@ MurmurHash 本身不是一致性哈希算法，而是一个通用的非加密哈
 
 
 * 核心机制：非加密哈希函数。将任意长度的输入快速计算出一个均匀分布、随机性强的哈希值（如32位或128位整数）。它不是一致性哈希算法，但常作为其他一致性哈希算法的核心计算组件。
-* 查询速度：极快（O(k)，k为输入长度）。比SHA等加密哈希函数快数十倍，设计目标即追求高性能。
+* 查询速度：极快（$$O(k)$$，k为输入长度）。比SHA等加密哈希函数快数十倍，设计目标即追求高性能。
 * 内存占用：零。无状态的计算函数，不占用内存。
 * 均衡性 (负载分布)：优秀。设计目标即为输出均匀分布，碰撞率低，能满足大多数哈希需求。
 * 扩缩容影响 (扰动)：不适用。MurmurHash本身不提供映射稳定性，它只负责计算哈希值，不涉及节点映射逻辑。
@@ -662,12 +663,12 @@ MurmurHash 本身不是一致性哈希算法，而是一个通用的非加密哈
 
 | **算法** | **核心机制** | **查询速度** | **内存占用** | **均衡性 (负载分布)** | **扩缩容影响 (扰动)** | **实现复杂度** | **最大缺点** | **最大优点** |
 |------|----------|----------|----------|--------------------|--------------------|------------|----------|----------|
-| Ketama | 基于哈希环 + 虚拟节点。构建一个虚拟的环形哈希空间，每个物理节点对应多个虚拟节点均匀分布在环上。对于给定的Key，计算其哈希值，在环上顺时针查找第一个虚拟节点，该虚拟节点所属的物理节点即为目标节点。 | 较慢（`O(log vn)`）。需要在排序的虚拟节点环上进行二分查找，其中`vn`为虚拟节点总数。 | 较高。需要存储所有虚拟节点的位置信息，内存开销与（物理节点数 × 虚拟节点数）成正比。 | 非常优秀。通过配置大量虚拟节点（如每个物理节点160个），能实现非常均匀的数据分布，有效避免热点。 | 优秀。节点变化仅影响哈希环上该节点附近的数据，只需重新映射约 1/n 的数据（n为节点总数）。 | 中等。算法概念清晰，社区资料丰富，易于理解和实现。 | 内存开销与虚拟节点数线性相关，在大规模集群（数千节点）下，维护大量虚拟节点会消耗可观的内存，且查询延迟随虚拟节点数增加而上升。 | 节点变动时影响范围极小，仅波及约1/n的数据，且通过大量虚拟节点实现极佳的负载均衡，特别适合对缓存命中率要求苛刻的分布式缓存场景。 |
-| Maglev | 基于查找表 + 顺序填充。预先为每个后端节点生成一个“偏好位置”列表，然后通过一个全局的、确定性的填充过程，将每个节点分配到固定大小的查找表的某个条目上。 | 极快（`O(1)`）。直接通过哈希值在预计算的查找表中索引，一步到位，非常适合性能敏感场景。 | 可控。内存占用主要由查找表大小（如 65537 个条目）决定，与后端节点数量关系不大，更易预测。 | 良好。在节点数量变化时，填充过程可能导致一些节点的条目数略有差异，出现轻微的分配不均，但通常可接受。 | 较差。节点变化需要完全重建查找表，导致几乎全部数据的映射关系都可能发生变化。 | 较高。查找表的构建逻辑相对复杂，需要仔细处理以保证最终结果的确定性。 | 节点变更时引发全局重映射，所有数据都可能需要迁移，对于缓存类系统极易导致缓存雪崩，因此仅适合低频变更或可接受短暂流量冲击的场景。 | 查询速度达到极致（O(1)），仅需一次内存访问即可定位目标节点，非常适合需要每秒处理数百万个数据包的网络负载均衡器（如Google的Maglev系统）。 |
-| Rendezvous Hashing | 基于最高随机权重。对于给定的Key，分别计算它与每个后端节点的组合哈希值（如 `hash(key, node)`），选择产生最大哈希值的节点作为目标节点。 | 慢（`O(n)`）。需要遍历所有节点并计算权重，节点数量较多时性能成为瓶颈。 | 极低。无需存储任何额外数据结构，完全依靠实时计算。 | 优秀。理论上基于概率分布，只要哈希函数质量好，数据分布非常均匀。 | 优秀。节点变化仅影响那些最大权重值恰好落在变化节点上的Key，数据迁移量最小化。 | 低。算法逻辑简单直观，易于实现，无需复杂的数据结构维护。 | 查询时间复杂度与节点数线性相关，当集群规模超过几百个节点时，每次请求的计算开销急剧增大，难以支撑高并发场景。 | 无需任何数据结构，内存占用为零，且节点变动时数据迁移量达到理论最小值（仅影响落在变化节点上的Key），实现极其简单，非常适合节点数量有限且对内存敏感的场景。 |
-| Jump Consistent Hash | 基于随机跳跃。通过一个随机数生成器，让Key从一个虚拟位置开始“跳跃”，每次跳跃都有可能落入当前桶，直到它跳出桶的范围，最终落脚的桶即为目标桶。桶必须按连续整数编号（0, 1, 2, ..., n-1）。 | 快（`O(ln n)`）。循环次数少，且完全在寄存器内计算，效率极高。 | 零。无需内存存储任何数据结构，仅有几行代码。 | 极佳。论文证明其方差极小，近乎完美的均匀分布。 | 优秀。采用“跳跃”机制，节点增减时只影响约 1/n 的数据重新映射。 | 低。核心代码仅约5行，实现非常简洁，但需要理解其随机跳跃的数学原理。 | 节点必须为连续的整数编号，无法支持任意命名的节点（如IP地址），也无法为不同节点设置权重，灵活性严重受限。 | 计算效率极高且内存零占用，同时具备理论上完美的均匀分布，是内部数据分片（如数据库分库分表）中节点编号连续场景下的最佳选择。 |
-| MementoHash | 基于有状态的替换表 + 跳跃。结合了Jump Consistent Hash的核心逻辑，但增加了一个轻量级数据结构（替换表），仅用于记录已失效的节点。查询时通过跳跃定位到一个虚拟桶，若该桶已失效，则通过替换表查找其当前有效的替代桶。 | 极快 (接近 O(1))。在最佳和平均情况下，查找速度非常接近无状态的Jump Consistent Hash，因为它主要在寄存器内计算，仅在遇到失效节点时才需访问内存中的替换表。 | 极小。内存占用远小于AnchorHash和DxHash，因为它只需要维护一个包含已移除节点的替换表，而不是记录所有节点的状态。 | 优秀。理论保证和实验结果表明其具有良好的负载均衡能力。 | 优秀。继承了Jump Consistent Hash的低扰动特性，节点增减时仅影响约 1/n 的数据。同时，通过替换表机制，能够处理任意节点的随机故障，解决了JumpHash只能移除最后一个节点的限制。 | 中等。核心思想是向JumpHash添加一个最小的“记忆”层，设计精巧，但理解和实现替换表的维护逻辑需要一定成本。 | 极端场景下性能衰减。其最坏情况发生在集群中超过70%的节点同时故障时，此时替换表查询频繁，导致查找性能下降。但在常规集群生命周期中，这种情况极为罕见。 | 融合JumpHash性能与处理随机故障的能力。它既保留了JumpHash近乎完美的计算效率（速度极快、内存为零），又克服了其无法处理随机节点故障的致命缺陷，同时不像AnchorHash等算法那样需要预先固定集群的最大容量，支持无限扩展。 |
-| MurmurHash | 非加密哈希函数。将任意长度的输入快速计算出一个均匀分布、随机性强的哈希值（如32位或128位整数）。它不是一致性哈希算法，但常作为其他一致性哈希算法的核心计算组件。 | 极快（`O(k)`，k为输入长度）。比SHA等加密哈希函数快数十倍，设计目标即追求高性能。 | 零。无状态的计算函数，不占用内存。 | 优秀。设计目标即为输出均匀分布，碰撞率低，能满足大多数哈希需求。 | 不适用。MurmurHash本身不提供映射稳定性，它只负责计算哈希值，不涉及节点映射逻辑。 | 低。有大量成熟的现成库可用，只需调用函数即可，无需自行实现。 | 作为非加密哈希，易受HashDoS攻击（恶意构造大量碰撞的输入），且单独使用时无法实现一致性哈希所需的单调性（节点变化时无法最小化重映射）。 | 作为非加密哈希，速度极快且分布均匀，碰撞率低，是Ketama、Rendezvous等一致性哈希算法理想的底层哈希函数，广泛应用于各类高性能哈希场景。 |
+| Ketama | 基于哈希环 + 虚拟节点。构建一个虚拟的环形哈希空间，每个物理节点对应多个虚拟节点均匀分布在环上。对于给定的Key，计算其哈希值，在环上顺时针查找第一个虚拟节点，该虚拟节点所属的物理节点即为目标节点。 | 较慢（$$O(\log vn)$$）。需要在排序的虚拟节点环上进行二分查找，其中 $$vn$$ 为虚拟节点总数。 | 较高。需要存储所有虚拟节点的位置信息，内存开销与（物理节点数 × 虚拟节点数）成正比。 | 非常优秀。通过配置大量虚拟节点（如每个物理节点160个），能实现非常均匀的数据分布，有效避免热点。 | 优秀。节点变化仅影响哈希环上该节点附近的数据，只需重新映射约 $$1/n$$ 的数据（n为节点总数）。 | 中等。算法概念清晰，社区资料丰富，易于理解和实现。 | 内存开销与虚拟节点数线性相关，在大规模集群（数千节点）下，维护大量虚拟节点会消耗可观的内存，且查询延迟随虚拟节点数增加而上升。 | 节点变动时影响范围极小，仅波及约 $$1/n$$ 的数据，且通过大量虚拟节点实现极佳的负载均衡，特别适合对缓存命中率要求苛刻的分布式缓存场景。 |
+| Maglev | 基于查找表 + 顺序填充。预先为每个后端节点生成一个“偏好位置”列表，然后通过一个全局的、确定性的填充过程，将每个节点分配到固定大小的查找表的某个条目上。 | 极快（$$O(1)$$）。直接通过哈希值在预计算的查找表中索引，一步到位，非常适合性能敏感场景。 | 可控。内存占用主要由查找表大小（如 65537 个条目）决定，与后端节点数量关系不大，更易预测。 | 良好。在节点数量变化时，填充过程可能导致一些节点的条目数略有差异，出现轻微的分配不均，但通常可接受。 | 较差。节点变化需要完全重建查找表，导致几乎全部数据的映射关系都可能发生变化。 | 较高。查找表的构建逻辑相对复杂，需要仔细处理以保证最终结果的确定性。 | 节点变更时引发全局重映射，所有数据都可能需要迁移，对于缓存类系统极易导致缓存雪崩，因此仅适合低频变更或可接受短暂流量冲击的场景。 | 查询速度达到极致（$$O(1)$$），仅需一次内存访问即可定位目标节点，非常适合需要每秒处理数百万个数据包的网络负载均衡器（如Google的Maglev系统）。 |
+| Rendezvous Hashing | 基于最高随机权重。对于给定的Key，分别计算它与每个后端节点的组合哈希值（如 `hash(key, node)`），选择产生最大哈希值的节点作为目标节点。 | 慢（$$O(n)$$）。需要遍历所有节点并计算权重，节点数量较多时性能成为瓶颈。 | 极低。无需存储任何额外数据结构，完全依靠实时计算。 | 优秀。理论上基于概率分布，只要哈希函数质量好，数据分布非常均匀。 | 优秀。节点变化仅影响那些最大权重值恰好落在变化节点上的Key，数据迁移量最小化。 | 低。算法逻辑简单直观，易于实现，无需复杂的数据结构维护。 | 查询时间复杂度与节点数线性相关，当集群规模超过几百个节点时，每次请求的计算开销急剧增大，难以支撑高并发场景。 | 无需任何数据结构，内存占用为零，且节点变动时数据迁移量达到理论最小值（仅影响落在变化节点上的Key），实现极其简单，非常适合节点数量有限且对内存敏感的场景。 |
+| Jump Consistent Hash | 基于随机跳跃。通过一个随机数生成器，让Key从一个虚拟位置开始“跳跃”，每次跳跃都有可能落入当前桶，直到它跳出桶的范围，最终落脚的桶即为目标桶。桶必须按连续整数编号（0, 1, 2, ..., n-1）。 | 快（$$O(\ln n)$$）。循环次数少，且完全在寄存器内计算，效率极高。 | 零。无需内存存储任何数据结构，仅有几行代码。 | 极佳。论文证明其方差极小，近乎完美的均匀分布。 | 优秀。采用“跳跃”机制，节点增减时只影响约 $$1/n$$ 的数据重新映射。 | 低。核心代码仅约5行，实现非常简洁，但需要理解其随机跳跃的数学原理。 | 节点必须为连续的整数编号，无法支持任意命名的节点（如IP地址），也无法为不同节点设置权重，灵活性严重受限。 | 计算效率极高且内存零占用，同时具备理论上完美的均匀分布，是内部数据分片（如数据库分库分表）中节点编号连续场景下的最佳选择。 |
+| MementoHash | 基于有状态的替换表 + 跳跃。结合了Jump Consistent Hash的核心逻辑，但增加了一个轻量级数据结构（替换表），仅用于记录已失效的节点。查询时通过跳跃定位到一个虚拟桶，若该桶已失效，则通过替换表查找其当前有效的替代桶。 | 极快 (接近 $$O(1)$$)。在最佳和平均情况下，查找速度非常接近无状态的Jump Consistent Hash，因为它主要在寄存器内计算，仅在遇到失效节点时才需访问内存中的替换表。 | 极小。内存占用远小于AnchorHash和DxHash，因为它只需要维护一个包含已移除节点的替换表，而不是记录所有节点的状态。 | 优秀。理论保证和实验结果表明其具有良好的负载均衡能力。 | 优秀。继承了Jump Consistent Hash的低扰动特性，节点增减时仅影响约 $$1/n$$ 的数据。同时，通过替换表机制，能够处理任意节点的随机故障，解决了JumpHash只能移除最后一个节点的限制。 | 中等。核心思想是向JumpHash添加一个最小的“记忆”层，设计精巧，但理解和实现替换表的维护逻辑需要一定成本。 | 极端场景下性能衰减。其最坏情况发生在集群中超过70%的节点同时故障时，此时替换表查询频繁，导致查找性能下降。但在常规集群生命周期中，这种情况极为罕见。 | 融合JumpHash性能与处理随机故障的能力。它既保留了JumpHash近乎完美的计算效率（速度极快、内存为零），又克服了其无法处理随机节点故障的致命缺陷，同时不像AnchorHash等算法那样需要预先固定集群的最大容量，支持无限扩展。 |
+| MurmurHash | 非加密哈希函数。将任意长度的输入快速计算出一个均匀分布、随机性强的哈希值（如32位或128位整数）。它不是一致性哈希算法，但常作为其他一致性哈希算法的核心计算组件。 | 极快（$$O(k)$$，k为输入长度）。比SHA等加密哈希函数快数十倍，设计目标即追求高性能。 | 零。无状态的计算函数，不占用内存。 | 优秀。设计目标即为输出均匀分布，碰撞率低，能满足大多数哈希需求。 | 不适用。MurmurHash本身不提供映射稳定性，它只负责计算哈希值，不涉及节点映射逻辑。 | 低。有大量成熟的现成库可用，只需调用函数即可，无需自行实现。 | 作为非加密哈希，易受HashDoS攻击（恶意构造大量碰撞的输入），且单独使用时无法实现一致性哈希所需的单调性（节点变化时无法最小化重映射）。 | 作为非加密哈希，速度极快且分布均匀，碰撞率低，是Ketama、Rendezvous等一致性哈希算法理想的底层哈希函数，广泛应用于各类高性能哈希场景。 |
 {: .table-cards }
 
 

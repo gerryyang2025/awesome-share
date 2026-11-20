@@ -2,11 +2,13 @@
 layout: post
 title:  "Prometheus in Action"
 date:   2023-1-30 20:00:00 +0800
+last_modified_at: 2026-11-20 10:55:12 +0800
 categories: 云原生
 tags:
   - Prometheus
   - 云原生
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -98,7 +100,7 @@ The features that distinguish Prometheus from other metrics and monitoring syste
 * `Metric`: 采集目标暴露的、可以完整反映监控对象运行或者业务状态的一系列标签化数据。
 * `Label`: 描述指标的一组 Key-Value 值。
 * `Series`: 时间序列（时间线），由指标名（Metric）和标签（Label）组成。相同的指标名和标签在时间序列中构成唯一的一条时间线。
-* Series 上限: 指标个数上限，Series 上限= (单个指标 × 该指标的维度组合) × 指标个数。
+* Series 上限: 指标个数上限，Series 上限 $$= (\text{单个指标} \times \text{该指标的维度组合}) \times \text{指标个数}$$。
 * `Remote Write`: 支持作为远程数据库存储 Prometheus 监控服务的数据。可以使用 Remote Write 地址，将自建 Prometheus 的监控数据存储到 Prometheus 监控服务的实例中，实现远程存储，并可视化展示在同一 Grafana。
 * 预聚合: 对一些常用的指标或者计算相对复杂的指标进行提前计算，然后将这些数据存储到新的数据指标中，提前计算好的指标查询速度更快，可以解决用户配置以及查询慢的问题。
 

@@ -2,11 +2,13 @@
 layout: post
 title:  "Kernel TLS in Action"
 date:   2025-05-25 20:00:00 +0800
+last_modified_at: 2026-11-20 10:55:12 +0800
 categories: [Linux Performance]
 tags:
   - Kernel TLS
   - Linux Performance
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -76,7 +78,7 @@ send(sock, msg, strlen(msg));
 
 `send()` data is directly encrypted from the userspace buffer provided to the encrypted kernel send buffer if possible.
 
-The `sendfile` system call will send the file’s data over TLS records of maximum length (`2^14`).
+The `sendfile` system call will send the file’s data over TLS records of maximum length ($$2^{14}$$).
 
 ```c
 file = open(filename, O_RDONLY);

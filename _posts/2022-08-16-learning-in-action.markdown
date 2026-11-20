@@ -2,10 +2,12 @@
 layout: post
 title:  "知识拼图：收集碎片，拼凑我的世界真相"
 date:   2022-08-16 20:30:00 +0800
+last_modified_at: 2026-11-20 10:55:12 +0800
 categories: 杂记
 tags:
   - 杂记
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -452,7 +454,7 @@ AIGC（AI-Generated Content）可以自动生成各种文本内容，如文章�
         - 对 MySQL 索引不利，如果作为数据库主键，在 InnoDB 引擎下，UUID 的无序性可能会引起数据位置频繁变动，严重影响性能
     + 到目前为止业界一共有 5 种方式生成 UUID，详情见 IETF 发布的 UUID 规范 [A Universally Unique IDentifier (UUID) URN Namespace](http://www.ietf.org/rfc/rfc4122.txt)
 3. Twitter 的 snowflake 算法
-    + snowflake 是 Twitter 开源的分布式ID生成算法，结果是一个long型的ID。其核心思想是：使用41bit作为毫秒数，10bit作为机器的ID（5个bit是数据中心，5个bit的机器ID），12bit作为毫秒内的流水号（意味着每个节点在每毫秒可以产生 4096 个 ID），最后还有一个符号位，永远是0。具体实现可[参考代码](https://github.com/twitter/snowflake)。雪花算法支持的TPS可以达到419万左右（2^22*1000）
+    + snowflake 是 Twitter 开源的分布式ID生成算法，结果是一个long型的ID。其核心思想是：使用41bit作为毫秒数，10bit作为机器的ID（5个bit是数据中心，5个bit的机器ID），12bit作为毫秒内的流水号（意味着每个节点在每毫秒可以产生 4096 个 ID），最后还有一个符号位，永远是0。具体实现可[参考代码](https://github.com/twitter/snowflake)。雪花算法支持的 TPS 可以达到 419 万左右（$$2^{22} \times 1000$$）
     + 雪花算法在工程实现上有单机版本和分布式版本。分布式版本可以参看[美团leaf算法](https://github.com/Meituan-Dianping/Leaf)
 4. Redis生成ID。可以用 Redis 的原子操作 INCR 和 INCRBY 来实现
 5. 利用 Zookeeper 生成唯一ID。主要通过其 znode 数据版本来生成序列号，可以生成32位和64位的数据版本号，客户端可以使用这个版本号来作为唯一的序列号

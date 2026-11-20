@@ -2,11 +2,12 @@
 layout: post
 title:  "ETCD in Action"
 date:   2023-09-09 09:00:00 +0800
-last_modified_at: 2026-06-25 20:35:07 +0800
+last_modified_at: 2026-11-20 10:55:12 +0800
 categories: ETCD
 tags:
   - ETCD
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -17,7 +18,7 @@ tags:
 
 **桌上有十个苹果，要把这十个苹果放到九个抽屉里，无论怎样放，我们会发现至少会有一个抽屉里面放不少于两个苹果。这一现象就是我们所说的“抽屉原理”**。
 
-**抽屉原理的一般含义**为：“如果每个抽屉代表一个集合，每一个苹果就可以代表一个元素，假如有 `n+1` 个元素放到 `n` 个集合中去，其中必定有一个集合里至少有两个元素。”
+**抽屉原理的一般含义**为：“如果每个抽屉代表一个集合，每一个苹果就可以代表一个元素，假如有 $$n+1$$ 个元素放到 $$n$$ 个集合中去，其中必定有一个集合里至少有两个元素。”
 
 抽屉原理有时也被称为**鸽巢原理**。它是**组合数学中一个重要的原理**。
 
@@ -897,7 +898,7 @@ Role admin is granted to user alice
 ```
 
 
-* 然后当你再次使用 etcdctl 执行 put hello 命令时，鉴权模块会从 boltdb 查询 alice 用户对应的权限列表。因为有可能一个用户拥有成百上千个权限列表，etcd 为了提升权限检查的性能，引入了**区间树**，检查用户操作的 key 是否在已授权的区间，时间复杂度仅为 `O(logN)`。
+* 然后当你再次使用 etcdctl 执行 put hello 命令时，鉴权模块会从 boltdb 查询 alice 用户对应的权限列表。因为有可能一个用户拥有成百上千个权限列表，etcd 为了提升权限检查的性能，引入了**区间树**，检查用户操作的 key 是否在已授权的区间，时间复杂度仅为 $$O(\log N)$$。
 
 * 在这个案例中，很明显 hello 在 admin 角色可读写的 `[hello，helly)` 数据范围内，因此它有权限更新 key hello，执行成功。你也可以尝试更新 key hey，因为此 key 未在鉴权的数据区间内，因此 etcd server 会返回 "etcdserver: permission denied" 错误给 client，如下所示。
 
@@ -1052,9 +1053,9 @@ $ etcdctl get node -w=json | python -m json.tool
 ![etcd32](/assets/images/202501/etcd32.png)
 
 * 从图中可以看到，**目前 etcd 是基于最小堆来管理 Lease，实现快速淘汰过期的 Lease**。
-  + etcd 早期的时候，淘汰 Lease 非常暴力。etcd 会直接遍历所有 Lease，逐个检查 Lease 是否过期，过期则从 Lease 关联的 key 集合中，取出 key 列表，删除它们，时间复杂度是 `O(N)`。然而这种方案随着 Lease 数增大，毫无疑问它的性能会变得越来越差。**我们能否按过期时间排序呢？这样每次只需轮询、检查排在前面的 Lease 过期时间，一旦轮询到未过期的 Lease， 则可结束本轮检查**。
+  + etcd 早期的时候，淘汰 Lease 非常暴力。etcd 会直接遍历所有 Lease，逐个检查 Lease 是否过期，过期则从 Lease 关联的 key 集合中，取出 key 列表，删除它们，时间复杂度是 $$O(N)$$。然而这种方案随着 Lease 数增大，毫无疑问它的性能会变得越来越差。**我们能否按过期时间排序呢？这样每次只需轮询、检查排在前面的 Lease 过期时间，一旦轮询到未过期的 Lease， 则可结束本轮检查**。
   + 刚刚说的就是 **etcd Lease 高效淘汰方案最小堆的实现方法**。每次新增 Lease、续期的时候，它会插入、更新一个对象到最小堆中，对象含有 LeaseID 和其到期时间 unixnano，对象之间按到期时间升序排序。etcd Lessor 主循环每隔 `500ms` 执行一次撤销 Lease 检查（RevokeExpiredLease），每次轮询堆顶的元素，若已过期则加入到待淘汰列表，直到堆顶的 Lease 过期时间大于当前，则结束本轮轮询。
-  + 相比早期 `O(N)` 的遍历时间复杂度，使用堆后，插入、更新、删除，它的时间复杂度是 `O(LogN)`，查询堆顶对象是否过期时间复杂度仅为 `O(1)`，性能大大提升，可支撑大规模场景下 Lease 的高效淘汰。
+  + 相比早期 $$O(N)$$ 的遍历时间复杂度，使用堆后，插入、更新、删除，它的时间复杂度是 $$O(\log N)$$，查询堆顶对象是否过期时间复杂度仅为 $$O(1)$$，性能大大提升，可支撑大规模场景下 Lease 的高效淘汰。
 
 * 获取到待过期的 LeaseID 后，Leader 是如何通知其他 Follower 节点淘汰它们呢？
   + Lessor 模块会将已确认过期的 LeaseID，保存在一个名为 expiredC 的 channel 中，而 etcd server 的主循环会定期从 channel 中获取 LeaseID，发起 revoke 请求，通过 Raft Log 传递给 Follower 节点。
@@ -1558,7 +1559,7 @@ type EventHistory struct {
 
 ### 高效的事件匹配
 
-* 如果你创建了上万个 watcher 监听 key 变化，当 server 端收到一个写请求后，etcd 是如何根据变化的 key 快速找到监听它的 watcher 呢？一个个遍历 watcher 吗？显然一个个遍历 watcher 是最简单的方法，但是它的时间复杂度是 `O(N)`，在 watcher 数较多的场景下，会导致性能出现瓶颈。更何况 etcd 是在执行一个写事务结束时，同步触发事件通知流程的，若匹配 watcher 开销较大，将严重影响 etcd 性能。那使用什么数据结构来快速查找哪些 watcher 监听了一个事件中的 key 呢？
+* 如果你创建了上万个 watcher 监听 key 变化，当 server 端收到一个写请求后，etcd 是如何根据变化的 key 快速找到监听它的 watcher 呢？一个个遍历 watcher 吗？显然一个个遍历 watcher 是最简单的方法，但是它的时间复杂度是 $$O(N)$$，在 watcher 数较多的场景下，会导致性能出现瓶颈。更何况 etcd 是在执行一个写事务结束时，同步触发事件通知流程的，若匹配 watcher 开销较大，将严重影响 etcd 性能。那使用什么数据结构来快速查找哪些 watcher 监听了一个事件中的 key 呢？
 
 * 也许你会说使用 map 记录下哪些 watcher 监听了什么 key 不就可以了吗？ etcd 的确使用 map 记录了监听单个 key 的 watcher，但是你要注意的是 Watch 特性不仅仅可以监听单 key，它还可以指定监听 key 范围、key 前缀，因此 etcd 还使用了如下的**区间树**。
 
@@ -1568,7 +1569,7 @@ type EventHistory struct {
 
 * 当产生一个事件时，etcd 首先需要从 map 查找是否有 watcher 监听了单 key，其次它还需要从区间树找出与此 key 相交的所有区间，然后从区间的值获取监听的 watcher 集合。
 
-* **区间树**支持快速查找一个 key 是否在某个区间内，时间复杂度 `O(LogN)`，**因此 etcd 基于 map 和区间树实现了 watcher 与事件快速匹配，具备良好的扩展性**。
+* **区间树**支持快速查找一个 key 是否在某个区间内，时间复杂度 $$O(\log N)$$，**因此 etcd 基于 map 和区间树实现了 watcher 与事件快速匹配，具备良好的扩展性**。
 
 
 ## 事务：如何安全地实现多 key 操作

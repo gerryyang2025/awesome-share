@@ -2,10 +2,12 @@
 layout: post
 title:  "Protocol Buffers in Action"
 date:   2021-04-05 20:00:00 +0800
+last_modified_at: 2026-11-20 10:55:12 +0800
 categories: [Protocol Buffers,]
 tags:
   - Protocol Buffers
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -305,20 +307,20 @@ message SearchResponse {
 | uint64 | uint64 | Uses variable-length encoding.
 | sint32 | int32 | Uses variable-length encoding. **Signed int value. These more efficiently encode negative numbers than regular int32s**.
 | sint64 | int64 | Uses variable-length encoding. **Signed int value. These more efficiently encode negative numbers than regular int64s**.
-| fixed32 | uint32 | Always four bytes. **More efficient than uint32 if values are often greater than 2^28**.
-| fixed64 | uint64 | Always eight bytes. **More efficient than uint64 if values are often greater than 2^56.**
+| fixed32 | uint32 | Always four bytes. **More efficient than uint32 if values are often greater than $$2^{28}$$**.
+| fixed64 | uint64 | Always eight bytes. **More efficient than uint64 if values are often greater than $$2^{56}$$.**
 | sfixed32 | int32 | Always four bytes.
 | sfixed64 | int64 | Always eight bytes.
 | bool | bool |
-| string | string | **A string must always contain UTF-8 encoded or 7-bit ASCII text, and cannot be longer than 2^32.**
-| bytes | string | **May contain any arbitrary sequence of bytes no longer than 2^32.**
+| string | string | **A string must always contain UTF-8 encoded or 7-bit ASCII text, and cannot be longer than $$2^{32}$$.**
+| bytes | string | **May contain any arbitrary sequence of bytes no longer than $$2^{32}$$.**
 
 
 
 ## Assigning Field Numbers
 
 * Note that field numbers in the range `1` through `15` **take one byte to encode**, including **the field number and the field's type**. So reserve the numbers `1` through `15` for very frequently occurring message elements. **Remember to leave some room for frequently occurring elements that might be added in the future**.
-* **The smallest field number you can specify is `1`, and the largest is `2^29 - 1`, or `536,870,911`**. You also cannot use the numbers `19000` through `19999`, as they are reserved for the Protocol Buffers implementation - the protocol buffer compiler will complain if you use one of these reserved numbers in your `.proto`. Similarly, you cannot use any previously reserved field numbers.
+* **The smallest field number you can specify is `1`, and the largest is $$2^{29}-1$$, or `536,870,911`**. You also cannot use the numbers `19000` through `19999`, as they are reserved for the Protocol Buffers implementation - the protocol buffer compiler will complain if you use one of these reserved numbers in your `.proto`. Similarly, you cannot use any previously reserved field numbers.
 
 ## Specifying Field Rules
 
@@ -1784,13 +1786,13 @@ The following message class members are changed or added when you enable `arena`
 ### Message class methods
 
 
-* `Message(Message&& other)`: If the source message is not on `arena`, the move constructor efficiently moves all fields from one message to another without making copies or heap allocations (the time complexity of this operation is `O(number-of-declared-fields)` ). However, if the source message is on `arena`, it performs a deep copy of the underlying data. In both cases the source message is left in a valid but unspecified state.
+* `Message(Message&& other)`: If the source message is not on `arena`, the move constructor efficiently moves all fields from one message to another without making copies or heap allocations (the time complexity of this operation is $$O(\text{number of declared fields})$$ ). However, if the source message is on `arena`, it performs a deep copy of the underlying data. In both cases the source message is left in a valid but unspecified state.
 
 > 移动构造函数
 > 非 arena：移动语义，零拷贝
 > arena：深拷贝
 
-* `Message& operator=(Message&& other)`: If both messages are not on `arena` or are on the same `arena`, the move-assignment operator efficiently moves all fields from one message to another without making copies or heap allocations (the time complexity of this operation is `O(number-of-declared-fields)`). However, if only one message is on `arena`, or the messages are on different arenas, it performs a deep copy of the underlying data. In both cases the source message is left in a valid but unspecified state.
+* `Message& operator=(Message&& other)`: If both messages are not on `arena` or are on the same `arena`, the move-assignment operator efficiently moves all fields from one message to another without making copies or heap allocations (the time complexity of this operation is $$O(\text{number of declared fields})$$). However, if only one message is on `arena`, or the messages are on different arenas, it performs a deep copy of the underlying data. In both cases the source message is left in a valid but unspecified state.
 
 > 移动赋值函数
 > 如果两个 message 都不是 arena 或者都是分配在同一个 arena，则移动赋值为零拷贝

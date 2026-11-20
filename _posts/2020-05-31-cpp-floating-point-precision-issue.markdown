@@ -2,10 +2,12 @@
 layout: post
 title:  "CPP Floating-point Precision Issue"
 date:   2020-05-31 16:00:00 +0800
+last_modified_at: 2026-11-20 10:55:12 +0800
 categories: [C/C++]
 tags:
   - C/C++
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -16,10 +18,10 @@ tags:
 
 浮点数的存储格式可参考：[Single-precision floating-point format 32 bits](https://en.wikipedia.org/wiki/Single-precision_floating-point_format)，[Double-precision floating-point format 64 bits](https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
 
-* 单精度浮点型float，通常32位，至少有`6位`有效数字，取值范围`10^-38 - 10^38`
-* 双精度浮点型double，通常64位，`15-17位`有效数字，取值范围`10^-308 - 10^308`
+* 单精度浮点型float，通常32位，至少有`6位`有效数字，取值范围 $$10^{-38} \sim 10^{38}$$
+* 双精度浮点型double，通常64位，`15-17位`有效数字，取值范围 $$10^{-308} \sim 10^{308}$$
 * 多精度浮点型long double，精度更高
-* A signed 32-bit integer variable has a maximum value of 2^31 − 1 = `2,147,483,647`; An **IEEE 754** 32-bit base-2 floating-point variable has a maximum value of (2 − 2^−23) × 2^127 ≈ `3.4028235 × 10^38`
+* A signed 32-bit integer variable has a maximum value of $$2^{31}-1 = 2147483647$$; An **IEEE 754** 32-bit base-2 floating-point variable has a maximum value of $$(2 - 2^{-23}) \times 2^{127} \approx 3.4028235 \times 10^{38}$$
 
 
 

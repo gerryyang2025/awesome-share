@@ -2,11 +2,12 @@
 layout: post
 title:  "Linux in Action"
 date:   2021-01-02 17:00:00 +0800
-last_modified_at: 2026-05-06 22:23:00 +0800
+last_modified_at: 2026-11-20 10:55:12 +0800
 categories: Linux
 tags:
   - Linux
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -1270,7 +1271,7 @@ gdb --batch --pid {PID} -ex "dump memory native_memory.dump 0x66c2000 0x66d2000"
 
 通过`/proc/net/dev`文件，可以计算出服务器的**流量(bytes)**及**包量(packets)**。其中，`/proc/net/dev`的数值是从系统启动后一直累加的。
 
-> 注意：在32位系统上，/proc/net/dev中的数值系统使用4个字节的无符号整型保存，当数值达到2^32-1，即4294967295之后，数值会溢出，计算流量包量时需要把这一点考虑进去。而64位系统中/proc/net/dev使用的是8个字节的无符号整型，因此就不需要注意溢出的问题。
+> 注意：在32位系统上，/proc/net/dev中的数值系统使用4个字节的无符号整型保存，当数值达到 $$2^{32}-1$$，即 4294967295 之后，数值会溢出，计算流量包量时需要把这一点考虑进去。而64位系统中/proc/net/dev使用的是8个字节的无符号整型，因此就不需要注意溢出的问题。
 
 ```text
 $ cat /proc/net/dev

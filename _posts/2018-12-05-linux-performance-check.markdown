@@ -2,10 +2,12 @@
 layout: post
 title:  "Linux Performance 诊断"
 date:   2018-12-05 20:00:00 +0800
+last_modified_at: 2026-11-20 11:00:34 +0800
 categories: [Linux Performance]
 tags:
   - Linux Performance
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -549,10 +551,13 @@ A:
 
 可以看到，一旦**pages_free**小于pages_low，就会触发内存的回收。这个pages_low可以通过内核选项`/proc/sys/vm/min_free_kbytes`来间接设置。min_free_kbytes设置了pages_min，其他两个阈值，都是根据pages_min计算生成的，计算方法如下：
 
-```text
-pages_low  = pages_min * 5 / 4
-pages_high = pages_min * 3 / 2
-```
+$$
+\mathrm{pages_{low}} = \mathrm{pages_{min}} \times \frac{5}{4}
+$$
+
+$$
+\mathrm{pages_{high}} = \mathrm{pages_{min}} \times \frac{3}{2}
+$$
 
 
 **Q: 很多情况下，发现SWAP升高，可是在分析系统的内存使用时，却很可能发现系统剩余内存还多着呢，为什么剩余内存很多的情况下，也会发生SWAP？**
@@ -1386,8 +1391,8 @@ C10K和C1000K的首字母C是Client的缩写。C10K就是单机同时处理1万�
 优点：对应用程序比较友好，API简单。
 缺点：
 * 应用程序使用select和poll时，需要对这些文件描述符列表进行轮询，这样请求数多的时候就会比较耗时。
-* select使用固定长度的位相量，表示文件描述符的集合，因此会有最大描述符数量的限制。比如，在32位系统中，默认限制是1024。并且，在select内部，检查套接字状态是用轮询的方法，再加上应用程序使用时的轮询，就变成了一个O(N^2)的关系。
-* poll改进了select的表示方法，换成了一个没有固定长度的数组，这样就没有了最大描述符数量的限制（当然还会受到系统文件描述符限制）。但应用程序在使用poll时，同样需要对文件描述符列表进行轮询，这样，处理时耗跟描述符数量是O(N)的关系。
+* select使用固定长度的位相量，表示文件描述符的集合，因此会有最大描述符数量的限制。比如，在32位系统中，默认限制是1024。并且，在select内部，检查套接字状态是用轮询的方法，再加上应用程序使用时的轮询，就变成了一个 $$O(N^{2})$$ 的关系。
+* poll改进了select的表示方法，换成了一个没有固定长度的数组，这样就没有了最大描述符数量的限制（当然还会受到系统文件描述符限制）。但应用程序在使用poll时，同样需要对文件描述符列表进行轮询，这样，处理时耗跟描述符数量是 $$O(N)$$ 的关系。
 * 应用程序每次调用select和poll时，需要把文件描述符的集合，从用户空间传入内核空间，由内核修改后再传出到用户空间。这一来一回的内核空间与用户空间的切换，也增加了处理成本。
 
 **方法2：非阻塞I/O和边缘触发通知（比如，epoll）**

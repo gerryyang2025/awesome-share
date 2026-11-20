@@ -2,12 +2,13 @@
 layout: post
 title:  "Kubernetes in Action"
 date:   2022-07-31 16:30:00 +0800
-last_modified_at: 2026-11-17 12:15:21 +0800
+last_modified_at: 2026-11-20 11:00:34 +0800
 categories: 云原生
 tags:
   - Kubernetes
   - 云原生
   - 资源管理
+math: true
 
 ---
 
@@ -2179,9 +2180,9 @@ HPA 用来根据负载**自动调整副本数**，常见目标对象是 `Deploym
 
 官方文档给出的基本公式可以概括成：
 
-```text
-desiredReplicas = ceil(currentReplicas * currentMetricValue / desiredMetricValue)
-```
+$$
+\mathrm{desiredReplicas} = \left\lceil \mathrm{currentReplicas} \times \frac{\mathrm{currentMetricValue}}{\mathrm{desiredMetricValue}} \right\rceil
+$$
 
 一个基于 CPU 使用率的最小示例如下：
 

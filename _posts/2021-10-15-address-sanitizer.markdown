@@ -2,11 +2,13 @@
 layout: post
 title:  "AddressSanitizer (ASan) - A Fast Memory Error Detector"
 date:   2021-10-15 08:30:00 +0800
+last_modified_at: 2026-11-20 10:55:12 +0800
 categories: [Linux Performance]
 tags:
   - AddressSanitizer
   - Linux Performance
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -767,23 +769,23 @@ ASan 检测"栈返回后使用"（stack-use-after-return）漏洞的机制。**�
 
 **Memory consumption**
 
-The **Fake Stack** allocator uses a fixed amount of memory per each thread. The allocator has 11 size classes (from `2**6` bytes to `2**16` bytes), every size class has fixed amount of chunks. If the given size class is fully used, the allocator will return 0 and thus regular stack will be used (i.e. `stack-use-after-return` detection will not work for the given function call). The amount of memory given to every size class is proportional to the size of thread's real stack, but not more than `2**max_uar_stack_size_log` (by default, `2**20`) and not less than `2**min_uar_stack_size_log` (by default, `2**16`). See also: [AddressSanitizerFlags](https://github.com/google/sanitizers/wiki/AddressSanitizerFlags).
+The **Fake Stack** allocator uses a fixed amount of memory per each thread. The allocator has 11 size classes (from $$2^{6}$$ bytes to $$2^{16}$$ bytes), every size class has fixed amount of chunks. If the given size class is fully used, the allocator will return 0 and thus regular stack will be used (i.e. `stack-use-after-return` detection will not work for the given function call). The amount of memory given to every size class is proportional to the size of thread's real stack, but not more than `2**max_uar_stack_size_log` (by default, $$2^{20}$$) and not less than `2**min_uar_stack_size_log` (by default, $$2^{16}$$). See also: [AddressSanitizerFlags](https://github.com/google/sanitizers/wiki/AddressSanitizerFlags).
 
-So, with the default `8Mb` stack size and default AddressSanitizerFlags each size class will get `2**20` bytes and thus every thread will mmap ~11Mb for Fake Stack.
+So, with the default `8Mb` stack size and default AddressSanitizerFlags each size class will get $$2^{20}$$ bytes and thus every thread will mmap ~11Mb for Fake Stack.
 
 **The bigger the Fake Stack the better your chances to catch a stack-use-after-return and get a correct report, but the greater is the memory consumption.**
 
 ASan 的 **Fake Stack** 分配器通过内存预分配机制检测"栈返回后使用"（stack-use-after-return）漏洞，其内存消耗机制如下：
 
 * 内存分配架构
-  + 固定大小类别：分配器包含 2^6 到 2^16 字节共 11 个大小类别，每个类别有固定数量的内存块（chunk）
+  + 固定大小类别：分配器包含 $$2^{6}$$ 到 $$2^{16}$$ 字节共 11 个大小类别，每个类别有固定数量的内存块（chunk）
   + 线程独立内存池：每个线程独立分配 Fake Stack 内存池，避免多线程竞争
   + 动态调整规则
     - 每个类别的内存总量与线程实际栈大小成比例
-    - 受上下限约束：上限 2^20（默认 1MB），下限 2^16（默认 64KB）
+    - 受上下限约束：上限 $$2^{20}$$（默认 1MB），下限 $$2^{16}$$（默认 64KB）
   + 默认配置下的计算 (以 8MB 线程栈和默认参数为例：)
-    - 每个大小类别分配：2^20 字节（1MB）
-    - 总内存消耗：11 × 1MB = 11MB 虚拟内存（通过 `mmap` 分配）
+    - 每个大小类别分配：$$2^{20}$$ 字节（1MB）
+    - 总内存消耗：$$11 \times 1\,\mathrm{MB} = 11\,\mathrm{MB}$$ 虚拟内存（通过 `mmap` 分配）
   + 性能与内存的权衡 (当某大小类别的内存耗尽时，ASan 会回退到常规栈分配，此时无法检测 stack-use-after-return)
     - 增大 Fake Stack -> 提高检测成功率，错误报告更精准 -> 内存消耗增加（线性增长）
     - 减小 Fake Stack -> 降低内存占用 -> 可能漏检部分 use-after-return

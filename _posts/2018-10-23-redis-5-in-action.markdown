@@ -2,10 +2,12 @@
 layout: post
 title:  "Redis 5.0.0 in Action"
 date:   2018-10-23 13:00:00 +0800
+last_modified_at: 2026-11-20 10:55:12 +0800
 categories: Redis
 tags:
   - Redis
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -721,8 +723,8 @@ OK
 
 Redis的LIST底层实现为一个链表结构，而不是一个连续的数组。
 
-优点：插入时间复杂度是O(1)
-缺点：查询时间复杂度是O(n)
+优点：插入时间复杂度是 $$O(1)$$
+缺点：查询时间复杂度是 $$O(n)$$
 
 LIST的一个使用场景：例如，当写博客的时候，每次创建新的文章就把文章的ID `LPUSH` 到一个LIST里，当访问博客的时候，通过`LRANGE 0 9`只展示最新的10篇文章。
 
@@ -906,9 +908,9 @@ They are ordered according to the following rule:
 * If A and B are two elements with a different score, then A > B if A.score is > B.score.
 * If A and B have exactly the same score, then A > B if the A string is lexicographically greater than the B string. A and B strings can't be equal since sorted sets only have unique elements.
 
-内部数据结构实现：包含了`skip list`和`hash table`，其插入和更新的时间复杂度为`O(log(N))`。
+内部数据结构实现：包含了`skip list`和`hash table`，其插入和更新的时间复杂度为 $$O(\log N)$$。
 
-Implementation note: Sorted sets are implemented via a dual-ported data structure containing both a skip list and a hash table, so every time we add an element Redis performs an O(log(N)) operation. That's good, but when we ask for sorted elements Redis does not have to do any work at all, it's already all sorted.
+Implementation note: Sorted sets are implemented via a dual-ported data structure containing both a skip list and a hash table, so every time we add an element Redis performs an $$O(\log N)$$ operation. That's good, but when we ask for sorted elements Redis does not have to do any work at all, it's already all sorted.
 
 下面使用ZSET存储历史上的一些计算机名人，会按年龄自动排序。
 
@@ -965,12 +967,12 @@ Implementation note: Sorted sets are implemented via a dual-ported data structur
 | BITCOUNT | 返回bit位为1的数量
 
 
-* Bitmap底层使用STRING实现，总共可以记录`2^32`个bit(每个bit位上记录`0`或`1`)，总共占用内存`512 MB`，使用Bitmap的好处是节省内存。
+* Bitmap底层使用STRING实现，总共可以记录 $$2^{32}$$ 个 bit(每个bit位上记录`0`或`1`)，总共占用内存`512 MB`，使用Bitmap的好处是节省内存。
 * 当Bitmap的空间不够时，Redis会自动扩展底层的STRING长度。
 * 没有设置的bit位默认为0。
 * 例如，用bitmap记录不同的用户ID，可以标识`4亿`个不同的用户，且只用了512 MB的内存空间。
 
-Bitmaps are not an actual data type, but a set of bit-oriented operations defined on the `String` type. Since strings are binary safe blobs and their maximum length is `512 MB`, they are suitable to set up to `2^32`(= 2^9 * 2^20 * 2^3) different bits.
+Bitmaps are not an actual data type, but a set of bit-oriented operations defined on the `String` type. Since strings are binary safe blobs and their maximum length is `512 MB`, they are suitable to set up to $$2^{32} (= 2^{9} \times 2^{20} \times 2^{3})$$ different bits.
 
 ```text
 > setbit key 10 1

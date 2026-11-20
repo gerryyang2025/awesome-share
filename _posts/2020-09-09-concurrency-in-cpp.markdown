@@ -2,11 +2,13 @@
 layout: post
 title:  "Concurrency in CPP"
 date:   2020-09-09 08:00:00 +0800
+last_modified_at: 2026-11-20 10:55:12 +0800
 categories: [C/C++]
 tags:
   - Concurrency
   - C/C++
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -163,7 +165,7 @@ std::atomic<T>::compare_exchange_strong
 
 * 仅支持**单一读/写**线程模型的生产-消费场景
 * 操作读写指针不需要循环调用 CAS 等待其他线程操作结束，
-* 算法复杂度 `O(1)`
+* 算法复杂度 $$O(1)$$
 
 典型实现：
 
@@ -181,7 +183,7 @@ std::atomic<T>::compare_exchange_strong
 
 * 支持**多个读/写**线程同时访问
 * 依赖 CAS 操作读/写指针，某个线程会被其他线程的行为所影响，甚至被长时间阻塞
-* 算法复杂度 `O(n)`
+* 算法复杂度 $$O(n)$$
 
 典型实现：
 

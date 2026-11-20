@@ -2,11 +2,13 @@
 layout: post
 title:  "Linux Core Dumps"
 date:   2024-12-03 12:00:00 +0800
+last_modified_at: 2026-11-20 10:55:12 +0800
 categories: [Debuggers]
 tags:
   - Linux Core Dumps
   - Debuggers
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -97,7 +99,7 @@ Pss: 12 kB...
 
 ## Linux 32-bit Virtual Memory Layout
 
-* 3GB user space (2^^32), or 4GB if:
+* 3GB user space ($$2^{32}$$), or 4GB if:
   + 32-bit process on 64-bit kernel
   + 32-bit hugemem kernel
 

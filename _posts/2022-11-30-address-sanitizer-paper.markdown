@@ -2,11 +2,13 @@
 layout: post
 title:  "AddressSanitizer: A Fast Address Sanity Checker (Paper 2012)"
 date:   2022-11-30 20:30:00 +0800
+last_modified_at: 2026-11-20 10:55:12 +0800
 categories: [Linux Performance]
 tags:
   - AddressSanitizer
   - Linux Performance
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -97,13 +99,13 @@ From a high level, our approach to memory error detection is similar to that of 
 
 ## Shadow Memory
 
-The memory addresses returned by the `malloc` function `are typically aligned to at least 8 bytes`. This leads to the observation that any aligned 8-byte sequence of application heap memory is in one of 9 different states: the first k (0 ≤ k ≤ 8) bytes are addressable and the remaining 8 − k bytes are not. This state can be encoded into a single byte of shadow memory.
+The memory addresses returned by the `malloc` function `are typically aligned to at least 8 bytes`. This leads to the observation that any aligned 8-byte sequence of application heap memory is in one of 9 different states: the first $$k$$ ($$0 \le k \le 8$$) bytes are addressable and the remaining 8 − k bytes are not. This state can be encoded into a single byte of shadow memory.
 
-AddressSanitizer dedicates **one-eighth of the virtual address space to its shadow memory** and uses a direct mapping with a scale and offset to translate an application address to its corresponding shadow address. Given the application memory address Addr, the address of the shadow byte is computed as `(Addr>>3)+Offset`. If `Max-1` is the maximum valid address in the virtual address space, the value of `Offset` should be chosen in such a way that the region from `Offset` to `Offset+Max/8` is not occupied at startup. Unlike in Umbra [31], the `Offset` must be chosen statically for every platform, but we do not see this as a serious limitation.
+AddressSanitizer dedicates **one-eighth of the virtual address space to its shadow memory** and uses a direct mapping with a scale and offset to translate an application address to its corresponding shadow address. Given the application memory address Addr, the address of the shadow byte is computed as $$(\mathit{Addr} \gg 3) + \mathit{Offset}$$. If `Max-1` is the maximum valid address in the virtual address space, the value of `Offset` should be chosen in such a way that the region from `Offset` to `Offset+Max/8` is not occupied at startup. Unlike in Umbra [31], the `Offset` must be chosen statically for every platform, but we do not see this as a serious limitation.
 
-On a typical `32-bit` Linux or MacOS system, where the virtual address space is `0x00000000-0xffffffff`, we use `Offset = 0x20000000` (`2^29`).
+On a typical `32-bit` Linux or MacOS system, where the virtual address space is `0x00000000-0xffffffff`, we use `Offset = 0x20000000` ($$2^{29}$$).
 
-On a `64-bit` system with `47` significant address bits we use `Offset = 0x0000100000000000`(`2^44`). In some cases (e.g., with `-fPIE/-pie` compiler flags on Linux) a zero offset can be used to simplify instrumentation even further.
+On a `64-bit` system with `47` significant address bits we use `Offset = 0x0000100000000000` ($$2^{44}$$). In some cases (e.g., with `-fPIE/-pie` compiler flags on Linux) a zero offset can be used to simplify instrumentation even further.
 
 **Figure 1** shows the address space layout. The application memory is split into two parts (low and high) which map to the corresponding shadow regions. Applying the shadow mapping to addresses in the shadow region gives us addresses in the Bad region, which is marked inaccessible via page protection.
 
@@ -111,9 +113,9 @@ On a `64-bit` system with `47` significant address bits we use `Offset = 0x00001
 
 
 
-We use the following encoding for each shadow byte: `0` means that all `8` bytes of the corresponding application memory region are addressable; `k` (`1 ≤ k ≤ 7`) means that the first `k` bytes are addressible; any **negative value** indicates that the entire `8-byte` word is unaddressable. We use different negative values to distinguish between different kinds of unaddressable memory (heap redzones, stack redzones, global redzones, freed memory).
+We use the following encoding for each shadow byte: `0` means that all `8` bytes of the corresponding application memory region are addressable; $$k$$ ($$1 \le k \le 7$$) means that the first `k` bytes are addressible; any **negative value** indicates that the entire `8-byte` word is unaddressable. We use different negative values to distinguish between different kinds of unaddressable memory (heap redzones, stack redzones, global redzones, freed memory).
 
-This shadow mapping could be generalized to the form `(Addr>>Scale)+Offset`, where `Scale` is one of `1 . . . 7`. With `Scale=N`, the shadow memory occupies `1/2^N` of the virtual address space and the minimum size of the redzone (and the `malloc` alignment) is `2^N` bytes. Each shadow byte describes the state of `2^N` bytes and encodes `2^N + 1` different values. Larger values of Scale require less shadow memory but greater redzone sizes to satisfy alignment requirements. Values of Scale greater than `3` require more complex instrumentation for `8-byte` accesses (see Section 3.2) but provide more flexibility with applications that may not be able to give up a single contiguous one-eighth of their address space.
+This shadow mapping could be generalized to the form $$(\mathit{Addr} \gg \mathit{Scale}) + \mathit{Offset}$$, where `Scale` is one of `1 . . . 7`. With `Scale=N`, the shadow memory occupies $$1/2^{N}$$ of the virtual address space and the minimum size of the redzone (and the `malloc` alignment) is $$2^{N}$$ bytes. Each shadow byte describes the state of $$2^{N}$$ bytes and encodes $$2^{N}+1$$ different values. Larger values of Scale require less shadow memory but greater redzone sizes to satisfy alignment requirements. Values of Scale greater than `3` require more complex instrumentation for `8-byte` accesses (see Section 3.2) but provide more flexibility with applications that may not be able to give up a single contiguous one-eighth of their address space.
 
 ## Instrumentation
 

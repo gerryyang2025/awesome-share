@@ -2,11 +2,13 @@
 layout: post
 title:  "TCMalloc in Action"
 date:   2022-08-07 11:00:00 +0800
+last_modified_at: 2026-11-20 10:55:12 +0800
 categories: [Linux Performance]
 tags:
   - TCMalloc
   - Linux Performance
 
+math: true
 ---
 
 * Do not remove this line (it will not be displayed)
@@ -297,7 +299,7 @@ Additionally, TCMalloc exposes telemetry about the state of the application’s 
 * 优势：
   + 分配/释放操作简化：只需操作固定大小的空闲链表（Free List），无需复杂搜索。
   + 减少内部碎片：Span 内部只存放同尺寸对象，利用率高。
-  + 快速定位：通过尺寸直接映射到对应 Span，时间复杂度 O(1)。
+  + 快速定位：通过尺寸直接映射到对应 Span，时间复杂度 $$O(1)$$。
 
 
 > 多级缓存加速
